@@ -1,8 +1,9 @@
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
-from database import engine, Base, get_db
-from models import ListagemVendas
+from typing import List
+from database import engine, get_db, Base
+from models import ListagemVendas, ListagemVendasCreate  # CORRIGIDO: nome correto
 
 app = FastAPI()
 
@@ -24,11 +25,11 @@ def root():
 
 @app.get("/listagem_vendas")
 def listar_vendas(db: Session = Depends(get_db)):
-    return db.query(ListagemVenda).all()
+    return db.query(ListagemVendas).all()
 
 @app.post("/listagem_vendas")
-def criar_venda(venda: ListagemVendaCreate, db: Session = Depends(get_db)):
-    nova_venda = ListagemVenda(**venda.dict())
+def criar_venda(venda: ListagemVendasCreate, db: Session = Depends(get_db)):
+    nova_venda = ListagemVendas(**venda.dict())
     db.add(nova_venda)
     db.commit()
     db.refresh(nova_venda)
@@ -36,7 +37,7 @@ def criar_venda(venda: ListagemVendaCreate, db: Session = Depends(get_db)):
 
 @app.delete("/listagem_vendas/{venda_id}")
 def eliminar_venda(venda_id: int, db: Session = Depends(get_db)):
-    venda = db.query(ListagemVenda).filter(ListagemVenda.id == venda_id).first()
+    venda = db.query(ListagemVendas).filter(ListagemVendas.id == venda_id).first()
     if not venda:
         raise HTTPException(status_code=404, detail="Venda não encontrada")
     db.delete(venda)
