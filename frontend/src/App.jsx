@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 export default function App() {
   const [eventos, setEventos] = useState([]);
+  const [mostrarModal, setMostrarModal] = useState(false);
   const [novoEvento, setNovoEvento] = useState({
     id: "",
     nome: "",
@@ -51,55 +52,77 @@ export default function App() {
           pago: false,
           bilhetes: []
         });
+        setMostrarModal(false);
       });
   };
 
   return (
-    <div style={{ padding: "2rem" }}>
-      <h1>Interface de Gestão de Bilhetes</h1>
+    <div className="p-6 max-w-5xl mx-auto">
+      <h1 className="text-3xl font-bold mb-6 text-center text-blue-700">Gestão de Bilhetes</h1>
 
-      <h2>Adicionar Evento</h2>
-      <div style={{ marginBottom: "1rem" }}>
-        <input name="id" placeholder="ID" value={novoEvento.id} onChange={handleChange} />
-        <input name="nome" placeholder="Nome" value={novoEvento.nome} onChange={handleChange} />
-        <input name="data" placeholder="Data" value={novoEvento.data} onChange={handleChange} />
-        <input name="local" placeholder="Local" value={novoEvento.local} onChange={handleChange} />
-        <input name="gasto" type="number" placeholder="Gasto" value={novoEvento.gasto} onChange={handleChange} />
-        <input name="ganho" type="number" placeholder="Ganho" value={novoEvento.ganho} onChange={handleChange} />
-        <label>
-          Pago:
-          <input name="pago" type="checkbox" checked={novoEvento.pago} onChange={handleChange} />
-        </label>
-        <button onClick={adicionarEvento}>Guardar Evento</button>
+      <div className="flex justify-end mb-4">
+        <button onClick={() => setMostrarModal(true)} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 shadow">
+          + Adicionar Evento
+        </button>
       </div>
 
-      <h2>Eventos Existentes</h2>
-      <table border="1" cellPadding="8" style={{ borderCollapse: "collapse" }}>
-        <thead>
-          <tr>
-            <th>Nome</th>
-            <th>Data</th>
-            <th>Local</th>
-            <th>Gasto</th>
-            <th>Ganho</th>
-            <th>Lucro</th>
-            <th>Pago</th>
-          </tr>
-        </thead>
-        <tbody>
-          {eventos.map(e => (
-            <tr key={e.id}>
-              <td>{e.nome}</td>
-              <td>{e.data}</td>
-              <td>{e.local}</td>
-              <td>{e.gasto} €</td>
-              <td>{e.ganho} €</td>
-              <td>{(e.ganho - e.gasto).toFixed(2)} €</td>
-              <td>{e.pago ? "✅" : "❌"}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {mostrarModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-lg w-full max-w-3xl p-6">
+            <h2 className="text-xl font-semibold mb-4">Novo Evento</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <input name="id" type="number" className="input" placeholder="ID" value={novoEvento.id} onChange={handleChange} />
+              <input name="nome" className="input" placeholder="Nome" value={novoEvento.nome} onChange={handleChange} />
+              <input name="data" className="input" placeholder="Data" value={novoEvento.data} onChange={handleChange} />
+              <input name="local" className="input" placeholder="Local" value={novoEvento.local} onChange={handleChange} />
+              <input name="gasto" type="number" className="input" placeholder="Gasto" value={novoEvento.gasto} onChange={handleChange} />
+              <input name="ganho" type="number" className="input" placeholder="Ganho" value={novoEvento.ganho} onChange={handleChange} />
+              <label className="flex items-center space-x-2 col-span-full">
+                <input name="pago" type="checkbox" checked={novoEvento.pago} onChange={handleChange} />
+                <span>Pago</span>
+              </label>
+            </div>
+            <div className="flex justify-end space-x-2 mt-6">
+              <button onClick={() => setMostrarModal(false)} className="px-4 py-2 rounded border text-gray-700 hover:bg-gray-100">Cancelar</button>
+              <button onClick={adicionarEvento} className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700">Guardar</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="bg-white shadow rounded p-4">
+        <h2 className="text-lg font-semibold mb-2">Eventos Existentes</h2>
+        {eventos.length === 0 ? (
+          <p className="text-gray-500">Ainda não existem eventos registados.</p>
+        ) : (
+          <table className="min-w-full border text-sm text-left text-gray-700">
+            <thead>
+              <tr className="bg-gray-100">
+                <th className="p-2">Nome</th>
+                <th className="p-2">Data</th>
+                <th className="p-2">Local</th>
+                <th className="p-2">Gasto</th>
+                <th className="p-2">Ganho</th>
+                <th className="p-2">Lucro</th>
+                <th className="p-2">Pago</th>
+              </tr>
+            </thead>
+            <tbody>
+              {eventos.map(e => (
+                <tr key={e.id} className="border-t hover:bg-gray-50">
+                  <td className="p-2">{e.nome}</td>
+                  <td className="p-2">{e.data}</td>
+                  <td className="p-2">{e.local}</td>
+                  <td className="p-2">{e.gasto} €</td>
+                  <td className="p-2">{e.ganho} €</td>
+                  <td className="p-2">{(e.ganho - e.gasto).toFixed(2)} €</td>
+                  <td className="p-2">{e.pago ? "✅" : "❌"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
     </div>
   );
 }
