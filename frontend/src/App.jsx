@@ -1,117 +1,138 @@
 import { useEffect, useState } from "react";
 
 export default function App() {
-  const [eventos, setEventos] = useState([]);
-  const [novoEvento, setNovoEvento] = useState({
-    id: "",
-    nome: "",
-    data: "",
-    local: "",
-    gasto: 0,
+  const [registos, setRegistos] = useState([]);
+  const [novoRegisto, setNovoRegisto] = useState({
+    id_venda: "",
+    data_evento: "",
+    evento: "",
+    estadio: "",
     ganho: 0,
-    pago: false,
-    bilhetes: []
+    estado: "Por entregar"
   });
-  const [showModal, setShowModal] = useState(false);
+  const [selecionados, setSelecionados] = useState([]);
 
   useEffect(() => {
-    fetch("https://controlo-bilhetes.onrender.com/eventos")
-      .then(res => res.json())
-      .then(setEventos)
-      .catch(console.error);
+    buscarRegistos();
   }, []);
 
+  const buscarRegistos = () => {
+    fetch("https://controlo-bilhetes.onrender.com/listagem_vendas")
+      .then(res => res.json())
+      .then(data => setRegistos(data))
+      .catch(err => console.error("Erro ao buscar registos:", err));
+  };
+
   const handleChange = e => {
-    const { name, value, type, checked } = e.target;
-    setNovoEvento(prev => ({
+    const { name, value } = e.target;
+    setNovoRegisto(prev => ({
       ...prev,
-      [name]: type === "checkbox" ? checked : value
+      [name]: value
     }));
   };
 
-  const adicionarEvento = () => {
-    fetch("https://controlo-bilhetes.onrender.com/eventos", {
+  const adicionarRegisto = () => {
+    fetch("https://controlo-bilhetes.onrender.com/listagem_vendas", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...novoEvento, id: parseInt(novoEvento.id) })
+      body: JSON.stringify({ ...novoRegisto, id_venda: parseInt(novoRegisto.id_venda) })
     })
       .then(res => res.json())
       .then(() => {
-        setShowModal(false);
-        setNovoEvento({
-          id: "",
-          nome: "",
-          data: "",
-          local: "",
-          gasto: 0,
+        buscarRegistos();
+        setNovoRegisto({
+          id_venda: "",
+          data_evento: "",
+          evento: "",
+          estadio: "",
           ganho: 0,
-          pago: false,
-          bilhetes: []
+          estado: "Por entregar"
         });
-        return fetch("https://controlo-bilhetes.onrender.com/eventos").then(res => res.json());
+      });
+  };
+
+  const alternarSelecionado = (id) => {
+    setSelecionados(prev =>
+      prev.includes(id) ? prev.filter(s => s !== id) : [...prev, id]
+    );
+  };
+
+  const selecionarTodos = () => {
+    if (selecionados.length === registos.length) {
+      setSelecionados([]);
+    } else {
+      setSelecionados(registos.map(r => r.id_venda));
+    }
+  };
+
+  const eliminarSelecionados = () => {
+    Promise.all(selecionados.map(id =>
+      fetch(`https://controlo-bilhetes.onrender.com/listagem_vendas/${id}`, {
+        method: "DELETE"
       })
-      .then(setEventos);
+    )).then(() => {
+      buscarRegistos();
+      setSelecionados([]);
+    });
   };
 
   return (
-    <div className="p-6 max-w-5xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Gestão de Bilhetes</h1>
+    <div className="p-6 max-w-6xl mx-auto">
+      <h1 className="text-2xl font-bold mb-4">Listagem de Vendas</h1>
 
-      <button
-        onClick={() => setShowModal(true)}
-        className="mb-4 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-      >
-        + Adicionar Evento
-      </button>
-
-      {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded shadow-lg w-full max-w-xl">
-            <h2 className="text-lg font-semibold mb-4">Novo Evento</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <input name="id" type="number" className="input" placeholder="ID" value={novoEvento.id} onChange={handleChange} />
-              <input name="nome" className="input" placeholder="Nome" value={novoEvento.nome} onChange={handleChange} />
-              <input name="data" className="input" placeholder="Data" value={novoEvento.data} onChange={handleChange} />
-              <input name="local" className="input" placeholder="Local" value={novoEvento.local} onChange={handleChange} />
-              <input name="gasto" type="number" className="input" placeholder="Gasto" value={novoEvento.gasto} onChange={handleChange} />
-              <input name="ganho" type="number" className="input" placeholder="Ganho" value={novoEvento.ganho} onChange={handleChange} />
-              <label className="flex items-center space-x-2">
-                <input name="pago" type="checkbox" checked={novoEvento.pago} onChange={handleChange} />
-                <span>Pago</span>
-              </label>
-            </div>
-            <div className="flex justify-end gap-2 mt-4">
-              <button className="bg-gray-300 px-4 py-2 rounded" onClick={() => setShowModal(false)}>Cancelar</button>
-              <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" onClick={adicionarEvento}>Guardar</button>
-            </div>
-          </div>
+      <div className="bg-white shadow-md rounded p-4 mb-6">
+        <h2 className="text-lg font-semibold mb-2">Adicionar Registo</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <input name="id_venda" type="number" className="input" placeholder="ID Venda" value={novoRegisto.id_venda} onChange={handleChange} />
+          <input name="data_evento" type="date" className="input" value={novoRegisto.data_evento} onChange={handleChange} />
+          <input name="evento" className="input" placeholder="Evento" value={novoRegisto.evento} onChange={handleChange} />
+          <input name="estadio" className="input" placeholder="Estádio" value={novoRegisto.estadio} onChange={handleChange} />
+          <input name="ganho" type="number" className="input" placeholder="Ganho (€)" value={novoRegisto.ganho} onChange={handleChange} />
+          <select name="estado" className="input" value={novoRegisto.estado} onChange={handleChange}>
+            <option value="Entregue">Entregue</option>
+            <option value="Por entregar">Por entregar</option>
+            <option value="Disputa">Disputa</option>
+            <option value="Pago">Pago</option>
+          </select>
         </div>
-      )}
+        <button onClick={adicionarRegisto} className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+          Guardar Registo
+        </button>
+      </div>
 
-      <div className="bg-white shadow-md rounded p-4 mt-4">
-        <h2 className="text-lg font-semibold mb-2">Eventos</h2>
-        <table className="min-w-full border text-sm text-left text-gray-700">
+      <div className="bg-white shadow-md rounded p-4">
+        <div className="flex justify-between items-center mb-2">
+          <h2 className="text-lg font-semibold">Vendas</h2>
+          {selecionados.length > 0 && (
+            <button onClick={eliminarSelecionados} className="bg-red-600 text-white px-4 py-1 rounded hover:bg-red-700">
+              Eliminar Selecionados
+            </button>
+          )}
+        </div>
+        <table className="min-w-full border text-sm text-left text-gray-600">
           <thead>
             <tr className="bg-gray-100">
-              <th className="p-2">Nome</th>
-              <th className="p-2">Data</th>
-              <th className="p-2">Local</th>
-              <th className="p-2">Gasto</th>
+              <th className="p-2"><input type="checkbox" onChange={selecionarTodos} checked={selecionados.length === registos.length} /></th>
+              <th className="p-2">ID Venda</th>
+              <th className="p-2">Data Evento</th>
+              <th className="p-2">Evento</th>
+              <th className="p-2">Estádio</th>
               <th className="p-2">Ganho</th>
-              <th className="p-2">Lucro</th>
-              <th className="p-2">Pago</th>
+              <th className="p-2">Estado</th>
             </tr>
           </thead>
           <tbody>
-            {eventos.map(e => (
-              <tr key={e.id} className="border-t">
-                <td className="p-2">{e.nome}</td>
-                <td className="p-2">{e.data}</td>
-                <td className="p-2">{e.local}</td>
-                <td className="p-2">{e.gasto} €</td>
-                <td className="p-2">{e.ganho} €</td>
-                <td className="p-2">{(e.ganho - e.gasto).toFixed(2)} €</td>
-                <td className="p-2">{e.pago ? "✅" : "❌"}</td>
+            {registos.map(r => (
+              <tr key={r.id_venda} className="border-t">
+                <td className="p-2">
+                  <input type="checkbox" checked={selecionados.includes(r.id_venda)} onChange={() => alternarSelecionado(r.id_venda)} />
+                </td>
+                <td className="p-2">{r.id_venda}</td>
+                <td className="p-2">{r.data_evento}</td>
+                <td className="p-2">{r.evento}</td>
+                <td className="p-2">{r.estadio}</td>
+                <td className="p-2">{r.ganho} €</td>
+                <td className="p-2">{r.estado}</td>
               </tr>
             ))}
           </tbody>
