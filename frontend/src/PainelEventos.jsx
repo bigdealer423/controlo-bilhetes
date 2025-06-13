@@ -9,7 +9,7 @@ export default function PainelEventos() {
   const [eventoSelecionado, setEventoSelecionado] = useState(null);
 
   useEffect(() => {
-    axios.get("https://O-SEU-BACKEND-URL/eventos")
+    axios.get("https://controlo-api.onrender.com/eventos")
       .then((res) => setEventos(res.data))
       .catch((err) => console.error("Erro ao buscar eventos:", err));
   }, []);
