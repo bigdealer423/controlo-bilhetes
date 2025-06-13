@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from database import engine, Base, get_db
-from models import ListagemVendas, ListagemVendasCreate
+from models import ListagemVendas
 
 app = FastAPI()
 
