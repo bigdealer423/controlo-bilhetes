@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import LoginPage from "./LoginPage";
 import Dashboard from "./Dashboard";
 
@@ -6,29 +7,27 @@ export default function App() {
   const [autenticado, setAutenticado] = useState(false);
 
   useEffect(() => {
-    const estaAutenticado = localStorage.getItem("autenticado");
-    if (estaAutenticado === "true") {
-      setAutenticado(true);
-    }
+    const autenticadoLocal = localStorage.getItem("autenticado");
+    setAutenticado(autenticadoLocal === "true");
   }, []);
 
-  const handleLogin = (utilizador, password) => {
-    if (utilizador === "bigdealer" && password === "1091") {
-      localStorage.setItem("autenticado", "true");
-      setAutenticado(true);
-    } else {
-      alert("Credenciais inválidas");
-    }
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem("autenticado");
-    setAutenticado(false);
-  };
-
-  return autenticado ? (
-    <Dashboard onLogout={handleLogout} />
-  ) : (
-    <LoginPage onLogin={handleLogin} />
+  return (
+    <Router>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            autenticado ? <Navigate to="/dashboard" replace /> : <LoginPage />
+          }
+        />
+        <Route
+          path="/dashboard"
+          element={
+            autenticado ? <Dashboard /> : <Navigate to="/" replace />
+          }
+        />
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+    </Router>
   );
 }
