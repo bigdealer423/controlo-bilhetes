@@ -1,5 +1,5 @@
 {
-  "name": "controlo-bilhetes-frontend",
+  "name": "controlo-bilhetes-frontend"
   "version": "1.0.0",
   "scripts": {
     "dev": "vite",
