@@ -35,7 +35,11 @@ export default function App() {
     fetch("https://controlo-bilhetes.onrender.com/listagem_vendas", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...novoRegisto, id_venda: parseInt(novoRegisto.id_venda) })
+      body: JSON.stringify({
+        ...novoRegisto,
+        id_venda: parseInt(novoRegisto.id_venda),
+        ganho: parseFloat(novoRegisto.ganho)
+      })
     })
       .then(res => res.json())
       .then(() => {
@@ -61,7 +65,7 @@ export default function App() {
     if (selecionados.length === registos.length) {
       setSelecionados([]);
     } else {
-      setSelecionados(registos.map(r => r.id_venda));
+      setSelecionados(registos.map(r => r.id));
     }
   };
 
@@ -112,7 +116,9 @@ export default function App() {
         <table className="min-w-full border text-sm text-left text-gray-600">
           <thead>
             <tr className="bg-gray-100">
-              <th className="p-2"><input type="checkbox" onChange={selecionarTodos} checked={selecionados.length === registos.length} /></th>
+              <th className="p-2">
+                <input type="checkbox" onChange={selecionarTodos} checked={selecionados.length === registos.length} />
+              </th>
               <th className="p-2">ID Venda</th>
               <th className="p-2">Data Evento</th>
               <th className="p-2">Evento</th>
@@ -123,9 +129,9 @@ export default function App() {
           </thead>
           <tbody>
             {registos.map(r => (
-              <tr key={r.id_venda} className="border-t">
+              <tr key={r.id} className="border-t">
                 <td className="p-2">
-                  <input type="checkbox" checked={selecionados.includes(r.id_venda)} onChange={() => alternarSelecionado(r.id_venda)} />
+                  <input type="checkbox" checked={selecionados.includes(r.id)} onChange={() => alternarSelecionado(r.id)} />
                 </td>
                 <td className="p-2">{r.id_venda}</td>
                 <td className="p-2">{r.data_evento}</td>
