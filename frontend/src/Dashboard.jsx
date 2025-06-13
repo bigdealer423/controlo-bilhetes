@@ -1,57 +1,30 @@
 import { useState } from "react";
 import ListagemVendas from "./ListagemVendas";
+// futuramente importar Eventos, InfoClubes, etc.
 
 export default function Dashboard({ onLogout }) {
-  const [menuAtivo, setMenuAtivo] = useState("Listagem de Vendas");
-
-  const menus = [
-    "Listagem de Vendas",
-    "Eventos",
-    "Info Clubes",
-    "Disputas",
-    "Compras",
-    "Menu 6"
-  ];
-
-  const renderizarConteudo = () => {
-    switch (menuAtivo) {
-      case "Listagem de Vendas":
-        return <ListagemVendas />;
-      default:
-        return (
-          <div className="p-6">
-            <h2 className="text-xl font-semibold">
-              {menuAtivo} (em desenvolvimento)
-            </h2>
-          </div>
-        );
-    }
-  };
+  const [menuAtivo, setMenuAtivo] = useState("listagem");
 
   return (
-    <div className="min-h-screen">
-      <header className="bg-gray-800 text-white p-4 flex justify-between items-center">
-        <nav className="space-x-4">
-          {menus.map((menu) => (
-            <button
-              key={menu}
-              className={`px-3 py-1 rounded ${
-                menuAtivo === menu ? "bg-blue-600" : "bg-gray-700"
-              }`}
-              onClick={() => setMenuAtivo(menu)}
-            >
-              {menu}
-            </button>
-          ))}
-        </nav>
-        <button
-          onClick={onLogout}
-          className="bg-red-600 hover:bg-red-700 px-3 py-1 rounded"
-        >
+    <div className="p-4">
+      <div className="flex justify-between items-center mb-6">
+        <div className="flex gap-4">
+          <button onClick={() => setMenuAtivo("listagem")}>Listagem Vendas</button>
+          <button onClick={() => setMenuAtivo("eventos")}>Eventos</button>
+          <button onClick={() => setMenuAtivo("clubes")}>Info Clubes</button>
+          <button onClick={() => setMenuAtivo("disputas")}>Disputas</button>
+          <button onClick={() => setMenuAtivo("compras")}>Compras</button>
+          <button onClick={() => setMenuAtivo("outro")}>Outro</button>
+        </div>
+        <button onClick={onLogout} className="text-red-600 font-semibold">
           Logout
         </button>
-      </header>
-      <main className="bg-gray-50">{renderizarConteudo()}</main>
+      </div>
+
+      <div>
+        {menuAtivo === "listagem" && <ListagemVendas />}
+        {/* Renderizar outros menus quando forem criados */}
+      </div>
     </div>
   );
 }
