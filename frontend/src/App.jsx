@@ -1,39 +1,38 @@
-import { useState, useEffect } from "react";
-import Dashboard from "./Dashboard";
+import { useEffect, useState } from "react";
 import LoginPage from "./LoginPage";
+import Dashboard from "./Dashboard";
 
 export default function App() {
   const [autenticado, setAutenticado] = useState(false);
 
   useEffect(() => {
-    const loginAnterior = localStorage.getItem("login");
-    if (loginAnterior === "true") {
+    const userLogado = localStorage.getItem("autenticado");
+    if (userLogado === "true") {
       setAutenticado(true);
     }
   }, []);
 
-  const handleLogin = (username, password) => {
+  const fazerLogin = (username, password) => {
     if (username === "bigdealer" && password === "1091") {
-      localStorage.setItem("login", "true");
       setAutenticado(true);
+      localStorage.setItem("autenticado", "true");
     } else {
       alert("Credenciais inválidas");
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("login");
+  const fazerLogout = () => {
     setAutenticado(false);
+    localStorage.removeItem("autenticado");
   };
 
   return (
-    <div>
+    <div className="min-h-screen bg-gray-100">
       {autenticado ? (
-        <Dashboard onLogout={handleLogout} />
+        <Dashboard onLogout={fazerLogout} />
       ) : (
-        <LoginPage onLogin={handleLogin} />
+        <LoginPage onLogin={fazerLogin} />
       )}
     </div>
   );
 }
-
