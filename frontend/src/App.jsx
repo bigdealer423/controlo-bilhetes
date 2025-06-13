@@ -1,12 +1,13 @@
 import { useState } from "react";
 import LoginPage from "./LoginPage";
-import ListagemVendas from "./ListagemVendas"; // este é o que já tem
-// Placeholder para os outros menus:
-const Eventos = () => <div>Eventos</div>;
-const InfoClubes = () => <div>Info Clubes</div>;
-const Disputas = () => <div>Disputas</div>;
-const Compras = () => <div>Compras</div>;
-const OutroMenu = () => <div>Outro menu</div>;
+import ListagemVendas from "./ListagemVendas";
+
+// Placeholder dos outros menus
+const Eventos = () => <div className="p-6">Página de Eventos</div>;
+const InfoClubes = () => <div className="p-6">Página de Info Clubes</div>;
+const Disputas = () => <div className="p-6">Página de Disputas</div>;
+const Compras = () => <div className="p-6">Página de Compras</div>;
+const OutroMenu = () => <div className="p-6">Outro Menu</div>;
 
 export default function App() {
   const [logado, setLogado] = useState(false);
@@ -31,30 +32,31 @@ export default function App() {
       case "outro":
         return <OutroMenu />;
       default:
-        return <div>Menu inválido</div>;
+        return <div className="p-6">Menu não encontrado</div>;
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-50">
       {/* Barra de navegação */}
-      <nav className="bg-white shadow mb-4">
-        <ul className="flex justify-between items-center px-4 py-2">
-          <div className="flex space-x-4">
-            <li><button onClick={() => setMenuAtivo("vendas")} className="hover:underline">Listagem Vendas</button></li>
-            <li><button onClick={() => setMenuAtivo("eventos")} className="hover:underline">Eventos</button></li>
-            <li><button onClick={() => setMenuAtivo("clubes")} className="hover:underline">Info Clubes</button></li>
-            <li><button onClick={() => setMenuAtivo("disputas")} className="hover:underline">Disputas</button></li>
-            <li><button onClick={() => setMenuAtivo("compras")} className="hover:underline">Compras</button></li>
-            <li><button onClick={() => setMenuAtivo("outro")} className="hover:underline">Outro</button></li>
-          </div>
-          <li>
-            <button onClick={() => setLogado(false)} className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">Logout</button>
-          </li>
-        </ul>
+      <nav className="bg-white shadow p-4 flex justify-between items-center">
+        <div className="flex space-x-6">
+          <button onClick={() => setMenuAtivo("vendas")} className="hover:text-blue-600">Listagem Vendas</button>
+          <button onClick={() => setMenuAtivo("eventos")} className="hover:text-blue-600">Eventos</button>
+          <button onClick={() => setMenuAtivo("clubes")} className="hover:text-blue-600">Info Clubes</button>
+          <button onClick={() => setMenuAtivo("disputas")} className="hover:text-blue-600">Disputas</button>
+          <button onClick={() => setMenuAtivo("compras")} className="hover:text-blue-600">Compras</button>
+          <button onClick={() => setMenuAtivo("outro")} className="hover:text-blue-600">Outro</button>
+        </div>
+        <button
+          onClick={() => setLogado(false)}
+          className="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600"
+        >
+          Logout
+        </button>
       </nav>
 
-      {/* Conteúdo da página */}
+      {/* Conteúdo da página atual */}
       {renderConteudo()}
     </div>
   );
