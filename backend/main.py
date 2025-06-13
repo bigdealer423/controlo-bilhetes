@@ -60,6 +60,6 @@ def eliminar_evento(evento_id: int):
     global eventos_db
     eventos_db = [e for e in eventos_db if e.id != evento_id]
     return {"detail": "Evento eliminado com sucesso"}
-    @app.get("/")
+@app.get("/")
 def root():
     return {"status": "API online"}
