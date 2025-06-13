@@ -21,3 +21,18 @@ class ListagemVendas(Base):
     estadio = Column(String, nullable=False)
     ganho = Column(Float, nullable=False)
     estado = Column(Enum(EstadoVenda), nullable=False)
+    
+from pydantic import BaseModel
+from datetime import date
+
+class ListagemVendasCreate(BaseModel):
+    id_venda: int
+    data_evento: date
+    evento: str
+    estadio: str
+    ganho: float
+    estado: str  # pode usar o enum EstadoVenda se preferir validação
+
+class Config:
+        orm_mode = True
+
