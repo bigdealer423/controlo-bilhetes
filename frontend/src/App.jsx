@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import LoginPage from "./LoginPage";
 import ListagemVendas from "./ListagemVendas";
 
@@ -13,26 +13,37 @@ export default function App() {
   const [logado, setLogado] = useState(false);
   const [menuAtivo, setMenuAtivo] = useState("vendas");
 
+  // Verificar LocalStorage ao carregar a app
+  useEffect(() => {
+    const isLogado = localStorage.getItem("logado");
+    if (isLogado === "true") {
+      setLogado(true);
+    }
+  }, []);
+
+  const handleLogin = () => {
+    setLogado(true);
+    localStorage.setItem("logado", "true");
+  };
+
+  const handleLogout = () => {
+    setLogado(false);
+    localStorage.removeItem("logado");
+  };
+
   if (!logado) {
-    return <LoginPage onLoginSuccess={() => setLogado(true)} />;
+    return <LoginPage onLoginSuccess={handleLogin} />;
   }
 
   const renderConteudo = () => {
     switch (menuAtivo) {
-      case "vendas":
-        return <ListagemVendas />;
-      case "eventos":
-        return <Eventos />;
-      case "clubes":
-        return <InfoClubes />;
-      case "disputas":
-        return <Disputas />;
-      case "compras":
-        return <Compras />;
-      case "outro":
-        return <OutroMenu />;
-      default:
-        return <div className="p-6">Menu não encontrado</div>;
+      case "vendas": return <ListagemVendas />;
+      case "eventos": return <Eventos />;
+      case "clubes": return <InfoClubes />;
+      case "disputas": return <Disputas />;
+      case "compras": return <Compras />;
+      case "outro": return <OutroMenu />;
+      default: return <div className="p-6">Menu não encontrado</div>;
     }
   };
 
@@ -49,7 +60,7 @@ export default function App() {
           <button onClick={() => setMenuAtivo("outro")} className="hover:text-blue-600">Outro</button>
         </div>
         <button
-          onClick={() => setLogado(false)}
+          onClick={handleLogout}
           className="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600"
         >
           Logout
