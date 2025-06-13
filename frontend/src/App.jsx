@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
+import LoginPage from "./LoginPage";
 
 export default function App() {
+  const [logado, setLogado] = useState(false);
   const [registos, setRegistos] = useState([]);
   const [novoRegisto, setNovoRegisto] = useState({
     id_venda: "",
@@ -13,8 +15,8 @@ export default function App() {
   const [selecionados, setSelecionados] = useState([]);
 
   useEffect(() => {
-    buscarRegistos();
-  }, []);
+    if (logado) buscarRegistos();
+  }, [logado]);
 
   const buscarRegistos = () => {
     fetch("https://controlo-bilhetes.onrender.com/listagem_vendas")
@@ -25,10 +27,7 @@ export default function App() {
 
   const handleChange = e => {
     const { name, value } = e.target;
-    setNovoRegisto(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setNovoRegisto(prev => ({ ...prev, [name]: value }));
   };
 
   const adicionarRegisto = () => {
@@ -62,23 +61,21 @@ export default function App() {
   };
 
   const selecionarTodos = () => {
-    if (selecionados.length === registos.length) {
-      setSelecionados([]);
-    } else {
-      setSelecionados(registos.map(r => r.id));
-    }
+    setSelecionados(selecionados.length === registos.length ? [] : registos.map(r => r.id));
   };
 
   const eliminarSelecionados = () => {
     Promise.all(selecionados.map(id =>
-      fetch(`https://controlo-bilhetes.onrender.com/listagem_vendas/${id}`, {
-        method: "DELETE"
-      })
+      fetch(`https://controlo-bilhetes.onrender.com/listagem_vendas/${id}`, { method: "DELETE" })
     )).then(() => {
       buscarRegistos();
       setSelecionados([]);
     });
   };
+
+  if (!logado) {
+    return <LoginPage onLoginSuccess={() => setLogado(true)} />;
+  }
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
@@ -116,9 +113,7 @@ export default function App() {
         <table className="min-w-full border text-sm text-left text-gray-600">
           <thead>
             <tr className="bg-gray-100">
-              <th className="p-2">
-                <input type="checkbox" onChange={selecionarTodos} checked={selecionados.length === registos.length} />
-              </th>
+              <th className="p-2"><input type="checkbox" onChange={selecionarTodos} checked={selecionados.length === registos.length} /></th>
               <th className="p-2">ID Venda</th>
               <th className="p-2">Data Evento</th>
               <th className="p-2">Evento</th>
