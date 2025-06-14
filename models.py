@@ -40,7 +40,9 @@ class EventoCompleto(Base):
     gasto = Column(Float, nullable=False)
     ganho = Column(Float, nullable=False)
     estado = Column(String, nullable=False)
-
+# Garante que todas as tabelas estão incluídas antes da criação
+from database import engine
+Base.metadata.create_all(bind=engine)
 # -------------------- SCHEMAS Pydantic --------------------
 
 class ListagemVendasCreate(BaseModel):
@@ -75,6 +77,4 @@ class EventoCompleto(EventoCompletoCreate):
     class Config:
         from_attributes = True
 
-# Garante que todas as tabelas estão incluídas antes da criação
-from database import engine
-Base.metadata.create_all(bind=engine)
+
