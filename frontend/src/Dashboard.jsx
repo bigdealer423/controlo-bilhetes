@@ -1,4 +1,5 @@
 import { useNavigate, useLocation } from "react-router-dom";
+import EventoModal from "./EventoModal"; // Certifique-se de que o caminho está correto
 import { FiSettings } from "react-icons/fi";
 
 export default function Dashboard({ abrirModal }) {
