@@ -76,15 +76,15 @@ export default function Eventos() {
       data_evento: "",
       evento: "",
       estadio: "",
-      gasto: 0,
-      ganho: 0,
+      gasto: "",
+      ganho: "",
       estado: "Por entregar"
     });
     buscarEventos();
   };
 
   const eliminarRegisto = async (id) => {
-    await fetch(\`https://controlo-bilhetes.onrender.com/eventos_completos/\${id}\`, {
+    await fetch('https://controlo-bilhetes.onrender.com/eventos_completos/' + id, {
       method: "DELETE"
     });
     buscarEventos();
