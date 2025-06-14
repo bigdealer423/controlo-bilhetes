@@ -1,10 +1,11 @@
-Base.metadata.create_all(bind=engine)
+
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from typing import List
 from database import engine, get_db
 from models import ListagemVendas, ListagemVendasCreate, EventoDropdown, EventoDropdownCreate, Base
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
