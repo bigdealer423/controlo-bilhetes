@@ -104,3 +104,16 @@ def eliminar_evento_completo(evento_id: int, db: Session = Depends(get_db)):
     db.delete(evento)
     db.commit()
     return {"detail": "Evento completo eliminado com sucesso"}
+
+@app.put("/eventos_completos2/{evento_id}", response_model=EventoCompletoOut)
+def atualizar_evento_completo(evento_id: int, evento: EventoCompletoCreate, db: Session = Depends(get_db)):
+    evento_existente = db.query(EventoCompletoModel).filter(EventoCompletoModel.id == evento_id).first()
+    if not evento_existente:
+        raise HTTPException(status_code=404, detail="Evento não encontrado")
+    
+    for key, value in evento.dict().items():
+        setattr(evento_existente, key, value)
+
+    db.commit()
+    db.refresh(evento_existente)
+    return evento_existente
