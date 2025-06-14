@@ -1,12 +1,9 @@
-// Dashboard.jsx
 import { useNavigate, useLocation } from "react-router-dom";
-import { useEffect, useState } from "react";
-import EventoModal from "./EventoModal";
+import { FiSettings } from "react-icons/fi";
 
-export default function Dashboard() {
+export default function Dashboard({ abrirModal }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const [mostrarModalEvento, setMostrarModalEvento] = useState(false);
 
   const menus = [
     { nome: "Listagem de Vendas", rota: "/listagem-vendas" },
@@ -17,34 +14,47 @@ export default function Dashboard() {
     { nome: "Outro Menu", rota: "/outro" }
   ];
 
-  useEffect(() => {
-    if (location.pathname === "/dashboard") {
-      navigate("/listagem-vendas");
-    }
-  }, [location.pathname, navigate]);
+  const sair = () => {
+    localStorage.removeItem("autenticado");
+    navigate("/");
+  };
 
   return (
-    <div className="bg-white p-2 shadow-md flex justify-between items-center">
-      <div className="flex gap-2">
-        {menus.map(menu => (
+    <div className="flex justify-between items-center bg-white shadow px-4 py-2 mb-4">
+      {/* Menus de navegação */}
+      <div className="flex gap-2 flex-wrap">
+        {menus.map((menu) => (
           <button
             key={menu.rota}
             onClick={() => navigate(menu.rota)}
-            className={`px-3 py-1 rounded text-sm font-medium ${location.pathname === menu.rota ? "bg-blue-600 text-white" : "bg-gray-100 hover:bg-gray-200"}`}
+            className={`px-3 py-1 text-sm rounded transition ${
+              location.pathname === menu.rota
+                ? "bg-blue-600 text-white"
+                : "bg-gray-200 hover:bg-blue-100"
+            }`}
           >
             {menu.nome}
           </button>
         ))}
       </div>
-      <button
-        onClick={() => setMostrarModalEvento(true)}
-        className="ml-4 text-gray-600 hover:text-gray-900 text-xl"
-        title="Definições"
-      >
-        ⚙️
-      </button>
 
-      {mostrarModalEvento && <EventoModal onClose={() => setMostrarModalEvento(false)} />}
+      {/* Ícones de definições e logout */}
+      <div className="flex items-center gap-4">
+        {/* Roda dentada */}
+        <FiSettings
+          onClick={abrirModal}
+          className="text-2xl text-gray-700 cursor-pointer hover:text-blue-600"
+          title="Definições"
+        />
+
+        {/* Logout */}
+        <button
+          onClick={sair}
+          className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 text-sm rounded"
+        >
+          Logout
+        </button>
+      </div>
     </div>
   );
 }
