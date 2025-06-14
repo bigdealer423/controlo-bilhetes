@@ -139,6 +139,19 @@ def eliminar_compra(compra_id: int, db: Session = Depends(get_db)):
     db.commit()
     return {"detail": "Compra eliminada com sucesso"}
 
+@app.put("/compras/{compra_id}", response_model=CompraOut)
+def atualizar_compra(compra_id: int, compra: CompraCreate, db: Session = Depends(get_db)):
+    compra_existente = db.query(Compra).filter(Compra.id == compra_id).first()
+    if not compra_existente:
+        raise HTTPException(status_code=404, detail="Compra não encontrada")
+
+    for key, value in compra.dict().items():
+        setattr(compra_existente, key, value)
+
+    db.commit()
+    db.refresh(compra_existente)
+    return compra_existente
+
 
 from models import Compra  # Garante que está importado
 from database import engine
