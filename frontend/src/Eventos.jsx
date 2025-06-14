@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";More actions
+import { useEffect, useState } from "react";
 
 export default function Eventos() {
   const [registos, setRegistos] = useState([]);
