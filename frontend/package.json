@@ -1,8 +1,7 @@
-{
-  "type": "module"
-}
+
 {
   "name": "controlo-bilhetes-frontend",
+  "type": "module",
   "version": "1.0.0",
   "scripts": {
     "dev": "vite",
