@@ -6,6 +6,8 @@ import enum
 
 Base = declarative_base()
 
+# -------------------- MODELOS SQLAlchemy --------------------
+
 class EstadoVenda(str, enum.Enum):
     entregue = "Entregue"
     por_entregar = "Por entregar"
@@ -29,7 +31,6 @@ class EventoDropdown(Base):
     id = Column(Integer, primary_key=True, index=True)
     nome = Column(String, nullable=False, unique=True)
 
-# NOVO: EventoCompleto (tabela nova para aba "Eventos")
 class EventoCompleto(Base):
     __tablename__ = "eventos_completos2"
 
@@ -40,9 +41,19 @@ class EventoCompleto(Base):
     gasto = Column(Float, nullable=False)
     ganho = Column(Float, nullable=False)
     estado = Column(String, nullable=False)
-# Garante que todas as tabelas estão incluídas antes da criação
-from database import engine
-Base.metadata.create_all(bind=engine)
+
+# NOVO: Modelo de Compras
+class Compra(Base):
+    __tablename__ = "compras"
+
+    id = Column(Integer, primary_key=True, index=True)
+    local_compras = Column(String, nullable=False)
+    bancada = Column(String, nullable=False)
+    setor = Column(String, nullable=False)
+    fila = Column(String, nullable=True)
+    quantidade = Column(Integer, nullable=False)
+    gasto = Column(Float, nullable=False)
+
 # -------------------- SCHEMAS Pydantic --------------------
 
 class ListagemVendasCreate(BaseModel):
@@ -62,7 +73,6 @@ class EventoDropdownCreate(BaseModel):
     class Config:
         from_attributes = True
 
-# NOVOS SCHEMAS
 class EventoCompletoBase(BaseModel):
     data_evento: date
     evento: str
@@ -79,5 +89,26 @@ class EventoCompletoOut(EventoCompletoBase):
 
     class Config:
         from_attributes = True
+
+# NOVOS SCHEMAS PARA COMPRAS
+class CompraCreate(BaseModel):
+    local_compras: str
+    bancada: str
+    setor: str
+    fila: str
+    quantidade: int
+    gasto: float
+
+    class Config:
+        from_attributes = True
+
+class CompraOut(CompraCreate):
+    id: int
+
+    class Config:
+        from_attributes = True
+
+# Criação automática das tabelas
+from database import engine
 Base.metadata.create_all(bind=engine)
 
