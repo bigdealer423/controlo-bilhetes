@@ -42,11 +42,15 @@ def listar_vendas(db: Session = Depends(get_db)):
 
 @app.post("/listagem_vendas")
 def criar_venda(venda: ListagemVendasCreate, db: Session = Depends(get_db)):
-    nova_venda = ListagemVendas(**venda.dict())
-    db.add(nova_venda)
-    db.commit()
-    db.refresh(nova_venda)
-    return nova_venda
+    try:
+        nova_venda = ListagemVendas(**venda.dict())
+        db.add(nova_venda)
+        db.commit()
+        db.refresh(nova_venda)
+        return nova_venda
+    except Exception as e:
+        print(f"Erro ao criar venda: {e}")
+        raise HTTPException(status_code=500, detail="Erro ao criar venda")
 
 @app.delete("/listagem_vendas/{venda_id}")
 def eliminar_venda(venda_id: int, db: Session = Depends(get_db)):
@@ -57,17 +61,16 @@ def eliminar_venda(venda_id: int, db: Session = Depends(get_db)):
     db.commit()
     return {"detail": "Venda eliminada com sucesso"}
 
-@app.post("/listagem_vendas")
-def criar_venda(venda: ListagemVendasCreate, db: Session = Depends(get_db)):
-    try:
-        nova_venda = ListagemVendas(**venda.dict())
-        db.add(nova_venda)
-        db.commit()
-        db.refresh(nova_venda)
-        return nova_venda
-    except Exception as e:
-        print(f"Erro ao criar venda: {e}")
-        raise HTTPException(status_code=500, detail="Erro ao criar venda")
+@app.put("/listagem_vendas/{venda_id}")
+def atualizar_venda(venda_id: int, venda: ListagemVendasCreate, db: Session = Depends(get_db)):
+    existente = db.query(ListagemVendas).filter(ListagemVendas.id == venda_id).first()
+    if not existente:
+        raise HTTPException(status_code=404, detail="Venda não encontrada")
+    for key, value in venda.dict().items():
+        setattr(existente, key, value)
+    db.commit()
+    db.refresh(existente)
+    return existente
 
 # ---------------- EVENTOS DROPDOWN ----------------
 @app.get("/eventos_dropdown")
@@ -164,12 +167,7 @@ def atualizar_compra(compra_id: int, compra: CompraCreate, db: Session = Depends
     db.refresh(compra_existente)
     return compra_existente
 
-
-from models import Compra  # Garante que está importado
-from database import engine
-
-Compra.__table__.create(bind=engine, checkfirst=True)
-    
+# ---------------- HEALTH CHECK ----------------
 @app.get("/ping")
 def ping():
     return {"status": "ativo"}
