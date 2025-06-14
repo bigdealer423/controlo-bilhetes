@@ -84,7 +84,8 @@ def eliminar_evento_dropdown(evento_id: int, db: Session = Depends(get_db)):
 
 # ---------------- EVENTOS COMPLETOS ----------------
 @app.get("/eventos_completos2")
-def listar_eventos_completos(db: Session = Depends(get_db)):
+def listar_eventos_completos2
+(db: Session = Depends(get_db)):
     return db.query(EventoCompleto).order_by(EventoCompleto.data_evento).all()
 
 @app.post("/eventos_completos2")
