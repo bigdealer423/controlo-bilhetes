@@ -45,9 +45,9 @@ class EventoCompleto(Base):
 # NOVO: Modelo de Compras
 class Compra(Base):
     __tablename__ = "compras"
-
     id = Column(Integer, primary_key=True, index=True)
     local_compras = Column(String, nullable=False)
+    evento = Column(String, nullable=False)  # NOVA COLUNA
     bancada = Column(String, nullable=False)
     setor = Column(String, nullable=False)
     fila = Column(String, nullable=True)
