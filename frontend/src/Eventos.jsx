@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";More actions
 
 export default function Eventos() {
   const [registos, setRegistos] = useState([]);
@@ -12,13 +12,15 @@ export default function Eventos() {
     estado: "Por entregar"
   });
   const [modoEdicao, setModoEdicao] = useState(null);
-  const [expansaoAtiva, setExpansaoAtiva] = useState(null);
-  const [detalhesVendas, setDetalhesVendas] = useState({});
-  const [detalhesCompras, setDetalhesCompras] = useState({});
+  const [linhaExpandida, setLinhaExpandida] = useState(null);
+  const [vendas, setVendas] = useState([]);
+  const [compras, setCompras] = useState([]);
 
   useEffect(() => {
     buscarEventos();
     buscarDropdown();
+    buscarVendas();
+    buscarCompras();
   }, []);
 
   const buscarEventos = async () => {
@@ -26,6 +28,8 @@ export default function Eventos() {
     if (res.ok) {
       const data = await res.json();
       setRegistos(data);
+    } else {
+      console.error("Erro ao carregar eventos.");
     }
   };
 
@@ -34,12 +38,28 @@ export default function Eventos() {
     if (res.ok) {
       const data = await res.json();
       setEventosDropdown(data);
+    } else {
+      console.error("Erro ao carregar dropdown.");
+    }
+  };
+
+  const buscarVendas = async () => {
+    const res = await fetch("https://controlo-bilhetes.onrender.com/listagem_vendas");
+    if (res.ok) {
+      setVendas(await res.json());
+    }
+  };
+
+  const buscarCompras = async () => {
+    const res = await fetch("https://controlo-bilhetes.onrender.com/compras");
+    if (res.ok) {
+      setCompras(await res.json());
     }
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setNovoRegisto(prev => ({ ...prev, [name]: value }));
+    setNovoRegisto((prev) => ({ ...prev, [name]: value }));
   };
 
   const guardarRegisto = async () => {
@@ -62,6 +82,8 @@ export default function Eventos() {
         estado: "Por entregar"
       });
       buscarEventos();
+    } else {
+      console.error("Erro ao guardar evento.");
     }
   };
 
@@ -71,7 +93,7 @@ export default function Eventos() {
   };
 
   const atualizarRegisto = async () => {
-    const res = await fetch("https://controlo-bilhetes.onrender.com/eventos_completos2/" + modoEdicao, {
+    const res = await fetch('https://controlo-bilhetes.onrender.com/eventos_completos2/' + modoEdicao, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -91,30 +113,17 @@ export default function Eventos() {
         estado: "Por entregar"
       });
       buscarEventos();
+    } else {
+      console.error("Erro ao atualizar evento.");
     }
   };
 
   const eliminarRegisto = async (id) => {
-    const res = await fetch("https://controlo-bilhetes.onrender.com/eventos_completos2/" + id, {
+    const res = await fetch('https://controlo-bilhetes.onrender.com/eventos_completos2/' + id, {
       method: "DELETE"
     });
     if (res.ok) buscarEventos();
-  };
-
-  const toggleExpandir = async (evento) => {
-    if (expansaoAtiva === evento) {
-      setExpansaoAtiva(null);
-    } else {
-      const [vendasRes, comprasRes] = await Promise.all([
-        fetch("https://controlo-bilhetes.onrender.com/listagem_vendas"),
-        fetch("https://controlo-bilhetes.onrender.com/compras")
-      ]);
-      const vendas = await vendasRes.json();
-      const compras = await comprasRes.json();
-      setDetalhesVendas({ ...detalhesVendas, [evento]: vendas.filter(v => v.evento === evento) });
-      setDetalhesCompras({ ...detalhesCompras, [evento]: compras.filter(c => c.evento === evento) });
-      setExpansaoAtiva(evento);
-    }
+    else console.error("Erro ao eliminar.");
   };
 
   return (
@@ -166,7 +175,7 @@ export default function Eventos() {
           <tbody>
             {registos.map(r => (
               <>
-                <tr key={r.id} className={r.estado === "Pago" ? "bg-green-100" : "border-t"}>
+                <tr key={r.id} onClick={() => setLinhaExpandida(linhaExpandida === r.id ? null : r.id)} className={r.estado === "Pago" ? "bg-green-100 cursor-pointer" : "border-t cursor-pointer"}>
                   <td className="p-2">{new Date(r.data_evento).toLocaleDateString("pt-PT")}</td>
                   <td className="p-2">{r.evento}</td>
                   <td className="p-2">{r.estadio}</td>
@@ -175,55 +184,58 @@ export default function Eventos() {
                   <td className="p-2">{(r.ganho - r.gasto).toFixed(2)} €</td>
                   <td className="p-2">{r.estado}</td>
                   <td className="p-2 flex gap-2">
-                    <button onClick={() => editarRegisto(r)} className="text-blue-600 hover:underline">Editar</button>
-                    <button onClick={() => eliminarRegisto(r.id)} className="text-red-600 hover:underline">Eliminar</button>
-                    <button onClick={() => toggleExpandir(r.evento)} className="text-purple-600 hover:underline">Ver Detalhes</button>
+                    <button onClick={(e) => { e.stopPropagation(); editarRegisto(r); }} className="text-blue-600 hover:underline">Editar</button>
+                    <button onClick={(e) => { e.stopPropagation(); eliminarRegisto(r.id); }} className="text-red-600 hover:underline">Eliminar</button>
                   </td>
                 </tr>
-                {expansaoAtiva === r.evento && (
+                {linhaExpandida === r.id && (
                   <>
-                    {detalhesVendas[r.evento]?.length > 0 && (
+                    {vendas.some(v => v.evento === r.evento) && (
                       <>
-                        <tr className="bg-green-50"><td colSpan={8} className="p-2 font-semibold">Vendas</td></tr>
-                        <tr className="bg-green-50 text-xs">
+                        <tr className="bg-gray-50">
+                          <td colSpan="8" className="p-2 font-semibold">Vendas</td>
+                        </tr>
+                        <tr className="bg-gray-100 text-xs font-bold">
                           <td className="p-2">ID Venda</td>
-                          <td className="p-2">Estádio</td>
+                          <td className="p-2">Bilhetes</td>
                           <td className="p-2">Ganho</td>
                           <td className="p-2">Estado</td>
-                          <td colSpan={4}></td>
+                          <td colSpan="4"></td>
                         </tr>
-                        {detalhesVendas[r.evento].map(v => (
-                          <tr key={`venda-${v.id}`} className="bg-green-50 text-xs">
+                        {vendas.filter(v => v.evento === r.evento).map(v => (
+                          <tr key={"v" + v.id} className="text-xs bg-white border-t">
                             <td className="p-2">{v.id_venda}</td>
                             <td className="p-2">{v.estadio}</td>
                             <td className="p-2">{v.ganho} €</td>
                             <td className="p-2">{v.estado}</td>
-                            <td colSpan={4}></td>
+                            <td colSpan="4"></td>
                           </tr>
                         ))}
                       </>
                     )}
-                    {detalhesCompras[r.evento]?.length > 0 && (
+                    {compras.some(c => c.evento === r.evento) && (
                       <>
-                        <tr className="bg-red-100"><td colSpan={8} className="p-2 font-semibold">Compras</td></tr>
-                        <tr className="bg-red-100 text-xs">
+                        <tr className="bg-gray-50">
+                          <td colSpan="8" className="p-2 font-semibold">Compras</td>
+                        </tr>
+                        <tr className="bg-gray-100 text-xs font-bold">
                           <td className="p-2">Local</td>
                           <td className="p-2">Bancada</td>
                           <td className="p-2">Setor</td>
                           <td className="p-2">Fila</td>
                           <td className="p-2">Qt</td>
                           <td className="p-2">Gasto</td>
-                          <td colSpan={2}></td>
+                          <td colSpan="2"></td>
                         </tr>
-                        {detalhesCompras[r.evento].map(c => (
-                          <tr key={`compra-${c.id}`} className="bg-red-100 text-xs">
+                        {compras.filter(c => c.evento === r.evento).map(c => (
+                          <tr key={"c" + c.id} className="text-xs bg-white border-t">
                             <td className="p-2">{c.local_compras}</td>
                             <td className="p-2">{c.bancada}</td>
                             <td className="p-2">{c.setor}</td>
                             <td className="p-2">{c.fila}</td>
                             <td className="p-2">{c.quantidade}</td>
                             <td className="p-2">{c.gasto} €</td>
-                            <td colSpan={2}></td>
+                            <td colSpan="2"></td>
                           </tr>
                         ))}
                       </>
@@ -236,6 +248,5 @@ export default function Eventos() {
         </table>
       </div>
     </div>
-  );
+  );Add commentMore actions
 }
-
