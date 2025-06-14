@@ -1,19 +1,17 @@
-from sqlalchemy import Column, Integer, String, Float, Date, Enum
+from sqlalchemy import Column, Integer, String, Float, Date, Enum, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
-import enum
 from pydantic import BaseModel
 from datetime import date
+import enum
 
 Base = declarative_base()
 
-# Enum do estado da venda
 class EstadoVenda(str, enum.Enum):
-    entregue = "Entregue"
-    por_entregar = "Por entregar"
-    disputa = "Disputa"
-    pago = "Pago"
+    Entregue = "Entregue"
+    Por_entregar = "Por entregar"
+    Disputa = "Disputa"
+    Pago = "Pago"
 
-# Tabela principal de vendas
 class ListagemVendas(Base):
     __tablename__ = "listagem_vendas"
 
@@ -25,14 +23,18 @@ class ListagemVendas(Base):
     ganho = Column(Float, nullable=False)
     estado = Column(Enum(EstadoVenda), nullable=False)
 
-# Tabela com eventos disponíveis para dropdown
-class EventoDropdown(Base):
-    __tablename__ = "eventos_dropdown"
+class Evento(Base):
+    __tablename__ = "eventos"
 
     id = Column(Integer, primary_key=True, index=True)
-    nome = Column(String, nullable=False, unique=True)
+    data_evento = Column(Date, nullable=False)
+    evento = Column(String, nullable=False)
+    estadio = Column(String, nullable=False)
+    gasto = Column(Float, default=0.0)
+    ganho = Column(Float, default=0.0)
+    estado = Column(Enum(EstadoVenda), default=EstadoVenda.Por_entregar)
 
-# Esquemas Pydantic para validação
+# Pydantic schemas
 
 class ListagemVendasCreate(BaseModel):
     id_venda: int
@@ -40,14 +42,31 @@ class ListagemVendasCreate(BaseModel):
     evento: str
     estadio: str
     ganho: float
-    estado: str
+    estado: EstadoVenda
 
     class Config:
         orm_mode = True
 
-class EventoDropdownCreate(BaseModel):
-    nome: str
+class EventoCreate(BaseModel):
+    data_evento: date
+    evento: str
+    estadio: str
+    gasto: float
+    ganho: float
+    estado: EstadoVenda
 
     class Config:
         orm_mode = True
 
+class EventoRead(BaseModel):
+    id: int
+    data_evento: date
+    evento: str
+    estadio: str
+    gasto: float
+    ganho: float
+    estado: EstadoVenda
+    lucro: float  # calculado como ganho - gasto
+
+    class Config:
+        orm_mode = True
