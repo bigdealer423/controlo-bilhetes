@@ -142,3 +142,27 @@ def eliminar_compra(compra_id: int, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(evento_existente)
     return evento_existente
+
+from models import Compra, CompraCreate, CompraOut  # Importações necessárias
+
+# ---------------- COMPRAS ----------------
+@app.get("/compras", response_model=List[CompraOut])
+def listar_compras(db: Session = Depends(get_db)):
+    return db.query(Compra).all()
+
+@app.post("/compras", response_model=CompraOut)
+def criar_compra(compra: CompraCreate, db: Session = Depends(get_db)):
+    nova_compra = Compra(**compra.dict())
+    db.add(nova_compra)
+    db.commit()
+    db.refresh(nova_compra)
+    return nova_compra
+
+@app.delete("/compras/{compra_id}")
+def eliminar_compra(compra_id: int, db: Session = Depends(get_db)):
+    compra = db.query(Compra).filter(Compra.id == compra_id).first()
+    if not compra:
+        raise HTTPException(status_code=404, detail="Compra não encontrada")
+    db.delete(compra)
+    db.commit()
+    return {"detail": "Compra eliminada com sucesso"}
