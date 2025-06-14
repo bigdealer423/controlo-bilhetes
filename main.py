@@ -8,6 +8,7 @@ from models import (
     Base,
     ListagemVendas,
     ListagemVendasCreate,
+    ListagemVendasUpdate,
     EventoDropdown,
     EventoDropdownCreate,
     EventoCompleto as EventoCompletoModel,
@@ -62,7 +63,7 @@ def eliminar_venda(venda_id: int, db: Session = Depends(get_db)):
     return {"detail": "Venda eliminada com sucesso"}
 
 @app.put("/listagem_vendas/{venda_id}")
-def atualizar_venda(venda_id: int, venda: ListagemVendasCreate, db: Session = Depends(get_db)):
+def atualizar_venda(venda_id: int, venda: ListagemVendasUpdate, db: Session = Depends(get_db)):
     existente = db.query(ListagemVendas).filter(ListagemVendas.id == venda_id).first()
     if not existente:
         raise HTTPException(status_code=404, detail="Venda não encontrada")
