@@ -136,7 +136,7 @@ export default function Compras() {
         <table className="min-w-full border text-sm text-left text-gray-600">
           <thead>
             <tr className="bg-gray-100">
-              <th className="p-2">Local</th>
+              <th className="p-2">Local Compra</th>
               <th className="p-2">Bancada</th>
               <th className="p-2">Setor</th>
               <th className="p-2">Fila</th>
