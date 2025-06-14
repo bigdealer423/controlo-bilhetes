@@ -57,6 +57,18 @@ def eliminar_venda(venda_id: int, db: Session = Depends(get_db)):
     db.commit()
     return {"detail": "Venda eliminada com sucesso"}
 
+@app.post("/listagem_vendas")
+def criar_venda(venda: ListagemVendasCreate, db: Session = Depends(get_db)):
+    try:
+        nova_venda = ListagemVendas(**venda.dict())
+        db.add(nova_venda)
+        db.commit()
+        db.refresh(nova_venda)
+        return nova_venda
+    except Exception as e:
+        print(f"Erro ao criar venda: {e}")
+        raise HTTPException(status_code=500, detail="Erro ao criar venda")
+
 # ---------------- EVENTOS DROPDOWN ----------------
 @app.get("/eventos_dropdown")
 def listar_eventos_dropdown(db: Session = Depends(get_db)):
