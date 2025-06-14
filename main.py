@@ -1,3 +1,4 @@
+Base.metadata.create_all(bind=engine)
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
@@ -48,7 +49,11 @@ def eliminar_venda(venda_id: int, db: Session = Depends(get_db)):
 # ---------------- EVENTOS DROPDOWN ----------------
 @app.get("/eventos_dropdown")
 def listar_eventos_dropdown(db: Session = Depends(get_db)):
-    return db.query(EventoDropdown).all()
+    try:
+        return db.query(EventoDropdown).all()
+    except Exception as e:
+        print(f"Erro ao buscar eventos: {e}")
+        raise HTTPException(status_code=500, detail="Erro interno ao listar eventos")
 
 @app.post("/eventos_dropdown")
 def adicionar_evento_dropdown(evento: EventoDropdownCreate, db: Session = Depends(get_db)):
