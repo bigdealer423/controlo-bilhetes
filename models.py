@@ -74,3 +74,7 @@ class EventoCompleto(EventoCompletoCreate):
 
     class Config:
         from_attributes = True
+
+# Garante que todas as tabelas estão incluídas antes da criação
+from database import engine
+Base.metadata.create_all(bind=engine)
