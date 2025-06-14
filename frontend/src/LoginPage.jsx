@@ -10,7 +10,7 @@ export default function LoginPage() {
   const autenticar = () => {
     if (utilizador === "bigdealer" && password === "1091") {
       localStorage.setItem("autenticado", "true");
-      navigate("/dashboard");
+      navigate("/Dashboard");
     } else {
       setErro("Credenciais inválidas");
     }
