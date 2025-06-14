@@ -1,4 +1,6 @@
-
+{
+  "type": "module"
+}
 {
   "name": "controlo-bilhetes-frontend",
   "version": "1.0.0",
