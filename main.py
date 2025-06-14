@@ -139,10 +139,6 @@ def eliminar_compra(compra_id: int, db: Session = Depends(get_db)):
     db.commit()
     return {"detail": "Compra eliminada com sucesso"}
 
-    db.commit()
-    db.refresh(evento_existente)
-    return evento_existente
-
-from models import Compra, CompraCreate, CompraOut  # Importações necessárias
+    
 
 
