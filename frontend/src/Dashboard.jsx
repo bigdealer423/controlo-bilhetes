@@ -1,13 +1,19 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "./AuthContext";
 
 export default function Dashboard() {
-  const { logout } = useAuth();
+  const { autenticado, logout } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!autenticado) {
+      navigate("/");
+    }
+  }, [autenticado, navigate]);
 
   const handleLogout = () => {
     logout();
-    navigate("/");
   };
 
   return (
