@@ -139,6 +139,11 @@ def eliminar_compra(compra_id: int, db: Session = Depends(get_db)):
     db.commit()
     return {"detail": "Compra eliminada com sucesso"}
 
+
+from models import Compra  # Garante que está importado
+from database import engine
+
+Compra.__table__.create(bind=engine, checkfirst=True)
     
 
 
