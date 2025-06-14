@@ -1,16 +1,19 @@
-
 from sqlalchemy import Column, Integer, String, Float, Date, Enum
 from sqlalchemy.ext.declarative import declarative_base
 import enum
+from pydantic import BaseModel
+from datetime import date
 
 Base = declarative_base()
 
+# Enum do estado da venda
 class EstadoVenda(str, enum.Enum):
     entregue = "Entregue"
     por_entregar = "Por entregar"
     disputa = "Disputa"
     pago = "Pago"
 
+# Tabela principal de vendas
 class ListagemVendas(Base):
     __tablename__ = "listagem_vendas"
 
@@ -21,9 +24,15 @@ class ListagemVendas(Base):
     estadio = Column(String, nullable=False)
     ganho = Column(Float, nullable=False)
     estado = Column(Enum(EstadoVenda), nullable=False)
-    
-from pydantic import BaseModel
-from datetime import date
+
+# Tabela com eventos disponíveis para dropdown
+class EventoDropdown(Base):
+    __tablename__ = "eventos_dropdown"
+
+    id = Column(Integer, primary_key=True, index=True)
+    nome = Column(String, nullable=False, unique=True)
+
+# Esquemas Pydantic para validação
 
 class ListagemVendasCreate(BaseModel):
     id_venda: int
@@ -31,8 +40,14 @@ class ListagemVendasCreate(BaseModel):
     evento: str
     estadio: str
     ganho: float
-    estado: str  # pode usar o enum EstadoVenda se preferir validação
+    estado: str
 
-class Config:
+    class Config:
+        orm_mode = True
+
+class EventoDropdownCreate(BaseModel):
+    nome: str
+
+    class Config:
         orm_mode = True
 
