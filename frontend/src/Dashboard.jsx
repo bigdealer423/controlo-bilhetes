@@ -24,6 +24,8 @@ export default function Dashboard() {
     }
   }, [location.pathname, navigate]);
 
+  // Novo estado no topo do Dashboard.jsx
+  const [atualizarEventos, setAtualizarEventos] = useState(false);
   const rotaAtual = location.pathname;
 
   return (
@@ -58,3 +60,4 @@ export default function Dashboard() {
     </div>
   );
 }
+
