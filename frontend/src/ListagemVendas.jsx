@@ -83,16 +83,25 @@ export default function ListagemVendas(props) {
     }
   };
 
-  const eliminarSelecionados = () => {
-    Promise.all(selecionados.map(id =>
+const eliminarSelecionados = () => {
+  if (selecionados.length === 0) return;
+
+  Promise.all(
+    selecionados.map(id =>
       fetch(`https://controlo-bilhetes.onrender.com/listagem_vendas/${id}`, {
         method: "DELETE"
       })
-    )).then(() => {
+    )
+  )
+    .then(() => {
       buscarRegistos();
       setSelecionados([]);
+    })
+    .catch(error => {
+      console.error("Erro ao eliminar registos:", error);
     });
-  };
+};
+
 
   const ativarEdicao = (id, registo) => {
     setModoEdicao(id);
