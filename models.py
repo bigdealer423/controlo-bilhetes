@@ -76,5 +76,6 @@ class EventoCompleto(EventoCompletoCreate):
 
     class Config:
         from_attributes = True
-
+from database import engine
+Base.metadata.create_all(bind=engine)
 
