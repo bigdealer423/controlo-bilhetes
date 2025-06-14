@@ -1,65 +1,79 @@
+// src/EventoModal.jsx
 import { useEffect, useState } from "react";
 
-export default function EventoModal({ onClose }) {
+export default function EventoModal({ visivel, fechar }) {
   const [eventos, setEventos] = useState([]);
   const [novoEvento, setNovoEvento] = useState("");
 
   useEffect(() => {
-    buscarEventos();
-  }, []);
+    if (visivel) buscarEventos();
+  }, [visivel]);
 
-  const buscarEventos = () => {
-    fetch("https://controlo-bilhetes.onrender.com/eventos-definidos")
-      .then(res => res.json())
-      .then(data => setEventos(data))
-      .catch(err => console.error("Erro ao buscar eventos definidos:", err));
+  const buscarEventos = async () => {
+    try {
+      const res = await fetch("https://controlo-bilhetes.onrender.com/eventos_dropdown");
+      const data = await res.json();
+      setEventos(data);
+    } catch (err) {
+      console.error("Erro ao buscar eventos:", err);
+    }
   };
 
-  const adicionarEvento = () => {
+  const adicionarEvento = async () => {
     if (!novoEvento.trim()) return;
-    fetch("https://controlo-bilhetes.onrender.com/eventos-definidos", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ nome: novoEvento })
-    })
-      .then(() => {
+    try {
+      const res = await fetch("https://controlo-bilhetes.onrender.com/eventos_dropdown", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nome: novoEvento })
+      });
+      if (res.ok) {
         setNovoEvento("");
         buscarEventos();
-      });
+      }
+    } catch (err) {
+      console.error("Erro ao adicionar evento:", err);
+    }
   };
 
-  const eliminarEvento = (id) => {
-    fetch(`https://controlo-bilhetes.onrender.com/eventos-definidos/${id}`, {
-      method: "DELETE"
-    })
-      .then(() => buscarEventos());
+  const eliminarEvento = async (id) => {
+    try {
+      await fetch(`https://controlo-bilhetes.onrender.com/eventos_dropdown/${id}`, {
+        method: "DELETE"
+      });
+      buscarEventos();
+    } catch (err) {
+      console.error("Erro ao eliminar evento:", err);
+    }
   };
+
+  if (!visivel) return null;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded shadow-md w-full max-w-md relative">
-        <button onClick={onClose} className="absolute top-2 right-3 text-gray-600 text-xl">&times;</button>
-        <h2 className="text-lg font-bold mb-4">Eventos Definidos</h2>
+      <div className="bg-white p-6 rounded shadow-lg w-96">
+        <h2 className="text-lg font-bold mb-4">Gerir Eventos</h2>
         <div className="flex gap-2 mb-4">
           <input
             type="text"
-            value={novoEvento}
-            onChange={(e) => setNovoEvento(e.target.value)}
-            className="border px-2 py-1 flex-1"
+            className="border px-2 py-1 flex-grow"
             placeholder="Novo evento"
+            value={novoEvento}
+            onChange={e => setNovoEvento(e.target.value)}
           />
-          <button onClick={adicionarEvento} className="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700">
-            Adicionar
-          </button>
+          <button onClick={adicionarEvento} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Adicionar</button>
         </div>
-        <ul className="space-y-2 max-h-60 overflow-y-auto">
-          {eventos.map((e) => (
+        <ul className="max-h-40 overflow-y-auto">
+          {eventos.map(e => (
             <li key={e.id} className="flex justify-between items-center border-b py-1">
               <span>{e.nome}</span>
-              <button onClick={() => eliminarEvento(e.id)} className="text-red-500 hover:text-red-700">Eliminar</button>
+              <button onClick={() => eliminarEvento(e.id)} className="text-red-600 hover:underline">Eliminar</button>
             </li>
           ))}
         </ul>
+        <div className="text-right mt-4">
+          <button onClick={fechar} className="text-gray-600 hover:text-black">Fechar</button>
+        </div>
       </div>
     </div>
   );
