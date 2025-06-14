@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from typing import List
 from database import engine, get_db, Base
-from models import ListagemVendas, ListagemVendasCreate  # CORRIGIDO: nome correto
+from models import ListagemVendas, ListagemVendasCreate, EventoDropdown, EventoDropdownCreate
 
 app = FastAPI()
 
@@ -23,6 +23,7 @@ Base.metadata.create_all(bind=engine)
 def root():
     return {"status": "API online"}
 
+# ---------------- LISTAGEM DE VENDAS ----------------
 @app.get("/listagem_vendas")
 def listar_vendas(db: Session = Depends(get_db)):
     return db.query(ListagemVendas).all()
@@ -43,3 +44,28 @@ def eliminar_venda(venda_id: int, db: Session = Depends(get_db)):
     db.delete(venda)
     db.commit()
     return {"detail": "Venda eliminada com sucesso"}
+
+# ---------------- EVENTOS DROPDOWN ----------------
+@app.get("/eventos_dropdown")
+def listar_eventos_dropdown(db: Session = Depends(get_db)):
+    return db.query(EventoDropdown).all()
+
+@app.post("/eventos_dropdown")
+def adicionar_evento_dropdown(evento: EventoDropdownCreate, db: Session = Depends(get_db)):
+    evento_existente = db.query(EventoDropdown).filter_by(nome=evento.nome).first()
+    if evento_existente:
+        raise HTTPException(status_code=400, detail="Evento já existe.")
+    novo_evento = EventoDropdown(**evento.dict())
+    db.add(novo_evento)
+    db.commit()
+    db.refresh(novo_evento)
+    return novo_evento
+
+@app.delete("/eventos_dropdown/{evento_id}")
+def eliminar_evento_dropdown(evento_id: int, db: Session = Depends(get_db)):
+    evento = db.query(EventoDropdown).filter(EventoDropdown.id == evento_id).first()
+    if not evento:
+        raise HTTPException(status_code=404, detail="Evento não encontrado")
+    db.delete(evento)
+    db.commit()
+    return {"detail": "Evento eliminado com sucesso"}
