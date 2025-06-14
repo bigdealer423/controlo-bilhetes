@@ -19,7 +19,7 @@ export default function Eventos() {
   }, []);
 
   const buscarEventos = async () => {
-    const res = await fetch("https://controlo-bilhetes.onrender.com/eventos_completos");
+    const res = await fetch("https://controlo-bilhetes.onrender.com/eventos_completos2");
     const data = await res.json();
     setRegistos(data);
   };
@@ -36,7 +36,7 @@ export default function Eventos() {
   };
 
   const guardarRegisto = async () => {
-    await fetch("https://controlo-bilhetes.onrender.com/eventos_completos", {
+    await fetch("https://controlo-bilhetes.onrender.com/eventos_completos2", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -62,7 +62,7 @@ ganho: parseFloat(novoRegisto.ganho) || 0
   };
 
   const atualizarRegisto = async () => {
-    await fetch('https://controlo-bilhetes.onrender.com/eventos_completos/' + modoEdicao, {
+    await fetch('https://controlo-bilhetes.onrender.com/eventos_completos2/' + modoEdicao, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -84,7 +84,7 @@ ganho: parseFloat(novoRegisto.ganho) || 0
   };
 
   const eliminarRegisto = async (id) => {
-    await fetch('https://controlo-bilhetes.onrender.com/eventos_completos/' + id, {
+    await fetch('https://controlo-bilhetes.onrender.com/eventos_completos2/' + id, {
       method: "DELETE"
     });
     buscarEventos();
