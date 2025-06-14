@@ -10,8 +10,9 @@ from models import (
     ListagemVendasCreate,
     EventoDropdown,
     EventoDropdownCreate,
-    EventoCompleto,
-    EventoCompletoCreate
+    EventoCompleto as EventoCompletoModel,  # Modelo SQLAlchemy
+    EventoCompletoCreate,
+    EventoCompletoOut                         # Pydantic com nome distinto
 )
 
 Base.metadata.create_all(bind=engine)
@@ -21,7 +22,7 @@ app = FastAPI()
 # Permitir pedidos do frontend no Vercel
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Pode testar com "*" para garantir funcionamento
+    allow_origins=["*"],  # Para garantir funcionamento em dev/teste
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -83,13 +84,13 @@ def eliminar_evento_dropdown(evento_id: int, db: Session = Depends(get_db)):
     return {"detail": "Evento eliminado com sucesso"}
 
 # ---------------- EVENTOS COMPLETOS ----------------
-@app.get("/eventos_completos2")
+@app.get("/eventos_completos2", response_model=List[EventoCompletoOut])
 def listar_eventos_completos2(db: Session = Depends(get_db)):
-    return db.query(EventoCompleto).order_by(EventoCompleto.data_evento).all()
+    return db.query(EventoCompletoModel).order_by(EventoCompletoModel.data_evento).all()
 
-@app.post("/eventos_completos2")
+@app.post("/eventos_completos2", response_model=EventoCompletoOut)
 def criar_evento_completo(evento: EventoCompletoCreate, db: Session = Depends(get_db)):
-    novo_evento = EventoCompleto(**evento.dict())
+    novo_evento = EventoCompletoModel(**evento.dict())
     db.add(novo_evento)
     db.commit()
     db.refresh(novo_evento)
@@ -97,7 +98,7 @@ def criar_evento_completo(evento: EventoCompletoCreate, db: Session = Depends(ge
 
 @app.delete("/eventos_completos2/{evento_id}")
 def eliminar_evento_completo(evento_id: int, db: Session = Depends(get_db)):
-    evento = db.query(EventoCompleto).filter(EventoCompleto.id == evento_id).first()
+    evento = db.query(EventoCompletoModel).filter(EventoCompletoModel.id == evento_id).first()
     if not evento:
         raise HTTPException(status_code=404, detail="Evento não encontrado")
     db.delete(evento)
