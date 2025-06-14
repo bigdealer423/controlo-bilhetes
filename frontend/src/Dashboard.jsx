@@ -14,15 +14,9 @@ export default function Dashboard() {
     { nome: "Outro Menu", rota: "/outro" }
   ];
 
-  // Ir para listagem de vendas por defeito
-  useEffect(() => {
-    if (location.pathname === "/dashboard") {
-      navigate("/listagem-vendas");
-    }
-  }, [location.pathname, navigate]);
-
   const logout = () => {
     localStorage.removeItem("autenticado");
+    setAutenticado(false);
     navigate("/");
   };
 
