@@ -93,6 +93,7 @@ class EventoCompletoOut(EventoCompletoBase):
 # NOVOS SCHEMAS PARA COMPRAS
 class CompraCreate(BaseModel):
     local_compras: str
+    evento: str  # NOVO CAMPO
     bancada: str
     setor: str
     fila: str
