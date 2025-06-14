@@ -56,14 +56,12 @@ export default function Dashboard() {
         </button>
       </div>
 
-      <EventoModal
-  visivel={mostrarModal}
-  fechar={() => {
-    setMostrarModal(false);
-    setAtualizarEventos(prev => !prev); // força re-render do dropdown
-  }}
-/>
-    </div>
-  );
-}
-
+       <EventoModal
+      visivel={mostrarModal}
+      fechar={() => {
+        setMostrarModal(false);
+        setAtualizarEventos((prev) => !prev); // <- aqui está perfeito
+      }}
+    />
+  </div> // <--- este é o fecho correto do container
+);
