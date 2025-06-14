@@ -6,7 +6,7 @@ export default function Eventos() {
     data_evento: "",
     evento: "",
     estadio: "",
-    gasto: 0,
+    gasto: "",
     ganho: 0,
     estado: "Por entregar"
   });
