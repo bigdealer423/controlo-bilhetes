@@ -83,11 +83,11 @@ def eliminar_evento_dropdown(evento_id: int, db: Session = Depends(get_db)):
     return {"detail": "Evento eliminado com sucesso"}
 
 # ---------------- EVENTOS COMPLETOS ----------------
-@app.get("/eventos_completos")
+@app.get("/eventos_completos2")
 def listar_eventos_completos(db: Session = Depends(get_db)):
     return db.query(EventoCompleto).order_by(EventoCompleto.data_evento).all()
 
-@app.post("/eventos_completos")
+@app.post("/eventos_completos2")
 def criar_evento_completo(evento: EventoCompletoCreate, db: Session = Depends(get_db)):
     novo_evento = EventoCompleto(**evento.dict())
     db.add(novo_evento)
@@ -95,7 +95,7 @@ def criar_evento_completo(evento: EventoCompletoCreate, db: Session = Depends(ge
     db.refresh(novo_evento)
     return novo_evento
 
-@app.delete("/eventos_completos/{evento_id}")
+@app.delete("/eventos_completos2/{evento_id}")
 def eliminar_evento_completo(evento_id: int, db: Session = Depends(get_db)):
     evento = db.query(EventoCompleto).filter(EventoCompleto.id == evento_id).first()
     if not evento:
