@@ -10,19 +10,22 @@ from models import (
     ListagemVendasCreate,
     EventoDropdown,
     EventoDropdownCreate,
-    EventoCompleto as EventoCompletoModel,  # Modelo SQLAlchemy
+    EventoCompleto as EventoCompletoModel,
     EventoCompletoCreate,
-    EventoCompletoOut                         # Pydantic com nome distinto
+    EventoCompletoOut,
+    Compra,
+    CompraCreate,
+    CompraOut
 )
 
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-# Permitir pedidos do frontend no Vercel
+# CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Para garantir funcionamento em dev/teste
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -57,11 +60,7 @@ def eliminar_venda(venda_id: int, db: Session = Depends(get_db)):
 # ---------------- EVENTOS DROPDOWN ----------------
 @app.get("/eventos_dropdown")
 def listar_eventos_dropdown(db: Session = Depends(get_db)):
-    try:
-        return db.query(EventoDropdown).all()
-    except Exception as e:
-        print(f"Erro ao buscar eventos: {e}")
-        raise HTTPException(status_code=500, detail="Erro interno ao listar eventos")
+    return db.query(EventoDropdown).all()
 
 @app.post("/eventos_dropdown")
 def adicionar_evento_dropdown(evento: EventoDropdownCreate, db: Session = Depends(get_db)):
@@ -113,6 +112,32 @@ def atualizar_evento_completo(evento_id: int, evento: EventoCompletoCreate, db: 
     
     for key, value in evento.dict().items():
         setattr(evento_existente, key, value)
+
+    db.commit()
+    db.refresh(evento_existente)
+    return evento_existente
+
+# ---------------- COMPRAS ----------------
+@app.get("/compras", response_model=List[CompraOut])
+def listar_compras(db: Session = Depends(get_db)):
+    return db.query(Compra).all()
+
+@app.post("/compras", response_model=CompraOut)
+def criar_compra(compra: CompraCreate, db: Session = Depends(get_db)):
+    nova_compra = Compra(**compra.dict())
+    db.add(nova_compra)
+    db.commit()
+    db.refresh(nova_compra)
+    return nova_compra
+
+@app.delete("/compras/{compra_id}")
+def eliminar_compra(compra_id: int, db: Session = Depends(get_db)):
+    compra = db.query(Compra).filter(Compra.id == compra_id).first()
+    if not compra:
+        raise HTTPException(status_code=404, detail="Compra não encontrada")
+    db.delete(compra)
+    db.commit()
+    return {"detail": "Compra eliminada com sucesso"}
 
     db.commit()
     db.refresh(evento_existente)
