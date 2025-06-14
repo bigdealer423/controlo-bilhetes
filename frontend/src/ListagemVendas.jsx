@@ -18,6 +18,15 @@ export default function ListagemVendas() {
     buscarEventosDropdown();
   }, []);
 
+  useEffect(() => {
+  const carregarEventos = async () => {
+    const res = await fetch("https://controlo-bilhetes.onrender.com/eventos_dropdown");
+    const data = await res.json();
+    setEventos(data); // <--- a variável que alimenta o dropdown
+  };
+
+  carregarEventos();
+}, [props.atualizarEventos]); // Dependente da prop!
   const buscarRegistos = () => {
     fetch("https://controlo-bilhetes.onrender.com/listagem_vendas")
       .then(res => res.json())
