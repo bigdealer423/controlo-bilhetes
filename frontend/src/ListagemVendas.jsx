@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 export default function ListagemVendas() {
   const [registos, setRegistos] = useState([]);
+  const [eventosDropdown, setEventosDropdown] = useState([]);
   const [novoRegisto, setNovoRegisto] = useState({
     id_venda: "",
     data_evento: "",
@@ -14,6 +15,7 @@ export default function ListagemVendas() {
 
   useEffect(() => {
     buscarRegistos();
+    buscarEventosDropdown();
   }, []);
 
   const buscarRegistos = () => {
@@ -21,6 +23,13 @@ export default function ListagemVendas() {
       .then(res => res.json())
       .then(data => setRegistos(data))
       .catch(err => console.error("Erro ao buscar registos:", err));
+  };
+
+  const buscarEventosDropdown = () => {
+    fetch("https://controlo-bilhetes.onrender.com/eventos_dropdown")
+      .then(res => res.json())
+      .then(data => setEventosDropdown(data))
+      .catch(err => console.error("Erro ao buscar eventos:", err));
   };
 
   const handleChange = e => {
@@ -89,7 +98,14 @@ export default function ListagemVendas() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <input name="id_venda" type="number" className="input" placeholder="ID Venda" value={novoRegisto.id_venda} onChange={handleChange} />
           <input name="data_evento" type="date" className="input" value={novoRegisto.data_evento} onChange={handleChange} />
-          <input name="evento" className="input" placeholder="Evento" value={novoRegisto.evento} onChange={handleChange} />
+
+          <select name="evento" className="input" value={novoRegisto.evento} onChange={handleChange}>
+            <option value="">-- Selecionar Evento --</option>
+            {eventosDropdown.map(e => (
+              <option key={e.id} value={e.nome}>{e.nome}</option>
+            ))}
+          </select>
+
           <input name="estadio" className="input" placeholder="Estádio" value={novoRegisto.estadio} onChange={handleChange} />
           <input name="ganho" type="number" className="input" placeholder="Ganho (€)" value={novoRegisto.ganho} onChange={handleChange} />
           <select name="estado" className="input" value={novoRegisto.estado} onChange={handleChange}>
@@ -147,3 +163,4 @@ export default function ListagemVendas() {
     </div>
   );
 }
+
