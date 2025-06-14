@@ -9,7 +9,7 @@ export default function ListagemVendas(props) {
     data_evento: "",
     evento: "",
     estadio: "",
-    ganho: 0,
+    ganho: "",
     estado: "Por entregar"
   });
   const [selecionados, setSelecionados] = useState([]);
