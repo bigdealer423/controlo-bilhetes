@@ -205,7 +205,7 @@ export default function ListagemVendas(props) {
                 ) : (
                   <>
                     <td className="p-2">{r.id_venda}</td>
-                    <td className="p-2">{r.data_evento}</td>
+                    <td className="p-2">{new Date(r.data_evento).toLocaleDateString("pt-PT", {day: "2-digit",month: "2-digit",year: "numeric"})}</td>
                     <td className="p-2">{r.evento}</td>
                     <td className="p-2">{r.estadio}</td>
                     <td className="p-2">{r.ganho} €</td>
