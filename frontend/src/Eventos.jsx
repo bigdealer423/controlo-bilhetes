@@ -12,10 +12,15 @@ export default function Eventos() {
     estado: "Por entregar"
   });
   const [modoEdicao, setModoEdicao] = useState(null);
+  const [linhaExpandida, setLinhaExpandida] = useState(null);
+  const [vendas, setVendas] = useState([]);
+  const [compras, setCompras] = useState([]);
 
   useEffect(() => {
     buscarEventos();
     buscarDropdown();
+    buscarVendas();
+    buscarCompras();
   }, []);
 
   const buscarEventos = async () => {
@@ -35,6 +40,20 @@ export default function Eventos() {
       setEventosDropdown(data);
     } else {
       console.error("Erro ao carregar dropdown.");
+    }
+  };
+
+  const buscarVendas = async () => {
+    const res = await fetch("https://controlo-bilhetes.onrender.com/listagem_vendas");
+    if (res.ok) {
+      setVendas(await res.json());
+    }
+  };
+
+  const buscarCompras = async () => {
+    const res = await fetch("https://controlo-bilhetes.onrender.com/compras");
+    if (res.ok) {
+      setCompras(await res.json());
     }
   };
 
@@ -155,19 +174,75 @@ export default function Eventos() {
           </thead>
           <tbody>
             {registos.map(r => (
-              <tr key={r.id} className={r.estado === "Pago" ? "bg-green-100" : "border-t"}>
-                <td className="p-2">{new Date(r.data_evento).toLocaleDateString("pt-PT")}</td>
-                <td className="p-2">{r.evento}</td>
-                <td className="p-2">{r.estadio}</td>
-                <td className="p-2">{r.gasto} €</td>
-                <td className="p-2">{r.ganho} €</td>
-                <td className="p-2">{(r.ganho - r.gasto).toFixed(2)} €</td>
-                <td className="p-2">{r.estado}</td>
-                <td className="p-2 flex gap-2">
-                  <button onClick={() => editarRegisto(r)} className="text-blue-600 hover:underline">Editar</button>
-                  <button onClick={() => eliminarRegisto(r.id)} className="text-red-600 hover:underline">Eliminar</button>
-                </td>
-              </tr>
+              <>
+                <tr key={r.id} onClick={() => setLinhaExpandida(linhaExpandida === r.id ? null : r.id)} className={r.estado === "Pago" ? "bg-green-100 cursor-pointer" : "border-t cursor-pointer"}>
+                  <td className="p-2">{new Date(r.data_evento).toLocaleDateString("pt-PT")}</td>
+                  <td className="p-2">{r.evento}</td>
+                  <td className="p-2">{r.estadio}</td>
+                  <td className="p-2">{r.gasto} €</td>
+                  <td className="p-2">{r.ganho} €</td>
+                  <td className="p-2">{(r.ganho - r.gasto).toFixed(2)} €</td>
+                  <td className="p-2">{r.estado}</td>
+                  <td className="p-2 flex gap-2">
+                    <button onClick={(e) => { e.stopPropagation(); editarRegisto(r); }} className="text-blue-600 hover:underline">Editar</button>
+                    <button onClick={(e) => { e.stopPropagation(); eliminarRegisto(r.id); }} className="text-red-600 hover:underline">Eliminar</button>
+                  </td>
+                </tr>
+                {linhaExpandida === r.id && (
+                  <>
+                    {vendas.some(v => v.evento === r.evento) && (
+                      <>
+                        <tr className="bg-gray-50">
+                          <td colSpan="8" className="p-2 font-semibold">Vendas</td>
+                        </tr>
+                        <tr className="bg-gray-100 text-xs font-bold">
+                          <td className="p-2">ID Venda</td>
+                          <td className="p-2">Bilhetes</td>
+                          <td className="p-2">Ganho</td>
+                          <td className="p-2">Estado</td>
+                          <td colSpan="4"></td>
+                        </tr>
+                        {vendas.filter(v => v.evento === r.evento).map(v => (
+                          <tr key={"v" + v.id} className="text-xs bg-white border-t">
+                            <td className="p-2">{v.id_venda}</td>
+                            <td className="p-2">{v.estadio}</td>
+                            <td className="p-2">{v.ganho} €</td>
+                            <td className="p-2">{v.estado}</td>
+                            <td colSpan="4"></td>
+                          </tr>
+                        ))}
+                      </>
+                    )}
+                    {compras.some(c => c.evento === r.evento) && (
+                      <>
+                        <tr className="bg-gray-50">
+                          <td colSpan="8" className="p-2 font-semibold">Compras</td>
+                        </tr>
+                        <tr className="bg-gray-100 text-xs font-bold">
+                          <td className="p-2">Local</td>
+                          <td className="p-2">Bancada</td>
+                          <td className="p-2">Setor</td>
+                          <td className="p-2">Fila</td>
+                          <td className="p-2">Qt</td>
+                          <td className="p-2">Gasto</td>
+                          <td colSpan="2"></td>
+                        </tr>
+                        {compras.filter(c => c.evento === r.evento).map(c => (
+                          <tr key={"c" + c.id} className="text-xs bg-white border-t">
+                            <td className="p-2">{c.local_compras}</td>
+                            <td className="p-2">{c.bancada}</td>
+                            <td className="p-2">{c.setor}</td>
+                            <td className="p-2">{c.fila}</td>
+                            <td className="p-2">{c.quantidade}</td>
+                            <td className="p-2">{c.gasto} €</td>
+                            <td colSpan="2"></td>
+                          </tr>
+                        ))}
+                      </>
+                    )}
+                  </>
+                )}
+              </>
             ))}
           </tbody>
         </table>
