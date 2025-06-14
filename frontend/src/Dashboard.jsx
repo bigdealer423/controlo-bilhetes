@@ -8,6 +8,14 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const location = useLocation();
   const [mostrarModal, setMostrarModal] = useState(false);
+  const [atualizarEventos, setAtualizarEventos] = useState(false);
+  const rotaAtual = location.pathname;
+
+  useEffect(() => {
+    if (location.pathname === "/dashboard") {
+      navigate("/listagem-vendas");
+    }
+  }, [location.pathname, navigate]);
 
   const menus = [
     { nome: "Listagem de Vendas", rota: "/listagem-vendas" },
@@ -18,50 +26,43 @@ export default function Dashboard() {
     { nome: "Outro Menu", rota: "/outro" }
   ];
 
-  useEffect(() => {
-    if (location.pathname === "/dashboard") {
-      navigate("/listagem-vendas");
-    }
-  }, [location.pathname, navigate]);
-
-  // Novo estado no topo do Dashboard.jsx
-  const [atualizarEventos, setAtualizarEventos] = useState(false);
-  const rotaAtual = location.pathname;
-
   return (
-    <div className="bg-gray-100 p-3 flex justify-between items-center border-b mb-4">
-      <div className="flex gap-2 flex-wrap">
-        {menus.map(menu => (
+    <div>
+      <div className="bg-gray-100 p-3 flex justify-between items-center border-b mb-4">
+        <div className="flex gap-2 flex-wrap">
+          {menus.map((menu) => (
+            <button
+              key={menu.rota}
+              onClick={() => navigate(menu.rota)}
+              className={`px-3 py-1 text-sm rounded ${
+                rotaAtual === menu.rota
+                  ? "bg-blue-600 text-white"
+                  : "bg-white text-gray-700 border hover:bg-blue-50"
+              }`}
+            >
+              {menu.nome}
+            </button>
+          ))}
+        </div>
+
+        <div>
           <button
-            key={menu.rota}
-            onClick={() => navigate(menu.rota)}
-            className={`px-3 py-1 text-sm rounded ${
-              rotaAtual === menu.rota
-                ? "bg-blue-600 text-white"
-                : "bg-white text-gray-700 border hover:bg-blue-50"
-            }`}
+            onClick={() => setMostrarModal(true)}
+            className="text-gray-700 hover:text-black ml-4"
+            title="Definições"
           >
-            {menu.nome}
+            <FiSettings size={20} />
           </button>
-        ))}
+        </div>
       </div>
 
-      <div>
-        <button
-          onClick={() => setMostrarModal(true)}
-          className="text-gray-700 hover:text-black ml-4"
-          title="Definições"
-        >
-          <FiSettings size={20} />
-        </button>
-      </div>
-
-       <EventoModal
-      visivel={mostrarModal}
-      fechar={() => {
-        setMostrarModal(false);
-        setAtualizarEventos((prev) => !prev); // <- aqui está perfeito
-      }}
-    />
-  </div> // <--- este é o fecho correto do container
-);
+      <EventoModal
+        visivel={mostrarModal}
+        fechar={() => {
+          setMostrarModal(false);
+          setAtualizarEventos((prev) => !prev); // <- isto força o re-render no componente que usar esse estado
+        }}
+      />
+    </div>
+  );
+}
