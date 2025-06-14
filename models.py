@@ -31,7 +31,7 @@ class EventoDropdown(Base):
 
 # NOVO: EventoCompleto (tabela nova para aba "Eventos")
 class EventoCompleto(Base):
-    __tablename__ = "eventos_completos"
+    __tablename__ = "eventos_completos2"
 
     id = Column(Integer, primary_key=True, index=True)
     data_evento = Column(Date, nullable=False)
