@@ -1,10 +1,13 @@
+// src/Dashboard.jsx
 import { useNavigate, useLocation } from "react-router-dom";
-import EventoModal from "./EventoModal"; // Certifique-se de que o caminho está correto
+import { useEffect, useState } from "react";
+import EventoModal from "./EventoModal";
 import { FiSettings } from "react-icons/fi";
 
-export default function Dashboard({ abrirModal }) {
+export default function Dashboard() {
   const navigate = useNavigate();
   const location = useLocation();
+  const [mostrarModal, setMostrarModal] = useState(false);
 
   const menus = [
     { nome: "Listagem de Vendas", rota: "/listagem-vendas" },
@@ -15,23 +18,25 @@ export default function Dashboard({ abrirModal }) {
     { nome: "Outro Menu", rota: "/outro" }
   ];
 
-  const sair = () => {
-    localStorage.removeItem("autenticado");
-    navigate("/");
-  };
+  useEffect(() => {
+    if (location.pathname === "/dashboard") {
+      navigate("/listagem-vendas");
+    }
+  }, [location.pathname, navigate]);
+
+  const rotaAtual = location.pathname;
 
   return (
-    <div className="flex justify-between items-center bg-white shadow px-4 py-2 mb-4">
-      {/* Menus de navegação */}
+    <div className="bg-gray-100 p-3 flex justify-between items-center border-b mb-4">
       <div className="flex gap-2 flex-wrap">
-        {menus.map((menu) => (
+        {menus.map(menu => (
           <button
             key={menu.rota}
             onClick={() => navigate(menu.rota)}
-            className={`px-3 py-1 text-sm rounded transition ${
-              location.pathname === menu.rota
+            className={`px-3 py-1 text-sm rounded ${
+              rotaAtual === menu.rota
                 ? "bg-blue-600 text-white"
-                : "bg-gray-200 hover:bg-blue-100"
+                : "bg-white text-gray-700 border hover:bg-blue-50"
             }`}
           >
             {menu.nome}
@@ -39,23 +44,17 @@ export default function Dashboard({ abrirModal }) {
         ))}
       </div>
 
-      {/* Ícones de definições e logout */}
-      <div className="flex items-center gap-4">
-        {/* Roda dentada */}
-        <FiSettings
-          onClick={abrirModal}
-          className="text-2xl text-gray-700 cursor-pointer hover:text-blue-600"
-          title="Definições"
-        />
-
-        {/* Logout */}
+      <div>
         <button
-          onClick={sair}
-          className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 text-sm rounded"
+          onClick={() => setMostrarModal(true)}
+          className="text-gray-700 hover:text-black ml-4"
+          title="Definições"
         >
-          Logout
+          <FiSettings size={20} />
         </button>
       </div>
+
+      <EventoModal visivel={mostrarModal} fechar={() => setMostrarModal(false)} />
     </div>
   );
 }
