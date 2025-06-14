@@ -248,5 +248,5 @@ export default function Eventos() {
         </table>
       </div>
     </div>
-  );Add commentMore actions
+  )
 }
