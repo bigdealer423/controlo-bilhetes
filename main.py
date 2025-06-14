@@ -21,7 +21,7 @@ app = FastAPI()
 # Permitir pedidos do frontend no Vercel
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"]
+    allow_origins=["*"],  # Pode testar com "*" para garantir funcionamento
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
