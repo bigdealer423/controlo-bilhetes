@@ -1,24 +1,23 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { useAuth } from "./AuthContext";
+import { useNavigate } from "react-router-dom";
 
 export default function Dashboard() {
-  const { autenticado, logout } = useAuth();
+  const { logout } = useAuth();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (!autenticado) {
-      navigate("/");
-    }
-  }, [autenticado, navigate]);
-
   const handleLogout = () => {
-    logout();
+    logout();               // Atualiza o contexto
+    setTimeout(() => {
+      navigate("/");        // Aguarda que o estado seja atualizado
+    }, 0);
   };
 
   return (
-    <div className="flex justify-end p-4">
-      <button onClick={handleLogout} className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">Logout</button>
+    <div>
+      {/* ... outros menus ... */}
+      <button onClick={handleLogout} className="bg-red-500 text-white px-4 py-1 rounded">
+        Logout
+      </button>
     </div>
   );
 }
