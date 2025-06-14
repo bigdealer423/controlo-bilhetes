@@ -158,5 +158,7 @@ from database import engine
 
 Compra.__table__.create(bind=engine, checkfirst=True)
     
-
+@app.get("/ping")
+def ping():
+    return {"status": "ativo"}
 
