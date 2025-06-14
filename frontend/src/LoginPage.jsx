@@ -1,56 +1,28 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "./AuthContext";
 
 export default function LoginPage() {
-  const [utilizador, setUtilizador] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [erro, setErro] = useState("");
+  const { login } = useAuth();
   const navigate = useNavigate();
 
-  const autenticar = () => {
-    if (utilizador === "bigdealer" && password === "1091") {
-      localStorage.setItem("autenticado", "true");
-      setAutenticado(true);
+  const handleLogin = () => {
+    if (username === "bigdealer" && password === "1091") {
+      login(); // ← reativa o context
       navigate("/listagem-vendas");
     } else {
-      setErro("Credenciais inválidas");
+      alert("Credenciais inválidas");
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded shadow-md w-full max-w-sm">
-        <h2 className="text-2xl font-bold mb-4 text-center">Login</h2>
-        
-        <input
-          type="text"
-          id="utilizador"
-          name="utilizador"
-          placeholder="Nome de utilizador"
-          className="w-full p-2 border rounded mb-4"
-          value={utilizador}
-          onChange={e => setUtilizador(e.target.value)}
-        />
-
-        <input
-          type="password"
-          id="password"
-          name="password"
-          placeholder="Password"
-          className="w-full p-2 border rounded mb-4"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-        />
-
-        {erro && <div className="text-red-600 text-sm mb-2">{erro}</div>}
-
-        <button
-          onClick={autenticar}
-          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
-        >
-          Entrar
-        </button>
-      </div>
+    <div className="p-6 max-w-sm mx-auto">
+      <h1 className="text-2xl font-bold mb-4">Login</h1>
+      <input type="text" placeholder="Nome de utilizador" value={username} onChange={e => setUsername(e.target.value)} className="input mb-2" />
+      <input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} className="input mb-4" />
+      <button onClick={handleLogin} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Login</button>
     </div>
   );
 }
