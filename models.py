@@ -6,13 +6,15 @@ import enum
 
 Base = declarative_base()
 
-# -------------------- MODELOS SQLAlchemy --------------------
+# -------------------- ENUM --------------------
 
 class EstadoVenda(str, enum.Enum):
     entregue = "Entregue"
     por_entregar = "Por entregar"
     disputa = "Disputa"
     pago = "Pago"
+
+# -------------------- MODELOS SQLAlchemy --------------------
 
 class ListagemVendas(Base):
     __tablename__ = "listagem_vendas"
@@ -42,12 +44,11 @@ class EventoCompleto(Base):
     ganho = Column(Float, nullable=False)
     estado = Column(String, nullable=False)
 
-# NOVO: Modelo de Compras
 class Compra(Base):
     __tablename__ = "compras"
     id = Column(Integer, primary_key=True, index=True)
     local_compras = Column(String, nullable=False)
-    evento = Column(String, nullable=False)  # NOVA COLUNA
+    evento = Column(String, nullable=False)
     bancada = Column(String, nullable=False)
     setor = Column(String, nullable=False)
     fila = Column(String, nullable=True)
@@ -56,23 +57,33 @@ class Compra(Base):
 
 # -------------------- SCHEMAS Pydantic --------------------
 
-class ListagemVendasCreate(BaseModel):
+# Listagem de Vendas
+class ListagemVendasBase(BaseModel):
     id_venda: int
     data_evento: date
     evento: str
     estadio: str
     ganho: float
-    estado: str
+    estado: EstadoVenda
 
+class ListagemVendasCreate(ListagemVendasBase):
+    pass
+
+class ListagemVendasUpdate(ListagemVendasBase):
+    pass
+
+class ListagemVendasOut(ListagemVendasBase):
+    id: int
     class Config:
         from_attributes = True
 
+# Dropdown de Eventos
 class EventoDropdownCreate(BaseModel):
     nome: str
-
     class Config:
         from_attributes = True
 
+# Eventos Completos
 class EventoCompletoBase(BaseModel):
     data_evento: date
     evento: str
@@ -86,30 +97,26 @@ class EventoCompletoCreate(EventoCompletoBase):
 
 class EventoCompletoOut(EventoCompletoBase):
     id: int
-
     class Config:
         from_attributes = True
 
-# NOVOS SCHEMAS PARA COMPRAS
+# Compras
 class CompraCreate(BaseModel):
     local_compras: str
-    evento: str  # NOVO CAMPO
+    evento: str
     bancada: str
     setor: str
     fila: str
     quantidade: int
     gasto: float
-
     class Config:
         from_attributes = True
 
 class CompraOut(CompraCreate):
     id: int
-
     class Config:
         from_attributes = True
 
 # Criação automática das tabelas
 from database import engine
 Base.metadata.create_all(bind=engine)
-
