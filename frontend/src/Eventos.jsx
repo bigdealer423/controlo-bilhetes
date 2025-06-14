@@ -20,14 +20,22 @@ export default function Eventos() {
 
   const buscarEventos = async () => {
     const res = await fetch("https://controlo-bilhetes.onrender.com/eventos_completos2");
-    const data = await res.json();
-    setRegistos(data);
+    if (res.ok) {
+      const data = await res.json();
+      setRegistos(data);
+    } else {
+      console.error("Erro ao carregar eventos.");
+    }
   };
 
   const buscarDropdown = async () => {
     const res = await fetch("https://controlo-bilhetes.onrender.com/eventos_dropdown");
-    const data = await res.json();
-    setEventosDropdown(data);
+    if (res.ok) {
+      const data = await res.json();
+      setEventosDropdown(data);
+    } else {
+      console.error("Erro ao carregar dropdown.");
+    }
   };
 
   const handleChange = (e) => {
@@ -36,24 +44,28 @@ export default function Eventos() {
   };
 
   const guardarRegisto = async () => {
-    await fetch("https://controlo-bilhetes.onrender.com/eventos_completos2", {
+    const res = await fetch("https://controlo-bilhetes.onrender.com/eventos_completos2", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         ...novoRegisto,
         gasto: parseFloat(novoRegisto.gasto) || 0,
-ganho: parseFloat(novoRegisto.ganho) || 0
+        ganho: parseFloat(novoRegisto.ganho) || 0
       })
     });
-    setNovoRegisto({
-      data_evento: "",
-      evento: "",
-      estadio: "",
-      gasto: "",
-      ganho: "",
-      estado: "Por entregar"
-    });
-    buscarEventos();
+    if (res.ok) {
+      setNovoRegisto({
+        data_evento: "",
+        evento: "",
+        estadio: "",
+        gasto: "",
+        ganho: "",
+        estado: "Por entregar"
+      });
+      buscarEventos();
+    } else {
+      console.error("Erro ao guardar evento.");
+    }
   };
 
   const editarRegisto = (registo) => {
@@ -62,32 +74,37 @@ ganho: parseFloat(novoRegisto.ganho) || 0
   };
 
   const atualizarRegisto = async () => {
-    await fetch('https://controlo-bilhetes.onrender.com/eventos_completos2/' + modoEdicao, {
+    const res = await fetch('https://controlo-bilhetes.onrender.com/eventos_completos2/' + modoEdicao, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         ...novoRegisto,
         gasto: parseFloat(novoRegisto.gasto) || 0,
-ganho: parseFloat(novoRegisto.ganho) || 0
+        ganho: parseFloat(novoRegisto.ganho) || 0
       })
     });
-    setModoEdicao(null);
-    setNovoRegisto({
-      data_evento: "",
-      evento: "",
-      estadio: "",
-      gasto: "",
-      ganho: "",
-      estado: "Por entregar"
-    });
-    buscarEventos();
+    if (res.ok) {
+      setModoEdicao(null);
+      setNovoRegisto({
+        data_evento: "",
+        evento: "",
+        estadio: "",
+        gasto: "",
+        ganho: "",
+        estado: "Por entregar"
+      });
+      buscarEventos();
+    } else {
+      console.error("Erro ao atualizar evento.");
+    }
   };
 
   const eliminarRegisto = async (id) => {
-    await fetch('https://controlo-bilhetes.onrender.com/eventos_completos2/' + id, {
+    const res = await fetch('https://controlo-bilhetes.onrender.com/eventos_completos2/' + id, {
       method: "DELETE"
     });
-    buscarEventos();
+    if (res.ok) buscarEventos();
+    else console.error("Erro ao eliminar.");
   };
 
   return (
@@ -158,3 +175,4 @@ ganho: parseFloat(novoRegisto.ganho) || 0
     </div>
   );
 }
+
