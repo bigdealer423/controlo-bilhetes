@@ -1,7 +1,7 @@
 // src/EventoModal.jsx
 import { useEffect, useState } from "react";
 
-export default function EventoModal({ visivel, fechar }) {
+export default function EventoModal({ visivel, fechar, onAtualizar }) {
   const [eventos, setEventos] = useState([]);
   const [novoEvento, setNovoEvento] = useState("");
 
