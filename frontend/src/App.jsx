@@ -40,19 +40,18 @@ export default function App() {
         />
 
         <Route
-          path="/listagem-vendas"
-          element={
-            autenticado ? (
-              <>
-                <Dashboard onAtualizarEventos={forcarAtualizacaoEventos} />
-                <ListagemVendas />
-              </>
-            ) : (
-              <Navigate to="/" replace />
+  path="/listagem-vendas"
+  element={
+    autenticado ? (
+      <>
+        <Dashboard onAtualizarEventos={forcarAtualizacaoEventos} />
+        <ListagemVendas atualizarEventos={true} />
+          </>
+       ) : (
+          <Navigate to="/" replace />
             )
           }
         />
-
         <Route
           path="/eventos"
           element={
