@@ -4,18 +4,12 @@ import { useEffect, useState } from "react";
 import EventoModal from "./EventoModal";
 import { FiSettings } from "react-icons/fi";
 
-export default function Dashboard() {
+export default function Dashboard({ onAtualizarEventos }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const [mostrarModal, setMostrarModal] = useState(false);
-  const [atualizarEventos, setAtualizarEventos] = useState(false);
   const rotaAtual = location.pathname;
 
-  useEffect(() => {
-    if (location.pathname === "/dashboard") {
-      navigate("/listagem-vendas");
-    }
-  }, [location.pathname, navigate]);
+  const [mostrarModal, setMostrarModal] = useState(false);
 
   const menus = [
     { nome: "Listagem de Vendas", rota: "/listagem-vendas" },
@@ -26,42 +20,44 @@ export default function Dashboard() {
     { nome: "Outro Menu", rota: "/outro" }
   ];
 
-  return (
-    <div>
-      <div className="bg-gray-100 p-3 flex justify-between items-center border-b mb-4">
-        <div className="flex gap-2 flex-wrap">
-          {menus.map((menu) => (
-            <button
-              key={menu.rota}
-              onClick={() => navigate(menu.rota)}
-              className={`px-3 py-1 text-sm rounded ${
-                rotaAtual === menu.rota
-                  ? "bg-blue-600 text-white"
-                  : "bg-white text-gray-700 border hover:bg-blue-50"
-              }`}
-            >
-              {menu.nome}
-            </button>
-          ))}
-        </div>
+  useEffect(() => {
+    if (location.pathname === "/dashboard") {
+      navigate("/listagem-vendas");
+    }
+  }, [location.pathname, navigate]);
 
-        <div>
+  return (
+    <div className="bg-gray-100 p-3 flex justify-between items-center border-b mb-4">
+      <div className="flex gap-2 flex-wrap">
+        {menus.map((menu) => (
           <button
-            onClick={() => setMostrarModal(true)}
-            className="text-gray-700 hover:text-black ml-4"
-            title="Definições"
+            key={menu.rota}
+            onClick={() => navigate(menu.rota)}
+            className={`px-3 py-1 text-sm rounded ${
+              rotaAtual === menu.rota
+                ? "bg-blue-600 text-white"
+                : "bg-white text-gray-700 border hover:bg-blue-50"
+            }`}
           >
-            <FiSettings size={20} />
+            {menu.nome}
           </button>
-        </div>
+        ))}
+      </div>
+
+      <div>
+        <button
+          onClick={() => setMostrarModal(true)}
+          className="text-gray-700 hover:text-black ml-4"
+          title="Definições"
+        >
+          <FiSettings size={20} />
+        </button>
       </div>
 
       <EventoModal
         visivel={mostrarModal}
-        fechar={() => {
-          setMostrarModal(false);
-          setAtualizarEventos((prev) => !prev); // <- isto força o re-render no componente que usar esse estado
-        }}
+        fechar={() => setMostrarModal(false)}
+        onAtualizar={onAtualizarEventos}
       />
     </div>
   );
