@@ -63,7 +63,7 @@ class EventoDropdownCreate(BaseModel):
         from_attributes = True
 
 # NOVOS SCHEMAS
-class EventoCompletoCreate(BaseModel):
+class EventoCompletoBase(BaseModel):
     data_evento: date
     evento: str
     estadio: str
@@ -71,11 +71,13 @@ class EventoCompletoCreate(BaseModel):
     ganho: float
     estado: str
 
-class EventoCompleto(EventoCompletoCreate):
+class EventoCompletoCreate(EventoCompletoBase):
+    pass
+
+class EventoCompletoOut(EventoCompletoBase):
     id: int
 
     class Config:
         from_attributes = True
-from database import engine
 Base.metadata.create_all(bind=engine)
 
