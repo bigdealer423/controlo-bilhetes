@@ -61,7 +61,7 @@ export default function Eventos() {
           <input name="data_evento" type="date" className="input" value={novoEvento.data_evento} onChange={handleChange} />
           <input name="evento" className="input" placeholder="Evento" value={novoEvento.evento} onChange={handleChange} />
           <input name="estadio" className="input" placeholder="Estádio" value={novoEvento.estadio} onChange={handleChange} />
-          <input name="gasto" type="number" className="input" placeholder="Gasto (€)" value={novoEvento.gasto} onChange={handleChange} />
+          <input name="gasto" type="number" className="input" placeholder="Gasto" value={novoEvento.gasto} onChange={handleChange} />
           <input name="ganho" type="number" className="input" placeholder="Ganho (€)" value={novoEvento.ganho} onChange={handleChange} />
           <select name="estado" className="input" value={novoEvento.estado} onChange={handleChange}>
             <option value="Entregue">Entregue</option>
