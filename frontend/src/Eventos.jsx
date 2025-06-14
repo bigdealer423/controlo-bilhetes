@@ -41,8 +41,8 @@ export default function Eventos() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         ...novoRegisto,
-        ganho: parseFloat(novoRegisto.ganho),
-        gasto: parseFloat(novoRegisto.gasto)
+        gasto: parseFloat(novoRegisto.gasto) || 0,
+ganho: parseFloat(novoRegisto.ganho) || 0
       })
     });
     setNovoRegisto({
@@ -67,8 +67,8 @@ export default function Eventos() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         ...novoRegisto,
-        ganho: parseFloat(novoRegisto.ganho),
-        gasto: parseFloat(novoRegisto.gasto)
+        gasto: parseFloat(novoRegisto.gasto) || 0,
+ganho: parseFloat(novoRegisto.ganho) || 0
       })
     });
     setModoEdicao(null);
