@@ -124,14 +124,12 @@ export default function ListagemVendas(props) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <input name="id_venda" type="number" className="input" placeholder="ID Venda" value={novoRegisto.id_venda} onChange={handleChange} />
           <input name="data_evento" type="date" className="input" value={novoRegisto.data_evento} onChange={handleChange} />
-
           <select name="evento" className="input" value={novoRegisto.evento} onChange={handleChange}>
             <option value="">-- Selecionar Evento --</option>
             {eventosDropdown.map(e => (
               <option key={e.id} value={e.nome}>{e.nome}</option>
             ))}
           </select>
-
           <input name="estadio" className="input" placeholder="Estádio" value={novoRegisto.estadio} onChange={handleChange} />
           <input name="ganho" type="number" className="input" placeholder="Ganho (€)" value={novoRegisto.ganho} onChange={handleChange} />
           <select name="estado" className="input" value={novoRegisto.estado} onChange={handleChange}>
@@ -160,9 +158,7 @@ export default function ListagemVendas(props) {
         <table className="min-w-full border text-sm text-left text-gray-600">
           <thead>
             <tr className="bg-gray-100">
-              <th className="p-2">
-                <input type="checkbox" onChange={selecionarTodos} checked={selecionados.length === registos.length} />
-              </th>
+              <th className="p-2"><input type="checkbox" onChange={selecionarTodos} checked={selecionados.length === registos.length} /></th>
               <th className="p-2">ID Venda</th>
               <th className="p-2">Data Evento</th>
               <th className="p-2">Evento</th>
@@ -180,18 +176,18 @@ export default function ListagemVendas(props) {
                 </td>
                 {modoEdicao === r.id ? (
                   <>
-                    <td className="p-2"><input type="number" name="id_venda" className="input" value={registoEditado.id_venda} onChange={e => setRegistoEditado({ ...registoEditado, id_venda: e.target.value })} /></td>
-                    <td className="p-2"><input type="date" name="data_evento" className="input" value={registoEditado.data_evento} onChange={e => setRegistoEditado({ ...registoEditado, data_evento: e.target.value })} /></td>
+                    <td className="p-2"><input type="number" className="input" value={registoEditado.id_venda} onChange={e => setRegistoEditado({ ...registoEditado, id_venda: e.target.value })} /></td>
+                    <td className="p-2"><input type="date" className="input" value={registoEditado.data_evento} onChange={e => setRegistoEditado({ ...registoEditado, data_evento: e.target.value })} /></td>
                     <td className="p-2">
-                      <select name="evento" className="input" value={registoEditado.evento} onChange={e => setRegistoEditado({ ...registoEditado, evento: e.target.value })}>
+                      <select className="input" value={registoEditado.evento} onChange={e => setRegistoEditado({ ...registoEditado, evento: e.target.value })}>
                         <option value="">-- Evento --</option>
                         {eventosDropdown.map(e => <option key={e.id} value={e.nome}>{e.nome}</option>)}
                       </select>
                     </td>
-                    <td className="p-2"><input type="text" name="estadio" className="input" value={registoEditado.estadio} onChange={e => setRegistoEditado({ ...registoEditado, estadio: e.target.value })} /></td>
-                    <td className="p-2"><input type="number" name="ganho" className="input" value={registoEditado.ganho} onChange={e => setRegistoEditado({ ...registoEditado, ganho: e.target.value })} /></td>
+                    <td className="p-2"><input className="input" value={registoEditado.estadio} onChange={e => setRegistoEditado({ ...registoEditado, estadio: e.target.value })} /></td>
+                    <td className="p-2"><input type="number" className="input" value={registoEditado.ganho} onChange={e => setRegistoEditado({ ...registoEditado, ganho: e.target.value })} /></td>
                     <td className="p-2">
-                      <select name="estado" className="input" value={registoEditado.estado} onChange={e => setRegistoEditado({ ...registoEditado, estado: e.target.value })}>
+                      <select className="input" value={registoEditado.estado} onChange={e => setRegistoEditado({ ...registoEditado, estado: e.target.value })}>
                         <option value="Entregue">Entregue</option>
                         <option value="Por entregar">Por entregar</option>
                         <option value="Disputa">Disputa</option>
@@ -199,19 +195,20 @@ export default function ListagemVendas(props) {
                       </select>
                     </td>
                     <td className="p-2">
-                      <button onClick={atualizarRegisto} className="text-green-600 hover:underline">Guardar</button>
+                      <button onClick={atualizarRegisto} className="text-green-600 hover:underline mr-2">Guardar</button>
                     </td>
                   </>
                 ) : (
                   <>
                     <td className="p-2">{r.id_venda}</td>
-                    <td className="p-2">{new Date(r.data_evento).toLocaleDateString("pt-PT", {day: "2-digit",month: "2-digit",year: "numeric"})}</td>
+                    <td className="p-2">{new Date(r.data_evento).toLocaleDateString("pt-PT")}</td>
                     <td className="p-2">{r.evento}</td>
                     <td className="p-2">{r.estadio}</td>
                     <td className="p-2">{r.ganho} €</td>
                     <td className="p-2">{r.estado}</td>
                     <td className="p-2">
-                      <button onClick={() => ativarEdicao(r.id, r)} className="text-blue-600 hover:underline">Editar</button>
+                      <button onClick={() => ativarEdicao(r.id, r)} className="text-blue-600 hover:underline mr-2">Editar</button>
+                      <button onClick={() => eliminarSelecionados([r.id])} className="text-red-600 hover:underline">Eliminar</button>
                     </td>
                   </>
                 )}
@@ -223,3 +220,4 @@ export default function ListagemVendas(props) {
     </div>
   );
 }
+
