@@ -3,13 +3,14 @@ import { useEffect, useState } from "react";
 export default function Compras() {
   const [compras, setCompras] = useState([]);
   const [novaCompra, setNovaCompra] = useState({
-    local: "",
+    local_compras: "",
     bancada: "",
     setor: "",
     fila: "",
     quantidade: "",
     gasto: ""
   });
+  const [modoEdicao, setModoEdicao] = useState(null);
 
   const locaisCompra = [
     "Benfica Viagens", "Site Benfica", "Odisseias", "Continente",
@@ -24,21 +25,74 @@ export default function Compras() {
     ...Array.from({ length: 44 }, (_, i) => "upper " + (i + 1))
   ];
 
+  useEffect(() => {
+    buscarCompras();
+  }, []);
+
+  const buscarCompras = async () => {
+    const res = await fetch("https://controlo-bilhetes.onrender.com/compras");
+    const data = await res.json();
+    setCompras(data);
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setNovaCompra(prev => ({ ...prev, [name]: value }));
   };
 
-  const guardarCompra = () => {
-    setCompras([...compras, { ...novaCompra }]);
+  const guardarCompra = async () => {
+    await fetch("https://controlo-bilhetes.onrender.com/compras", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ...novaCompra,
+        quantidade: parseInt(novaCompra.quantidade),
+        gasto: parseFloat(novaCompra.gasto)
+      })
+    });
     setNovaCompra({
-      local: "",
+      local_compras: "",
       bancada: "",
       setor: "",
       fila: "",
       quantidade: "",
       gasto: ""
     });
+    buscarCompras();
+  };
+
+  const editarCompra = (compra) => {
+    setModoEdicao(compra.id);
+    setNovaCompra({ ...compra });
+  };
+
+  const atualizarCompra = async () => {
+    await fetch(`https://controlo-bilhetes.onrender.com/compras/${modoEdicao}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ...novaCompra,
+        quantidade: parseInt(novaCompra.quantidade),
+        gasto: parseFloat(novaCompra.gasto)
+      })
+    });
+    setModoEdicao(null);
+    setNovaCompra({
+      local_compras: "",
+      bancada: "",
+      setor: "",
+      fila: "",
+      quantidade: "",
+      gasto: ""
+    });
+    buscarCompras();
+  };
+
+  const eliminarCompra = async (id) => {
+    await fetch(`https://controlo-bilhetes.onrender.com/compras/${id}`, {
+      method: "DELETE"
+    });
+    buscarCompras();
   };
 
   return (
@@ -46,8 +100,9 @@ export default function Compras() {
       <h1 className="text-2xl font-bold mb-4">Compras</h1>
 
       <div className="bg-white shadow-md rounded p-4 mb-6">
+        <h2 className="text-lg font-semibold mb-2">{modoEdicao ? "Editar Compra" : "Nova Compra"}</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <select name="local" className="input" value={novaCompra.local} onChange={handleChange}>
+          <select name="local_compras" className="input" value={novaCompra.local_compras} onChange={handleChange}>
             <option value="">-- Local da Compra --</option>
             {locaisCompra.map(local => (
               <option key={local} value={local}>{local}</option>
@@ -70,10 +125,10 @@ export default function Compras() {
         </div>
 
         <button
-          onClick={guardarCompra}
+          onClick={modoEdicao ? atualizarCompra : guardarCompra}
           className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
         >
-          Guardar
+          {modoEdicao ? "Atualizar" : "Guardar"}
         </button>
       </div>
 
@@ -87,17 +142,22 @@ export default function Compras() {
               <th className="p-2">Fila</th>
               <th className="p-2">Qt.</th>
               <th className="p-2">Gasto (€)</th>
+              <th className="p-2">Ações</th>
             </tr>
           </thead>
           <tbody>
-            {compras.map((c, idx) => (
-              <tr key={idx} className="border-t">
-                <td className="p-2">{c.local}</td>
+            {compras.map((c) => (
+              <tr key={c.id} className="border-t">
+                <td className="p-2">{c.local_compras}</td>
                 <td className="p-2">{c.bancada}</td>
                 <td className="p-2">{c.setor}</td>
                 <td className="p-2">{c.fila}</td>
                 <td className="p-2">{c.quantidade}</td>
                 <td className="p-2">{parseFloat(c.gasto).toFixed(2)} €</td>
+                <td className="p-2 flex gap-2">
+                  <button onClick={() => editarCompra(c)} className="text-blue-600 hover:underline">Editar</button>
+                  <button onClick={() => eliminarCompra(c.id)} className="text-red-600 hover:underline">Eliminar</button>
+                </td>
               </tr>
             ))}
           </tbody>
