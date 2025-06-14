@@ -49,8 +49,8 @@ export default function Eventos() {
       data_evento: "",
       evento: "",
       estadio: "",
-      gasto: 0,
-      ganho: 0,
+      gasto: "",
+      ganho: "",
       estado: "Por entregar"
     });
     buscarEventos();
@@ -62,7 +62,7 @@ export default function Eventos() {
   };
 
   const atualizarRegisto = async () => {
-    await fetch(\`https://controlo-bilhetes.onrender.com/eventos_completos/\${modoEdicao}\`, {
+    await fetch('https://controlo-bilhetes.onrender.com/eventos_completos/' + modoEdicao, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
