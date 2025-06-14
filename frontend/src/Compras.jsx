@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 
 export default function Compras() {
   const [compras, setCompras] = useState([]);
+  const [eventosDropdown, setEventosDropdown] = useState([]);
   const [novaCompra, setNovaCompra] = useState({
+    evento: "",
     local_compras: "",
     bancada: "",
     setor: "",
@@ -27,12 +29,19 @@ export default function Compras() {
 
   useEffect(() => {
     buscarCompras();
+    buscarEventos();
   }, []);
 
   const buscarCompras = async () => {
     const res = await fetch("https://controlo-bilhetes.onrender.com/compras");
     const data = await res.json();
     setCompras(data);
+  };
+
+  const buscarEventos = async () => {
+    const res = await fetch("https://controlo-bilhetes.onrender.com/eventos_dropdown");
+    const data = await res.json();
+    setEventosDropdown(data);
   };
 
   const handleChange = (e) => {
@@ -51,6 +60,7 @@ export default function Compras() {
       })
     });
     setNovaCompra({
+      evento: "",
       local_compras: "",
       bancada: "",
       setor: "",
@@ -78,6 +88,7 @@ export default function Compras() {
     });
     setModoEdicao(null);
     setNovaCompra({
+      evento: "",
       local_compras: "",
       bancada: "",
       setor: "",
@@ -102,6 +113,13 @@ export default function Compras() {
       <div className="bg-white shadow-md rounded p-4 mb-6">
         <h2 className="text-lg font-semibold mb-2">{modoEdicao ? "Editar Compra" : "Nova Compra"}</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <select name="evento" className="input" value={novaCompra.evento} onChange={handleChange}>
+            <option value="">-- Evento --</option>
+            {eventosDropdown.map(e => (
+              <option key={e.id} value={e.nome}>{e.nome}</option>
+            ))}
+          </select>
+
           <select name="local_compras" className="input" value={novaCompra.local_compras} onChange={handleChange}>
             <option value="">-- Local da Compra --</option>
             {locaisCompra.map(local => (
@@ -136,6 +154,7 @@ export default function Compras() {
         <table className="min-w-full border text-sm text-left text-gray-600">
           <thead>
             <tr className="bg-gray-100">
+              <th className="p-2">Evento</th>
               <th className="p-2">Local Compra</th>
               <th className="p-2">Bancada</th>
               <th className="p-2">Setor</th>
@@ -148,6 +167,7 @@ export default function Compras() {
           <tbody>
             {compras.map((c) => (
               <tr key={c.id} className="border-t">
+                <td className="p-2">{c.evento}</td>
                 <td className="p-2">{c.local_compras}</td>
                 <td className="p-2">{c.bancada}</td>
                 <td className="p-2">{c.setor}</td>
@@ -166,3 +186,4 @@ export default function Compras() {
     </div>
   );
 }
+
