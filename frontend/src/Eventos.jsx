@@ -7,7 +7,7 @@ export default function Eventos() {
     evento: "",
     estadio: "",
     gasto: "",
-    ganho: 0,
+    ganho: "",
     estado: "Por entregar"
   });
 
