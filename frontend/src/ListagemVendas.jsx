@@ -1,4 +1,3 @@
-// src/ListagemVendas.jsx
 import { useEffect, useState } from "react";
 
 export default function ListagemVendas(props) {
@@ -13,13 +12,14 @@ export default function ListagemVendas(props) {
     estado: "Por entregar"
   });
   const [selecionados, setSelecionados] = useState([]);
+  const [modoEdicao, setModoEdicao] = useState(null);
+  const [registoEditado, setRegistoEditado] = useState({});
 
   useEffect(() => {
     buscarRegistos();
     buscarEventosDropdown();
   }, []);
 
-  // Atualiza dropdown sempre que o modal é fechado
   useEffect(() => {
     if (props.atualizarEventos) {
       buscarEventosDropdown();
@@ -42,10 +42,7 @@ export default function ListagemVendas(props) {
 
   const handleChange = e => {
     const { name, value } = e.target;
-    setNovoRegisto(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setNovoRegisto(prev => ({ ...prev, [name]: value }));
   };
 
   const adicionarRegisto = () => {
@@ -97,6 +94,27 @@ export default function ListagemVendas(props) {
     });
   };
 
+  const ativarEdicao = (id, registo) => {
+    setModoEdicao(id);
+    setRegistoEditado({ ...registo });
+  };
+
+  const atualizarRegisto = () => {
+    fetch(`https://controlo-bilhetes.onrender.com/listagem_vendas/${modoEdicao}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ...registoEditado,
+        id_venda: parseInt(registoEditado.id_venda),
+        ganho: parseFloat(registoEditado.ganho)
+      })
+    })
+      .then(() => {
+        setModoEdicao(null);
+        buscarRegistos();
+      });
+  };
+
   return (
     <div className="p-6 max-w-6xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">Listagem de Vendas</h1>
@@ -131,11 +149,13 @@ export default function ListagemVendas(props) {
       <div className="bg-white shadow-md rounded p-4">
         <div className="flex justify-between items-center mb-2">
           <h2 className="text-lg font-semibold">Vendas</h2>
-          {selecionados.length > 0 && (
-            <button onClick={eliminarSelecionados} className="bg-red-600 text-white px-4 py-1 rounded hover:bg-red-700">
-              Eliminar Selecionados
-            </button>
-          )}
+          <div className="flex gap-2">
+            {selecionados.length > 0 && (
+              <button onClick={eliminarSelecionados} className="bg-red-600 text-white px-4 py-1 rounded hover:bg-red-700">
+                Eliminar Selecionados
+              </button>
+            )}
+          </div>
         </div>
         <table className="min-w-full border text-sm text-left text-gray-600">
           <thead>
@@ -149,6 +169,7 @@ export default function ListagemVendas(props) {
               <th className="p-2">Estádio</th>
               <th className="p-2">Ganho</th>
               <th className="p-2">Estado</th>
+              <th className="p-2">Ações</th>
             </tr>
           </thead>
           <tbody>
@@ -157,12 +178,43 @@ export default function ListagemVendas(props) {
                 <td className="p-2">
                   <input type="checkbox" checked={selecionados.includes(r.id)} onChange={() => alternarSelecionado(r.id)} />
                 </td>
-                <td className="p-2">{r.id_venda}</td>
-                <td className="p-2">{r.data_evento}</td>
-                <td className="p-2">{r.evento}</td>
-                <td className="p-2">{r.estadio}</td>
-                <td className="p-2">{r.ganho} €</td>
-                <td className="p-2">{r.estado}</td>
+                {modoEdicao === r.id ? (
+                  <>
+                    <td className="p-2"><input type="number" name="id_venda" className="input" value={registoEditado.id_venda} onChange={e => setRegistoEditado({ ...registoEditado, id_venda: e.target.value })} /></td>
+                    <td className="p-2"><input type="date" name="data_evento" className="input" value={registoEditado.data_evento} onChange={e => setRegistoEditado({ ...registoEditado, data_evento: e.target.value })} /></td>
+                    <td className="p-2">
+                      <select name="evento" className="input" value={registoEditado.evento} onChange={e => setRegistoEditado({ ...registoEditado, evento: e.target.value })}>
+                        <option value="">-- Evento --</option>
+                        {eventosDropdown.map(e => <option key={e.id} value={e.nome}>{e.nome}</option>)}
+                      </select>
+                    </td>
+                    <td className="p-2"><input type="text" name="estadio" className="input" value={registoEditado.estadio} onChange={e => setRegistoEditado({ ...registoEditado, estadio: e.target.value })} /></td>
+                    <td className="p-2"><input type="number" name="ganho" className="input" value={registoEditado.ganho} onChange={e => setRegistoEditado({ ...registoEditado, ganho: e.target.value })} /></td>
+                    <td className="p-2">
+                      <select name="estado" className="input" value={registoEditado.estado} onChange={e => setRegistoEditado({ ...registoEditado, estado: e.target.value })}>
+                        <option value="Entregue">Entregue</option>
+                        <option value="Por entregar">Por entregar</option>
+                        <option value="Disputa">Disputa</option>
+                        <option value="Pago">Pago</option>
+                      </select>
+                    </td>
+                    <td className="p-2">
+                      <button onClick={atualizarRegisto} className="text-green-600 hover:underline">Guardar</button>
+                    </td>
+                  </>
+                ) : (
+                  <>
+                    <td className="p-2">{r.id_venda}</td>
+                    <td className="p-2">{r.data_evento}</td>
+                    <td className="p-2">{r.evento}</td>
+                    <td className="p-2">{r.estadio}</td>
+                    <td className="p-2">{r.ganho} €</td>
+                    <td className="p-2">{r.estado}</td>
+                    <td className="p-2">
+                      <button onClick={() => ativarEdicao(r.id, r)} className="text-blue-600 hover:underline">Editar</button>
+                    </td>
+                  </>
+                )}
               </tr>
             ))}
           </tbody>
