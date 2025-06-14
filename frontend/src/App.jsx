@@ -25,7 +25,7 @@ export default function App() {
         <Route
           path="/"
           element={
-            autenticado ? <Navigate to="/listagem-vendas" replace /> : <LoginPage />
+            autenticado ? <Navigate to="/listagem-vendas" replace /> : <LoginPage setAutenticado={setAutenticado} />
           }
         />
 
