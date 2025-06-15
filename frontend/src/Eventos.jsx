@@ -54,7 +54,7 @@ export default function Eventos() {
     if (!registo) return;
 
     const atualizado = { ...registo, [campo]: valor };
-    const res = await fetch(\`https://controlo-bilhetes.onrender.com/eventos_completos2/\${id}\`, {
+    const res = await fetch("https://controlo-bilhetes.onrender.com/eventos_completos2/" + id, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(atualizado)
@@ -82,7 +82,7 @@ export default function Eventos() {
   };
 
   const eliminarRegisto = async (id) => {
-    const res = await fetch(\`https://controlo-bilhetes.onrender.com/eventos_completos2/\${id}\`, {
+    const res = await fetch("https://controlo-bilhetes.onrender.com/eventos_completos2/" + id, {
       method: "DELETE"
     });
     if (res.ok) buscarEventos();
