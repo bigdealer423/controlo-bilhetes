@@ -236,7 +236,7 @@ const eliminarConfirmado = async () => {
             ))}
           </tbody>
         </table>
-)}
+
 
       {/* Modal de confirmação */}
       {idsAEliminar.length > 0 && (
