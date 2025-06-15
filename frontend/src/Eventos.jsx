@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";More actions
+import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 
 export default function Eventos() {
