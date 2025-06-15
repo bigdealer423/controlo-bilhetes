@@ -143,7 +143,19 @@ export default function Compras() {
                         {eventosDropdown.map(e => <option key={e.id} value={e.nome}>{e.nome}</option>)}
                       </select>
                     </td>
-                    <td className="p-2"><input name="local_compras" className="input" value={novaCompra.local_compras} onChange={handleChange} /></td>
+                    <td className="p-2">
+  <select
+    className="input"
+    value={novaCompra.local_compras}
+    onChange={(e) => setNovaCompra({ ...novaCompra, local_compras: e.target.value })}
+  >
+    {locaisCompra.map((local) => (
+      <option key={local} value={local}>
+        {local}
+      </option>
+    ))}
+  </select>
+</td>
                     <td className="p-2"><input name="bancada" className="input" value={novaCompra.bancada} onChange={handleChange} /></td>
                     <td className="p-2"><input name="setor" className="input" value={novaCompra.setor} onChange={handleChange} /></td>
                     <td className="p-2"><input name="fila" className="input" value={novaCompra.fila} onChange={handleChange} /></td>
