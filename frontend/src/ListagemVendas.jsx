@@ -235,11 +235,11 @@ const eliminarConfirmado = async () => {
               </tr>
             ))}
           </tbody>
-        </div>
+        </table>
 )}
 
       {/* Modal de confirmação */}
-      {confirmarEliminarId !== null && (
+      {idsAEliminar.length > 0 && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <div className="bg-white rounded p-6 shadow-lg">
             <p>Tem a certeza que deseja eliminar esta venda?</p>
