@@ -59,7 +59,21 @@ def search_emails(mail, subject="Os seus bilhetes foram vendidos", sender="viago
     mail.select("inbox")
     date_str = datetime.strptime(date_from, "%d-%b-%Y").strftime("%d-%b-%Y")
     status, messages = mail.search(None, f'(SUBJECT "{subject}" FROM "{sender}" SINCE {date_str})')
-    return messages[0].split()
+    message_ids = messages[0].split()
+    email_infos = []
+
+    for msg_id in message_ids:
+        _, msg_data = mail.fetch(msg_id, "(RFC822)")
+        for response_part in msg_data:
+            if isinstance(response_part, tuple):
+                msg = email.message_from_bytes(response_part[1])
+                raw_date = msg["Date"]
+                parsed = parsedate_tz(raw_date)
+                dt = datetime.fromtimestamp(mktime_tz(parsed))
+                data_venda = dt.strftime("%Y-%m-%d")
+                email_infos.append((msg_id, data_venda))
+
+    return email_infos
 
 def extract_email_content(mail, email_id):
     _, msg = mail.fetch(email_id, "(RFC822)")
