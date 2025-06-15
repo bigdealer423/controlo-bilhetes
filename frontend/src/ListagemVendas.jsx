@@ -25,7 +25,8 @@ export default function ListagemVendas(props) {
       buscarEventosDropdown();
     }
   }, [props.atualizarEventos]);
-
+  
+  const [erroIDExistente, setErroIDExistente] = useState(false);
   const buscarRegistos = () => {
   fetch("https://controlo-bilhetes.onrender.com/listagem_vendas")
     .then(res => res.json())
@@ -49,28 +50,40 @@ export default function ListagemVendas(props) {
   };
 
   const adicionarRegisto = () => {
-    fetch("https://controlo-bilhetes.onrender.com/listagem_vendas", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        ...novoRegisto,
-        id_venda: parseInt(novoRegisto.id_venda),
-        ganho: parseFloat(novoRegisto.ganho)
-      })
+  fetch("https://controlo-bilhetes.onrender.com/listagem_vendas", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      ...novoRegisto,
+      id_venda: parseInt(novoRegisto.id_venda),
+      ganho: Math.ceil(parseFloat(novoRegisto.ganho))  // Arredondado para cima
     })
-      .then(res => res.json())
-      .then(() => {
+  })
+    .then(res => {
+      if (res.status === 409) {
+        setErroIDExistente(true);  // Mostra modal
+        return null;
+      }
+      return res.json();
+    })
+    .then(data => {
+      if (data) {
         buscarRegistos();
         setNovoRegisto({
           id_venda: "",
+          data_venda: "",
           data_evento: "",
           evento: "",
-          estadio: "",
+          bilhetes: "",
           ganho: "",
           estado: "Por entregar"
         });
-      });
-  };
+      }
+    })
+    .catch(err => {
+      console.error("Erro ao adicionar registo:", err);
+    });
+};
 
   const ativarEdicao = (id, registo) => {
     setModoEdicao(id);
