@@ -226,6 +226,14 @@ const eliminarConfirmado = async () => {
                 {modoEdicao === r.id ? (
                   <>
                     <td className="p-2"><input type="number" className="input" value={registoEditado.id_venda} onChange={e => setRegistoEditado({ ...registoEditado, id_venda: e.target.value })} /></td>
+                    <td className="p-2">
+  <input
+    type="date"
+    className="input"
+    value={registoEditado.data_venda || ""}
+    onChange={e => setRegistoEditado({ ...registoEditado, data_venda: e.target.value })}
+/>
+</td>
                     <td className="p-2"><input type="date" className="input" value={registoEditado.data_evento} onChange={e => setRegistoEditado({ ...registoEditado, data_evento: e.target.value })} /></td>
                     <td className="p-2">
                       <select className="input" value={registoEditado.evento} onChange={e => setRegistoEditado({ ...registoEditado, evento: e.target.value })}>
