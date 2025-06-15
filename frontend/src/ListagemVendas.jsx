@@ -266,7 +266,7 @@ const eliminarCompraConfirmada = async () => {
                     <td className="p-2">{r.estado}</td>
                     <td className="p-2">
                       <button onClick={() => ativarEdicao(r.id, r)} className="text-blue-600 hover:underline mr-2">Editar</button>
-                      <button onClick={() => eliminarSelecionados([r.id])} className="text-red-600 hover:underline">Eliminar</button>
+                      <button onClick={() => pedirConfirmEliminar(r.id)} className="text-red-600 hover:underline">Eliminar</button>
                     </td>
                   </>
                 )}
@@ -274,6 +274,21 @@ const eliminarCompraConfirmada = async () => {
             ))}
           </tbody>
         </table>
+        {confirmarEliminarId !== null && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="bg-white rounded p-6 shadow-lg max-w-sm w-full">
+      <p className="mb-4 text-center">Tem a certeza que deseja eliminar esta venda?</p>
+      <div className="flex justify-end gap-4">
+        <button onClick={eliminarCompraConfirmada} className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+          Sim, eliminar
+        </button>
+        <button onClick={cancelarEliminar} className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400">
+          Cancelar
+        </button>
+      </div>
+    </div>
+  </div>
+)}
       </div>
     </div>
   );
