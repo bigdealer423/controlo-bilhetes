@@ -159,10 +159,17 @@ return (
                     </button>
                   </td>
                   <td className="p-2">
-                    {modoEdicao === r.id
-                      ? <input type="date" value={r.data_evento} onChange={(e) => atualizarCampo(r.id, "data_evento", e.target.value)} className="input" />
-                      : r.data_evento}
-                  </td>
+  {modoEdicao === r.id ? (
+    <input
+      type="date"
+      value={r.data_evento}
+      onChange={(e) => atualizarCampo(r.id, "data_evento", e.target.value)}
+      className="input"
+    />
+  ) : (
+    new Date(r.data_evento).toLocaleDateString("pt-PT")
+  )}
+</td>
                   <td className="p-2">
                     {modoEdicao === r.id
                       ? <input value={r.evento} onChange={(e) => atualizarCampo(r.id, "evento", e.target.value)} className="input" />
