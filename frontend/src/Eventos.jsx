@@ -76,15 +76,7 @@ const buscarDropdown = async () => {
     }
   };
 
-  const buscarDropdown = async () => {
-    const res = await fetch("https://controlo-bilhetes.onrender.com/eventos_dropdown");
-    if (res.ok) {
-      const data = await res.json();
-      setEventosDropdown(data);
-    } else {
-      console.error("Erro ao carregar dropdown.");
-    }
-  };
+
 
   const buscarVendas = async () => {
     const res = await fetch("https://controlo-bilhetes.onrender.com/listagem_vendas");
