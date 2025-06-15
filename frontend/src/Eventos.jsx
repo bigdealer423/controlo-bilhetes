@@ -39,20 +39,20 @@ useEffect(() => {
 
     // Calcula gasto/ganho com base em compras/vendas para cada evento
     eventos = eventos.map(evento => {
-      const totalGasto = compras
-        .filter(c => c.evento === evento.evento)
-        .reduce((acc, curr) => acc + parseFloat(curr.gasto || 0), 0);
+  const totalGasto = compras
+    .filter(c => c.evento === evento.evento)
+    .reduce((acc, curr) => acc + parseFloat(curr.gasto || 0), 0);
 
-      const totalGanho = vendas
-        .filter(v => v.evento === evento.evento)
-        .reduce((acc, curr) => acc + parseFloat(v.ganho || 0), 0);
+  const totalGanho = vendas
+    .filter(v => v.evento === evento.evento)
+    .reduce((acc, curr) => acc + parseFloat(curr.ganho || 0), 0);
 
-      return {
-        ...evento,
-        gasto: totalGasto,
-        ganho: totalGanho,
-      };
-    });
+  return {
+    ...evento,
+    gasto: totalGasto,
+    ganho: totalGanho,
+  };
+});
 
     setRegistos(eventos);
   } else {
