@@ -8,24 +8,23 @@ export default function Eventos() {
   const [linhaExpandida, setLinhaExpandida] = useState(null);
   const [vendas, setVendas] = useState([]);
   const [compras, setCompras] = useState([]);
+  const [mostrarModal, setMostrarModal] = useState(false);
+  const [idAEliminar, setIdAEliminar] = useState(null);
   const location = useLocation();
 
   useEffect(() => {
-  // Carrega tudo em sequência, garantindo ordem
-  const carregarDados = async () => {
-    await buscarVendas();
-    await buscarCompras();
-  };
+    const carregarDados = async () => {
+      await buscarVendas();
+      await buscarCompras();
+    };
+    carregarDados();
+  }, []);
 
-  carregarDados();
-}, []);
-
-useEffect(() => {
-  // Quando vendas e compras estiverem prontos, carregar eventos e calcular valores
-  if (vendas.length && compras.length) {
-    buscarEventos();
-  }
-}, [vendas, compras]);
+  useEffect(() => {
+    if (vendas.length && compras.length) {
+      buscarEventos();
+    }
+  }, [vendas, compras]);
 
   const buscarTudo = async () => {
     await Promise.all([buscarDropdown(), buscarVendas(), buscarCompras()]);
@@ -33,32 +32,34 @@ useEffect(() => {
   };
 
   const buscarEventos = async () => {
-  const res = await fetch("https://controlo-bilhetes.onrender.com/eventos_completos2");
-  if (res.ok) {
-    let eventos = await res.json();
+    const res = await fetch("https://controlo-bilhetes.onrender.com/eventos_completos2");
+    if (res.ok) {
+      let eventos = await res.json();
 
-    // Calcula gasto/ganho com base em compras/vendas para cada evento
-    eventos = eventos.map(evento => {
-  const totalGasto = compras
-    .filter(c => c.evento === evento.evento)
-    .reduce((acc, curr) => acc + parseFloat(curr.gasto || 0), 0);
+      eventos = eventos.map(evento => {
+        const totalGasto = compras
+          .filter(c => c.evento === evento.evento)
+          .reduce((acc, curr) => acc + parseFloat(curr.gasto || 0), 0);
 
-  const totalGanho = vendas
-    .filter(v => v.evento === evento.evento)
-    .reduce((acc, curr) => acc + parseFloat(curr.ganho || 0), 0);
+        const totalGanho = vendas
+          .filter(v => v.evento === evento.evento)
+          .reduce((acc, curr) => acc + parseFloat(curr.ganho || 0), 0);
 
-  return {
-    ...evento,
-    gasto: totalGasto,
-    ganho: totalGanho,
+        return {
+          ...evento,
+          gasto: totalGasto,
+          ganho: totalGanho,
+        };
+      });
+
+      // Ordenação por data (mais antiga primeiro)
+      eventos.sort((a, b) => new Date(a.data_evento) - new Date(b.data_evento));
+
+      setRegistos(eventos);
+    } else {
+      console.error("Erro ao carregar eventos.");
+    }
   };
-});
-
-    setRegistos(eventos);
-  } else {
-    console.error("Erro ao carregar eventos.");
-  }
-};
 
   const buscarDropdown = async () => {
     const res = await fetch("https://controlo-bilhetes.onrender.com/eventos_dropdown");
@@ -110,14 +111,22 @@ useEffect(() => {
     if (res.ok) buscarEventos();
   };
 
-  const eliminarRegisto = async (id) => {
-    const res = await fetch("https://controlo-bilhetes.onrender.com/eventos_completos2/" + id, {
-      method: "DELETE"
-    });
-    if (res.ok) buscarEventos();
+  const confirmarEliminar = (id) => {
+    setIdAEliminar(id);
+    setMostrarModal(true);
   };
 
-  return (
+  const eliminarRegisto = async () => {
+    const res = await fetch("https://controlo-bilhetes.onrender.com/eventos_completos2/" + idAEliminar, {
+      method: "DELETE"
+    });
+    if (res.ok) {
+      buscarEventos();
+      setMostrarModal(false);
+      setIdAEliminar(null);
+    }
+  };
+return (
     <div className="p-6 max-w-6xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">Resumo de Eventos</h1>
 
@@ -143,30 +152,57 @@ useEffect(() => {
           <tbody>
             {registos.map(r => (
               <>
-  <tr key={r.id} className={`cursor-pointer ${r.estado === "Pago" ? "bg-green-100" : ""}`}>
+                <tr key={r.id} className={`cursor-pointer ${r.estado === "Pago" ? "bg-green-100" : ""}`}>
                   <td className="p-2">
                     <button onClick={() => setLinhaExpandida(linhaExpandida === r.id ? null : r.id)}>
                       {linhaExpandida === r.id ? "🔼" : "🔽"}
                     </button>
                   </td>
-                  <td className="p-2"><input type="date" value={r.data_evento} onChange={(e) => atualizarCampo(r.id, "data_evento", e.target.value)} className="input" /></td>
-                  <td className="p-2"><input value={r.evento} onChange={(e) => atualizarCampo(r.id, "evento", e.target.value)} className="input" /></td>
-                  <td className="p-2"><input value={r.estadio} onChange={(e) => atualizarCampo(r.id, "estadio", e.target.value)} className="input" /></td>
+                  <td className="p-2">
+                    {modoEdicao === r.id
+                      ? <input type="date" value={r.data_evento} onChange={(e) => atualizarCampo(r.id, "data_evento", e.target.value)} className="input" />
+                      : r.data_evento}
+                  </td>
+                  <td className="p-2">
+                    {modoEdicao === r.id
+                      ? <input value={r.evento} onChange={(e) => atualizarCampo(r.id, "evento", e.target.value)} className="input" />
+                      : r.evento}
+                  </td>
+                  <td className="p-2">
+                    {modoEdicao === r.id
+                      ? <input value={r.estadio} onChange={(e) => atualizarCampo(r.id, "estadio", e.target.value)} className="input" />
+                      : r.estadio}
+                  </td>
                   <td className="p-2">{r.gasto} €</td>
                   <td className="p-2">{r.ganho} €</td>
                   <td className="p-2">{(r.ganho - r.gasto)} €</td>
                   <td className="p-2">
-                    <select value={r.estado} onChange={(e) => atualizarCampo(r.id, "estado", e.target.value)} className="input">
-                      <option value="Entregue">Entregue</option>
-                      <option value="Por entregar">Por entregar</option>
-                      <option value="Disputa">Disputa</option>
-                      <option value="Pago">Pago</option>
-                    </select>
+                    {modoEdicao === r.id
+                      ? (
+                        <select value={r.estado} onChange={(e) => atualizarCampo(r.id, "estado", e.target.value)} className="input">
+                          <option value="Entregue">Entregue</option>
+                          <option value="Por entregar">Por entregar</option>
+                          <option value="Disputa">Disputa</option>
+                          <option value="Pago">Pago</option>
+                        </select>
+                      ) : r.estado}
                   </td>
-                  <td className="p-2">
-                    <button onClick={() => eliminarRegisto(r.id)} className="text-red-600 hover:underline">Eliminar</button>
+                  <td className="p-2 space-x-2">
+                    <button
+                      onClick={() => setModoEdicao(modoEdicao === r.id ? null : r.id)}
+                      className="text-blue-600 hover:underline"
+                    >
+                      {modoEdicao === r.id ? "Guardar" : "Editar"}
+                    </button>
+                    <button
+                      onClick={() => confirmarEliminar(r.id)}
+                      className="text-red-600 hover:underline"
+                    >
+                      Eliminar
+                    </button>
                   </td>
                 </tr>
+
                 {linhaExpandida === r.id && (
                   <>
                     <tr className="bg-gray-50">
@@ -202,6 +238,23 @@ useEffect(() => {
           </tbody>
         </table>
       </div>
+
+      {/* Modal de confirmação */}
+      {mostrarModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded shadow-lg">
+            <p className="mb-4">Tem a certeza que quer eliminar este registo?</p>
+            <div className="flex justify-end space-x-4">
+              <button onClick={() => setMostrarModal(false)} className="bg-gray-300 px-4 py-2 rounded">
+                Cancelar
+              </button>
+              <button onClick={eliminarRegisto} className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+                Confirmar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
