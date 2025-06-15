@@ -3,29 +3,13 @@ import { useEffect, useState } from "react";
 export default function Compras() {
   const [compras, setCompras] = useState([]);
   const [eventosDropdown, setEventosDropdown] = useState([]);
-  const [novaCompra, setNovaCompra] = useState({
-    evento: "",
-    local_compras: "",
-    bancada: "",
-    setor: "",
-    fila: "",
-    quantidade: "",
-    gasto: ""
-  });
   const [modoEdicao, setModoEdicao] = useState(null);
+  const [registoEditado, setRegistoEditado] = useState({});
+  const [confirmaId, setConfirmaId] = useState(null);
 
-  const locaisCompra = [
-    "Benfica Viagens", "Site Benfica", "Odisseias", "Continente",
-    "Site clube adversário", "Smartfans", "Outro"
-  ];
-
+  const locaisCompra = ["Benfica Viagens", "Site Benfica", "Odisseias", "Continente", "Site clube adversário", "Smartfans", "Outro"];
   const bancadas = ["Emirates", "BTV", "Sagres", "Mais vantagens"];
-
-  const setores = [
-    ...Array.from({ length: 32 }, (_, i) => "lower " + (i + 1)),
-    ...Array.from({ length: 43 }, (_, i) => "middle " + (i + 1)),
-    ...Array.from({ length: 44 }, (_, i) => "upper " + (i + 1))
-  ];
+  const setores = [...Array.from({ length: 32 }, (_, i) => "lower " + (i + 1)), ...Array.from({ length: 43 }, (_, i) => "middle " + (i + 1)), ...Array.from({ length: 44 }, (_, i) => "upper " + (i + 1))];
 
   useEffect(() => {
     buscarCompras();
@@ -44,36 +28,9 @@ export default function Compras() {
     setEventosDropdown(data);
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setNovaCompra(prev => ({ ...prev, [name]: value }));
-  };
-
-  const guardarCompra = async () => {
-    await fetch("https://controlo-bilhetes.onrender.com/compras", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        ...novaCompra,
-        quantidade: parseInt(novaCompra.quantidade),
-        gasto: parseFloat(novaCompra.gasto)
-      })
-    });
-    setNovaCompra({
-      evento: "",
-      local_compras: "",
-      bancada: "",
-      setor: "",
-      fila: "",
-      quantidade: "",
-      gasto: ""
-    });
-    buscarCompras();
-  };
-
-  const editarCompra = (compra) => {
-    setModoEdicao(compra.id);
-    setNovaCompra({ ...compra });
+  const ativarEdicao = (id, compra) => {
+    setModoEdicao(id);
+    setRegistoEditado({ ...compra });
   };
 
   const atualizarCompra = async () => {
@@ -81,21 +38,13 @@ export default function Compras() {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        ...novaCompra,
-        quantidade: parseInt(novaCompra.quantidade),
-        gasto: parseFloat(novaCompra.gasto)
+        ...registoEditado,
+        quantidade: parseInt(registoEditado.quantidade),
+        gasto: parseFloat(registoEditado.gasto)
       })
     });
     setModoEdicao(null);
-    setNovaCompra({
-      evento: "",
-      local_compras: "",
-      bancada: "",
-      setor: "",
-      fila: "",
-      quantidade: "",
-      gasto: ""
-    });
+    setRegistoEditado({});
     buscarCompras();
   };
 
@@ -103,52 +52,13 @@ export default function Compras() {
     await fetch(`https://controlo-bilhetes.onrender.com/compras/${id}`, {
       method: "DELETE"
     });
+    setConfirmaId(null);
     buscarCompras();
   };
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">Compras</h1>
-
-      <div className="bg-white shadow-md rounded p-4 mb-6">
-        <h2 className="text-lg font-semibold mb-2">{modoEdicao ? "Editar Compra" : "Nova Compra"}</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <select name="evento" className="input" value={novaCompra.evento} onChange={handleChange}>
-            <option value="">-- Evento --</option>
-            {eventosDropdown.map(e => (
-              <option key={e.id} value={e.nome}>{e.nome}</option>
-            ))}
-          </select>
-
-          <select name="local_compras" className="input" value={novaCompra.local_compras} onChange={handleChange}>
-            <option value="">-- Local da Compra --</option>
-            {locaisCompra.map(local => (
-              <option key={local} value={local}>{local}</option>
-            ))}
-          </select>
-
-          <input list="bancadas" name="bancada" className="input" placeholder="Bancada" value={novaCompra.bancada} onChange={handleChange} />
-          <datalist id="bancadas">
-            {bancadas.map(b => <option key={b} value={b} />)}
-          </datalist>
-
-          <input list="setores" name="setor" className="input" placeholder="Setor" value={novaCompra.setor} onChange={handleChange} />
-          <datalist id="setores">
-            {setores.map(s => <option key={s} value={s} />)}
-          </datalist>
-
-          <input name="fila" className="input" placeholder="Fila" value={novaCompra.fila} onChange={handleChange} />
-          <input name="quantidade" type="number" className="input" placeholder="Qt." value={novaCompra.quantidade} onChange={handleChange} />
-          <input name="gasto" type="number" className="input" placeholder="Gasto (€)" value={novaCompra.gasto} onChange={handleChange} />
-        </div>
-
-        <button
-          onClick={modoEdicao ? atualizarCompra : guardarCompra}
-          className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-        >
-          {modoEdicao ? "Atualizar" : "Guardar"}
-        </button>
-      </div>
 
       <div className="bg-white shadow-md rounded p-4">
         <table className="min-w-full border text-sm text-left text-gray-600">
@@ -167,22 +77,65 @@ export default function Compras() {
           <tbody>
             {compras.map((c) => (
               <tr key={c.id} className="border-t">
-                <td className="p-2">{c.evento}</td>
-                <td className="p-2">{c.local_compras}</td>
-                <td className="p-2">{c.bancada}</td>
-                <td className="p-2">{c.setor}</td>
-                <td className="p-2">{c.fila}</td>
-                <td className="p-2">{c.quantidade}</td>
-                <td className="p-2">{parseFloat(c.gasto).toFixed(2)} €</td>
-                <td className="p-2 flex gap-2">
-                  <button onClick={() => editarCompra(c)} className="text-blue-600 hover:underline">Editar</button>
-                  <button onClick={() => eliminarCompra(c.id)} className="text-red-600 hover:underline">Eliminar</button>
-                </td>
+                {modoEdicao === c.id ? (
+                  <>
+                    <td className="p-2">
+                      <select value={registoEditado.evento} onChange={e => setRegistoEditado({ ...registoEditado, evento: e.target.value })} className="input">
+                        <option value="">-- Evento --</option>
+                        {eventosDropdown.map(e => (
+                          <option key={e.id} value={e.nome}>{e.nome}</option>
+                        ))}
+                      </select>
+                    </td>
+                    <td className="p-2">
+                      <select value={registoEditado.local_compras} onChange={e => setRegistoEditado({ ...registoEditado, local_compras: e.target.value })} className="input">
+                        <option value="">-- Local --</option>
+                        {locaisCompra.map(l => <option key={l} value={l}>{l}</option>)}
+                      </select>
+                    </td>
+                    <td className="p-2"><input className="input" value={registoEditado.bancada} onChange={e => setRegistoEditado({ ...registoEditado, bancada: e.target.value })} /></td>
+                    <td className="p-2"><input className="input" value={registoEditado.setor} onChange={e => setRegistoEditado({ ...registoEditado, setor: e.target.value })} /></td>
+                    <td className="p-2"><input className="input" value={registoEditado.fila} onChange={e => setRegistoEditado({ ...registoEditado, fila: e.target.value })} /></td>
+                    <td className="p-2"><input type="number" className="input" value={registoEditado.quantidade} onChange={e => setRegistoEditado({ ...registoEditado, quantidade: e.target.value })} /></td>
+                    <td className="p-2"><input type="number" className="input" value={registoEditado.gasto} onChange={e => setRegistoEditado({ ...registoEditado, gasto: e.target.value })} /></td>
+                    <td className="p-2 flex gap-2">
+                      <button onClick={atualizarCompra} className="text-green-600 hover:underline">Guardar</button>
+                      <button onClick={() => setModoEdicao(null)} className="text-gray-600 hover:underline">Cancelar</button>
+                    </td>
+                  </>
+                ) : (
+                  <>
+                    <td className="p-2">{c.evento}</td>
+                    <td className="p-2">{c.local_compras}</td>
+                    <td className="p-2">{c.bancada}</td>
+                    <td className="p-2">{c.setor}</td>
+                    <td className="p-2">{c.fila}</td>
+                    <td className="p-2">{c.quantidade}</td>
+                    <td className="p-2">{parseFloat(c.gasto).toFixed(2)} €</td>
+                    <td className="p-2 flex gap-2">
+                      <button onClick={() => ativarEdicao(c.id, c)} className="text-blue-600 hover:underline">Editar</button>
+                      <button onClick={() => setConfirmaId(c.id)} className="text-red-600 hover:underline">Eliminar</button>
+                    </td>
+                  </>
+                )}
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+
+      {/* Modal de Confirmação */}
+      {confirmaId !== null && (
+        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded shadow-lg">
+            <p className="mb-4 text-lg">Tem a certeza que deseja eliminar esta compra?</p>
+            <div className="flex justify-end gap-4">
+              <button onClick={() => setConfirmaId(null)} className="bg-gray-300 px-4 py-2 rounded">Cancelar</button>
+              <button onClick={() => eliminarCompra(confirmaId)} className="bg-red-600 text-white px-4 py-2 rounded">Eliminar</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
