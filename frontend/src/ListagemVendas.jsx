@@ -237,6 +237,7 @@ const eliminarConfirmado = async () => {
           </tbody>
         </div>
 
+      {/* Modal de confirmação */}
       {confirmarEliminarId !== null && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <div className="bg-white rounded p-6 shadow-lg">
@@ -248,7 +249,7 @@ const eliminarConfirmado = async () => {
           </div>
         </div>
       )}
-    </div>
+    </div> {/* <-- ESTA é a div que estava a faltar */}
   );
 }
 
