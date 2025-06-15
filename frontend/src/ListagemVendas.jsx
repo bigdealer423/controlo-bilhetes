@@ -30,7 +30,7 @@ export default function ListagemVendas(props) {
   fetch("https://controlo-bilhetes.onrender.com/listagem_vendas")
     .then(res => res.json())
     .then(data => {
-      const ordenado = data.sort((a, b) => a.evento.localeCompare(b.evento));
+      const ordenado = ordenarRegistos(data, colunaOrdenacao, ordemAscendente);
       setRegistos(ordenado);
     })
     .catch(err => console.error("Erro ao buscar registos:", err));
@@ -126,7 +126,32 @@ const eliminarSelecionados = () => {
         buscarRegistos();
       });
   };
+  const handleOrdenarPor = (coluna) => {
+  if (coluna === colunaOrdenacao) {
+    setOrdemAscendente(!ordemAscendente);
+    setRegistos(ordenarRegistos(registos, coluna, !ordemAscendente));
+  } else {
+    setColunaOrdenacao(coluna);
+    setOrdemAscendente(true);
+    setRegistos(ordenarRegistos(registos, coluna, true));
+  }
+};
+  const [colunaOrdenacao, setColunaOrdenacao] = useState("evento");
+  const [ordemAscendente, setOrdemAscendente] = useState(true);
+  const ordenarRegistos = (dados, coluna, ascendente) => {
+  return [...dados].sort((a, b) => {
+    const valA = a[coluna] ?? "";
+    const valB = b[coluna] ?? "";
 
+    if (coluna === "ganho" || coluna === "id_venda") {
+      return ascendente ? valA - valB : valB - valA;
+    }
+
+    return ascendente
+      ? valA.toString().localeCompare(valB.toString())
+      : valB.toString().localeCompare(valA.toString());
+  });
+};
   return (
     <div className="p-6 max-w-6xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">Listagem de Vendas</h1>
@@ -168,18 +193,28 @@ const eliminarSelecionados = () => {
           </div>
         </div>
         <table className="min-w-full border text-sm text-left text-gray-600">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="p-2"><input type="checkbox" onChange={selecionarTodos} checked={selecionados.length === registos.length} /></th>
-              <th className="p-2">ID Venda</th>
-              <th className="p-2">Data Evento</th>
-              <th className="p-2">Evento</th>
-              <th className="p-2">Estádio</th>
-              <th className="p-2">Ganho</th>
-              <th className="p-2">Estado</th>
-              <th className="p-2">Ações</th>
-            </tr>
-          </thead>
+         <thead>
+  <tr className="bg-gray-100">
+    <th className="p-2"><input type="checkbox" onChange={selecionarTodos} checked={selecionados.length === registos.length} /></th>
+    <th className="p-2 cursor-pointer" onClick={() => handleOrdenarPor("id_venda")}>
+      ID Venda {colunaOrdenacao === "id_venda" && (ordemAscendente ? "▲" : "▼")}
+    </th>
+    <th className="p-2 cursor-pointer" onClick={() => handleOrdenarPor("data_evento")}>
+      Data Evento {colunaOrdenacao === "data_evento" && (ordemAscendente ? "▲" : "▼")}
+    </th>
+    <th className="p-2 cursor-pointer" onClick={() => handleOrdenarPor("evento")}>
+      Evento {colunaOrdenacao === "evento" && (ordemAscendente ? "▲" : "▼")}
+    </th>
+    <th className="p-2">Estádio</th>
+    <th className="p-2 cursor-pointer" onClick={() => handleOrdenarPor("ganho")}>
+      Ganho (€) {colunaOrdenacao === "ganho" && (ordemAscendente ? "▲" : "▼")}
+    </th>
+    <th className="p-2 cursor-pointer" onClick={() => handleOrdenarPor("estado")}>
+      Estado {colunaOrdenacao === "estado" && (ordemAscendente ? "▲" : "▼")}
+    </th>
+    <th className="p-2">Ações</th>
+  </tr>
+</thead>
           <tbody>
             {registos.map(r => (
               <tr key={r.id} className="border-t">
