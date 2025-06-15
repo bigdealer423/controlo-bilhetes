@@ -11,10 +11,21 @@ export default function Eventos() {
   const location = useLocation();
 
   useEffect(() => {
-    if (location.pathname === "/eventos") {
-      buscarTudo();
-    }
-  }, [location]);
+  // Carrega tudo em sequência, garantindo ordem
+  const carregarDados = async () => {
+    await buscarVendas();
+    await buscarCompras();
+  };
+
+  carregarDados();
+}, []);
+
+useEffect(() => {
+  // Quando vendas e compras estiverem prontos, carregar eventos e calcular valores
+  if (vendas.length && compras.length) {
+    buscarEventos();
+  }
+}, [vendas, compras]);
 
   const buscarTudo = async () => {
     await Promise.all([buscarDropdown(), buscarVendas(), buscarCompras()]);
@@ -26,19 +37,20 @@ export default function Eventos() {
   if (res.ok) {
     let eventos = await res.json();
 
-    eventos = eventos.map(ev => {
-      const totalCompras = compras
-        .filter(c => c.evento === ev.evento)
-        .reduce((sum, c) => sum + parseFloat(c.gasto || 0), 0);
+    // Calcula gasto/ganho com base em compras/vendas para cada evento
+    eventos = eventos.map(evento => {
+      const totalGasto = compras
+        .filter(c => c.evento === evento.evento)
+        .reduce((acc, curr) => acc + parseFloat(curr.gasto || 0), 0);
 
-      const totalVendas = vendas
-        .filter(v => v.evento === ev.evento)
-        .reduce((sum, v) => sum + parseFloat(v.ganho || 0), 0);
+      const totalGanho = vendas
+        .filter(v => v.evento === evento.evento)
+        .reduce((acc, curr) => acc + parseFloat(v.ganho || 0), 0);
 
       return {
-        ...ev,
-        gasto: totalCompras,
-        ganho: totalVendas,
+        ...evento,
+        gasto: totalGasto,
+        ganho: totalGanho,
       };
     });
 
