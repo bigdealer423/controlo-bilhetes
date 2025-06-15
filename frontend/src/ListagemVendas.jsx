@@ -236,7 +236,7 @@ const eliminarConfirmado = async () => {
             ))}
           </tbody>
         </table>
-
+      </div> {/* Fecha o contentor da tabela */}
 
       {/* Modal de confirmação */}
       {idsAEliminar.length > 0 && (
@@ -244,14 +244,22 @@ const eliminarConfirmado = async () => {
           <div className="bg-white rounded p-6 shadow-lg">
             <p>Tem a certeza que deseja eliminar esta venda?</p>
             <div className="mt-4 flex justify-end gap-4">
-              <button onClick={eliminarRegisto} className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Sim, eliminar</button>
-              <button onClick={() => setConfirmarEliminarId(null)} className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400">Cancelar</button>
+              <button
+                onClick={eliminarConfirmado}
+                className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+              >
+                Sim, eliminar
+              </button>
+              <button
+                onClick={cancelarEliminar}
+                className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
+              >
+                Cancelar
+              </button>
             </div>
           </div>
         </div>
       )}
-    </div> {/* <-- ESTA é a div que estava a faltar */}
+    </div> // Fecha o container principal da página
   );
 }
-
-
