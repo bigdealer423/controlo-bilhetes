@@ -136,6 +136,7 @@ const eliminarSelecionados = () => {
     setRegistos(ordenarRegistos(registos, coluna, true));
   }
 };
+  const [confirmarEliminarId, setConfirmarEliminarId] = useState(null);
   const [colunaOrdenacao, setColunaOrdenacao] = useState("evento");
   const [ordemAscendente, setOrdemAscendente] = useState(true);
   const ordenarRegistos = (dados, coluna, ascendente) => {
