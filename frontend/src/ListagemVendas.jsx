@@ -278,12 +278,14 @@ const eliminarConfirmado = async () => {
             ))}
           </tbody>
         </table>
-        {confirmarEliminarId !== null && (
+        {idsAEliminar.length > 0 && (
   <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div className="bg-white rounded p-6 shadow-lg max-w-sm w-full">
-      <p className="mb-4 text-center">Tem a certeza que deseja eliminar esta venda?</p>
+      <p className="mb-4 text-center">
+        Tem a certeza que deseja eliminar {idsAEliminar.length > 1 ? "estas vendas" : "esta venda"}?
+      </p>
       <div className="flex justify-end gap-4">
-        <button onClick={eliminarCompraConfirmada} className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+        <button onClick={eliminarConfirmado} className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
           Sim, eliminar
         </button>
         <button onClick={cancelarEliminar} className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400">
