@@ -242,7 +242,9 @@ const eliminarConfirmado = async () => {
                 ) : (
                   <>
                     <td className="p-2">{r.id_venda}</td>
-                    <td className="p-2">{new Date(r.data_evento).toLocaleDateString("pt-PT")}</td>
+                    <td className="p-2">
+  {r.data_venda ? new Date(r.data_venda).toLocaleDateString("pt-PT") : ""}
+</td>
                     <td className="p-2">{r.evento}</td>
                     <td className="p-2">{r.estadio}</td>
                     <td className="p-2">{r.ganho} €</td>
