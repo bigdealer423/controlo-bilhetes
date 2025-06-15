@@ -236,6 +236,7 @@ const eliminarConfirmado = async () => {
             ))}
           </tbody>
         </div>
+)}
 
       {/* Modal de confirmação */}
       {confirmarEliminarId !== null && (
