@@ -171,10 +171,21 @@ return (
   )}
 </td>
                   <td className="p-2">
-                    {modoEdicao === r.id
-                      ? <input value={r.evento} onChange={(e) => atualizarCampo(r.id, "evento", e.target.value)} className="input" />
-                      : r.evento}
-                  </td>
+  {modoEdicao === r.id ? (
+    <select
+      value={r.evento}
+      onChange={(e) => atualizarCampo(r.id, "evento", e.target.value)}
+      className="input"
+    >
+      <option value="">Selecione</option>
+      {eventosDropdown.map((ev, i) => (
+        <option key={i} value={ev}>{ev}</option>
+      ))}
+    </select>
+  ) : (
+    r.evento
+  )}
+</td>
                   <td className="p-2">
                     {modoEdicao === r.id
                       ? <input value={r.estadio} onChange={(e) => atualizarCampo(r.id, "estadio", e.target.value)} className="input" />
