@@ -180,15 +180,15 @@ return (
                   <td className="p-2">
   {modoEdicao === r.id ? (
     <select
-      value={r.evento}
-      onChange={(e) => atualizarCampo(r.id, "evento", e.target.value)}
-      className="input"
-    >
-      <option value="">Selecione</option>
-      {eventosDropdown.map((ev, i) => (
-        <option key={i} value={ev}>{ev}</option>
-      ))}
-    </select>
+  value={r.evento}
+  onChange={(e) => atualizarCampo(r.id, "evento", e.target.value)}
+  className="input"
+>
+  <option value="">-- Selecionar Evento --</option>
+  {eventosDropdown.map(e => (
+    <option key={e.id} value={e.nome}>{e.nome}</option>
+  ))}
+</select>
   ) : (
     r.evento
   )}
