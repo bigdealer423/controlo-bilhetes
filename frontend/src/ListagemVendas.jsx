@@ -136,15 +136,19 @@ const eliminarSelecionados = () => {
     setRegistos(ordenarRegistos(registos, coluna, true));
   }
 };
-  const [confirmarEliminarId, setConfirmarEliminarId] = useState(null);
-  const pedirConfirmEliminar = (id) => setConfirmarEliminarId(id);
-const cancelarEliminar = () => setConfirmarEliminarId(null);
+  const [idsAEliminar, setIdsAEliminar] = useState([]);
+  const pedirConfirmEliminar = (ids) => setIdsAEliminar(ids);
+const cancelarEliminar = () => setIdsAEliminar([]);
 
-const eliminarCompraConfirmada = async () => {
-  await fetch(`https://controlo-bilhetes.onrender.com/listagem_vendas/${confirmarEliminarId}`, {
-    method: "DELETE"
-  });
-  setConfirmarEliminarId(null);
+const eliminarConfirmado = async () => {
+  await Promise.all(
+    idsAEliminar.map(id =>
+      fetch(`https://controlo-bilhetes.onrender.com/listagem_vendas/${id}`, {
+        method: "DELETE"
+      })
+    )
+  );
+  setIdsAEliminar([]);
   buscarRegistos();
 };
   const [colunaOrdenacao, setColunaOrdenacao] = useState("evento");
@@ -197,9 +201,9 @@ const eliminarCompraConfirmada = async () => {
           <h2 className="text-lg font-semibold">Vendas</h2>
           <div className="flex gap-2">
             {selecionados.length > 0 && (
-              <button onClick={eliminarSelecionados} className="bg-red-600 text-white px-4 py-1 rounded hover:bg-red-700">
-                Eliminar Selecionados
-              </button>
+              <button onClick={() => pedirConfirmEliminar(selecionados)} className="bg-red-600 text-white px-4 py-1 rounded hover:bg-red-700">
+  Eliminar Selecionados
+</button>
             )}
           </div>
         </div>
