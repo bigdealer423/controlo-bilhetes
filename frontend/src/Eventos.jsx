@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 
 export default function Eventos() {
   const [registos, setRegistos] = useState([]);
@@ -7,19 +8,30 @@ export default function Eventos() {
   const [linhaExpandida, setLinhaExpandida] = useState(null);
   const [vendas, setVendas] = useState([]);
   const [compras, setCompras] = useState([]);
+  const location = useLocation();
 
   useEffect(() => {
-    buscarEventos();
-    buscarDropdown();
-    buscarVendas();
-    buscarCompras();
-  }, []);
+    if (location.pathname === "/eventos") {
+      buscarTudo();
+    }
+  }, [location]);
+
+  const buscarTudo = async () => {
+    await Promise.all([buscarDropdown(), buscarVendas(), buscarCompras()]);
+    await buscarEventos();
+  };
 
   const buscarEventos = async () => {
     const res = await fetch("https://controlo-bilhetes.onrender.com/eventos_completos2");
     if (res.ok) {
       const data = await res.json();
-      setRegistos(data);
+      // Atualizar ganho e gasto com base nas vendas e compras
+      const atualizados = data.map(evento => {
+        const totalGanho = vendas.filter(v => v.evento === evento.evento).reduce((acc, v) => acc + (v.ganho || 0), 0);
+        const totalGasto = compras.filter(c => c.evento === evento.evento).reduce((acc, c) => acc + (c.gasto || 0), 0);
+        return { ...evento, ganho: totalGanho, gasto: totalGasto };
+      });
+      setRegistos(atualizados);
     } else {
       console.error("Erro ao carregar eventos.");
     }
@@ -37,16 +49,12 @@ export default function Eventos() {
 
   const buscarVendas = async () => {
     const res = await fetch("https://controlo-bilhetes.onrender.com/listagem_vendas");
-    if (res.ok) {
-      setVendas(await res.json());
-    }
+    if (res.ok) setVendas(await res.json());
   };
 
   const buscarCompras = async () => {
     const res = await fetch("https://controlo-bilhetes.onrender.com/compras");
-    if (res.ok) {
-      setCompras(await res.json());
-    }
+    if (res.ok) setCompras(await res.json());
   };
 
   const atualizarCampo = async (id, campo, valor) => {
@@ -59,9 +67,7 @@ export default function Eventos() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(atualizado)
     });
-    if (res.ok) {
-      buscarEventos();
-    }
+    if (res.ok) buscarEventos();
   };
 
   const adicionarLinha = async () => {
@@ -138,7 +144,6 @@ export default function Eventos() {
                     <button onClick={() => eliminarRegisto(r.id)} className="text-red-600 hover:underline">Eliminar</button>
                   </td>
                 </tr>
-
                 {linhaExpandida === r.id && (
                   <>
                     <tr className="bg-gray-50">
@@ -177,6 +182,7 @@ export default function Eventos() {
     </div>
   );
 }
+
 
 
 
