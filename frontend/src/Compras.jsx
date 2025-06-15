@@ -157,7 +157,7 @@ export default function Compras() {
             </tr>
           </thead>
           <tbody>
-            {comprasFiltradas.map(c => (
+            {[...comprasFiltradas].sort((a, b) => a.evento.localeCompare(b.evento)).map(c => (
               <tr key={c.id} className="border-t">
                 {modoEdicao === c.id ? (
                   <>
