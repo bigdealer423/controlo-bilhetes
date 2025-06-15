@@ -57,6 +57,7 @@ export default function ListagemVendas(props) {
       ...novoRegisto,
       id_venda: parseInt(novoRegisto.id_venda),
       ganho: Math.ceil(parseFloat(novoRegisto.ganho))  // Arredondado para cima
+      data_venda: novoRegisto.data_venda // 🔴 Adicione isto se ainda não estiver
     })
   })
     .then(res => {
