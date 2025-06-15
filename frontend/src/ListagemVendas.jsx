@@ -8,7 +8,7 @@ export default function ListagemVendas(props) {
     data_venda: "",
     data_evento: "",
     evento: "",
-    estadio: "",
+    estadio: "Bilhetes",
     ganho: "",
     estado: "Por entregar"
   });
