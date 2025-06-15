@@ -273,6 +273,22 @@ const eliminarConfirmado = async () => {
           </div>
         </div>
       )}
+      {erroIDExistente && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="bg-white rounded p-6 shadow-lg max-w-sm w-full">
+      <h2 className="text-lg font-semibold text-red-600 mb-2">ID de Venda já existe</h2>
+      <p className="text-gray-700">Já existe um registo com este ID de venda. Por favor utilize um ID diferente.</p>
+      <div className="mt-4 text-right">
+        <button
+          onClick={() => setErroIDExistente(false)}
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+        >
+          Fechar
+        </button>
+      </div>
+    </div>
+  </div>
+)}
     </div> // Fecha o container principal da página
   );
 }
