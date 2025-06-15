@@ -18,8 +18,7 @@ export default function Eventos() {
   const buscarEventos = async () => {
     const res = await fetch("https://controlo-bilhetes.onrender.com/eventos_completos2");
     if (res.ok) {
-      const data = await res.json();
-      setRegistos(data);
+      setRegistos(await res.json());
     }
   };
 
@@ -32,39 +31,32 @@ export default function Eventos() {
 
   const buscarVendas = async () => {
     const res = await fetch("https://controlo-bilhetes.onrender.com/listagem_vendas");
-    if (res.ok) setVendas(await res.json());
+    if (res.ok) {
+      setVendas(await res.json());
+    }
   };
 
   const buscarCompras = async () => {
     const res = await fetch("https://controlo-bilhetes.onrender.com/compras");
-    if (res.ok) setCompras(await res.json());
-  };
-
-  const atualizarRegisto = async (id, registoAtualizado) => {
-    const res = await fetch('https://controlo-bilhetes.onrender.com/eventos_completos2/' + id, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(registoAtualizado)
-    });
     if (res.ok) {
-      buscarEventos();
-      setModoEdicao(null);
+      setCompras(await res.json());
     }
   };
 
-  const handleInputChange = (e, id) => {
-    const { name, value } = e.target;
-    setRegistos((prev) =>
-      prev.map((r) =>
-        r.id === id ? { ...r, [name]: name === "gasto" || name === "ganho" ? parseFloat(value) || 0 : value } : r
-      )
+  const handleCampoDireto = (id, campo, valor) => {
+    const atualizados = registos.map(reg =>
+      reg.id === id ? { ...reg, [campo]: valor } : reg
     );
+    setRegistos(atualizados);
   };
 
-  const calcularTotais = (eventoNome) => {
-    const totalGasto = compras.filter(c => c.evento === eventoNome).reduce((acc, cur) => acc + cur.gasto, 0);
-    const totalGanho = vendas.filter(v => v.evento === eventoNome).reduce((acc, cur) => acc + cur.ganho, 0);
-    return { totalGasto, totalGanho };
+  const guardarAtualizacao = async (id, dados) => {
+    const res = await fetch(`https://controlo-bilhetes.onrender.com/eventos_completos2/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(dados),
+    });
+    if (!res.ok) console.error("Erro ao atualizar.");
   };
 
   return (
@@ -74,8 +66,7 @@ export default function Eventos() {
         <table className="min-w-full border text-sm text-left text-gray-600">
           <thead>
             <tr className="bg-gray-100">
-              <th className="p-2">#</th>
-              <th className="p-2">Data</th>
+              <th className="p-2">Data Evento</th>
               <th className="p-2">Evento</th>
               <th className="p-2">Estádio</th>
               <th className="p-2">Gasto</th>
@@ -87,84 +78,66 @@ export default function Eventos() {
           </thead>
           <tbody>
             {registos.map((r) => {
-              const { totalGasto, totalGanho } = calcularTotais(r.evento);
+              const vendasDoEvento = vendas.filter((v) => v.evento === r.evento);
+              const comprasDoEvento = compras.filter((c) => c.evento === r.evento);
+              const gastoTotal = comprasDoEvento.reduce((s, c) => s + c.gasto, 0);
+              const ganhoTotal = vendasDoEvento.reduce((s, v) => s + v.ganho, 0);
+
               return (
-                <Fragment key={r.id}>
-                  <tr className={r.estado === "Pago" ? "bg-green-100" : ""}>
-                    <td className="p-2">
-                      <button onClick={() => setLinhaExpandida(linhaExpandida === r.id ? null : r.id)}>
-                        {linhaExpandida === r.id ? "🔼" : "🔽"}
-                      </button>
-                    </td>
-                    <td className="p-2">{new Date(r.data_evento).toLocaleDateString("pt-PT")}</td>
-                    <td className="p-2">
-                      {modoEdicao === r.id ? (
-                        <input name="evento" className="input" value={r.evento} onChange={(e) => handleInputChange(e, r.id)} />
-                      ) : (
-                        r.evento
-                      )}
-                    </td>
-                    <td className="p-2">
-                      {modoEdicao === r.id ? (
-                        <input name="estadio" className="input" value={r.estadio} onChange={(e) => handleInputChange(e, r.id)} />
-                      ) : (
-                        r.estadio
-                      )}
-                    </td>
-                    <td className="p-2">{totalGasto.toFixed(2)} €</td>
-                    <td className="p-2">{totalGanho.toFixed(2)} €</td>
-                    <td className="p-2">{(totalGanho - totalGasto).toFixed(2)} €</td>
-                    <td className="p-2">
-                      {modoEdicao === r.id ? (
-                        <select name="estado" className="input" value={r.estado} onChange={(e) => handleInputChange(e, r.id)}>
-                          <option value="Entregue">Entregue</option>
-                          <option value="Por entregar">Por entregar</option>
-                          <option value="Disputa">Disputa</option>
-                          <option value="Pago">Pago</option>
-                        </select>
-                      ) : (
-                        r.estado
-                      )}
-                    </td>
-                    <td className="p-2 flex gap-2">
-                      {modoEdicao === r.id ? (
-                        <button onClick={() => atualizarRegisto(r.id, r)} className="text-green-600 hover:underline">Guardar</button>
-                      ) : (
-                        <button onClick={() => setModoEdicao(r.id)} className="text-blue-600 hover:underline">Editar</button>
-                      )}
-                    </td>
+                <>
+                  <tr key={r.id} onClick={() => setLinhaExpandida(linhaExpandida === r.id ? null : r.id)} className="border-t cursor-pointer">
+                    <td className="p-2"><input type="date" className="input" value={r.data_evento} onChange={e => handleCampoDireto(r.id, "data_evento", e.target.value)} onBlur={() => guardarAtualizacao(r.id, r)} /></td>
+                    <td className="p-2"><input value={r.evento} onChange={e => handleCampoDireto(r.id, "evento", e.target.value)} onBlur={() => guardarAtualizacao(r.id, r)} /></td>
+                    <td className="p-2"><input value={r.estadio} onChange={e => handleCampoDireto(r.id, "estadio", e.target.value)} onBlur={() => guardarAtualizacao(r.id, r)} /></td>
+                    <td className="p-2">{gastoTotal.toFixed(2)} €</td>
+                    <td className="p-2">{ganhoTotal.toFixed(2)} €</td>
+                    <td className="p-2">{(ganhoTotal - gastoTotal).toFixed(2)} €</td>
+                    <td className="p-2"><input value={r.estado} onChange={e => handleCampoDireto(r.id, "estado", e.target.value)} onBlur={() => guardarAtualizacao(r.id, r)} /></td>
+                    <td className="p-2"><button className="text-red-600 hover:underline" onClick={() => eliminarRegisto(r.id)}>Eliminar</button></td>
                   </tr>
                   {linhaExpandida === r.id && (
                     <>
-                      <tr className="bg-gray-200 text-xs font-bold">
-                        <td className="p-2" colSpan="9">Vendas</td>
+                      <tr><td colSpan="8" className="font-bold p-2">Vendas</td></tr>
+                      <tr className="bg-gray-100 text-xs font-bold">
+                        <td className="p-2">ID Venda</td>
+                        <td className="p-2">Bilhetes</td>
+                        <td className="p-2">Ganho</td>
+                        <td className="p-2">Estado</td>
+                        <td colSpan="4"></td>
                       </tr>
-                      {vendas.filter(v => v.evento === r.evento).map(v => (
-                        <tr key={`v-${v.id}`} className="bg-green-100 text-xs">
-                          <td className="p-2" colSpan="2">ID {v.id_venda}</td>
+                      {vendasDoEvento.map((v) => (
+                        <tr key={"v" + v.id} className="text-xs border-t">
+                          <td className="p-2">{v.id_venda}</td>
                           <td className="p-2">{v.estadio}</td>
                           <td className="p-2">{v.ganho} €</td>
                           <td className="p-2">{v.estado}</td>
                           <td colSpan="4"></td>
                         </tr>
                       ))}
-                      <tr className="bg-gray-200 text-xs font-bold">
-                        <td className="p-2" colSpan="9">Compras</td>
+                      <tr><td colSpan="8" className="font-bold p-2">Compras</td></tr>
+                      <tr className="bg-gray-100 text-xs font-bold">
+                        <td className="p-2">Local</td>
+                        <td className="p-2">Bancada</td>
+                        <td className="p-2">Setor</td>
+                        <td className="p-2">Fila</td>
+                        <td className="p-2">Qt</td>
+                        <td className="p-2">Gasto</td>
+                        <td colSpan="2"></td>
                       </tr>
-                      {compras.filter(c => c.evento === r.evento).map(c => (
-                        <tr key={`c-${c.id}`} className="bg-red-100 text-xs">
+                      {comprasDoEvento.map((c) => (
+                        <tr key={"c" + c.id} className="text-xs border-t">
                           <td className="p-2">{c.local_compras}</td>
                           <td className="p-2">{c.bancada}</td>
                           <td className="p-2">{c.setor}</td>
                           <td className="p-2">{c.fila}</td>
                           <td className="p-2">{c.quantidade}</td>
                           <td className="p-2">{c.gasto} €</td>
-                          <td colSpan="3"></td>
+                          <td colSpan="2"></td>
                         </tr>
                       ))}
                     </>
                   )}
-                </Fragment>
+                </>
               );
             })}
           </tbody>
