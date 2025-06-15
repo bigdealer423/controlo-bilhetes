@@ -8,7 +8,7 @@ export default function ListagemVendas(props) {
     data_venda: "",
     data_evento: "",
     evento: "",
-    estadio: "Bilhetes",
+    estadio: "",
     ganho: "",
     estado: "Por entregar"
   });
@@ -172,7 +172,7 @@ const eliminarConfirmado = async () => {
             ))}
           </select>
           
-          <input name="estadio" className="input" placeholder="Estádio" value={novoRegisto.estadio} onChange={handleChange} />
+          <input name="estadio" className="input" placeholder="Bilhete" value={novoRegisto.estadio} onChange={handleChange} />
           <input name="ganho" type="number" className="input" placeholder="Ganho (€)" value={novoRegisto.ganho} onChange={handleChange} />
           <select name="estado" className="input" value={novoRegisto.estado} onChange={handleChange}>
             <option value="Entregue">Entregue</option>
