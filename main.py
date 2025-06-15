@@ -50,15 +50,16 @@ def obter_venda_por_id(id_venda: int, db: Session = Depends(get_db)):
     
 @app.post("/listagem_vendas")
 def criar_venda(venda: ListagemVendasCreate, db: Session = Depends(get_db)):
-    existente = db.query(ListagemVendas).filter_by(id_venda=venda.id_venda).first()
-    if existente:
-        raise HTTPException(status_code=409, detail="ID de venda já existe.")
-    
-    nova_venda = ListagemVendas(**venda.dict())
-    db.add(nova_venda)
-    db.commit()
-    db.refresh(nova_venda)
-    return nova_venda
+    try:
+        existente = db.query(ListagemVendas).filter_by(id_venda=venda.id_venda).first()
+        if existente:
+            raise HTTPException(status_code=409, detail="ID de venda já existe.")
+        
+        nova_venda = ListagemVendas(**venda.dict())
+        db.add(nova_venda)
+        db.commit()
+        db.refresh(nova_venda)
+        return nova_venda
     except Exception as e:
         print(f"Erro ao criar venda: {e}")
         raise HTTPException(status_code=500, detail="Erro ao criar venda")
