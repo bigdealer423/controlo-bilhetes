@@ -1,43 +1,83 @@
-import { useEffect, useState, Fragment } from "react";
+import { useEffect, useState } from "react";More actions
+import { useLocation } from "react-router-dom";
 
 export default function Eventos() {
   const [registos, setRegistos] = useState([]);
+  const [eventosDropdown, setEventosDropdown] = useState([]);
   const [modoEdicao, setModoEdicao] = useState(null);
   const [linhaExpandida, setLinhaExpandida] = useState(null);
   const [vendas, setVendas] = useState([]);
   const [compras, setCompras] = useState([]);
+  const location = useLocation();
 
   useEffect(() => {
-    atualizarTudo();
-  }, []);
+  // Carrega tudo em sequência, garantindo ordem
+  const carregarDados = async () => {
+    await buscarVendas();
+    await buscarCompras();
+  };
 
-  const atualizarTudo = async () => {
-    const [resEventos, resVendas, resCompras] = await Promise.all([
-      fetch("https://controlo-bilhetes.onrender.com/eventos_completos2"),
-      fetch("https://controlo-bilhetes.onrender.com/listagem_vendas"),
-      fetch("https://controlo-bilhetes.onrender.com/compras")
-    ]);
+  carregarDados();
+}, []);
 
-    const eventos = await resEventos.json();
-    const vendasData = await resVendas.json();
-    const comprasData = await resCompras.json();
+useEffect(() => {
+  // Quando vendas e compras estiverem prontos, carregar eventos e calcular valores
+  if (vendas.length && compras.length) {
+    buscarEventos();
+  }
+}, [vendas, compras]);
 
-    setVendas(vendasData);
-    setCompras(comprasData);
+  const buscarTudo = async () => {
+    await Promise.all([buscarDropdown(), buscarVendas(), buscarCompras()]);
+    await buscarEventos();
+  };
 
-    const eventosAtualizados = eventos.map(evento => {
-      const totalGasto = comprasData
-        .filter(c => c.evento === evento.evento)
-        .reduce((acc, curr) => acc + parseFloat(curr.gasto || 0), 0);
+  const buscarEventos = async () => {
+  const res = await fetch("https://controlo-bilhetes.onrender.com/eventos_completos2");
+  if (res.ok) {
+    let eventos = await res.json();
 
-      const totalGanho = vendasData
-        .filter(v => v.evento === evento.evento)
-        .reduce((acc, curr) => acc + parseFloat(v.ganho || 0), 0);
+    // Calcula gasto/ganho com base em compras/vendas para cada evento
+    eventos = eventos.map(evento => {
+  const totalGasto = compras
+    .filter(c => c.evento === evento.evento)
+    .reduce((acc, curr) => acc + parseFloat(curr.gasto || 0), 0);
 
-      return { ...evento, gasto: totalGasto, ganho: totalGanho };
-    });
+  const totalGanho = vendas
+    .filter(v => v.evento === evento.evento)
+    .reduce((acc, curr) => acc + parseFloat(curr.ganho || 0), 0);
 
-    setRegistos(eventosAtualizados);
+  return {
+    ...evento,
+    gasto: totalGasto,
+    ganho: totalGanho,
+  };
+});
+
+    setRegistos(eventos);
+  } else {
+    console.error("Erro ao carregar eventos.");
+  }
+};
+
+  const buscarDropdown = async () => {
+    const res = await fetch("https://controlo-bilhetes.onrender.com/eventos_dropdown");
+    if (res.ok) {
+      const data = await res.json();
+      setEventosDropdown(data);
+    } else {
+      console.error("Erro ao carregar dropdown.");
+    }
+  };
+
+  const buscarVendas = async () => {
+    const res = await fetch("https://controlo-bilhetes.onrender.com/listagem_vendas");
+    if (res.ok) setVendas(await res.json());
+  };
+
+  const buscarCompras = async () => {
+    const res = await fetch("https://controlo-bilhetes.onrender.com/compras");
+    if (res.ok) setCompras(await res.json());
   };
 
   const atualizarCampo = async (id, campo, valor) => {
@@ -50,7 +90,7 @@ export default function Eventos() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(atualizado)
     });
-    if (res.ok) atualizarTudo();
+    if (res.ok) buscarEventos();
   };
 
   const adicionarLinha = async () => {
@@ -67,14 +107,14 @@ export default function Eventos() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(novo)
     });
-    if (res.ok) atualizarTudo();
+    if (res.ok) buscarEventos();
   };
 
   const eliminarRegisto = async (id) => {
     const res = await fetch("https://controlo-bilhetes.onrender.com/eventos_completos2/" + id, {
       method: "DELETE"
     });
-    if (res.ok) atualizarTudo();
+    if (res.ok) buscarEventos();
   };
 
   return (
@@ -102,54 +142,33 @@ export default function Eventos() {
           </thead>
           <tbody>
             {registos.map(r => (
-              <Fragment key={r.id}>
-                <tr className={r.estado === "Pago" ? "bg-green-100" : ""}>
+              <>
+                <tr key={r.id}>
+                <tr
+                    key={r.id}className={`cursor-pointer ${r.estado === "Pago" ? "bg-green-100" : ""}`}>
                   <td className="p-2">
                     <button onClick={() => setLinhaExpandida(linhaExpandida === r.id ? null : r.id)}>
                       {linhaExpandida === r.id ? "🔼" : "🔽"}
                     </button>
                   </td>
-                  <td className="p-2">
-                    {modoEdicao === r.id ?
-                      <input type="date" value={r.data_evento} onChange={(e) => atualizarCampo(r.id, "data_evento", e.target.value)} className="input" />
-                      : new Date(r.data_evento).toLocaleDateString("pt-PT")
-                    }
-                  </td>
-                  <td className="p-2">
-                    {modoEdicao === r.id ?
-                      <input value={r.evento} onChange={(e) => atualizarCampo(r.id, "evento", e.target.value)} className="input" />
-                      : r.evento
-                    }
-                  </td>
-                  <td className="p-2">
-                    {modoEdicao === r.id ?
-                      <input value={r.estadio} onChange={(e) => atualizarCampo(r.id, "estadio", e.target.value)} className="input" />
-                      : r.estadio
-                    }
-                  </td>
+                  <td className="p-2"><input type="date" value={r.data_evento} onChange={(e) => atualizarCampo(r.id, "data_evento", e.target.value)} className="input" /></td>
+                  <td className="p-2"><input value={r.evento} onChange={(e) => atualizarCampo(r.id, "evento", e.target.value)} className="input" /></td>
+                  <td className="p-2"><input value={r.estadio} onChange={(e) => atualizarCampo(r.id, "estadio", e.target.value)} className="input" /></td>
                   <td className="p-2">{r.gasto} €</td>
                   <td className="p-2">{r.ganho} €</td>
-                  <td className="p-2">{(r.ganho - r.gasto).toFixed(2)} €</td>
+                  <td className="p-2">{(r.ganho - r.gasto)} €</td>
                   <td className="p-2">
-                    {modoEdicao === r.id ?
-                      <select value={r.estado} onChange={(e) => atualizarCampo(r.id, "estado", e.target.value)} className="input">
-                        <option value="Entregue">Entregue</option>
-                        <option value="Por entregar">Por entregar</option>
-                        <option value="Disputa">Disputa</option>
-                        <option value="Pago">Pago</option>
-                      </select>
-                      : r.estado
-                    }
+                    <select value={r.estado} onChange={(e) => atualizarCampo(r.id, "estado", e.target.value)} className="input">
+                      <option value="Entregue">Entregue</option>
+                      <option value="Por entregar">Por entregar</option>
+                      <option value="Disputa">Disputa</option>
+                      <option value="Pago">Pago</option>
+                    </select>
                   </td>
                   <td className="p-2">
-                    {modoEdicao === r.id ?
-                      <button onClick={() => setModoEdicao(null)} className="text-green-600 hover:underline">OK</button> :
-                      <button onClick={() => setModoEdicao(r.id)} className="text-blue-600 hover:underline">Editar</button>
-                    }
-                    <button onClick={() => eliminarRegisto(r.id)} className="ml-2 text-red-600 hover:underline">Eliminar</button>
+                    <button onClick={() => eliminarRegisto(r.id)} className="text-red-600 hover:underline">Eliminar</button>
                   </td>
                 </tr>
-
                 {linhaExpandida === r.id && (
                   <>
                     <tr className="bg-gray-50">
@@ -180,7 +199,7 @@ export default function Eventos() {
                     ))}
                   </>
                 )}
-              </Fragment>
+              </>
             ))}
           </tbody>
         </table>
