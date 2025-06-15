@@ -22,20 +22,31 @@ export default function Eventos() {
   };
 
   const buscarEventos = async () => {
-    const res = await fetch("https://controlo-bilhetes.onrender.com/eventos_completos2");
-    if (res.ok) {
-      const data = await res.json();
-      // Atualizar ganho e gasto com base nas vendas e compras
-      const atualizados = data.map(evento => {
-        const totalGanho = vendas.filter(v => v.evento === evento.evento).reduce((acc, v) => acc + (v.ganho || 0), 0);
-        const totalGasto = compras.filter(c => c.evento === evento.evento).reduce((acc, c) => acc + (c.gasto || 0), 0);
-        return { ...evento, ganho: totalGanho, gasto: totalGasto };
-      });
-      setRegistos(atualizados);
-    } else {
-      console.error("Erro ao carregar eventos.");
-    }
-  };
+  const res = await fetch("https://controlo-bilhetes.onrender.com/eventos_completos2");
+  if (res.ok) {
+    let eventos = await res.json();
+
+    eventos = eventos.map(ev => {
+      const totalCompras = compras
+        .filter(c => c.evento === ev.evento)
+        .reduce((sum, c) => sum + parseFloat(c.gasto || 0), 0);
+
+      const totalVendas = vendas
+        .filter(v => v.evento === ev.evento)
+        .reduce((sum, v) => sum + parseFloat(v.ganho || 0), 0);
+
+      return {
+        ...ev,
+        gasto: totalCompras,
+        ganho: totalVendas,
+      };
+    });
+
+    setRegistos(eventos);
+  } else {
+    console.error("Erro ao carregar eventos.");
+  }
+};
 
   const buscarDropdown = async () => {
     const res = await fetch("https://controlo-bilhetes.onrender.com/eventos_dropdown");
