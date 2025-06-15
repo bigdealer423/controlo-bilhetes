@@ -27,11 +27,14 @@ export default function ListagemVendas(props) {
   }, [props.atualizarEventos]);
 
   const buscarRegistos = () => {
-    fetch("https://controlo-bilhetes.onrender.com/listagem_vendas")
-      .then(res => res.json())
-      .then(data => setRegistos(data))
-      .catch(err => console.error("Erro ao buscar registos:", err));
-  };
+  fetch("https://controlo-bilhetes.onrender.com/listagem_vendas")
+    .then(res => res.json())
+    .then(data => {
+      const ordenado = data.sort((a, b) => a.evento.localeCompare(b.evento));
+      setRegistos(ordenado);
+    })
+    .catch(err => console.error("Erro ao buscar registos:", err));
+};
 
   const buscarEventosDropdown = () => {
     fetch("https://controlo-bilhetes.onrender.com/eventos_dropdown")
