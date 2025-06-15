@@ -5,6 +5,7 @@ export default function ListagemVendas(props) {
   const [eventosDropdown, setEventosDropdown] = useState([]);
   const [novoRegisto, setNovoRegisto] = useState({
     id_venda: "",
+    data_venda: "",
     data_evento: "",
     evento: "",
     estadio: "",
