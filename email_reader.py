@@ -131,9 +131,9 @@ def auto_update_email_data(username, password, date_from="01-May-2025"):
     mensagens = search_emails(mail, date_from=date_from)
     print(f"📬 Emails encontrados: {len(mensagens)}")
 
-    for msg_id in mensagens:
-        conteudo = extract_email_content(mail, msg_id)
-        processar_email(conteudo)
+    for msg_id, data_venda in mensagens:
+    conteudo = extract_email_content(mail, msg_id)
+    processar_email(conteudo, data_venda)
 
 # ========================
 # Configurações do utilizador
