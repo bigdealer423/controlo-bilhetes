@@ -154,7 +154,7 @@ useEffect(() => {
                   <td className="p-2"><input value={r.estadio} onChange={(e) => atualizarCampo(r.id, "estadio", e.target.value)} className="input" /></td>
                   <td className="p-2">{r.gasto} €</td>
                   <td className="p-2">{r.ganho} €</td>
-                  <td className="p-2">{(r.ganho - r.gasto).toFixed(2)} €</td>
+                  <td className="p-2">{(r.ganho - r.gasto)} €</td>
                   <td className="p-2">
                     <select value={r.estado} onChange={(e) => atualizarCampo(r.id, "estado", e.target.value)} className="input">
                       <option value="Entregue">Entregue</option>
