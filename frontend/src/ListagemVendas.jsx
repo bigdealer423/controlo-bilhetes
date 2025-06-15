@@ -137,6 +137,16 @@ const eliminarSelecionados = () => {
   }
 };
   const [confirmarEliminarId, setConfirmarEliminarId] = useState(null);
+  const pedirConfirmEliminar = (id) => setConfirmarEliminarId(id);
+const cancelarEliminar = () => setConfirmarEliminarId(null);
+
+const eliminarCompraConfirmada = async () => {
+  await fetch(`https://controlo-bilhetes.onrender.com/listagem_vendas/${confirmarEliminarId}`, {
+    method: "DELETE"
+  });
+  setConfirmarEliminarId(null);
+  buscarRegistos();
+};
   const [colunaOrdenacao, setColunaOrdenacao] = useState("evento");
   const [ordemAscendente, setOrdemAscendente] = useState(true);
   const ordenarRegistos = (dados, coluna, ascendente) => {
