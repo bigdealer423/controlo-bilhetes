@@ -26,6 +26,10 @@ export default function Eventos() {
     }
   }, [vendas, compras]);
 
+  useEffect(() => {
+  buscarDropdown();
+}, []);
+
   const buscarTudo = async () => {
     await Promise.all([buscarDropdown(), buscarVendas(), buscarCompras()]);
     await buscarEventos();
