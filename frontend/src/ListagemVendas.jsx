@@ -162,13 +162,7 @@ const eliminarConfirmado = async () => {
   value={novoRegisto.data_venda}
   onChange={handleChange}
 />
-          <input
-  name="data_venda"
-  type="date"
-  className="input"
-  value={novoRegisto.data_venda}
-  onChange={handleChange}
-/>
+
           <input name="data_evento" type="date" className="input" value={novoRegisto.data_evento} onChange={handleChange} />
           <select name="evento" className="input" value={novoRegisto.evento} onChange={handleChange}>
             <option value="">-- Selecionar Evento --</option>
