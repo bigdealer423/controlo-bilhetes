@@ -60,6 +60,7 @@ class Compra(Base):
 # Listagem de Vendas
 class ListagemVendasBase(BaseModel):
     id_venda: int
+    data_venda: date  # novo campo que adicionou
     data_evento: date
     evento: str
     estadio: str
