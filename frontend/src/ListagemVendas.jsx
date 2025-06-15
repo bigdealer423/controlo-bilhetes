@@ -206,7 +206,7 @@ const eliminarConfirmado = async () => {
     <th className="p-2 cursor-pointer" onClick={() => handleOrdenarPor("evento")}>
       Evento {colunaOrdenacao === "evento" && (ordemAscendente ? "▲" : "▼")}
     </th>
-    <th className="p-2">Estádio</th>
+    <th className="p-2">Bilhete</th>
     <th className="p-2 cursor-pointer" onClick={() => handleOrdenarPor("ganho")}>
       Ganho (€) {colunaOrdenacao === "ganho" && (ordemAscendente ? "▲" : "▼")}
     </th>
