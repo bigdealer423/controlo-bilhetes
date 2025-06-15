@@ -2,24 +2,20 @@ import { useEffect, useState } from "react";
 
 export default function Compras() {
   const [compras, setCompras] = useState([]);
+  const [comprasFiltradas, setComprasFiltradas] = useState([]);
   const [eventosDropdown, setEventosDropdown] = useState([]);
   const [novaCompra, setNovaCompra] = useState({
-    evento: "",
-    local_compras: "",
-    bancada: "",
-    setor: "",
-    fila: "",
-    quantidade: "",
-    gasto: ""
+    evento: "", local_compras: "", bancada: "", setor: "", fila: "", quantidade: "", gasto: ""
   });
   const [modoEdicao, setModoEdicao] = useState(null);
   const [confirmarEliminarId, setConfirmarEliminarId] = useState(null);
+  const [filtros, setFiltros] = useState({ evento: "" });
 
-  const locaisCompra = [
-    "Benfica Viagens", "Site Benfica", "Odisseias", "Continente",
-    "Site clube adversário", "Smartfans", "Outro"];
-  const bancadas = [/* ...mesmos valores... */];
-  const setores = [/* ...mesmos valores... */];
+  const locaisCompra = ["Benfica Viagens", "Site Benfica", "Odisseias", "Continente", "Site clube adversário", "Smartfans", "Outro"];
+  const bancadas = ["Emirates", "BTV", "Sagres", "Mais vantagens"];
+  const setores = [...Array.from({ length: 32 }, (_, i) => "lower " + (i + 1)),
+                   ...Array.from({ length: 43 }, (_, i) => "middle " + (i + 1)),
+                   ...Array.from({ length: 44 }, (_, i) => "upper " + (i + 1))];
 
   useEffect(() => {
     buscarCompras();
@@ -30,6 +26,7 @@ export default function Compras() {
     const res = await fetch("https://controlo-bilhetes.onrender.com/compras");
     const data = await res.json();
     setCompras(data);
+    setComprasFiltradas(data);
   };
 
   const buscarEventos = async () => {
@@ -41,6 +38,22 @@ export default function Compras() {
   const handleChange = e => {
     const { name, value } = e.target;
     setNovaCompra(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleFiltroChange = e => {
+    const { name, value } = e.target;
+    setFiltros(prev => ({ ...prev, [name]: value }));
+  };
+
+  const aplicarFiltros = () => {
+    let resultado = [...compras];
+    if (filtros.evento) resultado = resultado.filter(c => c.evento === filtros.evento);
+    setComprasFiltradas(resultado);
+  };
+
+  const limparFiltros = () => {
+    setFiltros({ evento: "" });
+    setComprasFiltradas(compras);
   };
 
   const guardarCompra = async () => {
@@ -90,15 +103,25 @@ export default function Compras() {
     <div className="p-6 max-w-6xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">Compras</h1>
 
+      {/* Filtro */}
+      <div className="bg-gray-50 shadow-sm rounded p-4 mb-4">
+        <div className="flex gap-4 items-end">
+          <select name="evento" className="input" value={filtros.evento} onChange={handleFiltroChange}>
+            <option value="">-- Filtrar por Evento --</option>
+            {eventosDropdown.map(e => <option key={e.id} value={e.nome}>{e.nome}</option>)}
+          </select>
+          <button onClick={aplicarFiltros} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Aplicar Filtro</button>
+          <button onClick={limparFiltros} className="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500">Limpar</button>
+        </div>
+      </div>
+
       {/* Form adicionar */}
       <div className="bg-white shadow-md rounded p-4 mb-6">
         <h2 className="text-lg font-semibold mb-2">{modoEdicao ? "Editar Compra" : "Nova Compra"}</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <select name="evento" className="input" value={novaCompra.evento} onChange={handleChange}>
             <option value="">-- Evento --</option>
-            {eventosDropdown.map(e => (
-              <option key={e.id} value={e.nome}>{e.nome}</option>
-            ))}
+            {eventosDropdown.map(e => <option key={e.id} value={e.nome}>{e.nome}</option>)}
           </select>
           <select name="local_compras" className="input" value={novaCompra.local_compras} onChange={handleChange}>
             <option value="">-- Local da Compra --</option>
@@ -110,7 +133,7 @@ export default function Compras() {
           <datalist id="setores">{setores.map(s => <option key={s} value={s} />)}</datalist>
           <input name="fila" className="input" placeholder="Fila" value={novaCompra.fila} onChange={handleChange} />
           <input name="quantidade" type="number" className="input" placeholder="Qt." value={novaCompra.quantidade} onChange={handleChange} />
-          <input name="gasto" type="number" className="input" placeholder="Gasto (€)" value={novaCompra.gasto} onChange={handleChange} />
+          <input name="gasto" type="text" className="input" placeholder="Gasto (€)" value={novaCompra.gasto} onChange={handleChange} />
         </div>
         <button onClick={modoEdicao ? atualizarCompra : guardarCompra}
           className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
@@ -134,7 +157,7 @@ export default function Compras() {
             </tr>
           </thead>
           <tbody>
-            {compras.map(c => (
+            {comprasFiltradas.map(c => (
               <tr key={c.id} className="border-t">
                 {modoEdicao === c.id ? (
                   <>
@@ -144,23 +167,15 @@ export default function Compras() {
                       </select>
                     </td>
                     <td className="p-2">
-  <select
-    className="input"
-    value={novaCompra.local_compras}
-    onChange={(e) => setNovaCompra({ ...novaCompra, local_compras: e.target.value })}
-  >
-    {locaisCompra.map((local) => (
-      <option key={local} value={local}>
-        {local}
-      </option>
-    ))}
-  </select>
-</td>
+                      <select className="input" value={novaCompra.local_compras} onChange={e => setNovaCompra({ ...novaCompra, local_compras: e.target.value })}>
+                        {locaisCompra.map(local => <option key={local} value={local}>{local}</option>)}
+                      </select>
+                    </td>
                     <td className="p-2"><input name="bancada" className="input" value={novaCompra.bancada} onChange={handleChange} /></td>
                     <td className="p-2"><input name="setor" className="input" value={novaCompra.setor} onChange={handleChange} /></td>
                     <td className="p-2"><input name="fila" className="input" value={novaCompra.fila} onChange={handleChange} /></td>
                     <td className="p-2"><input name="quantidade" type="number" className="input" value={novaCompra.quantidade} onChange={handleChange} /></td>
-                    <td className="p-2"><input name="gasto" type="number" className="input" value={novaCompra.gasto} onChange={handleChange} /></td>
+                    <td className="p-2"><input name="gasto" className="input" value={novaCompra.gasto} onChange={handleChange} /></td>
                     <td className="p-2 flex gap-2">
                       <button onClick={atualizarCompra} className="text-green-600 hover:underline">Guardar</button>
                       <button onClick={() => setModoEdicao(null)} className="text-gray-600 hover:underline">Cancelar</button>
