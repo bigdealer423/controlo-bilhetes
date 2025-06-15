@@ -30,6 +30,17 @@ export default function Eventos() {
   buscarDropdown();
 }, []);
 
+const buscarDropdown = async () => {
+  const res = await fetch("https://controlo-bilhetes.onrender.com/eventos_dropdown");
+  if (res.ok) {
+    const data = await res.json();
+    console.log("🔽 Dados dropdown:", data);
+    setEventosDropdown(data);
+  } else {
+    console.error("Erro ao carregar dropdown.");
+  }
+};
+
   const buscarTudo = async () => {
     await Promise.all([buscarDropdown(), buscarVendas(), buscarCompras()]);
     await buscarEventos();
