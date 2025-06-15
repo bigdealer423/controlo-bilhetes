@@ -91,7 +91,7 @@ def extract_email_content(mail, email_id):
 # ========================
 # Processamento dos emails
 # ========================
-def processar_email(content):
+def processar_email(content, data_venda):
     if not content:
         print("⚠️ Conteúdo vazio. Ignorado.")
         return
@@ -121,7 +121,7 @@ def processar_email(content):
         evento = evento.split("Notas do vendedor")[0].strip()
 
     # Enviar à API
-    enviar_para_fastapi(id_encomenda, evento, ganho_total)
+    enviar_para_fastapi(id_encomenda, evento, ganho_total, data_venda)
 
 # ========================
 # Execução principal
