@@ -144,10 +144,6 @@ useEffect(() => {
             {registos.map(r => (
               <>
                 <trkey={r.id}className={`cursor-pointer ${r.estado === "Pago" ? "bg-green-100" : ""}`}>
-                <tr
-  key={r.id}
-  className={`cursor-pointer ${r.estado === "Pago" ? "bg-green-100" : ""}`}
->
                   <td className="p-2">
                     <button onClick={() => setLinhaExpandida(linhaExpandida === r.id ? null : r.id)}>
                       {linhaExpandida === r.id ? "🔼" : "🔽"}
