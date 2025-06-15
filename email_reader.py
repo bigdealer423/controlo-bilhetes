@@ -33,6 +33,7 @@ def enviar_para_fastapi(id_venda, evento, ganho):
         "id_venda": int(id_venda),
         "evento": evento,
         "ganho": float(ganho),
+        "data_venda": data_venda,
         "data_evento": datetime.now().strftime("%Y-%m-%d"),
         "estadio": "",
         "estado": "Por entregar"
