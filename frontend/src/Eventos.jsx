@@ -7,6 +7,8 @@ export default function Eventos() {
   const [linhaExpandida, setLinhaExpandida] = useState(null);
   const [vendas, setVendas] = useState([]);
   const [compras, setCompras] = useState([]);
+  const [modalVisivel, setModalVisivel] = useState(false);
+  const [eventoAEliminar, setEventoAEliminar] = useState(null);
   const location = useLocation();
 
   useEffect(() => {
@@ -37,10 +39,18 @@ export default function Eventos() {
           .filter(v => v.evento === evento.evento)
           .reduce((acc, curr) => acc + parseFloat(curr.ganho || 0), 0);
 
-        return { ...evento, gasto: totalGasto, ganho: totalGanho };
+        return {
+          ...evento,
+          gasto: totalGasto,
+          ganho: totalGanho,
+        };
       });
 
+      eventos.sort((a, b) => new Date(a.data_evento) - new Date(b.data_evento));
+
       setRegistos(eventos);
+    } else {
+      console.error("Erro ao carregar eventos.");
     }
   };
 
@@ -64,10 +74,7 @@ export default function Eventos() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(atualizado)
     });
-    if (res.ok) {
-      setModoEdicao(null);
-      buscarEventos();
-    }
+    if (res.ok) buscarEventos();
   };
 
   const adicionarLinha = async () => {
@@ -87,11 +94,21 @@ export default function Eventos() {
     if (res.ok) buscarEventos();
   };
 
-  const eliminarRegisto = async (id) => {
-    const res = await fetch("https://controlo-bilhetes.onrender.com/eventos_completos2/" + id, {
+  const confirmarEliminar = (id) => {
+    setEventoAEliminar(id);
+    setModalVisivel(true);
+  };
+
+  const eliminarRegisto = async () => {
+    if (!eventoAEliminar) return;
+    const res = await fetch("https://controlo-bilhetes.onrender.com/eventos_completos2/" + eventoAEliminar, {
       method: "DELETE"
     });
-    if (res.ok) buscarEventos();
+    if (res.ok) {
+      setModalVisivel(false);
+      setEventoAEliminar(null);
+      buscarEventos();
+    }
   };
 
   return (
@@ -119,86 +136,39 @@ export default function Eventos() {
           </thead>
           <tbody>
             {registos.map(r => (
-              <>
-                <tr key={r.id} className={`${r.estado === "Pago" ? "bg-green-100" : ""}`}>
-                  <td className="p-2">
-                    <button onClick={() => setLinhaExpandida(linhaExpandida === r.id ? null : r.id)}>
-                      {linhaExpandida === r.id ? "🔼" : "🔽"}
-                    </button>
-                  </td>
-                  <td className="p-2">
-                    {modoEdicao === r.id ?
-                      <input type="date" value={r.data_evento} onChange={(e) => atualizarCampo(r.id, "data_evento", e.target.value)} className="input" />
-                      : new Date(r.data_evento).toLocaleDateString("pt-PT")}
-                  </td>
-                  <td className="p-2">
-                    {modoEdicao === r.id ?
-                      <input value={r.evento} onChange={(e) => atualizarCampo(r.id, "evento", e.target.value)} className="input" />
-                      : r.evento}
-                  </td>
-                  <td className="p-2">
-                    {modoEdicao === r.id ?
-                      <input value={r.estadio} onChange={(e) => atualizarCampo(r.id, "estadio", e.target.value)} className="input" />
-                      : r.estadio}
-                  </td>
-                  <td className="p-2">{r.gasto} €</td>
-                  <td className="p-2">{r.ganho} €</td>
-                  <td className="p-2">{(r.ganho - r.gasto).toFixed(2)} €</td>
-                  <td className="p-2">
-                    {modoEdicao === r.id ?
-                      <select value={r.estado} onChange={(e) => atualizarCampo(r.id, "estado", e.target.value)} className="input">
-                        <option value="Entregue">Entregue</option>
-                        <option value="Por entregar">Por entregar</option>
-                        <option value="Disputa">Disputa</option>
-                        <option value="Pago">Pago</option>
-                      </select>
-                      : r.estado}
-                  </td>
-                  <td className="p-2">
-                    {modoEdicao === r.id ? (
-                      <button onClick={() => setModoEdicao(null)} className="text-green-600 hover:underline">Guardar</button>
-                    ) : (
-                      <button onClick={() => setModoEdicao(r.id)} className="text-blue-600 hover:underline">Editar</button>
-                    )}
-                    <button onClick={() => eliminarRegisto(r.id)} className="ml-2 text-red-600 hover:underline">Eliminar</button>
-                  </td>
-                </tr>
-
-                {linhaExpandida === r.id && (
-                  <>
-                    <tr className="bg-gray-50">
-                      <td colSpan="9" className="p-2 font-semibold">Vendas</td>
-                    </tr>
-                    {vendas.filter(v => v.evento === r.evento).map(v => (
-                      <tr key={"v" + v.id} className="text-xs bg-white border-t">
-                        <td className="p-2" colSpan="2">ID Venda: {v.id_venda}</td>
-                        <td className="p-2" colSpan="2">Bilhetes: {v.estadio}</td>
-                        <td className="p-2" colSpan="2">Ganho: {v.ganho} €</td>
-                        <td className="p-2" colSpan="2">Estado: {v.estado}</td>
-                        <td></td>
-                      </tr>
-                    ))}
-                    <tr className="bg-gray-50">
-                      <td colSpan="9" className="p-2 font-semibold">Compras</td>
-                    </tr>
-                    {compras.filter(c => c.evento === r.evento).map(c => (
-                      <tr key={"c" + c.id} className="text-xs bg-white border-t">
-                        <td className="p-2" colSpan="2">Local: {c.local_compras}</td>
-                        <td className="p-2">Bancada: {c.bancada}</td>
-                        <td className="p-2">Setor: {c.setor}</td>
-                        <td className="p-2">Fila: {c.fila}</td>
-                        <td className="p-2">Qt: {c.quantidade}</td>
-                        <td className="p-2" colSpan="2">Gasto: {c.gasto} €</td>
-                        <td></td>
-                      </tr>
-                    ))}
-                  </>
-                )}
-              </>
+              <tr key={r.id} className={`cursor-pointer ${r.estado === "Pago" ? "bg-green-100" : ""}`}>
+                <td className="p-2">
+                  <button onClick={() => setLinhaExpandida(linhaExpandida === r.id ? null : r.id)}>
+                    {linhaExpandida === r.id ? "🔼" : "🔽"}
+                  </button>
+                </td>
+                <td className="p-2">{r.data_evento}</td>
+                <td className="p-2">{r.evento}</td>
+                <td className="p-2">{r.estadio}</td>
+                <td className="p-2">{r.gasto} €</td>
+                <td className="p-2">{r.ganho} €</td>
+                <td className="p-2">{(r.ganho - r.gasto).toFixed(2)} €</td>
+                <td className="p-2">{r.estado}</td>
+                <td className="p-2">
+                  <button onClick={() => confirmarEliminar(r.id)} className="text-red-600 hover:underline">Eliminar</button>
+                </td>
+              </tr>
             ))}
           </tbody>
         </table>
       </div>
+
+      {modalVisivel && (
+        <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-40">
+          <div className="bg-white p-6 rounded shadow-lg">
+            <p className="mb-4">Tem a certeza que deseja eliminar este evento?</p>
+            <div className="flex justify-end gap-4">
+              <button onClick={() => setModalVisivel(false)} className="bg-gray-300 px-4 py-2 rounded">Cancelar</button>
+              <button onClick={eliminarRegisto} className="bg-red-600 text-white px-4 py-2 rounded">Eliminar</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
