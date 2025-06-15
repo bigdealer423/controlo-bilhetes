@@ -3,7 +3,8 @@ import { useEffect, useState } from "react";
 export default function Eventos() {
   const [registos, setRegistos] = useState([]);
   const [eventosDropdown, setEventosDropdown] = useState([]);
-  const [linhaEditavel, setLinhaEditavel] = useState(null);
+  const [modoEdicao, setModoEdicao] = useState(null);
+  const [linhaExpandida, setLinhaExpandida] = useState(null);
   const [vendas, setVendas] = useState([]);
   const [compras, setCompras] = useState([]);
 
@@ -16,12 +17,17 @@ export default function Eventos() {
 
   const buscarEventos = async () => {
     const res = await fetch("https://controlo-bilhetes.onrender.com/eventos_completos2");
-    if (res.ok) setRegistos(await res.json());
+    if (res.ok) {
+      const data = await res.json();
+      setRegistos(data);
+    }
   };
 
   const buscarDropdown = async () => {
     const res = await fetch("https://controlo-bilhetes.onrender.com/eventos_dropdown");
-    if (res.ok) setEventosDropdown(await res.json());
+    if (res.ok) {
+      setEventosDropdown(await res.json());
+    }
   };
 
   const buscarVendas = async () => {
@@ -34,36 +40,42 @@ export default function Eventos() {
     if (res.ok) setCompras(await res.json());
   };
 
-  const atualizarLinha = (id, campo, valor) => {
-    setRegistos(registos.map(r => r.id === id ? { ...r, [campo]: valor } : r));
-  };
-
-  const guardarAlteracoes = async (registo) => {
-    const somaCompras = compras.filter(c => c.evento === registo.evento).reduce((s, c) => s + c.gasto, 0);
-    const somaVendas = vendas.filter(v => v.evento === registo.evento).reduce((s, v) => s + v.ganho, 0);
-    const atualizado = { ...registo, gasto: somaCompras, ganho: somaVendas };
-
-    const res = await fetch("https://controlo-bilhetes.onrender.com/eventos_completos2/" + registo.id, {
+  const atualizarRegisto = async (id, registoAtualizado) => {
+    const res = await fetch('https://controlo-bilhetes.onrender.com/eventos_completos2/' + id, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(atualizado)
+      body: JSON.stringify(registoAtualizado)
     });
-
     if (res.ok) {
-      setLinhaEditavel(null);
       buscarEventos();
+      setModoEdicao(null);
     }
+  };
+
+  const handleInputChange = (e, id) => {
+    const { name, value } = e.target;
+    setRegistos((prev) =>
+      prev.map((r) =>
+        r.id === id ? { ...r, [name]: name === "gasto" || name === "ganho" ? parseFloat(value) || 0 : value } : r
+      )
+    );
+  };
+
+  const calcularTotais = (eventoNome) => {
+    const totalGasto = compras.filter(c => c.evento === eventoNome).reduce((acc, cur) => acc + cur.gasto, 0);
+    const totalGanho = vendas.filter(v => v.evento === eventoNome).reduce((acc, cur) => acc + cur.ganho, 0);
+    return { totalGasto, totalGanho };
   };
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">Resumo de Eventos</h1>
-
       <div className="bg-white shadow-md rounded p-4">
         <table className="min-w-full border text-sm text-left text-gray-600">
           <thead>
             <tr className="bg-gray-100">
-              <th className="p-2">Data Evento</th>
+              <th className="p-2">#</th>
+              <th className="p-2">Data</th>
               <th className="p-2">Evento</th>
               <th className="p-2">Estádio</th>
               <th className="p-2">Gasto</th>
@@ -74,48 +86,85 @@ export default function Eventos() {
             </tr>
           </thead>
           <tbody>
-            {registos.map(r => {
-              const edicao = linhaEditavel === r.id;
-              const gasto = compras.filter(c => c.evento === r.evento).reduce((s, c) => s + c.gasto, 0);
-              const ganho = vendas.filter(v => v.evento === r.evento).reduce((s, v) => s + v.ganho, 0);
-
+            {registos.map((r) => {
+              const { totalGasto, totalGanho } = calcularTotais(r.evento);
               return (
-                <tr key={r.id} className={r.estado === "Pago" ? "bg-green-100" : "border-t"}>
-                  <td className="p-2">
-                    {edicao
-                      ? <input type="date" value={r.data_evento} onChange={e => atualizarLinha(r.id, "data_evento", e.target.value)} className="input" />
-                      : new Date(r.data_evento).toLocaleDateString("pt-PT")}
-                  </td>
-                  <td className="p-2">{r.evento}</td>
-                  <td className="p-2">
-                    {edicao
-                      ? <input value={r.estadio} onChange={e => atualizarLinha(r.id, "estadio", e.target.value)} className="input" />
-                      : r.estadio}
-                  </td>
-                  <td className="p-2">{gasto.toFixed(2)} €</td>
-                  <td className="p-2">{ganho.toFixed(2)} €</td>
-                  <td className="p-2">{(ganho - gasto).toFixed(2)} €</td>
-                  <td className="p-2">
-                    {edicao
-                      ? <select value={r.estado} onChange={e => atualizarLinha(r.id, "estado", e.target.value)} className="input">
+                <Fragment key={r.id}>
+                  <tr className={r.estado === "Pago" ? "bg-green-100" : ""}>
+                    <td className="p-2">
+                      <button onClick={() => setLinhaExpandida(linhaExpandida === r.id ? null : r.id)}>
+                        {linhaExpandida === r.id ? "🔼" : "🔽"}
+                      </button>
+                    </td>
+                    <td className="p-2">{new Date(r.data_evento).toLocaleDateString("pt-PT")}</td>
+                    <td className="p-2">
+                      {modoEdicao === r.id ? (
+                        <input name="evento" className="input" value={r.evento} onChange={(e) => handleInputChange(e, r.id)} />
+                      ) : (
+                        r.evento
+                      )}
+                    </td>
+                    <td className="p-2">
+                      {modoEdicao === r.id ? (
+                        <input name="estadio" className="input" value={r.estadio} onChange={(e) => handleInputChange(e, r.id)} />
+                      ) : (
+                        r.estadio
+                      )}
+                    </td>
+                    <td className="p-2">{totalGasto.toFixed(2)} €</td>
+                    <td className="p-2">{totalGanho.toFixed(2)} €</td>
+                    <td className="p-2">{(totalGanho - totalGasto).toFixed(2)} €</td>
+                    <td className="p-2">
+                      {modoEdicao === r.id ? (
+                        <select name="estado" className="input" value={r.estado} onChange={(e) => handleInputChange(e, r.id)}>
                           <option value="Entregue">Entregue</option>
                           <option value="Por entregar">Por entregar</option>
                           <option value="Disputa">Disputa</option>
                           <option value="Pago">Pago</option>
                         </select>
-                      : r.estado}
-                  </td>
-                  <td className="p-2 flex gap-2">
-                    {edicao ? (
-                      <>
-                        <button onClick={() => guardarAlteracoes(r)} className="text-green-600 hover:underline">Guardar</button>
-                        <button onClick={() => setLinhaEditavel(null)} className="text-gray-600 hover:underline">Cancelar</button>
-                      </>
-                    ) : (
-                      <button onClick={() => setLinhaEditavel(r.id)} className="text-blue-600 hover:underline">Editar</button>
-                    )}
-                  </td>
-                </tr>
+                      ) : (
+                        r.estado
+                      )}
+                    </td>
+                    <td className="p-2 flex gap-2">
+                      {modoEdicao === r.id ? (
+                        <button onClick={() => atualizarRegisto(r.id, r)} className="text-green-600 hover:underline">Guardar</button>
+                      ) : (
+                        <button onClick={() => setModoEdicao(r.id)} className="text-blue-600 hover:underline">Editar</button>
+                      )}
+                    </td>
+                  </tr>
+                  {linhaExpandida === r.id && (
+                    <>
+                      <tr className="bg-gray-200 text-xs font-bold">
+                        <td className="p-2" colSpan="9">Vendas</td>
+                      </tr>
+                      {vendas.filter(v => v.evento === r.evento).map(v => (
+                        <tr key={`v-${v.id}`} className="bg-green-100 text-xs">
+                          <td className="p-2" colSpan="2">ID {v.id_venda}</td>
+                          <td className="p-2">{v.estadio}</td>
+                          <td className="p-2">{v.ganho} €</td>
+                          <td className="p-2">{v.estado}</td>
+                          <td colSpan="4"></td>
+                        </tr>
+                      ))}
+                      <tr className="bg-gray-200 text-xs font-bold">
+                        <td className="p-2" colSpan="9">Compras</td>
+                      </tr>
+                      {compras.filter(c => c.evento === r.evento).map(c => (
+                        <tr key={`c-${c.id}`} className="bg-red-100 text-xs">
+                          <td className="p-2">{c.local_compras}</td>
+                          <td className="p-2">{c.bancada}</td>
+                          <td className="p-2">{c.setor}</td>
+                          <td className="p-2">{c.fila}</td>
+                          <td className="p-2">{c.quantidade}</td>
+                          <td className="p-2">{c.gasto} €</td>
+                          <td colSpan="3"></td>
+                        </tr>
+                      ))}
+                    </>
+                  )}
+                </Fragment>
               );
             })}
           </tbody>
@@ -124,5 +173,6 @@ export default function Eventos() {
     </div>
   );
 }
+
 
 
