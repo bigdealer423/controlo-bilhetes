@@ -174,7 +174,7 @@ export default function Compras() {
                     <td className="p-2">{c.setor}</td>
                     <td className="p-2">{c.fila}</td>
                     <td className="p-2">{c.quantidade}</td>
-                    <td className="p-2">{parseFloat(c.gasto).toFixed(2)} €</td>
+                    <td className="p-2">{parseInt(c.gasto)} €</td>
                     <td className="p-2 flex gap-2">
                       <button onClick={() => editarCompra(c)} className="text-blue-600 hover:underline">Editar</button>
                       <button onClick={() => pedirConfirmEliminar(c.id)} className="text-red-600 hover:underline">Eliminar</button>
