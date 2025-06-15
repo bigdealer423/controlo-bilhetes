@@ -15,7 +15,9 @@ export default function Compras() {
   const [modoEdicao, setModoEdicao] = useState(null);
   const [confirmarEliminarId, setConfirmarEliminarId] = useState(null);
 
-  const locaisCompra = [/* ...mesmos valores... */];
+  const locaisCompra = [
+    "Benfica Viagens", "Site Benfica", "Odisseias", "Continente",
+    "Site clube adversário", "Smartfans", "Outro"];
   const bancadas = [/* ...mesmos valores... */];
   const setores = [/* ...mesmos valores... */];
 
