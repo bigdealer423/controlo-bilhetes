@@ -11,7 +11,7 @@ export default function ListagemVendas(props) {
     ganho: "",
     estado: "Por entregar"
   });
-  const [selecionados, setSelecionados] = useState([]);
+  
   const [modoEdicao, setModoEdicao] = useState(null);
   const [registoEditado, setRegistoEditado] = useState({});
 
@@ -71,40 +71,6 @@ export default function ListagemVendas(props) {
         });
       });
   };
-
-  const alternarSelecionado = (id) => {
-    setSelecionados(prev =>
-      prev.includes(id) ? prev.filter(s => s !== id) : [...prev, id]
-    );
-  };
-
-  const selecionarTodos = () => {
-    if (selecionados.length === registos.length) {
-      setSelecionados([]);
-    } else {
-      setSelecionados(registos.map(r => r.id));
-    }
-  };
-
-const eliminarSelecionados = () => {
-  if (selecionados.length === 0) return;
-
-  Promise.all(
-    selecionados.map(id =>
-      fetch(`https://controlo-bilhetes.onrender.com/listagem_vendas/${id}`, {
-        method: "DELETE"
-      })
-    )
-  )
-    .then(() => {
-      buscarRegistos();
-      setSelecionados([]);
-    })
-    .catch(error => {
-      console.error("Erro ao eliminar registos:", error);
-    });
-};
-
 
   const ativarEdicao = (id, registo) => {
     setModoEdicao(id);
@@ -200,17 +166,12 @@ const eliminarConfirmado = async () => {
         <div className="flex justify-between items-center mb-2">
           <h2 className="text-lg font-semibold">Vendas</h2>
           <div className="flex gap-2">
-            {selecionados.length > 0 && (
-              <button onClick={() => pedirConfirmEliminar(selecionados)} className="bg-red-600 text-white px-4 py-1 rounded hover:bg-red-700">
-  Eliminar Selecionados
-</button>
-            )}
+            
           </div>
         </div>
         <table className="min-w-full border text-sm text-left text-gray-600">
          <thead>
   <tr className="bg-gray-100">
-    <th className="p-2"><input type="checkbox" onChange={selecionarTodos} checked={selecionados.length === registos.length} /></th>
     <th className="p-2 cursor-pointer" onClick={() => handleOrdenarPor("id_venda")}>
       ID Venda {colunaOrdenacao === "id_venda" && (ordemAscendente ? "▲" : "▼")}
     </th>
@@ -233,9 +194,6 @@ const eliminarConfirmado = async () => {
           <tbody>
             {registos.map(r => (
               <tr key={r.id} className="border-t">
-                <td className="p-2">
-                  <input type="checkbox" checked={selecionados.includes(r.id)} onChange={() => alternarSelecionado(r.id)} />
-                </td>
                 {modoEdicao === r.id ? (
                   <>
                     <td className="p-2"><input type="number" className="input" value={registoEditado.id_venda} onChange={e => setRegistoEditado({ ...registoEditado, id_venda: e.target.value })} /></td>
