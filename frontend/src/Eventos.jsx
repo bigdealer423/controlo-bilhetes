@@ -3,7 +3,6 @@ import { useLocation } from "react-router-dom";
 
 export default function Eventos() {
   const [registos, setRegistos] = useState([]);
-  const [eventosDropdown, setEventosDropdown] = useState([]);
   const [modoEdicao, setModoEdicao] = useState(null);
   const [linhaExpandida, setLinhaExpandida] = useState(null);
   const [vendas, setVendas] = useState([]);
@@ -11,62 +10,37 @@ export default function Eventos() {
   const location = useLocation();
 
   useEffect(() => {
-  // Carrega tudo em sequência, garantindo ordem
-  const carregarDados = async () => {
-    await buscarVendas();
-    await buscarCompras();
-  };
+    const carregarDados = async () => {
+      await buscarVendas();
+      await buscarCompras();
+    };
+    carregarDados();
+  }, []);
 
-  carregarDados();
-}, []);
-
-useEffect(() => {
-  // Quando vendas e compras estiverem prontos, carregar eventos e calcular valores
-  if (vendas.length && compras.length) {
-    buscarEventos();
-  }
-}, [vendas, compras]);
-
-  const buscarTudo = async () => {
-    await Promise.all([buscarDropdown(), buscarVendas(), buscarCompras()]);
-    await buscarEventos();
-  };
+  useEffect(() => {
+    if (vendas.length && compras.length) {
+      buscarEventos();
+    }
+  }, [vendas, compras]);
 
   const buscarEventos = async () => {
-  const res = await fetch("https://controlo-bilhetes.onrender.com/eventos_completos2");
-  if (res.ok) {
-    let eventos = await res.json();
-
-    // Calcula gasto/ganho com base em compras/vendas para cada evento
-    eventos = eventos.map(evento => {
-  const totalGasto = compras
-    .filter(c => c.evento === evento.evento)
-    .reduce((acc, curr) => acc + parseFloat(curr.gasto || 0), 0);
-
-  const totalGanho = vendas
-    .filter(v => v.evento === evento.evento)
-    .reduce((acc, curr) => acc + parseFloat(curr.ganho || 0), 0);
-
-  return {
-    ...evento,
-    gasto: totalGasto,
-    ganho: totalGanho,
-  };
-});
-
-    setRegistos(eventos);
-  } else {
-    console.error("Erro ao carregar eventos.");
-  }
-};
-
-  const buscarDropdown = async () => {
-    const res = await fetch("https://controlo-bilhetes.onrender.com/eventos_dropdown");
+    const res = await fetch("https://controlo-bilhetes.onrender.com/eventos_completos2");
     if (res.ok) {
-      const data = await res.json();
-      setEventosDropdown(data);
-    } else {
-      console.error("Erro ao carregar dropdown.");
+      let eventos = await res.json();
+
+      eventos = eventos.map(evento => {
+        const totalGasto = compras
+          .filter(c => c.evento === evento.evento)
+          .reduce((acc, curr) => acc + parseFloat(curr.gasto || 0), 0);
+
+        const totalGanho = vendas
+          .filter(v => v.evento === evento.evento)
+          .reduce((acc, curr) => acc + parseFloat(curr.ganho || 0), 0);
+
+        return { ...evento, gasto: totalGasto, ganho: totalGanho };
+      });
+
+      setRegistos(eventos);
     }
   };
 
@@ -90,7 +64,10 @@ useEffect(() => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(atualizado)
     });
-    if (res.ok) buscarEventos();
+    if (res.ok) {
+      setModoEdicao(null);
+      buscarEventos();
+    }
   };
 
   const adicionarLinha = async () => {
@@ -143,33 +120,50 @@ useEffect(() => {
           <tbody>
             {registos.map(r => (
               <>
-                <tr
-  key={r.id}
-  className={`cursor-pointer ${r.estado === "Pago" ? "bg-green-100" : ""}`}
->
+                <tr key={r.id} className={`${r.estado === "Pago" ? "bg-green-100" : ""}`}>
                   <td className="p-2">
                     <button onClick={() => setLinhaExpandida(linhaExpandida === r.id ? null : r.id)}>
                       {linhaExpandida === r.id ? "🔼" : "🔽"}
                     </button>
                   </td>
-                  <td className="p-2"><input type="date" value={r.data_evento} onChange={(e) => atualizarCampo(r.id, "data_evento", e.target.value)} className="input" /></td>
-                  <td className="p-2"><input value={r.evento} onChange={(e) => atualizarCampo(r.id, "evento", e.target.value)} className="input" /></td>
-                  <td className="p-2"><input value={r.estadio} onChange={(e) => atualizarCampo(r.id, "estadio", e.target.value)} className="input" /></td>
+                  <td className="p-2">
+                    {modoEdicao === r.id ?
+                      <input type="date" value={r.data_evento} onChange={(e) => atualizarCampo(r.id, "data_evento", e.target.value)} className="input" />
+                      : new Date(r.data_evento).toLocaleDateString("pt-PT")}
+                  </td>
+                  <td className="p-2">
+                    {modoEdicao === r.id ?
+                      <input value={r.evento} onChange={(e) => atualizarCampo(r.id, "evento", e.target.value)} className="input" />
+                      : r.evento}
+                  </td>
+                  <td className="p-2">
+                    {modoEdicao === r.id ?
+                      <input value={r.estadio} onChange={(e) => atualizarCampo(r.id, "estadio", e.target.value)} className="input" />
+                      : r.estadio}
+                  </td>
                   <td className="p-2">{r.gasto} €</td>
                   <td className="p-2">{r.ganho} €</td>
-                  <td className="p-2">{(r.ganho - r.gasto)} €</td>
+                  <td className="p-2">{(r.ganho - r.gasto).toFixed(2)} €</td>
                   <td className="p-2">
-                    <select value={r.estado} onChange={(e) => atualizarCampo(r.id, "estado", e.target.value)} className="input">
-                      <option value="Entregue">Entregue</option>
-                      <option value="Por entregar">Por entregar</option>
-                      <option value="Disputa">Disputa</option>
-                      <option value="Pago">Pago</option>
-                    </select>
+                    {modoEdicao === r.id ?
+                      <select value={r.estado} onChange={(e) => atualizarCampo(r.id, "estado", e.target.value)} className="input">
+                        <option value="Entregue">Entregue</option>
+                        <option value="Por entregar">Por entregar</option>
+                        <option value="Disputa">Disputa</option>
+                        <option value="Pago">Pago</option>
+                      </select>
+                      : r.estado}
                   </td>
                   <td className="p-2">
-                    <button onClick={() => eliminarRegisto(r.id)} className="text-red-600 hover:underline">Eliminar</button>
+                    {modoEdicao === r.id ? (
+                      <button onClick={() => setModoEdicao(null)} className="text-green-600 hover:underline">Guardar</button>
+                    ) : (
+                      <button onClick={() => setModoEdicao(r.id)} className="text-blue-600 hover:underline">Editar</button>
+                    )}
+                    <button onClick={() => eliminarRegisto(r.id)} className="ml-2 text-red-600 hover:underline">Eliminar</button>
                   </td>
                 </tr>
+
                 {linhaExpandida === r.id && (
                   <>
                     <tr className="bg-gray-50">
@@ -208,9 +202,5 @@ useEffect(() => {
     </div>
   );
 }
-
-
-
-
 
 
