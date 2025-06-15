@@ -11,7 +11,24 @@ from bs4 import BeautifulSoup
 # Função para enviar dados para a sua API
 # ========================
 def enviar_para_fastapi(id_venda, evento, ganho):
-    url = "https://controlo-bilhetes.onrender.com/listagem_vendas"  # Use o endpoint real da sua API
+    url_base = "https://controlo-bilhetes.onrender.com/listagem_vendas"
+    
+    # 1. Verificar se já existe este ID na base de dados
+    try:
+        resposta = requests.get(url_base)
+        if resposta.status_code == 200:
+            dados = resposta.json()
+            if any(int(reg['id_venda']) == int(id_venda) for reg in dados):
+                print(f"⚠️ ID {id_venda} já existe. Ignorado.")
+                return
+        else:
+            print(f"⚠️ Erro ao verificar duplicado: {resposta.status_code}")
+            return
+    except Exception as e:
+        print(f"⚠️ Erro ao consultar registos existentes: {e}")
+        return
+
+    # 2. Se não existir, inserir novo registo
     payload = {
         "id_venda": int(id_venda),
         "evento": evento,
@@ -21,7 +38,7 @@ def enviar_para_fastapi(id_venda, evento, ganho):
         "estado": "Por entregar"
     }
     try:
-        resp = requests.post(url, json=payload)
+        resp = requests.post(url_base, json=payload)
         if resp.status_code == 200:
             print(f"✅ Registo {id_venda} inserido com sucesso.")
         else:
