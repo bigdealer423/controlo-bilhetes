@@ -228,7 +228,7 @@ const eliminarConfirmado = async () => {
                     <td className="p-2">{r.estado}</td>
                     <td className="p-2">
                       <button onClick={() => ativarEdicao(r.id, r)} className="text-blue-600 hover:underline mr-2">Editar</button>
-                      <button onClick={cancelarEliminar}(r.id)} className="text-red-600 hover:underline">Eliminar</button>
+                      <button onClick={() => pedirConfirmEliminar([r.id])} className="text-red-600 hover:underline">Eliminar</button>
                     </td>
                   </>
                 )}
