@@ -21,6 +21,7 @@ class ListagemVendas(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     id_venda = Column(Integer, unique=True, index=True)  # <- Aqui adiciona-se unique=True
+    data_venda = Column(Date)  # ✅ Aqui
     data_evento = Column(Date, nullable=False)
     evento = Column(String, nullable=False)
     estadio = Column(String, nullable=False)
