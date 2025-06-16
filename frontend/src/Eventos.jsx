@@ -159,7 +159,7 @@ return (
           <tbody>
             {registos.map(r => (
               <>
-                <tr key={r.id} className={`cursor-pointer ${r.estado === "Pago" ? "bg-green-100" : ""}`}>
+                <tr key={r.id} className={`cursor-pointer ${r.estado === "Pago" ? "bg-green-100" : ""} ${linhaExpandida === r.id ? "font-bold" : ""}`}>
                   <td className="p-2">
                     <button onClick={() => setLinhaExpandida(linhaExpandida === r.id ? null : r.id)}>
                       {linhaExpandida === r.id ? "🔼" : "🔽"}
