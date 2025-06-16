@@ -161,9 +161,4 @@ def auto_update_email_data(username, password, date_from="01-May-2025"):
     print(f"   ⚠️ Registos que já existiam: {ja_existiam}")
     print(f"   ❌ Registos com erro ou incompletos: {falha}")
 
-# ========================
-# Executar
-# ========================
-username = "miguelitocosta423@gmail.com"
-password = "jtjoqyssexqtvwae"
-auto_update_email_data(username, password)
+
