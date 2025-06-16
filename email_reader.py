@@ -9,9 +9,9 @@ password = os.getenv("EMAIL_PASSWORD")
 # DEBUG: Verificar se as variáveis de ambiente estão corretamente carregadas
 print("🔍 [DEBUG] Variáveis de ambiente carregadas:")
 print(f"EMAIL_USERNAME: {username}")
-print(f"EMAIL_PASSWORD: {'****' if password else 'NÃO DEFINIDA'}")
+print(f"EMAIL_PASSWORD: {'****' if password else 'NÃO DEFINIDA'}")
 print(f"SMTP_EMAIL: {os.getenv('SMTP_EMAIL')}")
-print(f"SMTP_PASS: {'****' if os.getenv('SMTP_PASS') else 'NÃO DEFINIDA'}")
+print(f"SMTP_PASS: {'****' if os.getenv('SMTP_PASS') else 'NÃO DEFINIDA'}")
 print(f"SMTP_DEST: {os.getenv('SMTP_DEST')}")
 
 import imaplib
@@ -96,7 +96,7 @@ def processar_email(content, data_venda):
     id_encomenda = match_id.group(1)
     texto_pos_id = content.split(id_encomenda, 1)[-1]
 
-    match_ganho = re.search(r'Ganhos\s*Totais\s*[:\-]?\s*([\d\s\.,]+)\s*€', texto_pos_id, re.IGNORECASE)
+    match_ganho = re.search(r'Ganhos\s*Totais\s*[:\-]?\s*([\d\s\.,]+)\s*\u20ac', texto_pos_id, re.IGNORECASE)
     if not match_ganho:
         print(f"❌ Ganhos não encontrados no ID {id_encomenda}.")
         return "erro"
@@ -226,3 +226,6 @@ def enviar_resumo_email(total_emails, sucesso, falha, ja_existentes, ids_erro=No
     except Exception as e:
         print(f"❌ Erro ao enviar email de resumo: {e}")
         traceback.print_exc()
+
+if __name__ == "__main__":
+    auto_update_email_data(username, password)
