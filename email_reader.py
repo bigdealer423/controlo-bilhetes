@@ -1,6 +1,5 @@
 from dotenv import load_dotenv
 import os
-import traceback
 
 load_dotenv()  # Carrega as variáveis do ficheiro .env
 
@@ -10,9 +9,9 @@ password = os.getenv("EMAIL_PASSWORD")
 # DEBUG: Verificar se as variáveis de ambiente estão corretamente carregadas
 print("🔍 [DEBUG] Variáveis de ambiente carregadas:")
 print(f"EMAIL_USERNAME: {username}")
-print(f"EMAIL_PASSWORD: {'****' if password else 'NÃO DEFINIDA'}")
+print(f"EMAIL_PASSWORD: {'****' if password else 'NÃO DEFINIDA'}")
 print(f"SMTP_EMAIL: {os.getenv('SMTP_EMAIL')}")
-print(f"SMTP_PASS: {'****' if os.getenv('SMTP_PASS') else 'NÃO DEFINIDA'}")
+print(f"SMTP_PASS: {'****' if os.getenv('SMTP_PASS') else 'NÃO DEFINIDA'}")
 print(f"SMTP_DEST: {os.getenv('SMTP_DEST')}")
 
 import imaplib
@@ -24,6 +23,10 @@ import unicodedata
 from email.utils import parsedate_tz, mktime_tz
 from bs4 import BeautifulSoup
 from datetime import datetime
+import traceback
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
 
 def enviar_para_fastapi(id_venda, evento, ganho, data_venda, data_evento, bilhetes):
     url = "https://controlo-bilhetes.onrender.com/listagem_vendas"
@@ -161,6 +164,7 @@ def auto_update_email_data(username, password, date_from="01-May-2025"):
     sucesso = 0
     falha = 0
     ja_existiam = 0
+    ids_erro = []
 
     for msg_id in mensagens:
         conteudo, data_venda = extract_email_content_and_date(mail, msg_id)
@@ -172,6 +176,9 @@ def auto_update_email_data(username, password, date_from="01-May-2025"):
             ja_existiam += 1
         else:
             falha += 1
+            match = re.search(r'(\d{9})', conteudo)
+            if match:
+                ids_erro.append(match.group(1))
 
     print("\n📊 Resumo:")
     print(f"   Total de e-mails lidos: {len(mensagens)}")
@@ -179,27 +186,21 @@ def auto_update_email_data(username, password, date_from="01-May-2025"):
     print(f"   ⚠️ Registos que já existiam: {ja_existiam}")
     print(f"   ❌ Registos com erro ou incompletos: {falha}")
 
-    print("🟢 A chamar a função de envio de email...")
-    enviar_resumo_email(len(mensagens), sucesso, falha, ja_existiam)
+    enviar_resumo_email(len(mensagens), sucesso, falha, ja_existiam, ids_erro)
 
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-
-def enviar_resumo_email(total_emails, sucesso, falha, ja_existentes):
+def enviar_resumo_email(total_emails, sucesso, falha, ja_existentes, ids_erro=None):
     remetente = os.getenv("SMTP_EMAIL")
     destinatario = os.getenv("SMTP_DEST")
     password = os.getenv("SMTP_PASS")
+
+    ids_erro = ids_erro or []
 
     print("🔍 [DEBUG] A preparar envio de resumo por e-mail")
     print(f"Remetente: {remetente}")
     print(f"Destinatário: {destinatario}")
     print(f"📊 Emails: total={total_emails}, sucesso={sucesso}, erro={falha}, existentes={ja_existentes}")
-
-    msg = MIMEMultipart()
-    msg['From'] = remetente
-    msg['To'] = destinatario
-    msg['Subject'] = "Resumo Diário de Processamento de Emails"
+    if ids_erro:
+        print(f"🔝 IDs com erro: {', '.join(ids_erro)}")
 
     corpo = f"""
 📬 Emails processados: {total_emails}
@@ -207,6 +208,13 @@ def enviar_resumo_email(total_emails, sucesso, falha, ja_existentes):
 ⚠️ Já existiam: {ja_existentes}
 ❌ Com erro: {falha}
 """
+    if ids_erro:
+        corpo += "\n🔝 IDs com erro:\n" + "\n".join(ids_erro)
+
+    msg = MIMEMultipart()
+    msg['From'] = remetente
+    msg['To'] = destinatario
+    msg['Subject'] = "Resumo Diário de Processamento de Emails"
     msg.attach(MIMEText(corpo, 'plain'))
 
     try:
@@ -218,6 +226,3 @@ def enviar_resumo_email(total_emails, sucesso, falha, ja_existentes):
     except Exception as e:
         print(f"❌ Erro ao enviar email de resumo: {e}")
         traceback.print_exc()
-
-if __name__ == "__main__":
-    auto_update_email_data(username, password)
