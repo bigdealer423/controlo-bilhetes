@@ -169,4 +169,37 @@ def auto_update_email_data(username, password, date_from="01-May-2025"):
     print(f"   ⚠️ Registos que já existiam: {ja_existiam}")
     print(f"   ❌ Registos com erro ou incompletos: {falha}")
 
+import smtplib
+from email.mime.text import MIMEText
+from dotenv import load_dotenv
+import os
+
+def enviar_resumo_email(total, sucesso, erro, ja_existentes):
+    load_dotenv()
+    smtp_user = os.getenv("SMTP_EMAIL")
+    smtp_pass = os.getenv("SMTP_PASS")
+    destino = os.getenv("SMTP_DEST")
+
+    corpo = f"""📊 Resumo da execução automática:
+
+- Total de emails lidos: {total}
+- ✅ Registos inseridos com sucesso: {sucesso}
+- ⚠️ Já existentes: {ja_existentes}
+- ❌ Com erro/incompletos: {erro}
+"""
+
+    msg = MIMEText(corpo)
+    msg['Subject'] = "Resumo: Atualização de Vendas"
+    msg['From'] = smtp_user
+    msg['To'] = destino
+
+    try:
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+            server.login(smtp_user, smtp_pass)
+            server.sendmail(smtp_user, destino, msg.as_string())
+        print("📧 Email de resumo enviado com sucesso.")
+    except Exception as e:
+        print(f"⚠️ Erro ao enviar email de resumo: {e}")
+
+
 
