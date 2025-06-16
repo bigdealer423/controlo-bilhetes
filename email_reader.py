@@ -215,14 +215,14 @@ def enviar_resumo_email(total_emails, sucesso, falha, ja_existentes):
     msg.attach(MIMEText(corpo, 'plain'))
 
     try:
+        print("📡 Ligando ao servidor SMTP...")
         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as servidor:
             servidor.login(remetente, password)
             servidor.send_message(msg)
         print("📧 Resumo enviado com sucesso.")
     except Exception as e:
-    import traceback
-    print(f"❌ Erro ao enviar email de resumo: {e}")
-    traceback.print_exc()  # 🔍 mostra o erro completo no log
+        print(f"❌ Erro ao enviar email de resumo: {e}")
+        traceback.print_exc()  # <-- Agora corretamente indentado
 
 
 
