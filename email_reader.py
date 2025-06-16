@@ -1,5 +1,6 @@
 from dotenv import load_dotenv
 import os
+import smtplib
 
 load_dotenv()  # Carrega as variáveis do ficheiro .env
 
@@ -96,7 +97,7 @@ def processar_email(content, data_venda):
     id_encomenda = match_id.group(1)
     texto_pos_id = content.split(id_encomenda, 1)[-1]
 
-    match_ganho = re.search(r'Ganhos\s*Totais\s*[:\-]?\s*([\d\s\.,]+)\s*\u20ac', texto_pos_id, re.IGNORECASE)
+    match_ganho = re.search(r'Ganhos\s*Totais\s*[:\-]?\s*([\d\s\.,]+)\s*€', texto_pos_id, re.IGNORECASE)
     if not match_ganho:
         print(f"❌ Ganhos não encontrados no ID {id_encomenda}.")
         return "erro"
