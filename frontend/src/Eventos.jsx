@@ -239,7 +239,7 @@ return (
 </tr>
 <tr className="bg-gray-200 text-xs font-semibold">
   <td className="p-2">ID Venda</td>
-  <td className="p-2">Bilhetes</td>
+  <td className="p-2" colSpan="2">Bilhetes</td>
   <td className="p-2">Ganho</td>
   <td className="p-2">Estado</td>
   <td colSpan="5"></td>
