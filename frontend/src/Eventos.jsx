@@ -231,17 +231,24 @@ return (
                 {linhaExpandida === r.id && (
                   <>
                     <tr className="bg-gray-50">
-                      <td colSpan="9" className="p-2 font-semibold">Vendas</td>
-                    </tr>
-                    {vendas.filter(v => v.evento === r.evento).map(v => (
-                      <tr key={"v" + v.id} className="text-xs bg-white border-t">
-                        <td className="p-2" colSpan="2">ID Venda: {v.id_venda}</td>
-                        <td className="p-2" colSpan="2">Bilhetes: {v.estadio}</td>
-                        <td className="p-2" colSpan="2">Ganho: {v.ganho} €</td>
-                        <td className="p-2" colSpan="2">Estado: {v.estado}</td>
-                        <td></td>
-                      </tr>
-                    ))}
+  <td colSpan="9" className="p-2 font-semibold">Vendas</td>
+</tr>
+<tr className="bg-gray-100 text-xs font-semibold">
+  <td className="p-2">ID Venda</td>
+  <td className="p-2" colSpan="2">Bilhetes</td>
+  <td className="p-2">Ganho</td>
+  <td className="p-2">Estado</td>
+  <td className="p-2" colSpan="4"></td>
+</tr>
+{vendas.filter(v => v.evento === r.evento).map(v => (
+  <tr key={"v" + v.id} className="text-xs bg-white border-t">
+    <td className="p-2">{v.id_venda}</td>
+    <td className="p-2" colSpan="2">{v.estadio}</td>
+    <td className="p-2">{v.ganho} €</td>
+    <td className="p-2">{v.estado}</td>
+    <td className="p-2" colSpan="4"></td>
+  </tr>
+))}
                     <tr className="bg-gray-50">
                       <td colSpan="9" className="p-2 font-semibold">Compras</td>
                     </tr>
