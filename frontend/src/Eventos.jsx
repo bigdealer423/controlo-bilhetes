@@ -162,14 +162,11 @@ return (
                 <tr key={r.id} className={`cursor-pointer ${r.estado === "Pago" ? "bg-green-100" : ""} ${linhaExpandida === r.id ? "font-bold bg-blue-50" : ""}`}>
                  <td className="p-2">
   {vendas.some(v => v.evento === r.evento) || compras.some(c => c.evento === r.evento) ? (
-    <button
-      onClick={() => setLinhaExpandida(linhaExpandida === r.id ? null : r.id)}
-      className="text-green-600"
-    >
+    <button onClick={() => setLinhaExpandida(linhaExpandida === r.id ? null : r.id)}>
       {linhaExpandida === r.id ? "🔼" : "🔽"}
     </button>
   ) : (
-    <span className="text-red-600">🔽</span>
+    <span className="text-red-600">🔻</span>
   )}
 </td>
                   <td className="p-2">
