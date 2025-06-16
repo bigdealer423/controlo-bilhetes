@@ -178,6 +178,7 @@ import smtplib
 from email.mime.text import MIMEText
 from dotenv import load_dotenv
 import os
+from email.mime.multipart import MIMEMultipart
 
 def enviar_resumo_email(total_emails, sucesso, falha, ja_existentes):
     remetente = os.getenv("SMTP_EMAIL")
