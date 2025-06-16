@@ -220,7 +220,10 @@ def enviar_resumo_email(total_emails, sucesso, falha, ja_existentes):
             servidor.send_message(msg)
         print("📧 Resumo enviado com sucesso.")
     except Exception as e:
-        print(f"❌ Erro ao enviar email de resumo: {e}")
+    import traceback
+    print(f"❌ Erro ao enviar email de resumo: {e}")
+    traceback.print_exc()  # 🔍 mostra o erro completo no log
+
 
 
 
