@@ -250,19 +250,28 @@ return (
   </tr>
 ))}
                     <tr className="bg-gray-50">
-                      <td colSpan="9" className="p-2 font-semibold">Compras</td>
-                    </tr>
-                    {compras.filter(c => c.evento === r.evento).map(c => (
-                      <tr key={"c" + c.id} className="text-xs bg-white border-t">
-                        <td className="p-2" colSpan="2">Local: {c.local_compras}</td>
-                        <td className="p-2">Bancada: {c.bancada}</td>
-                        <td className="p-2">Setor: {c.setor}</td>
-                        <td className="p-2">Fila: {c.fila}</td>
-                        <td className="p-2">Qt: {c.quantidade}</td>
-                        <td className="p-2" colSpan="2">Gasto: {c.gasto} €</td>
-                        <td></td>
-                      </tr>
-                    ))}
+  <td colSpan="9" className="p-2 font-semibold">Compras</td>
+</tr>
+<tr className="bg-gray-100 text-xs font-semibold">
+  <td className="p-2">Local</td>
+  <td className="p-2">Bancada</td>
+  <td className="p-2">Setor</td>
+  <td className="p-2">Fila</td>
+  <td className="p-2">Qt</td>
+  <td className="p-2">Gasto</td>
+  <td className="p-2" colSpan="3"></td>
+</tr>
+{compras.filter(c => c.evento === r.evento).map(c => (
+  <tr key={"c" + c.id} className="text-xs bg-white border-t">
+    <td className="p-2">{c.local_compras}</td>
+    <td className="p-2">{c.bancada}</td>
+    <td className="p-2">{c.setor}</td>
+    <td className="p-2">{c.fila}</td>
+    <td className="p-2">{c.quantidade}</td>
+    <td className="p-2">{c.gasto} €</td>
+    <td className="p-2" colSpan="3"></td>
+  </tr>
+))}
                   </>
                 )}
               </>
