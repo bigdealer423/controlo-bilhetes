@@ -1,23 +1,16 @@
 name: Executar Email Reader
 
 on:
-  schedule:
-    - cron: '0 9 * * *'  # Executa todos os dias às 9h UTC (10h em Portugal)
-  workflow_dispatch:      # Permite correr manualmente no GitHub
+  workflow_dispatch:  # Permite execução manual no botão "Run workflow"
 
 jobs:
-  executar-script:
+  run-script:
     runs-on: ubuntu-latest
-
-    env:
-      EMAIL_USERNAME: ${{ secrets.EMAIL_USERNAME }}
-      EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
-
     steps:
-      - name: Clonar repositório
+      - name: Fazer checkout do repositório
         uses: actions/checkout@v3
 
-      - name: Instalar Python
+      - name: Configurar Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
@@ -25,6 +18,10 @@ jobs:
       - name: Instalar dependências
         run: pip install -r requirements.txt
 
-      - name: Executar script de email
+      - name: Executar o script de leitura de emails
+        env:
+          EMAIL_USER: ${{ secrets.EMAIL_USER }}
+          EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
         run: python src/email_reader.py
+
 
