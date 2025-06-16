@@ -268,7 +268,6 @@ const eliminarConfirmado = async () => {
     <button onClick={() => ativarEdicao(r.id, r)} className="text-blue-600 hover:underline mr-2">Editar</button>
     <button onClick={() => pedirConfirmEliminar([r.id])} className="text-red-600 hover:underline">Eliminar</button>
   </td>
-</>
                   </>
                 )}
               </tr>
