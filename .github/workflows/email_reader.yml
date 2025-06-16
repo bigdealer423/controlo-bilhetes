@@ -2,8 +2,9 @@ name: Executar Email Reader
 
 on:
   schedule:
-    - cron: '0 9 * * *'  # Todos os dias às 9h UTC (10h em Portugal)
-  workflow_dispatch:
+    - cron: '0 9 * * *'  # corre todos os dias às 9h UTC (10h em Portugal)
+  workflow_dispatch:     # permite correr manualmente
+
 
 jobs:
   executar-script:
