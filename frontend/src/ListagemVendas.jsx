@@ -156,15 +156,15 @@ const eliminarConfirmado = async () => {
         <h2 className="text-lg font-semibold mb-2">Adicionar Registo</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <input name="id_venda" type="number" className="input" placeholder="ID Venda" value={novoRegisto.id_venda} onChange={handleChange} />
-          <input
-  name="data_venda"
-  type="date"
-  className="input"
-  value={novoRegisto.data_venda}
-  onChange={handleChange}
-/>
+          <div className="flex flex-col">
+  <label htmlFor="data_venda" className="text-sm font-medium text-gray-700">Data Venda</label>
+  <input name="data_venda" type="date" className="input" value={novoRegisto.data_venda} onChange={handleChange} />
+</div>
 
-          <input name="data_evento" type="date" className="input" value={novoRegisto.data_evento} onChange={handleChange} />
+<div className="flex flex-col">
+  <label htmlFor="data_evento" className="text-sm font-medium text-gray-700">Data Evento</label>
+  <input name="data_evento" type="date" className="input" value={novoRegisto.data_evento} onChange={handleChange} />
+</div>
           <select name="evento" className="input" value={novoRegisto.evento} onChange={handleChange}>
             <option value="">-- Selecionar Evento --</option>
             {eventosDropdown.map(e => (
