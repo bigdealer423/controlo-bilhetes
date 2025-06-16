@@ -184,6 +184,11 @@ def enviar_resumo_email(total_emails, sucesso, falha, ja_existentes):
     destinatario = os.getenv("SMTP_DEST")
     password = os.getenv("SMTP_PASS")
 
+    print("🔍 [DEBUG] A preparar envio de resumo por e-mail")
+    print(f"Remetente: {remetente}")
+    print(f"Destinatário: {destinatario}")
+    print(f"📊 Emails: total={total_emails}, sucesso={sucesso}, erro={falha}, existentes={ja_existentes}")
+
     msg = MIMEMultipart()
     msg['From'] = remetente
     msg['To'] = destinatario
@@ -204,6 +209,7 @@ def enviar_resumo_email(total_emails, sucesso, falha, ja_existentes):
         print("📧 Resumo enviado com sucesso.")
     except Exception as e:
         print(f"❌ Erro ao enviar email de resumo: {e}")
+
 
 
 
