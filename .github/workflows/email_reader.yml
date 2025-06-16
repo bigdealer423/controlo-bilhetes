@@ -22,6 +22,6 @@ jobs:
         env:
           EMAIL_USER: ${{ secrets.EMAIL_USERNAME }}
           EMAIL_PASS: ${{ secrets.EMAIL_PASSWORD }}
-        run: python src/email_reader.py
+        run: python email_reader.py
 
 
