@@ -60,9 +60,12 @@ def criar_venda(venda: ListagemVendasCreate, db: Session = Depends(get_db)):
         db.commit()
         db.refresh(nova_venda)
         return nova_venda
+    
+    except HTTPException:
+        raise  # ❗Deixe a exceção passar, sem embrulhar
     except Exception as e:
-        print(f"Erro ao criar venda: {e}")
-        raise HTTPException(status_code=500, detail="Erro ao criar venda")
+        print(f"Erro inesperado ao criar venda: {e}")
+        raise HTTPException(status_code=500, detail="Erro inesperado ao criar venda")
 
 @app.delete("/listagem_vendas/{venda_id}")
 def eliminar_venda(venda_id: int, db: Session = Depends(get_db)):
