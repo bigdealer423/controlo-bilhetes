@@ -159,14 +159,17 @@ return (
           <tbody>
             {registos.map(r => (
               <>
-                <tr key={r.id} className={`cursor-pointer ${r.estado === "Pago" ? "bg-green-100" : ""} ${linhaExpandida === r.id ? "font-bold" : ""}`}>
-                  <td className="p-2">
+                <tr key={r.id} className={`cursor-pointer ${r.estado === "Pago" ? "bg-green-100" : ""} ${linhaExpandida === r.id ? "font-bold bg-blue-50" : ""}`}>
+                 <td className="p-2">
   {vendas.some(v => v.evento === r.evento) || compras.some(c => c.evento === r.evento) ? (
-    <button onClick={() => setLinhaExpandida(linhaExpandida === r.id ? null : r.id)}>
+    <button
+      onClick={() => setLinhaExpandida(linhaExpandida === r.id ? null : r.id)}
+      className="text-green-600"
+    >
       {linhaExpandida === r.id ? "🔼" : "🔽"}
     </button>
   ) : (
-    <span className="text-red-600">🔻</span>
+    <span className="text-red-600">🔽</span>
   )}
 </td>
                   <td className="p-2">
@@ -237,12 +240,12 @@ return (
                     <tr className="bg-gray-50">
   <td colSpan="9" className="p-2 font-semibold">Vendas</td>
 </tr>
-<tr className="bg-gray-100 text-xs font-semibold">
+<tr className="bg-gray-200 text-xs font-semibold">
   <td className="p-2">ID Venda</td>
-  <td className="p-2" colSpan="2">Bilhetes</td>
+  <td className="p-2">Bilhetes</td>
   <td className="p-2">Ganho</td>
   <td className="p-2">Estado</td>
-  <td className="p-2" colSpan="4"></td>
+  <td colSpan="5"></td>
 </tr>
 {vendas.filter(v => v.evento === r.evento).map(v => (
   <tr key={"v" + v.id} className="text-xs bg-white border-t">
@@ -256,14 +259,14 @@ return (
                     <tr className="bg-gray-50">
   <td colSpan="9" className="p-2 font-semibold">Compras</td>
 </tr>
-<tr className="bg-gray-100 text-xs font-semibold">
+<tr className="bg-gray-200 text-xs font-semibold">
   <td className="p-2">Local</td>
   <td className="p-2">Bancada</td>
   <td className="p-2">Setor</td>
   <td className="p-2">Fila</td>
   <td className="p-2">Qt</td>
   <td className="p-2">Gasto</td>
-  <td className="p-2" colSpan="3"></td>
+  <td colSpan="3"></td>
 </tr>
 {compras.filter(c => c.evento === r.evento).map(c => (
   <tr key={"c" + c.id} className="text-xs bg-white border-t">
