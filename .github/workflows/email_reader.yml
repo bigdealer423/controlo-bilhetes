@@ -2,8 +2,8 @@ name: Executar Email Reader
 
 on:
   schedule:
-    - cron: '0 9 * * *'  # Todos os dias às 9h UTC
-  workflow_dispatch:      # Permite execução manual
+    - cron: '0 9 * * *'  # Executa todos os dias às 9h UTC (10h em Portugal)
+  workflow_dispatch:      # Permite correr manualmente no GitHub
 
 jobs:
   executar-script:
@@ -27,5 +27,4 @@ jobs:
 
       - name: Executar script de email
         run: python src/email_reader.py
-
 
