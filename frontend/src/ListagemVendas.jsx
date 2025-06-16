@@ -253,18 +253,22 @@ const eliminarConfirmado = async () => {
                   </>
                 ) : (
                   <>
-                    <td className="p-2">{r.id_venda}</td>
-                    <td className="p-2">
-  {r.data_venda ? new Date(r.data_venda).toLocaleDateString("pt-PT") : ""}
-</td>
-                    <td className="p-2">{r.evento}</td>
-                    <td className="p-2">{r.estadio}</td>
-                    <td className="p-2">{r.ganho} €</td>
-                    <td className="p-2">{r.estado}</td>
-                    <td className="p-2">
-                      <button onClick={() => ativarEdicao(r.id, r)} className="text-blue-600 hover:underline mr-2">Editar</button>
-                      <button onClick={() => pedirConfirmEliminar([r.id])} className="text-red-600 hover:underline">Eliminar</button>
-                    </td>
+                     <td className="p-2">{r.id_venda}</td>
+  <td className="p-2">
+    {r.data_venda ? new Date(r.data_venda).toLocaleDateString("pt-PT") : ""}
+  </td>
+  <td className="p-2">
+    {r.data_evento ? new Date(r.data_evento).toLocaleDateString("pt-PT") : ""}
+  </td>
+  <td className="p-2">{r.evento}</td>
+  <td className="p-2">{r.estadio}</td>
+  <td className="p-2">{r.ganho} €</td>
+  <td className="p-2">{r.estado}</td>
+  <td className="p-2">
+    <button onClick={() => ativarEdicao(r.id, r)} className="text-blue-600 hover:underline mr-2">Editar</button>
+    <button onClick={() => pedirConfirmEliminar([r.id])} className="text-red-600 hover:underline">Eliminar</button>
+  </td>
+</>
                   </>
                 )}
               </tr>
