@@ -1,3 +1,11 @@
+from dotenv import load_dotenv
+import os
+
+load_dotenv()  # Carrega as variáveis do ficheiro .env
+
+username = os.getenv("EMAIL_USERNAME")
+password = os.getenv("EMAIL_PASSWORD")
+
 cimport imaplib
 import email
 from email.header import decode_header
