@@ -237,7 +237,7 @@ return (
 
                 {linhaExpandida === r.id && (
                   <>
-                    <tr className="bg-gray-50">
+                    <tr className={`${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'} text-sm`}>
   <td colSpan="9" className="p-2 font-semibold">Vendas</td>
 </tr>
 <tr className="bg-gray-200 text-xs font-semibold">
@@ -256,7 +256,7 @@ return (
     <td className="p-2" colSpan="4"></td>
   </tr>
 ))}
-                    <tr className="bg-gray-50">
+                    <tr className={`${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'} text-sm`}>
   <td colSpan="9" className="p-2 font-semibold">Compras</td>
 </tr>
 <tr className="bg-gray-200 text-xs font-semibold">
