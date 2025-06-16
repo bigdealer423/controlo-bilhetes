@@ -6,6 +6,17 @@ load_dotenv()  # Carrega as variáveis do ficheiro .env
 username = os.getenv("EMAIL_USERNAME")
 password = os.getenv("EMAIL_PASSWORD")
 
+# DEBUG: Verificar se as variáveis de ambiente estão corretamente carregadas
+print("🔍 [DEBUG] Variáveis de ambiente carregadas:")
+print(f"EMAIL_USERNAME: {username}")
+print(f"EMAIL_PASSWORD: {'****' if password else 'NÃO DEFINIDA'}")
+print(f"SMTP_EMAIL: {os.getenv('SMTP_EMAIL')}")
+print(f"SMTP_PASS: {'****' if os.getenv('SMTP_PASS') else 'NÃO DEFINIDA'}")
+print(f"SMTP_DEST: {os.getenv('SMTP_DEST')}")
+
+# Resto do código continua aqui como já o tem...
+
+
 import imaplib
 import email
 from email.header import decode_header
