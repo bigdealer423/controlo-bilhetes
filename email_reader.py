@@ -156,6 +156,7 @@ def auto_update_email_data(username, password, date_from="01-May-2025"):
     for msg_id in mensagens:
         conteudo, data_venda = extract_email_content_and_date(mail, msg_id)
         resultado = processar_email(conteudo, data_venda)
+
         if resultado == "inserido":
             sucesso += 1
         elif resultado == "existente":
@@ -169,37 +170,41 @@ def auto_update_email_data(username, password, date_from="01-May-2025"):
     print(f"   ⚠️ Registos que já existiam: {ja_existiam}")
     print(f"   ❌ Registos com erro ou incompletos: {falha}")
 
+    # Chamada do resumo por email
+    enviar_resumo_email(len(mensagens), sucesso, falha, ja_existiam)
+
+
 import smtplib
 from email.mime.text import MIMEText
 from dotenv import load_dotenv
 import os
 
-def enviar_resumo_email(total, sucesso, erro, ja_existentes):
-    load_dotenv()
-    smtp_user = os.getenv("SMTP_EMAIL")
-    smtp_pass = os.getenv("SMTP_PASS")
-    destino = os.getenv("SMTP_DEST")
+def enviar_resumo_email(total_emails, sucesso, falha, ja_existentes):
+    remetente = os.getenv("SMTP_EMAIL")
+    destinatario = os.getenv("SMTP_DEST")
+    password = os.getenv("SMTP_PASS")
 
-    corpo = f"""📊 Resumo da execução automática:
+    msg = MIMEMultipart()
+    msg['From'] = remetente
+    msg['To'] = destinatario
+    msg['Subject'] = "Resumo Diário de Processamento de Emails"
 
-- Total de emails lidos: {total}
-- ✅ Registos inseridos com sucesso: {sucesso}
-- ⚠️ Já existentes: {ja_existentes}
-- ❌ Com erro/incompletos: {erro}
+    corpo = f"""
+📬 Emails processados: {total_emails}
+✅ Inseridos com sucesso: {sucesso}
+⚠️ Já existiam: {ja_existentes}
+❌ Com erro: {falha}
 """
-
-    msg = MIMEText(corpo)
-    msg['Subject'] = "Resumo: Atualização de Vendas"
-    msg['From'] = smtp_user
-    msg['To'] = destino
+    msg.attach(MIMEText(corpo, 'plain'))
 
     try:
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-            server.login(smtp_user, smtp_pass)
-            server.sendmail(smtp_user, destino, msg.as_string())
-        print("📧 Email de resumo enviado com sucesso.")
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as servidor:
+            servidor.login(remetente, password)
+            servidor.send_message(msg)
+        print("📧 Resumo enviado com sucesso.")
     except Exception as e:
-        print(f"⚠️ Erro ao enviar email de resumo: {e}")
+        print(f"❌ Erro ao enviar email de resumo: {e}")
+
 
 
 
