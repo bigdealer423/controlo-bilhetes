@@ -1,5 +1,6 @@
 from dotenv import load_dotenv
 import os
+import traceback
 
 load_dotenv()  # Carrega as variáveis do ficheiro .env
 
@@ -13,9 +14,6 @@ print(f"EMAIL_PASSWORD: {'****' if password else 'NÃO DEFINIDA'}")
 print(f"SMTP_EMAIL: {os.getenv('SMTP_EMAIL')}")
 print(f"SMTP_PASS: {'****' if os.getenv('SMTP_PASS') else 'NÃO DEFINIDA'}")
 print(f"SMTP_DEST: {os.getenv('SMTP_DEST')}")
-
-# Resto do código continua aqui como já o tem...
-
 
 import imaplib
 import email
@@ -181,14 +179,11 @@ def auto_update_email_data(username, password, date_from="01-May-2025"):
     print(f"   ⚠️ Registos que já existiam: {ja_existiam}")
     print(f"   ❌ Registos com erro ou incompletos: {falha}")
 
-    # Chamada do resumo por email
+    print("🟢 A chamar a função de envio de email...")
     enviar_resumo_email(len(mensagens), sucesso, falha, ja_existiam)
-
 
 import smtplib
 from email.mime.text import MIMEText
-from dotenv import load_dotenv
-import os
 from email.mime.multipart import MIMEMultipart
 
 def enviar_resumo_email(total_emails, sucesso, falha, ja_existentes):
@@ -222,10 +217,7 @@ def enviar_resumo_email(total_emails, sucesso, falha, ja_existentes):
         print("📧 Resumo enviado com sucesso.")
     except Exception as e:
         print(f"❌ Erro ao enviar email de resumo: {e}")
-        traceback.print_exc()  # <-- Agora corretamente indentado
+        traceback.print_exc()
 
-
-
-
-
-
+if __name__ == "__main__":
+    auto_update_email_data(username, password)
