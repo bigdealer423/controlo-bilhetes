@@ -24,8 +24,12 @@ jobs:
 
       - name: Executar o script de leitura de emails
         env:
-          EMAIL_USER: ${{ secrets.EMAIL_USERNAME }}
-          EMAIL_PASS: ${{ secrets.EMAIL_PASSWORD }}
+  EMAIL_USERNAME: ${{ secrets.EMAIL_USERNAME }}
+  EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+  SMTP_EMAIL: ${{ secrets.SMTP_EMAIL }}
+  SMTP_PASS: ${{ secrets.SMTP_PASS }}
+  SMTP_DEST: ${{ secrets.SMTP_DEST }}
+
         run: python email_reader.py
 
 
