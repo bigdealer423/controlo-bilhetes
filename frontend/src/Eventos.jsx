@@ -11,6 +11,7 @@ export default function Eventos() {
   const [mostrarModal, setMostrarModal] = useState(false);
   const [idAEliminar, setIdAEliminar] = useState(null);
   const location = useLocation();
+  const [resumoMensal, setResumoMensal] = useState({ lucro_mensal: 0, a_aguardar: 0 });
 
   useEffect(() => {
     const carregarDados = async () => {
@@ -30,6 +31,20 @@ export default function Eventos() {
   buscarDropdown();
 }, []);
 
+  useEffect(() => {
+  buscarResumoMensal();
+}, []);
+
+const buscarResumoMensal = async () => {
+  try {
+    const res = await fetch("https://controlo-bilhetes.onrender.com/resumo_mensal_eventos");
+    const data = await res.json();
+    setResumoMensal(data);
+  } catch (err) {
+    console.error("Erro ao buscar resumo mensal:", err);
+  }
+};
+  
 const buscarDropdown = async () => {
   const res = await fetch("https://controlo-bilhetes.onrender.com/eventos_dropdown");
   if (res.ok) {
