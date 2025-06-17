@@ -30,6 +30,16 @@ export default function ListagemVendas(props) {
     });
 };
 
+  const forcarLeituraEmail = () => {
+  fetch("https://controlo-bilhetes.onrender.com/forcar_leitura_email", {
+    method: "POST"
+  })
+    .then(res => res.json())
+    .then(data => alert(data.detail || "Ação enviada."))
+    .catch(err => alert("Erro ao tentar disparar leitura de e-mails."));
+};
+
+
   const [modoEdicao, setModoEdicao] = useState(null);
   const [registoEditado, setRegistoEditado] = useState({});
   const [resumoDiario, setResumoDiario] = useState({ total: 0, ganho: 0 });
