@@ -234,13 +234,9 @@ return (
 
                 {linhaExpandida === r.id && (
                   <>
-                    <tr className="bg-indigo-50 text-sm border-t">
-  <td colSpan="9" className="p-2 font-semibold">Vendas (x)</td>
-</tr>
-                    <tr className="bg-yellow-50 text-sm border-t">
-  <td colSpan="9" className="p-2 font-semibold">Compras (x)</td>
-</tr>
-                    <tr className="bg-white text-sm border-t">
+                    
+                    
+                   <tr className="bg-indigo-50 text-sm border-t border-l-4 border-blue-600">
   <td colSpan="9" className="p-2 font-semibold">
     Vendas ({
       vendas
