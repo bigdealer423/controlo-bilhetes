@@ -91,6 +91,13 @@ const buscarDropdown = async () => {
             ganho: totalGanho
           })
         });
+         // Atualiza o evento localmente
+        return {
+        ...evento,
+        gasto: totalGasto,
+        ganho: totalGanho,
+      };
+    }));
 
       // Ordenação por data (mais antiga primeiro)
       eventos.sort((a, b) => new Date(a.data_evento) - new Date(b.data_evento));
