@@ -3,6 +3,8 @@ from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from typing import List
+from datetime import datetime, date
+from sqlalchemy import func
 from database import engine, get_db
 from models import (
     Base,
@@ -186,4 +188,18 @@ def atualizar_compra(compra_id: int, compra: CompraCreate, db: Session = Depends
 @app.get("/ping")
 def ping():
     return {"status": "ativo"}
+
+
+from datetime import datetime, date
+from sqlalchemy import func
+# ---------------- RESUMO DIÁRIO VENDAS ----------------
+@app.get("/resumo_diario")
+def resumo_diario(db: Session = Depends(get_db)):
+    hoje = date.today()  # ou usar datetime.now().date() com timezone se necessário
+
+    total_vendas = db.query(func.count()).filter(ListagemVenda.data_venda == hoje).scalar()
+    ganho_total = db.query(func.sum(ListagemVenda.ganho)).filter(ListagemVenda.data_venda == hoje).scalar() or 0
+
+    return {"total": total_vendas, "ganho": ganho_total}
+
 
