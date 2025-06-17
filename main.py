@@ -212,5 +212,25 @@ def forcar_leitura_email():
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erro ao executar script: {e}")
 
+import requests
+import os
 
+GITHUB_TOKEN = os.getenv("GH_PAT")  # deve ser definido localmente se testar em dev
+REPO_OWNER = "bigdealer423"       # ex: "pedrorodrigosilva"
+REPO_NAME = "controlo-bilhetes"     # o nome do repositório
+
+@app.post("/forcar_leitura_email")
+def disparar_workflow_github():
+    url = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/actions/workflows/email-reader.yml/dispatches"
+    headers = {
+        "Authorization": f"token {GITHUB_TOKEN}",
+        "Accept": "application/vnd.github.v3+json"
+    }
+    payload = { "ref": "main" }  # ou "master", conforme o nome da sua branch principal
+    response = requests.post(url, headers=headers, json=payload)
+
+    if response.status_code == 204:
+        return {"detail": "Workflow disparado com sucesso"}
+    else:
+        return {"detail": "Erro ao disparar workflow", "status": response.status_code, "body": response.text}
 
