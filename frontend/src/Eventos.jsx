@@ -114,6 +114,7 @@ const buscarDropdown = async () => {
       body: JSON.stringify(atualizado)
     });
     if (res.ok) buscarEventos();
+    await buscarResumoMensal(); // ✅ atualiza se mudou estado ou valores
   };
 
   const adicionarLinha = async () => {
@@ -131,6 +132,7 @@ const buscarDropdown = async () => {
       body: JSON.stringify(novo)
     });
     if (res.ok) buscarEventos();
+    await buscarResumoMensal(); // ✅ força atualização do resumo
   };
 
   const confirmarEliminar = (id) => {
