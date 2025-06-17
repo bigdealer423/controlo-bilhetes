@@ -261,7 +261,7 @@ def resumo_mensal_eventos(db: Session = Depends(get_db)):
     ).all()
 
     lucro_mensal = 0
-    a_aguardar_pagamento = 0
+    a_aguardar = 0
 
     for evento in eventos_do_mes:
         lucro = evento.ganho - evento.gasto
@@ -274,11 +274,11 @@ def resumo_mensal_eventos(db: Session = Depends(get_db)):
 
         # ✅ A aguardar pagamento = ganho de eventos com estado diferente de "Pago"
         if evento.estado != "Pago":
-            a_aguardar_pagamento += evento.ganho
+            a_aguardar += evento.ganho
 
     return {
         "lucro": round(lucro_mensal),
-        "a_aguardar": round(a_aguardar_pagamento)
+        "a_aguardar": round(a_aguardar)
 
     }        
 
