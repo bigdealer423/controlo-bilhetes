@@ -260,31 +260,23 @@ def resumo_mensal_eventos(db: Session = Depends(get_db)):
         extract('year', EventoCompletoModel.data_evento) == ano
     ).all()
 
-    vendas = db.query(ListagemVendas).all()
-
     lucro_mensal = 0
     a_aguardar_pagamento = 0
 
     for evento in eventos_do_mes:
-        # Somar ganhos reais a partir da tabela de vendas
-        ganhos_reais = sum(
-            v.ganho for v in vendas if v.evento == evento.evento
-        )
+        lucro = evento.ganho - evento.gasto
 
-        lucro = ganhos_reais - evento.gasto
-
-        print(f"[DEBUG] Evento: {evento.evento} | Estado: {evento.estado} | Gasto: {evento.gasto} | Ganho real: {ganhos_reais} | Lucro: {lucro}")
-
-        if evento.estado == "Pago":
-            lucro_mensal += lucro
-        elif ganhos_reais > 0:
+        # ✅ Contabiliza no lucro se:
+        #   - Estado é "Pago"
+        #   - OU Estado ≠ "Pago" e ganho > 0
+        if evento.estado == "Pago" or (evento.estado != "Pago" and evento.ganho > 0):
             lucro_mensal += lucro
 
+        # ✅ A aguardar pagamento = ganho de eventos com estado diferente de "Pago"
         if evento.estado != "Pago":
-            a_aguardar_pagamento += ganhos_reais
+            a_aguardar_pagamento += evento.ganho
 
     return {
-        "lucro": lucro_mensal,
-        "aguardar": a_aguardar_pagamento
-    }
+        "lucro_mensal": round(lucro_mensal),
+        "a_aguardar": round(a_aguardar_pagamento)
 
