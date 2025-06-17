@@ -279,7 +279,7 @@ def resumo_mensal_eventos(db: Session = Depends(get_db)):
 
     return {
         "lucro": round(lucro_mensal),
-        "pagamento": round(a_aguardar)
+        "pagamento": round(pagamento)
         
     }        
 
