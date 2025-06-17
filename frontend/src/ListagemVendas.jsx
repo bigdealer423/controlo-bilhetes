@@ -13,12 +13,22 @@ export default function ListagemVendas(props) {
     estado: "Por entregar"
   });
 
-  const forcarAtualizacaoEmail = () => {
-  fetch("https://controlo-bilhetes.onrender.com/forcar_leitura_email", { method: "POST" })
-    .then(res => {
-      if (!res.ok) throw new Error("Erro ao forçar leitura de emails");
-      return res.json();
-    })
+  const [respostaAtualizacao, setRespostaAtualizacao] = useState(null);
+  const [mostrarModal, setMostrarModal] = useState(false);
+  const forcarAtualizacaoEmail = async () => {
+  try {
+    const res = await fetch("https://controlo-bilhetes.onrender.com/forcar_leitura_email", {
+      method: "POST"
+    });
+    const data = await res.json();
+    setRespostaAtualizacao(data);
+    setMostrarModal(true);
+  } catch (err) {
+    setRespostaAtualizacao({ mensagem: "Erro", detalhe: "Não foi possível iniciar o processo de leitura." });
+    setMostrarModal(true);
+  }
+};
+
     .then(data => {
       buscarRegistos();        // Atualiza a tabela
       buscarResumoDiario();    // Atualiza o resumo diário
@@ -361,6 +371,20 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
           Fechar
         </button>
       </div>
+    </div>
+  </div>
+)}
+      {mostrarModal && (
+  <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+    <div className="bg-white p-6 rounded shadow-lg w-full max-w-md">
+      <h2 className="text-lg font-semibold mb-2">{respostaAtualizacao?.mensagem}</h2>
+      <p className="text-gray-700">{respostaAtualizacao?.detalhe}</p>
+      <button
+        onClick={() => setMostrarModal(false)}
+        className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+      >
+        Fechar
+      </button>
     </div>
   </div>
 )}
