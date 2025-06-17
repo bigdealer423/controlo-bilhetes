@@ -12,7 +12,24 @@ export default function ListagemVendas(props) {
     ganho: "",
     estado: "Por entregar"
   });
-  
+
+  const forcarAtualizacaoEmail = () => {
+  fetch("https://controlo-bilhetes.onrender.com/forcar_leitura_email", { method: "POST" })
+    .then(res => {
+      if (!res.ok) throw new Error("Erro ao forçar leitura de emails");
+      return res.json();
+    })
+    .then(data => {
+      buscarRegistos();        // Atualiza a tabela
+      buscarResumoDiario();    // Atualiza o resumo diário
+      alert("Leitura de e-mails concluída com sucesso.");
+    })
+    .catch(err => {
+      console.error(err);
+      alert("Ocorreu um erro ao tentar ler os e-mails.");
+    });
+};
+
   const [modoEdicao, setModoEdicao] = useState(null);
   const [registoEditado, setRegistoEditado] = useState({});
   const [resumoDiario, setResumoDiario] = useState({ total: 0, ganho: 0 });
@@ -207,6 +224,13 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
         <div className="flex justify-between items-center mb-2">
           <h2 className="text-lg font-semibold">Vendas</h2>
           <div className="flex gap-2">
+            <button
+  onClick={forcarAtualizacaoEmail}
+  className="bg-green-600 text-white px-4 py-1 rounded hover:bg-green-700"
+>
+  🔄 Atualizar Vendas (Email)
+</button>
+
             
           </div>
         </div>
