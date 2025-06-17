@@ -35,6 +35,12 @@ export default function Eventos() {
   buscarResumoMensal();
 }, []);
 
+  useEffect(() => {
+  if (compras.length && vendas.length) {
+    buscarResumoMensal();
+  }
+}, [compras, vendas]);
+
 const buscarResumoMensal = async () => {
   try {
     const res = await fetch("https://controlo-bilhetes.onrender.com/resumo_mensal_eventos");
@@ -113,8 +119,10 @@ const buscarDropdown = async () => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(atualizado)
     });
-    if (res.ok) buscarEventos();
-      await buscarResumoMensal(); // ✅ atualiza se mudou estado ou valores
+    if (res.ok) {
+      await buscarEventos();
+      await buscarResumoMensal(); // ✅ só corre se a atualização for bem-sucedida
+    }
   };
 
   const adicionarLinha = async () => {
