@@ -241,4 +241,16 @@ def resultado_leitura_email():
     except Exception as e:
         return JSONResponse(status_code=404, content={"erro": "Nenhum resumo encontrado ainda."})
 
+resumo_mais_recente = {}
+
+@app.post("/guardar_resumo")
+def guardar_resumo(dados: dict):
+    global resumo_mais_recente
+    resumo_mais_recente = dados
+    return {"status": "Resumo guardado com sucesso"}
+
+@app.get("/resultado_leitura_email")
+def obter_resumo():
+    return resumo_mais_recente or {"mensagem": "Sem resumo disponível ainda."}
+
 
