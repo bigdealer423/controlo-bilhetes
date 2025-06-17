@@ -1,5 +1,4 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import { useEffect, useState } from "react";
 import LoginPage from "./LoginPage";
 import Dashboard from "./Dashboard";
 import ListagemVendas from "./ListagemVendas";
@@ -18,11 +17,22 @@ export default function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={isAuthenticated ? <Navigate to="/listagem-vendas" replace /> : <LoginPage />} />
+        <Route
+          path="/"
+          element={
+            isAuthenticated ? <Navigate to="/listagem-vendas" replace /> : <LoginPage />
+          }
+        />
 
         <Route
           path="/dashboard"
-          element={isAuthenticated ? <Dashboard onAtualizarEventos={forcarAtualizacaoEventos} /> : <Navigate to="/" replace />}
+          element={
+            isAuthenticated ? (
+              <Dashboard onAtualizarEventos={forcarAtualizacaoEventos} />
+            ) : (
+              <Navigate to="/" replace />
+            )
+          }
         />
 
         <Route
@@ -39,117 +49,10 @@ export default function App() {
           }
         />
 
-        {/* Repetir o mesmo para as restantes rotas */}
-        <Route
-          path="/eventos"
-          element={isAuthenticated ? (
-            <>
-              <Dashboard onAtualizarEventos={forcarAtualizacaoEventos} />
-              <Eventos />
-            </>
-          ) : (
-            <Navigate to="/" replace />
-          )}
-        />
-
-        <Route
-          path="/info-clubes"
-          element={isAuthenticated ? (
-            <>
-              <Dashboard onAtualizarEventos={forcarAtualizacaoEventos} />
-              <InfoClubes />
-            </>
-          ) : (
-            <Navigate to="/" replace />
-          )}
-        />
-
-        <Route
-          path="/disputas"
-          element={isAuthenticated ? (
-            <>
-              <Dashboard onAtualizarEventos={forcarAtualizacaoEventos} />
-              <Disputas />
-            </>
-          ) : (
-            <Navigate to="/" replace />
-          )}
-        />
-
-        <Route
-          path="/compras"
-          element={isAuthenticated ? (
-            <>
-              <Dashboard onAtualizarEventos={forcarAtualizacaoEventos} />
-              <Compras />
-            </>
-          ) : (
-            <Navigate to="/" replace />
-          )}
-        />
-
-        <Route
-          path="/outro"
-          element={isAuthenticated ? (
-            <>
-              <Dashboard onAtualizarEventos={forcarAtualizacaoEventos} />
-              <Outro />
-            </>
-          ) : (
-            <Navigate to="/" replace />
-          )}
-        />
-
-        <Route path="*" element={<Navigate to="/" />} />
-      </Routes>
-    </Router>
-  );
-}
-  
-  useEffect(() => {
-    const autenticadoLocal = localStorage.getItem("autenticado");
-    setAutenticado(autenticadoLocal === "true");
-  }, []);
-
-  if (autenticado === null) return null;
-
-  // Força reload para atualizar dropdown de eventos
-  const forcarAtualizacaoEventos = () => window.location.reload();
-
-  return (
-    <Router>
-      <Routes>
-        <Route
-          path="/"
-          element={
-            autenticado ? <Navigate to="/listagem-vendas" replace /> : <LoginPage />
-          }
-        />
-
-        <Route
-          path="/dashboard"
-          element={
-            autenticado ? <Dashboard onAtualizarEventos={forcarAtualizacaoEventos} /> : <Navigate to="/" replace />
-          }
-        />
-
-        <Route
-  path="/listagem-vendas"
-  element={
-    autenticado ? (
-      <>
-        <Dashboard onAtualizarEventos={forcarAtualizacaoEventos} />
-        <ListagemVendas atualizarEventos={true} />
-          </>
-       ) : (
-          <Navigate to="/" replace />
-            )
-          }
-        />
         <Route
           path="/eventos"
           element={
-            autenticado ? (
+            isAuthenticated ? (
               <>
                 <Dashboard onAtualizarEventos={forcarAtualizacaoEventos} />
                 <Eventos />
@@ -163,7 +66,7 @@ export default function App() {
         <Route
           path="/info-clubes"
           element={
-            autenticado ? (
+            isAuthenticated ? (
               <>
                 <Dashboard onAtualizarEventos={forcarAtualizacaoEventos} />
                 <InfoClubes />
@@ -177,7 +80,7 @@ export default function App() {
         <Route
           path="/disputas"
           element={
-            autenticado ? (
+            isAuthenticated ? (
               <>
                 <Dashboard onAtualizarEventos={forcarAtualizacaoEventos} />
                 <Disputas />
@@ -191,7 +94,7 @@ export default function App() {
         <Route
           path="/compras"
           element={
-            autenticado ? (
+            isAuthenticated ? (
               <>
                 <Dashboard onAtualizarEventos={forcarAtualizacaoEventos} />
                 <Compras />
@@ -205,7 +108,7 @@ export default function App() {
         <Route
           path="/outro"
           element={
-            autenticado ? (
+            isAuthenticated ? (
               <>
                 <Dashboard onAtualizarEventos={forcarAtualizacaoEventos} />
                 <Outro />
