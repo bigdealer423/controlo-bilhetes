@@ -181,7 +181,7 @@ def auto_update_email_data(username, password, date_from="01-May-2025"):
             if match:
                 ids_erro.append(match.group(1))
 
-  print("\n📊 Resumo:")
+    print("\n📊 Resumo:")
     print(f"   Total de e-mails lidos: {len(mensagens)}")
     print(f"   ✅ Registos inseridos com sucesso: {sucesso}")
     print(f"   ⚠️ Registos que já existiam: {ja_existiam}")
