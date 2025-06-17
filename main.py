@@ -21,7 +21,7 @@ from models import (
     CompraCreate,
     CompraOut
 )
-
+resumo_mais_recente = {}
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
