@@ -72,7 +72,7 @@ const buscarDropdown = async () => {
     if (res.ok) {
       let eventos = await res.json();
 
-      eventos = eventos.map(evento => {
+      eventos = await Promise.all(eventos.map(async evento => {
         const totalGasto = compras
           .filter(c => c.evento === evento.evento)
           .reduce((acc, curr) => acc + parseFloat(curr.gasto || 0), 0);
@@ -81,12 +81,16 @@ const buscarDropdown = async () => {
           .filter(v => v.evento === evento.evento)
           .reduce((acc, curr) => acc + parseFloat(curr.ganho || 0), 0);
 
-        return {
-          ...evento,
-          gasto: totalGasto,
-          ganho: totalGanho,
-        };
-      });
+        // Atualiza o evento no backend
+        await fetch(`https://controlo-bilhetes.onrender.com/eventos_completos2/${evento.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ...evento,
+            gasto: totalGasto,
+            ganho: totalGanho
+          })
+        });
 
       // Ordenação por data (mais antiga primeiro)
       eventos.sort((a, b) => new Date(a.data_evento) - new Date(b.data_evento));
