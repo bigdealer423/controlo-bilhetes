@@ -264,8 +264,7 @@ return (
     <td className="p-2" colSpan="4"></td>
   </tr>
 ))}
-                    <tr className="bg-white text-sm border-t">
-  <td colSpan="9" className="p-2 font-semibold">
+                    <tr className="bg-yellow-50 text-sm border-t border-l-4 border-yellow-600">
     Compras ({compras.filter(c => c.evento === r.evento).reduce((acc, c) => acc + Number(c.quantidade || 0), 0)})
   </td>
 </tr>
