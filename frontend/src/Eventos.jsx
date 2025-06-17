@@ -146,6 +146,7 @@ const buscarDropdown = async () => {
     });
     if (res.ok) {
       buscarEventos();
+      await buscarResumoMensal(); // ✅ força atualização do resumo
       setMostrarModal(false);
       setIdAEliminar(null);
     }
