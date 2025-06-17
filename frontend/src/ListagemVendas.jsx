@@ -107,7 +107,8 @@ export default function ListagemVendas(props) {
       body: JSON.stringify({
         ...registoEditado,
         id_venda: parseInt(registoEditado.id_venda),
-        ganho: parseFloat(registoEditado.ganho)
+        ganho: parseFloat(registoEditado.ganho),
+        data_venda: registoEditado.data_venda?.split("T")[0]
       })
     })
       .then(() => {
