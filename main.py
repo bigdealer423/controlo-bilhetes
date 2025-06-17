@@ -221,13 +221,13 @@ def forcar_execucao_workflow():
     response = requests.post(url, headers=headers, json=payload)
 
     if response.status_code == 204:
-        # Aqui devolve uma resposta que o frontend pode mostrar
         return {
-            "mensagem": "Verificação de emails iniciada com sucesso!",
-            "detalhe": "Aguarde cerca de 20 a 30 segundos para que os novos registos apareçam na tabela. Pode também recarregar a página."
+            "mensagem": "🔁 Atualização iniciada",
+            "detalhe": "O sistema está a verificar os e-mails. Aguarde 30 segundos e recarregue a tabela de vendas."
         }
     else:
         raise HTTPException(status_code=500, detail=f"Erro ao disparar workflow: {response.status_code}, {response.text}")
+
 
 
 
