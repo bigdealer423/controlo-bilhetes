@@ -18,32 +18,49 @@ export default function ListagemVendas(props) {
   const [mensagemModal, setMensagemModal] = useState("");
 
    const forcarAtualizacaoEmail = async () => {
-    setMensagemModal("⏳ A processar leitura de e-mails...");
-    setMostrarModal(true);
-  
-    try {
-      const res = await fetch("https://controlo-bilhetes.onrender.com/forcar_leitura_email", {
-        method: "POST"
-      });
-  
-      if (!res.ok) {
-        throw new Error("Falha na resposta");
-      }
-  
-      const data = await res.json();
-      setMensagemModal(`✅ ${data.mensagem}`);
-      buscarRegistos();
-      buscarResumoDiario();
-    } catch (err) {
-      setMensagemModal("❌ Erro ao tentar iniciar a leitura dos e-mails.");
+  setMensagemModal("⏳ A processar leitura de e-mails...");
+  setMostrarModal(true);
+
+  try {
+    const res = await fetch("https://controlo-bilhetes.onrender.com/forcar_leitura_email", {
+      method: "POST"
+    });
+
+    if (!res.ok) {
+      throw new Error("Falha na resposta");
     }
-  
-    // Fechar o modal depois de 6 segundos
+
+    const data = await res.json();
+    setMensagemModal(`✅ ${data.mensagem}`);
+    buscarRegistos();
+    buscarResumoDiario();
+  } catch (err) {
+    setMensagemModal("❌ Erro ao tentar iniciar a leitura dos e-mails.");
+  }
+
+  // ⏳ Após 60 segundos, buscar o resultado da leitura
+  setTimeout(async () => {
+    try {
+      const res = await fetch("https://controlo-bilhetes.onrender.com/resultado_leitura_email");
+      const json = await res.json();
+
+      if (json.sucesso !== undefined) {
+        setMensagemModal(`✅ Concluído: ${json.sucesso} novos, ${json.existentes} existentes, ${json.falhas} falhados.`);
+      } else {
+        setMensagemModal("⚠️ Concluído, mas sem dados detalhados.");
+      }
+    } catch {
+      setMensagemModal("⚠️ Concluído, mas não foi possível obter o resumo.");
+    }
+
+    // ⏹️ Fechar o modal após mais 8 segundos
     setTimeout(() => {
       setMostrarModal(false);
       setMensagemModal("");
-    }, 6000);
-  };
+    }, 8000);
+  }, 60000); // Esperar 60 segundos
+};
+
 
 
   const forcarLeituraEmail = () => {
