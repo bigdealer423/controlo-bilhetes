@@ -52,7 +52,14 @@ export default function Dashboard({ onAtualizarEventos }) {
         >
           <FiSettings size={20} />
         </button>
+        <button
+          onClick={handleLogout}
+          className="text-red-600 hover:text-red-800 text-sm border border-red-600 px-2 py-1 rounded"
+        >
+          Logout
+        </button>
       </div>
+      
 
       <EventoModal
         visivel={mostrarModal}
@@ -60,7 +67,5 @@ export default function Dashboard({ onAtualizarEventos }) {
         onAtualizar={onAtualizarEventos}
       />
     </div>
-    <Button onClick={handleLogout} className="ml-2">Logout</Button>
-  </div>
   );
 }
