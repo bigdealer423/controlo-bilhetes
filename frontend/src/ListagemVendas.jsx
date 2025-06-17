@@ -15,6 +15,7 @@ export default function ListagemVendas(props) {
   
   const [modoEdicao, setModoEdicao] = useState(null);
   const [registoEditado, setRegistoEditado] = useState({});
+  const [resumoDiario, setResumoDiario] = useState({ total: 0, ganho: 0 });
 
   useEffect(() => {
     buscarRegistos();
