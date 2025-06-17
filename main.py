@@ -202,35 +202,26 @@ def resumo_diario(db: Session = Depends(get_db)):
 
     return {"total": total_vendas, "ganho": ganho_total}
 
-import subprocess
 
 @app.post("/forcar_leitura_email")
-def forcar_leitura_email():
-    try:
-        subprocess.run(["python3", "email_reader.py"], check=True)
-        return {"status": "Script de email executado com sucesso"}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Erro ao executar script: {e}")
+def forcar_execucao_workflow():
+    token = os.getenv("GH_WEBHOOK_TOKEN")  # Token definido nas variáveis de ambiente
+    owner = "bigdealer423"        # ❗ Altere isto
+    repo = "controlo-bilhetes"
+    workflow = "email_reader.yml"  # ❗ Nome exato do ficheiro .yml no GitHub
 
-import requests
-import os
-
-GITHUB_TOKEN = os.getenv("GH_PAT")  # deve ser definido localmente se testar em dev
-REPO_OWNER = "bigdealer423"       # ex: "pedrorodrigosilva"
-REPO_NAME = "controlo-bilhetes"     # o nome do repositório
-
-@app.post("/forcar_leitura_email")
-def disparar_workflow_github():
-    url = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/actions/workflows/email-reader.yml/dispatches"
+    url = f"https://api.github.com/repos/{owner}/{repo}/actions/workflows/{workflow}/dispatches"
     headers = {
-        "Authorization": f"token {GITHUB_TOKEN}",
+        "Authorization": f"token {token}",
         "Accept": "application/vnd.github.v3+json"
     }
-    payload = { "ref": "main" }  # ou "master", conforme o nome da sua branch principal
+    payload = {"ref": "main"}
+
     response = requests.post(url, headers=headers, json=payload)
 
     if response.status_code == 204:
-        return {"detail": "Workflow disparado com sucesso"}
+        return {"mensagem": "Workflow disparado com sucesso"}
     else:
-        return {"detail": "Erro ao disparar workflow", "status": response.status_code, "body": response.text}
+        raise HTTPException(status_code=500, detail=f"Erro ao disparar workflow: {response.status_code}, {response.text}")
+
 
