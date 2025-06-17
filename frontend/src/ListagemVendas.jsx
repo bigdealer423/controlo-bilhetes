@@ -20,25 +20,33 @@ export default function ListagemVendas(props) {
     const res = await fetch("https://controlo-bilhetes.onrender.com/forcar_leitura_email", {
       method: "POST"
     });
+
+    if (!res.ok) {
+      throw new Error("Erro ao contactar o servidor.");
+    }
+
     const data = await res.json();
-    setRespostaAtualizacao(data);
+
+    // Atualizar tabela e resumo
+    buscarRegistos();
+    buscarResumoDiario();
+
+    // Mostrar modal com sucesso
+    setRespostaAtualizacao({
+      mensagem: "Leitura concluída ✅",
+      detalhe: data.mensagem || "Leitura forçada de emails terminada com sucesso."
+    });
     setMostrarModal(true);
   } catch (err) {
-    setRespostaAtualizacao({ mensagem: "Erro", detalhe: "Não foi possível iniciar o processo de leitura." });
+    console.error(err);
+    setRespostaAtualizacao({
+      mensagem: "Erro ❌",
+      detalhe: "Não foi possível iniciar o processo de leitura automática."
+    });
     setMostrarModal(true);
   }
 };
 
-    .then(data => {
-      buscarRegistos();        // Atualiza a tabela
-      buscarResumoDiario();    // Atualiza o resumo diário
-      alert("Leitura de e-mails concluída com sucesso.");
-    })
-    .catch(err => {
-      console.error(err);
-      alert("Ocorreu um erro ao tentar ler os e-mails.");
-    });
-};
 
   const forcarLeituraEmail = () => {
   fetch("https://controlo-bilhetes.onrender.com/forcar_leitura_email", {
