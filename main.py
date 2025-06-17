@@ -274,4 +274,3 @@ def resumo_mensal_eventos(db: Session = Depends(get_db)):
 
     return {"lucro_mensal": lucro, "a_aguardar": a_aguardar}
 
-
