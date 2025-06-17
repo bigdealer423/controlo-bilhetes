@@ -247,4 +247,24 @@ def guardar_resumo(dados: dict):
 def obter_resumo():
     return resumo_mais_recente or {"mensagem": "Sem resumo disponível ainda."}
 
+# ---------------- RESUMO MENSAL EVENTOS ----------------
+@app.get("/resumo_mensal_eventos")
+def resumo_mensal_eventos(db: Session = Depends(get_db)):
+    hoje = date.today()
+    mes = hoje.month
+    ano = hoje.year
+
+    eventos_mes = db.query(EventoCompletoModel).filter(
+        extract('month', EventoCompletoModel.data_evento) == mes,
+        extract('year', EventoCompletoModel.data_evento) == ano
+    ).all()
+
+    lucro_mensal = sum((e.ganho or 0) - (e.gasto or 0) for e in eventos_mes)
+    a_aguardar = sum(e.ganho or 0 for e in eventos_mes if e.estado != "Pago")
+
+    return {
+        "lucro_mensal": lucro_mensal,
+        "a_aguardar": a_aguardar
+    }
+
 
