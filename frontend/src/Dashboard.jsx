@@ -15,7 +15,7 @@ export default function Dashboard({ onAtualizarEventos }) {
   const [mostrarModal, setMostrarModal] = useState(false);
 
   const handleLogout = () => {
-  localStorage.removeItem("utilizador"); // ou o nome que estiver a usar para guardar o login
+  logout();
   navigate("/login");
 };
 
