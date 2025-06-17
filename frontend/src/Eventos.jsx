@@ -267,7 +267,13 @@ return (
       vendas
         .filter(v => v.evento === r.evento)
         .reduce((acc, v) => {
-          const match = v.estadio.match(/\((\d+)\s*Bilhetes?\)/i);
+          const texto = v.estadio.trim();
+          if (/^\d+$/.test(texto)) {
+            // Só números → usar como quantidade
+            return acc + parseInt(texto);
+          }
+          // Caso contrário, extrair número entre parêntesis
+          const match = texto.match(/\((\d+)\s*Bilhetes?\)/i);
           return acc + (match ? parseInt(match[1]) : 0);
         }, 0)
     })
