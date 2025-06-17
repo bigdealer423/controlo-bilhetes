@@ -3,6 +3,9 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import EventoModal from "./EventoModal";
 import { FiSettings } from "react-icons/fi";
+import { useAuth } from "./AuthContext";
+
+const { logout } = useAuth();
 
 export default function Dashboard({ onAtualizarEventos }) {
   const navigate = useNavigate();
