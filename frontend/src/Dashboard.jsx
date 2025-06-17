@@ -60,5 +60,7 @@ export default function Dashboard({ onAtualizarEventos }) {
         onAtualizar={onAtualizarEventos}
       />
     </div>
+    <Button onClick={handleLogout} className="ml-2">Logout</Button>
+  </div>
   );
 }
