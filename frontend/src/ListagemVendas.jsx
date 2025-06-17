@@ -113,6 +113,7 @@ export default function ListagemVendas(props) {
       .then(() => {
         setModoEdicao(null);
         buscarRegistos();
+        buscarResumoDiario();
       });
   };
   const handleOrdenarPor = (coluna) => {
