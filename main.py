@@ -202,4 +202,15 @@ def resumo_diario(db: Session = Depends(get_db)):
 
     return {"total": total_vendas, "ganho": ganho_total}
 
+import subprocess
+
+@app.post("/forcar_leitura_email")
+def forcar_leitura_email():
+    try:
+        subprocess.run(["python3", "email_reader.py"], check=True)
+        return {"status": "Script de email executado com sucesso"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro ao executar script: {e}")
+
+
 
