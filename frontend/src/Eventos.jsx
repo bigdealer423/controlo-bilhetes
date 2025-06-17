@@ -154,8 +154,8 @@ return (
 
       <div className="bg-yellow-100 border-l-4 border-yellow-600 text-yellow-800 p-4 mb-6 rounded">
   <p className="font-semibold">Resumo Mensal</p>
-  <p>📆 Lucro de {new Date().toLocaleString("pt-PT", { month: "long", year: "numeric" })}: <strong>{resumoMensal.lucro_mensal} €</strong></p>
-  <p>💸 A aguardar pagamento: <strong>{resumoMensal.a_aguardar} €</strong></p>
+  <p>📆 Lucro de {new Date().toLocaleString("pt-PT", { month: "long", year: "numeric" })}: <strong>{resumoMensal.lucro} €</strong></p>
+<p>💸 A aguardar pagamento: <strong>{resumoMensal.aguardar} €</strong></p>
 </div>
 
       <button onClick={adicionarLinha} className="mb-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
