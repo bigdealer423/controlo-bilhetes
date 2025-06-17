@@ -51,22 +51,23 @@ export default function Dashboard({ onAtualizarEventos }) {
         ))}
       </div>
 
-      <div>
-        <button
-          onClick={() => setMostrarModal(true)}
-          className="text-gray-700 hover:text-black ml-4"
-          title="Definições"
-        >
-          <FiSettings size={20} />
-        </button>
-        
-        <button
-          onClick={handleLogout}
-          className="text-red-600 hover:text-red-800 text-sm border border-red-600 px-2 py-1 rounded"
-        >
-          Logout
-        </button>
-      </div>
+      <div className="flex items-center space-x-4 ml-4">
+  <button
+    onClick={() => setMostrarModal(true)}
+    className="text-gray-700 hover:text-black"
+    title="Definições"
+  >
+    <FiSettings size={20} />
+  </button>
+
+  <button
+    onClick={handleLogout}
+    className="text-red-600 hover:text-red-800 text-sm border border-red-600 px-2 py-1 rounded"
+  >
+    Logout
+  </button>
+</div>
+
       
 
       <EventoModal
