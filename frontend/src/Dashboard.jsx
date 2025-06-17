@@ -26,6 +26,13 @@ export default function Dashboard({ onAtualizarEventos }) {
     }
   }, [location.pathname, navigate]);
 
+  // ✅ Função de logout
+  const handleLogout = () => {
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("authExpires");
+    navigate("/login");
+  };
+
   return (
     <div className="bg-gray-100 p-3 flex justify-between items-center border-b mb-4">
       <div className="flex gap-2 flex-wrap">
@@ -52,6 +59,7 @@ export default function Dashboard({ onAtualizarEventos }) {
         >
           <FiSettings size={20} />
         </button>
+        
         <button
           onClick={handleLogout}
           className="text-red-600 hover:text-red-800 text-sm border border-red-600 px-2 py-1 rounded"
