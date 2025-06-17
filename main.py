@@ -232,14 +232,7 @@ import json
 import os
 from fastapi.responses import JSONResponse
 
-@app.get("/resultado_leitura_email")
-def resultado_leitura_email():
-    try:
-        with open("resumo_leitura.json", "r") as f:
-            conteudo = json.load(f)
-        return JSONResponse(content=conteudo)
-    except Exception as e:
-        return JSONResponse(status_code=404, content={"erro": "Nenhum resumo encontrado ainda."})
+
 
 # ---------------- RESUMO DA LEITURA ----------------
 resumo_mais_recente = {}
