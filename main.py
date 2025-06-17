@@ -1,3 +1,4 @@
+from sqlalchemy import extract
 import os
 import requests
 from fastapi import FastAPI, HTTPException, Depends
