@@ -11,7 +11,7 @@ export default function Eventos() {
   const [mostrarModal, setMostrarModal] = useState(false);
   const [idAEliminar, setIdAEliminar] = useState(null);
   const location = useLocation();
-  const [resumoMensal, setResumoMensal] = useState({ lucro_mensal: 0, a_aguardar: 0 });
+  const [resumoMensal, setResumoMensal] = useState({ lucro: 0, pagamento: 0 });
 
   useEffect(() => {
     const carregarDados = async () => {
