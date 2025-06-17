@@ -252,20 +252,26 @@ def obter_resumo():
 @app.get("/resumo_mensal_eventos")
 def resumo_mensal_eventos(db: Session = Depends(get_db)):
     hoje = date.today()
-    mes = hoje.month
     ano = hoje.year
+    mes = hoje.month
 
     eventos_mes = db.query(EventoCompletoModel).filter(
-        extract('month', EventoCompletoModel.data_evento) == mes,
-        extract('year', EventoCompletoModel.data_evento) == ano
+        extract('year', EventoCompletoModel.data_evento) == ano,
+        extract('month', EventoCompletoModel.data_evento) == mes
     ).all()
 
-    lucro_mensal = sum((e.ganho or 0) - (e.gasto or 0) for e in eventos_mes)
-    a_aguardar = sum(e.ganho or 0 for e in eventos_mes if e.estado != "Pago")
+    lucro = sum(
+        e.ganho - e.gasto
+        for e in eventos_mes
+        if e.estado == "Pago" or e.ganho > 0
+    )
 
-    return {
-        "lucro_mensal": lucro_mensal,
-        "a_aguardar": a_aguardar
-    }
+    a_aguardar = sum(
+        e.ganho
+        for e in eventos_mes
+        if e.estado != "Pago"
+    )
+
+    return {"lucro_mensal": lucro, "a_aguardar": a_aguardar}
 
 
