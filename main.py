@@ -251,26 +251,32 @@ def obter_resumo():
 # ---------------- RESUMO MENSAL EVENTOS ----------------
 @app.get("/resumo_mensal_eventos")
 def resumo_mensal_eventos(db: Session = Depends(get_db)):
-    hoje = date.today()
-    ano = hoje.year
+    hoje = datetime.now()
     mes = hoje.month
+    ano = hoje.year
 
-    eventos_mes = db.query(EventoCompletoModel).filter(
-        extract('year', EventoCompletoModel.data_evento) == ano,
-        extract('month', EventoCompletoModel.data_evento) == mes
+    eventos_do_mes = db.query(EventoCompletoModel).filter(
+        extract('month', EventoCompletoModel.data_evento) == mes,
+        extract('year', EventoCompletoModel.data_evento) == ano
     ).all()
 
-    lucro = sum(
-        e.ganho - e.gasto
-        for e in eventos_mes
-        if e.estado == "Pago" or e.ganho > 0
-    )
+    lucro_mensal = 0
+    a_aguardar_pagamento = 0
 
-    a_aguardar = sum(
-        e.ganho
-        for e in eventos_mes
-        if e.estado != "Pago"
-    )
+    for evento in eventos_do_mes:
+        lucro = evento.ganho - evento.gasto
 
-    return {"lucro_mensal": lucro, "a_aguardar": a_aguardar}
+        # 💰 Lucro mensal:
+        if evento.estado == "Pago":
+            lucro_mensal += lucro
+        elif evento.ganho > 0:
+            lucro_mensal += lucro
 
+        # ⏳ A aguardar pagamento:
+        if evento.estado != "Pago":
+            a_aguardar_pagamento += evento.ganho
+
+    return {
+        "lucro": lucro_mensal,
+        "aguardar": a_aguardar_pagamento
+    }
