@@ -151,8 +151,8 @@ const buscarDropdown = async () => {
     await buscarResumoMensal();    // ✅ Atualização correta do resumo
     setMostrarModal(false);
     setIdAEliminar(null);
-  }
-};
+    }
+  };
 return (
     <div className="p-6 max-w-6xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">Resumo de Eventos</h1>
