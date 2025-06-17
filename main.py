@@ -206,12 +206,12 @@ def resumo_diario(db: Session = Depends(get_db)):
 
 @app.post("/forcar_leitura_email")
 def forcar_execucao_workflow():
-    token = os.getenv("GH_WEBHOOK_TOKEN")  # Token definido nas variáveis de ambiente
-    owner = "bigdealer423"        # ❗ Altere isto
+    token = os.getenv("GH_WEBHOOK_TOKEN")
+    owner = "bigdealer423"
     repo = "controlo-bilhetes"
-    workflow = "email_reader.yml"  # ❗ Nome exato do ficheiro .yml no GitHub
-
+    workflow = "email_reader.yml"
     url = f"https://api.github.com/repos/{owner}/{repo}/actions/workflows/{workflow}/dispatches"
+
     headers = {
         "Authorization": f"token {token}",
         "Accept": "application/vnd.github.v3+json"
@@ -221,8 +221,13 @@ def forcar_execucao_workflow():
     response = requests.post(url, headers=headers, json=payload)
 
     if response.status_code == 204:
-        return {"mensagem": "Workflow disparado com sucesso"}
+        # Aqui devolve uma resposta que o frontend pode mostrar
+        return {
+            "mensagem": "Verificação de emails iniciada com sucesso!",
+            "detalhe": "Aguarde cerca de 20 a 30 segundos para que os novos registos apareçam na tabela. Pode também recarregar a página."
+        }
     else:
         raise HTTPException(status_code=500, detail=f"Erro ao disparar workflow: {response.status_code}, {response.text}")
+
 
 
