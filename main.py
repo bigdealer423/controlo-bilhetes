@@ -268,9 +268,10 @@ def resumo_mensal_eventos(db: Session = Depends(get_db)):
 
         # 💰 Lucro mensal:
         if evento.estado == "Pago":
-            lucro_mensal += lucro
-        elif evento.ganho > 0:
-            lucro_mensal += lucro
+            lucro_mensal += evento.ganho - evento.gasto
+        elif evento.estado != "Pago" and evento.ganho > 0:
+            lucro_mensal += evento.ganho
+
 
         # ⏳ A aguardar pagamento:
         if evento.estado != "Pago":
