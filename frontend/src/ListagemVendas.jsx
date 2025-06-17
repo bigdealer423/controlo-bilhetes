@@ -142,8 +142,8 @@ const eliminarConfirmado = async () => {
   setIdsAEliminar([]);
   buscarRegistos();
 };
-  const [colunaOrdenacao, setColunaOrdenacao] = useState("evento");
-  const [ordemAscendente, setOrdemAscendente] = useState(true);
+  const [colunaOrdenacao, setColunaOrdenacao] = useState("data_venda");
+const [ordemAscendente, setOrdemAscendente] = useState(false);
   const ordenarRegistos = (dados, coluna, ascendente) => {
   return [...dados].sort((a, b) => {
     const valA = a[coluna] ?? "";
