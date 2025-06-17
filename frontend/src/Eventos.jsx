@@ -235,7 +235,16 @@ return (
                 {linhaExpandida === r.id && (
                   <>
                     <tr className="bg-white text-sm border-t">
-  <td colSpan="9" className="p-2 font-semibold">Vendas</td>
+  <td colSpan="9" className="p-2 font-semibold">
+    Vendas ({
+      vendas
+        .filter(v => v.evento === r.evento)
+        .reduce((acc, v) => {
+          const match = v.estadio.match(/\((\d+)\s*Bilhetes?\)/i);
+          return acc + (match ? parseInt(match[1]) : 0);
+        }, 0)
+    })
+  </td>
 </tr>
 <tr className="bg-gray-200 text-xs font-semibold">
   <td className="p-2">ID Venda</td>
@@ -254,7 +263,9 @@ return (
   </tr>
 ))}
                     <tr className="bg-white text-sm border-t">
-  <td colSpan="9" className="p-2 font-semibold">Compras</td>
+  <td colSpan="9" className="p-2 font-semibold">
+    Compras ({compras.filter(c => c.evento === r.evento).reduce((acc, c) => acc + Number(c.quantidade || 0), 0)})
+  </td>
 </tr>
 <tr className="bg-gray-200 text-xs font-semibold">
   <td className="p-2">Local</td>
