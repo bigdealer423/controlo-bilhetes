@@ -1,23 +1,19 @@
 // src/AuthContext.jsx
-import { createContext, useContext, useState, useEffect } from "react";
+
+import { createContext, useContext, useState } from "react";
 
 const AuthContext = createContext();
 
-export const AuthProvider = ({ children }) => {
-  const [autenticado, setAutenticado] = useState(false);
-
-  useEffect(() => {
-    const stored = localStorage.getItem("autenticado");
-    setAutenticado(stored === "true");
-  }, []);
+export function AuthProvider({ children }) {
+  const [autenticado, setAutenticado] = useState(!!localStorage.getItem("utilizador"));
 
   const login = () => {
-    localStorage.setItem("autenticado", "true");
+    localStorage.setItem("utilizador", "bigdealer");
     setAutenticado(true);
   };
 
   const logout = () => {
-    localStorage.removeItem("autenticado");
+    localStorage.removeItem("utilizador");
     setAutenticado(false);
   };
 
@@ -26,6 +22,6 @@ export const AuthProvider = ({ children }) => {
       {children}
     </AuthContext.Provider>
   );
-};
+}
 
 export const useAuth = () => useContext(AuthContext);
