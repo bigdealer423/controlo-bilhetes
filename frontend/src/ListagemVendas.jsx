@@ -225,7 +225,7 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
           <h2 className="text-lg font-semibold">Vendas</h2>
           <div className="flex gap-2">
             <button
-  onClick={() => window.open("https://github.com/pedrorodrigo-dev/controlo-bilhetes/actions/workflows/email-reader.yml", "_blank")}
+  onClick={() => window.open("https://github.com/bigdealer423/controlo-bilhetes/actions/workflows/email-reader.yml", "_blank")}
   className="bg-green-600 text-white px-4 py-1 rounded hover:bg-green-700"
 >
   🔄 Verificar E-mails (GitHub)
