@@ -114,7 +114,7 @@ const buscarDropdown = async () => {
       body: JSON.stringify(atualizado)
     });
     if (res.ok) buscarEventos();
-    await buscarResumoMensal(); // ✅ atualiza se mudou estado ou valores
+      await buscarResumoMensal(); // ✅ atualiza se mudou estado ou valores
   };
 
   const adicionarLinha = async () => {
@@ -132,9 +132,9 @@ const buscarDropdown = async () => {
       body: JSON.stringify(novo)
     });
     if (res.ok) {
-  await buscarEventos();         // ⏳ Esperar que os eventos sejam atualizados
-  await buscarResumoMensal();    // ✅ Só depois atualizar o resumo mensal
-  }
+      await buscarEventos();         // ⏳ Esperar que os eventos sejam atualizados
+      await buscarResumoMensal();    // ✅ Só depois atualizar o resumo mensal
+    }
 };
 
   const confirmarEliminar = (id) => {
