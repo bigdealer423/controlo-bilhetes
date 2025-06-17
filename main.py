@@ -40,6 +40,7 @@ app.add_middleware(
 def root():
     return {"status": "API online"}
 
+
 # ---------------- LISTAGEM DE VENDAS ----------------
 @app.get("/listagem_vendas")
 def listar_vendas(db: Session = Depends(get_db)):
