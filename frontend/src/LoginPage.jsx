@@ -16,6 +16,10 @@ export default function LoginPage() {
       alert("Credenciais inválidas");
     }
   };
+  
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleLogin();
 
   return (
     <div className="p-6 max-w-sm mx-auto">
