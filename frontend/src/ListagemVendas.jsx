@@ -15,37 +15,35 @@ export default function ListagemVendas(props) {
 
   const [respostaAtualizacao, setRespostaAtualizacao] = useState(null);
   const [mostrarModal, setMostrarModal] = useState(false);
-  const forcarAtualizacaoEmail = async () => {
-  try {
-    const res = await fetch("https://controlo-bilhetes.onrender.com/forcar_leitura_email", {
-      method: "POST"
-    });
+  const [mensagemModal, setMensagemModal] = useState("");
 
-    if (!res.ok) {
-      throw new Error("Erro ao contactar o servidor.");
+   const forcarAtualizacaoEmail = async () => {
+    setMensagemModal("⏳ A processar leitura de e-mails...");
+    setMostrarModal(true);
+  
+    try {
+      const res = await fetch("https://controlo-bilhetes.onrender.com/forcar_leitura_email", {
+        method: "POST"
+      });
+  
+      if (!res.ok) {
+        throw new Error("Falha na resposta");
+      }
+  
+      const data = await res.json();
+      setMensagemModal(`✅ ${data.mensagem}`);
+      buscarRegistos();
+      buscarResumoDiario();
+    } catch (err) {
+      setMensagemModal("❌ Erro ao tentar iniciar a leitura dos e-mails.");
     }
-
-    const data = await res.json();
-
-    // Atualizar tabela e resumo
-    buscarRegistos();
-    buscarResumoDiario();
-
-    // Mostrar modal com sucesso
-    setRespostaAtualizacao({
-      mensagem: "Leitura concluída ✅",
-      detalhe: data.mensagem || "Leitura forçada de emails terminada com sucesso."
-    });
-    setMostrarModal(true);
-  } catch (err) {
-    console.error(err);
-    setRespostaAtualizacao({
-      mensagem: "Erro ❌",
-      detalhe: "Não foi possível iniciar o processo de leitura automática."
-    });
-    setMostrarModal(true);
-  }
-};
+  
+    // Fechar o modal depois de 6 segundos
+    setTimeout(() => {
+      setMostrarModal(false);
+      setMensagemModal("");
+    }, 6000);
+  };
 
 
   const forcarLeituraEmail = () => {
@@ -383,19 +381,11 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
   </div>
 )}
       {mostrarModal && (
-  <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-    <div className="bg-white p-6 rounded shadow-lg w-full max-w-md">
-      <h2 className="text-lg font-semibold mb-2">{respostaAtualizacao?.mensagem}</h2>
-      <p className="text-gray-700">{respostaAtualizacao?.detalhe}</p>
-      <button
-        onClick={() => setMostrarModal(false)}
-        className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-      >
-        Fechar
-      </button>
-    </div>
+  <div className="fixed top-4 right-4 bg-white border border-blue-200 shadow-xl px-4 py-3 rounded-lg z-50">
+    <p className="text-sm text-gray-700">{mensagemModal}</p>
   </div>
 )}
+
     </div> // Fecha o container principal da página
   );
 }
