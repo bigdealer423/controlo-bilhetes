@@ -206,6 +206,12 @@ def auto_update_email_data(username, password, date_from="01-May-2025"):
         ids_erro=ids_erro
     )
 
+    try:
+        requests.post("https://controlo-bilhetes.onrender.com/guardar_resumo", json=resumo)
+        print("📡 Resumo enviado para a API FastAPI com sucesso.")
+    except Exception as e:
+        print(f"❌ Falha ao enviar resumo para API: {e}")
+
 def enviar_resumo_email(total_emails, sucesso, falha, ja_existentes, ids_erro=None):
     remetente = os.getenv("SMTP_EMAIL")
     destinatario = os.getenv("SMTP_DEST")
