@@ -2,7 +2,7 @@ name: Executar Email Reader
 
 on:
   schedule:
-    - cron: '0 7 * * *'   # 08:00 em Lisboa (UTC+1)
+    - cron: '0 7 * * *'   # 08:00 em Lisboa
     - cron: '0 13 * * *'  # 14:00 em Lisboa
     - cron: '0 19 * * *'  # 20:00 em Lisboa
   workflow_dispatch:       # também pode executar manualmente
@@ -14,6 +14,9 @@ jobs:
       - name: Fazer checkout do repositório
         uses: actions/checkout@v3
 
+      - name: Ver hora atual no runner (debug)
+        run: date
+
       - name: Configurar Python
         uses: actions/setup-python@v4
         with:
@@ -23,7 +26,9 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Executar o script de leitura de emails
-        run: python email_reader.py
+        run: |
+          echo "A executar o script python_email_reader.py..."
+          python email_reader.py
         env:
           EMAIL_USERNAME: ${{ secrets.EMAIL_USERNAME }}
           EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
