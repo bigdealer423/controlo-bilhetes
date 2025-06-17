@@ -131,9 +131,11 @@ const buscarDropdown = async () => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(novo)
     });
-    if (res.ok) buscarEventos();
-    await buscarResumoMensal(); // ✅ força atualização do resumo
-  };
+    if (res.ok) {
+  await buscarEventos();         // ⏳ Esperar que os eventos sejam atualizados
+  await buscarResumoMensal();    // ✅ Só depois atualizar o resumo mensal
+}
+
 
   const confirmarEliminar = (id) => {
     setIdAEliminar(id);
@@ -145,12 +147,12 @@ const buscarDropdown = async () => {
       method: "DELETE"
     });
     if (res.ok) {
-      buscarEventos();
-      await buscarResumoMensal(); // ✅ força atualização do resumo
-      setMostrarModal(false);
-      setIdAEliminar(null);
-    }
-  };
+    await buscarEventos();         // ⏳ Correção crítica
+    await buscarResumoMensal();    // ✅ Atualização correta do resumo
+    setMostrarModal(false);
+    setIdAEliminar(null);
+  }
+};
 return (
     <div className="p-6 max-w-6xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">Resumo de Eventos</h1>
