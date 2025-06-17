@@ -227,6 +227,17 @@ def enviar_resumo_email(total_emails, sucesso, falha, ja_existentes, ids_erro=No
     except Exception as e:
         print(f"❌ Erro ao enviar email de resumo: {e}")
         traceback.print_exc()
+import json
 
+resumo = {
+    "total_lidos": len(mensagens),
+    "sucesso": sucesso,
+    "existentes": ja_existiam,
+    "falhas": falha,
+    "ids_falhados": ids_com_erro  # uma lista que já usámos no email
+}
+
+with open("resumo_leitura.json", "w") as f:
+    json.dump(resumo, f)
 if __name__ == "__main__":
     auto_update_email_data(username, password)
