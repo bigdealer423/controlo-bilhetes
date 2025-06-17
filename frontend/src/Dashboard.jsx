@@ -5,12 +5,13 @@ import EventoModal from "./EventoModal";
 import { FiSettings } from "react-icons/fi";
 import { useAuth } from "./AuthContext";
 
-const { logout } = useAuth();
+
 
 export default function Dashboard({ onAtualizarEventos }) {
   const navigate = useNavigate();
   const location = useLocation();
   const rotaAtual = location.pathname;
+  const { logout } = useAuth();
 
   const [mostrarModal, setMostrarModal] = useState(false);
 
@@ -34,12 +35,7 @@ export default function Dashboard({ onAtualizarEventos }) {
     }
   }, [location.pathname, navigate]);
 
-  // ✅ Função de logout
-  const handleLogout = () => {
-    localStorage.removeItem("authToken");
-    localStorage.removeItem("authExpires");
-    navigate("/login");
-  };
+ 
 
   return (
     <div className="bg-gray-100 p-3 flex justify-between items-center border-b mb-4">
