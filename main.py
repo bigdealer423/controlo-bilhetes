@@ -266,6 +266,10 @@ def resumo_mensal_eventos(db: Session = Depends(get_db)):
     for evento in eventos_do_mes:
         lucro = evento.ganho - evento.gasto
 
+        # ✅ DEBUG: ver o que está a ser analisado
+        print(f"[DEBUG] Evento: {evento.evento} | Estado: {evento.estado} | Gasto: {evento.gasto} | Ganho: {evento.ganho} | Lucro: {lucro}")
+
+
         if evento.estado == "Pago":
             lucro_mensal += lucro
         elif evento.estado != "Pago" and evento.ganho > 0:
