@@ -134,8 +134,8 @@ const buscarDropdown = async () => {
     if (res.ok) {
   await buscarEventos();         // ⏳ Esperar que os eventos sejam atualizados
   await buscarResumoMensal();    // ✅ Só depois atualizar o resumo mensal
-}
-
+  }
+};
 
   const confirmarEliminar = (id) => {
     setIdAEliminar(id);
