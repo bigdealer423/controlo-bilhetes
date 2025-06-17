@@ -248,7 +248,7 @@ return (
     })
   </td>
 </tr>
-<tr className="bg-gray-200 text-xs font-semibold">
+<tr className="bg-blue-100 text-xs font-semibold">
   <td className="p-2">ID Venda</td>
   <td className="p-2" colSpan="2">Bilhetes</td>
   <td className="p-2">Ganho</td>
@@ -256,7 +256,7 @@ return (
   <td colSpan="5"></td>
 </tr>
 {vendas.filter(v => v.evento === r.evento).map(v => (
-  <tr key={"v" + v.id} className="text-xs bg-white border-t">
+  <tr key={"v" + v.id} className="text-xs bg-blue-50 border-t">
     <td className="p-2">{v.id_venda}</td>
     <td className="p-2" colSpan="2">{v.estadio}</td>
     <td className="p-2">{v.ganho} €</td>
@@ -269,7 +269,7 @@ return (
     Compras ({compras.filter(c => c.evento === r.evento).reduce((acc, c) => acc + Number(c.quantidade || 0), 0)})
   </td>
 </tr>
-<tr className="bg-gray-200 text-xs font-semibold">
+<tr className="bg-yellow-100 text-xs font-semibold">
   <td className="p-2">Local</td>
   <td className="p-2">Bancada</td>
   <td className="p-2">Setor</td>
@@ -279,7 +279,7 @@ return (
   <td colSpan="3"></td>
 </tr>
 {compras.filter(c => c.evento === r.evento).map(c => (
-  <tr key={"c" + c.id} className="text-xs bg-white border-t">
+  <tr key={"c" + c.id} className="text-xs bg-yellow-50 border-t">
     <td className="p-2">{c.local_compras}</td>
     <td className="p-2">{c.bancada}</td>
     <td className="p-2">{c.setor}</td>
