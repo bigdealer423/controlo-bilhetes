@@ -8,28 +8,45 @@ export default function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogin = () => {
+  const handleLogin = (e) => {
+    e.preventDefault(); // previne reload do form
+
     if (username === "bigdealer" && password === "1091") {
-      login(); // ← reativa o context
+      login();
       navigate("/listagem-vendas");
     } else {
       alert("Credenciais inválidas");
-    }
-  };
-  
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter") {
-      handleLogin();
     }
   };
 
   return (
     <div className="p-6 max-w-sm mx-auto">
       <h1 className="text-2xl font-bold mb-4">Login</h1>
-      <input type="text" placeholder="Nome de utilizador" value={username} onChange={e => setUsername(e.target.value)} className="input mb-2" />
-      <input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} className="input mb-4" />
-      <button onClick={handleLogin} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Login</button>
+
+      <form onSubmit={handleLogin}>
+        <input
+          type="text"
+          placeholder="Nome de utilizador"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          className="input mb-2 w-full"
+        />
+
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="input mb-4 w-full"
+        />
+
+        <button
+          type="submit"
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full"
+        >
+          Login
+        </button>
+      </form>
     </div>
   );
 }
-
