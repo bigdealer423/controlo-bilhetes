@@ -195,10 +195,10 @@ from sqlalchemy import func
 # ---------------- RESUMO DIÁRIO VENDAS ----------------
 @app.get("/resumo_diario")
 def resumo_diario(db: Session = Depends(get_db)):
-    hoje = date.today()  # ou usar datetime.now().date() com timezone se necessário
+    hoje = date.today()
 
-    total_vendas = db.query(func.count()).filter(ListagemVenda.data_venda == hoje).scalar()
-    ganho_total = db.query(func.sum(ListagemVenda.ganho)).filter(ListagemVenda.data_venda == hoje).scalar() or 0
+    total_vendas = db.query(func.count()).filter(func.date(ListagemVendas.data_venda) == hoje).scalar()
+    ganho_total = db.query(func.sum(ListagemVendas.ganho)).filter(func.date(ListagemVendas.data_venda) == hoje).scalar() or 0
 
     return {"total": total_vendas, "ganho": ganho_total}
 
