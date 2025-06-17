@@ -159,7 +159,7 @@ return (
           <tbody>
             {registos.map(r => (
               <>
-                <tr key={r.id} className={`cursor-pointer ${r.estado === "Pago" ? "bg-green-100" : ""} ${linhaExpandida === r.id ? "font-bold bg-blue-50" : ""}`}>
+                <tr key={r.id} className={`cursor-pointer ${linhaExpandida === r.id ? "bg-blue-100 text-black font-semibold" : r.estado === "Pago" ? "bg-green-100" : ""}`}>
                  <td className="p-2">
   {vendas.some(v => v.evento === r.evento) || compras.some(c => c.evento === r.evento) ? (
     <button onClick={() => setLinhaExpandida(linhaExpandida === r.id ? null : r.id)}>
@@ -234,6 +234,12 @@ return (
 
                 {linhaExpandida === r.id && (
                   <>
+                    <tr className="bg-indigo-50 text-sm border-t">
+  <td colSpan="9" className="p-2 font-semibold">Vendas (x)</td>
+</tr>
+                    <tr className="bg-yellow-50 text-sm border-t">
+  <td colSpan="9" className="p-2 font-semibold">Compras (x)</td>
+</tr>
                     <tr className="bg-white text-sm border-t">
   <td colSpan="9" className="p-2 font-semibold">
     Vendas ({
