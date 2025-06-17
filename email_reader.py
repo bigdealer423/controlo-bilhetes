@@ -181,13 +181,30 @@ def auto_update_email_data(username, password, date_from="01-May-2025"):
             if match:
                 ids_erro.append(match.group(1))
 
-    print("\n📊 Resumo:")
+  print("\n📊 Resumo:")
     print(f"   Total de e-mails lidos: {len(mensagens)}")
     print(f"   ✅ Registos inseridos com sucesso: {sucesso}")
     print(f"   ⚠️ Registos que já existiam: {ja_existiam}")
     print(f"   ❌ Registos com erro ou incompletos: {falha}")
 
-    enviar_resumo_email(len(mensagens), sucesso, falha, ja_existiam, ids_erro)
+    resumo = {
+        "total_lidos": sucesso + falha + ja_existiam,
+        "sucesso": sucesso,
+        "existentes": ja_existiam,
+        "falhas": falha,
+        "ids_falhados": ids_erro
+    }
+
+    with open("resumo_leitura.json", "w") as f:
+        json.dump(resumo, f, indent=2)
+
+    enviar_resumo_email(
+        total_emails=resumo["total_lidos"],
+        sucesso=resumo["sucesso"],
+        falha=resumo["falhas"],
+        ja_existentes=resumo["existentes"],
+        ids_erro=ids_erro
+    )
 
 def enviar_resumo_email(total_emails, sucesso, falha, ja_existentes, ids_erro=None):
     remetente = os.getenv("SMTP_EMAIL")
@@ -229,25 +246,7 @@ def enviar_resumo_email(total_emails, sucesso, falha, ja_existentes, ids_erro=No
         traceback.print_exc()
 import json
 
-resumo = {
-    "total_lidos": sucesso + falha + ja_existiam,
-    "sucesso": sucesso,
-    "existentes": ja_existiam,
-    "falhas": falha,
-    "ids_falhados": ids_com_erro
-}
 
-with open("resumo_leitura.json", "w") as f:
-    json.dump(resumo, f, indent=2)
-
-# Opcional: enviar email com resumo
-enviar_resumo_email(
-    total_emails=resumo["total_lidos"],
-    sucesso=resumo["sucesso"],
-    falha=resumo["falhas"],
-    ja_existentes=resumo["existentes"],
-    ids_erro=ids_com_erro
-)
 
 if __name__ == "__main__":
     auto_update_email_data(username, password)
