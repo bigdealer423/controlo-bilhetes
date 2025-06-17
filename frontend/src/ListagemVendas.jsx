@@ -141,6 +141,7 @@ const eliminarConfirmado = async () => {
   );
   setIdsAEliminar([]);
   buscarRegistos();
+  buscarResumoDiario();  // 🔴 Esta linha garante atualização do resumo
 };
   const [colunaOrdenacao, setColunaOrdenacao] = useState("data_venda");
 const [ordemAscendente, setOrdemAscendente] = useState(false);
