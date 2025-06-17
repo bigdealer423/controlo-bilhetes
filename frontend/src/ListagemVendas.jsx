@@ -19,6 +19,7 @@ export default function ListagemVendas(props) {
   useEffect(() => {
     buscarRegistos();
     buscarEventosDropdown();
+    buscarResumoDiario(); // ✅ adiciona isto
   }, []);
 
   useEffect(() => {
@@ -37,6 +38,12 @@ export default function ListagemVendas(props) {
     })
     .catch(err => console.error("Erro ao buscar registos:", err));
 };
+  const buscarResumoDiario = () => {
+    fetch("https://controlo-bilhetes.onrender.com/resumo_diario")
+      .then(res => res.json())
+      .then(data => setResumoDiario(data))
+      .catch(err => console.error("Erro ao buscar resumo diário:", err));
+  };
 
   const buscarEventosDropdown = () => {
     fetch("https://controlo-bilhetes.onrender.com/eventos_dropdown")
@@ -151,6 +158,12 @@ const eliminarConfirmado = async () => {
   return (
     <div className="p-6 max-w-6xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">Listagem de Vendas</h1>
+      <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-6 rounded">
+  <p className="font-semibold">Resumo Diário</p>
+  <p>📅 Vendas de hoje: {resumoDiario.total}</p>
+  <p>💰 Ganho de hoje: {resumoDiario.ganho} €</p>
+</div>
+
 
       <div className="bg-white shadow-md rounded p-4 mb-6">
         <h2 className="text-lg font-semibold mb-2">Adicionar Registo</h2>
