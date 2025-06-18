@@ -65,7 +65,7 @@ def connect_email(username, password):
 def search_emails(mail, subject="Os seus bilhetes foram vendidos", sender="viagogo", date_from=None):
     mail.select("inbox")
     if date_from is None:
-        date_from = (datetime.today() - timedelta(days=60)).strftime("%d-%b-%Y")
+        date_from = (datetime.today() - timedelta(days=PERIODO_DIAS)).strftime("%d-%b-%Y")
     else:
         date_from = datetime.strptime(date_from, "%d-%b-%Y").strftime("%d-%b-%Y")
         
