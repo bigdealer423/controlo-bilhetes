@@ -217,7 +217,8 @@ def auto_update_email_data(username, password, date_from=None):
     except Exception as e:
         print(f"❌ Falha ao enviar resumo para API: {e}")
 
-def enviar_resumo_email(total_emails, sucesso, falha, ja_existentes, ids_erro=None):
+def enviar_resumo_email(total_emails, sucesso, falha, ja_existentes, ids_erro=None, entregues=0, ids_entregues=None):
+
     remetente = os.getenv("SMTP_EMAIL")
     destinatario = os.getenv("SMTP_DEST")
     password = os.getenv("SMTP_PASS")
@@ -236,9 +237,14 @@ def enviar_resumo_email(total_emails, sucesso, falha, ja_existentes, ids_erro=No
 ✅ Inseridos com sucesso: {sucesso}
 ⚠️ Já existiam: {ja_existentes}
 ❌ Com erro: {falha}
+📦 Alterados para 'Entregue': {entregues}
 """
+
     if ids_erro:
         corpo += "\n🔝 IDs com erro:\n" + "\n".join(ids_erro)
+    if ids_entregues:
+        corpo += "\n📬 IDs entregues:\n" + "\n".join(ids_entregues)
+
 
     msg = MIMEMultipart()
     msg['From'] = remetente
@@ -301,11 +307,52 @@ def verificar_emails_entregues(username, password, dias=2):
                 except Exception as e:
                     print(f"Erro na comunicação com API para ID {id_venda}: {e}")
 
-    print(f"📝 IDs atualizados como 'Entregue': {ids_atualizados}")
+    return {
+    "total_verificados": len(ids),
+    "alterados_para_entregue": len(ids_atualizados),
+    "ids_entregues": ids_atualizados
+}
+
 
 
 
 
 if __name__ == "__main__":
     auto_update_email_data(username, password)
-    verificar_emails_entregues(username, password)
+
+    # Pequeno delay para garantir que os registos novos foram processados e guardados
+    time.sleep(5)
+    
+    # Captura o resultado das entregas
+    entregues_resumo = verificar_emails_entregues(username, password)
+
+    # Atualiza o ficheiro local de resumo com entregues
+    try:
+        with open("resumo_leitura.json", "r+") as f:
+            resumo = json.load(f)
+            resumo["entregues"] = entregues_resumo["alterados_para_entregue"]
+            resumo["ids_entregues"] = entregues_resumo["ids_entregues"]
+            f.seek(0)
+            json.dump(resumo, f, indent=2)
+            f.truncate()
+    except Exception as e:
+        print(f"❌ Erro ao atualizar resumo com entregues: {e}")
+
+    # Atualiza email enviado
+    enviar_resumo_email(
+        total_emails=resumo["total_lidos"],
+        sucesso=resumo["sucesso"],
+        falha=resumo["falhas"],
+        ja_existentes=resumo["existentes"],
+        ids_erro=resumo.get("ids_falhados", []),
+        entregues=resumo.get("entregues", 0),
+        ids_entregues=resumo.get("ids_entregues", [])
+    )
+
+    # Atualiza API
+    try:
+        requests.post("https://controlo-bilhetes.onrender.com/guardar_resumo", json=resumo)
+        print("📡 Resumo enviado para a API FastAPI com sucesso.")
+    except Exception as e:
+        print(f"❌ Falha ao enviar resumo para API: {e}")
+
