@@ -1,6 +1,26 @@
 // src/EventoModal.jsx
 import { useEffect, useState } from "react";
 
+const ordenarEventosDropdown = (data) => {
+  return [...data].sort((a, b) => {
+    const nomeA = a.nome.toLowerCase();
+    const nomeB = b.nome.toLowerCase();
+
+    const prioridade = (nome) => {
+      if (nome.startsWith("sl benfica")) return 0;
+      if (nome.startsWith("benfica")) return 1;
+      return 2;
+    };
+
+    const pA = prioridade(nomeA);
+    const pB = prioridade(nomeB);
+
+    if (pA !== pB) return pA - pB;
+    return nomeA.localeCompare(nomeB);
+  });
+};
+
+
 export default function EventoModal({ visivel, fechar, onAtualizar }) {
   const [eventos, setEventos] = useState([]);
   const [novoEvento, setNovoEvento] = useState("");
