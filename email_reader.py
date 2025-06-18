@@ -257,7 +257,55 @@ def enviar_resumo_email(total_emails, sucesso, falha, ja_existentes, ids_erro=No
         traceback.print_exc()
 import json
 
+def verificar_emails_entregues(username, password, dias=2):
+    mail = connect_email(username, password)
+    mail.select("inbox")
+
+    data_limite = (datetime.today() - timedelta(days=dias)).strftime("%d-%b-%Y")
+    status, mensagens = mail.search(None, f'(FROM "viagogo" SINCE {data_limite})')
+    ids = mensagens[0].split()
+    print(f"📩 Emails a verificar para entregas: {len(ids)}")
+
+    ids_atualizados = []
+
+    for msg_id in ids:
+        conteudo, _ = extract_email_content_and_date(mail, msg_id)
+        if not conteudo:
+            continue
+
+        # Verifica se contém as frases-chave
+        if "Agradecemos por confirmar a transferência do pedido" in conteudo or \
+           "Obrigado por entregar os ingressos para o pedido" in conteudo:
+
+            # Extrai ID após a palavra "pedido"
+            match = re.search(r'pedido\s*(\d{9})', conteudo, re.IGNORECASE)
+            if match:
+                id_venda = match.group(1)
+                print(f"🔎 Pedido confirmado: {id_venda}")
+
+                # Atualiza o estado via API se existir
+                url = f"https://controlo-bilhetes.onrender.com/listagem_vendas/{id_venda}"
+                try:
+                    res = requests.get(url)
+                    if res.status_code == 200:
+                        dados = res.json()
+                        dados["estado"] = "Entregue"
+                        update = requests.put(f"https://controlo-bilhetes.onrender.com/listagem_vendas/{dados['id']}", json=dados)
+                        if update.status_code == 200:
+                            print(f"✅ Estado atualizado para 'Entregue' no ID {id_venda}")
+                            ids_atualizados.append(id_venda)
+                        else:
+                            print(f"❌ Falha ao atualizar ID {id_venda}: {update.status_code}")
+                    else:
+                        print(f"⚠️ ID {id_venda} não existe na base de dados.")
+                except Exception as e:
+                    print(f"Erro na comunicação com API para ID {id_venda}: {e}")
+
+    print(f"📝 IDs atualizados como 'Entregue': {ids_atualizados}")
+
+
 
 
 if __name__ == "__main__":
     auto_update_email_data(username, password)
+    verificar_emails_entregues(username, password)
