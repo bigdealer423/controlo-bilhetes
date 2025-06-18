@@ -23,7 +23,7 @@ import re
 import unicodedata
 from email.utils import parsedate_tz, mktime_tz
 from bs4 import BeautifulSoup
-from datetime import datetime
+from datetime import datetime, timedelta
 import traceback
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
