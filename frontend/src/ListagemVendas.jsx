@@ -1,5 +1,4 @@
-// ✅ IMPORTS E DEFINIÇÕES INICIAIS
-import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";More actions
 
 export default function ListagemVendas(props) {
   const [registos, setRegistos] = useState([]);
@@ -13,106 +12,67 @@ export default function ListagemVendas(props) {
     ganho: "",
     estado: "Por entregar"
   });
+
   const [respostaAtualizacao, setRespostaAtualizacao] = useState(null);
   const [mostrarModal, setMostrarModal] = useState(false);
   const [mensagemModal, setMensagemModal] = useState("");
   const [filtroEvento, setFiltroEvento] = useState("");
   const [filtroIdVenda, setFiltroIdVenda] = useState("");
-  const [modoEdicao, setModoEdicao] = useState(null);
-  const [registoEditado, setRegistoEditado] = useState({});
-  const [resumoDiario, setResumoDiario] = useState({ total: 0, ganho: 0 });
-  const [erroIDExistente, setErroIDExistente] = useState(false);
-  const [idsAEliminar, setIdsAEliminar] = useState([]);
-  const [colunaOrdenacao, setColunaOrdenacao] = useState("data_venda");
-  const [ordemAscendente, setOrdemAscendente] = useState(false);
 
-  const token = "supersecreto";
+   const forcarAtualizacaoEmail = async () => {
+  setMensagemModal("⏳ A processar leitura de e-mails...");
+  setMostrarModal(true);
 
-  const buscarRegistos = () => {
-    fetch("https://controlo-bilhetes.onrender.com/listagem_vendas", {
-      headers: { "Authorization": `Bearer ${token}` }
-    })
-      .then(res => res.json())
-      .then(data => {
-        const ordenado = ordenarRegistos(data, colunaOrdenacao, ordemAscendente);
-        setRegistos(ordenado);
-      })
-      .catch(err => console.error("Erro ao buscar registos:", err));
-  };
+  try {
+    const res = await fetch("https://controlo-bilhetes.onrender.com/forcar_leitura_email", {
+      method: "POST"
+    });
 
-  const buscarResumoDiario = () => {
-    fetch("https://controlo-bilhetes.onrender.com/resumo_diario", {
-      headers: { "Authorization": `Bearer ${token}` }
-    })
-      .then(res => res.json())
-      .then(data => setResumoDiario(data))
-      .catch(err => console.error("Erro ao buscar resumo diário:", err));
-  };
-
-  const buscarEventosDropdown = () => {
-    fetch("https://controlo-bilhetes.onrender.com/eventos_dropdown", {
-      headers: { "Authorization": `Bearer ${token}` }
-    })
-      .then(res => res.json())
-      .then(data => setEventosDropdown(ordenarEventosDropdown(data)))
-      .catch(err => console.error("Erro ao buscar eventos:", err));
-  };
-
-  const forcarAtualizacaoEmail = async () => {
-    setMensagemModal("⏳ A processar leitura de e-mails...");
-    setMostrarModal(true);
-
-    try {
-      const res = await fetch("https://controlo-bilhetes.onrender.com/forcar_leitura_email", {
-        method: "POST",
-        headers: { "Authorization": `Bearer ${token}` }
-      });
-
-      if (!res.ok) throw new Error("Falha na resposta");
-
-      const data = await res.json();
-      setMensagemModal(`✅ ${data.mensagem}`);
-      buscarRegistos();
-      buscarResumoDiario();
-    } catch (err) {
-      setMensagemModal("❌ Erro ao tentar iniciar a leitura dos e-mails.");
+    if (!res.ok) {
+      throw new Error("Falha na resposta");
     }
 
-    setTimeout(async () => {
-      try {
-        const res = await fetch("https://controlo-bilhetes.onrender.com/resultado_leitura_email", {
-          headers: { "Authorization": `Bearer ${token}` }
-        });
-        const json = await res.json();
+    const data = await res.json();
+    setMensagemModal(`✅ ${data.mensagem}`);
+    buscarRegistos();
+    buscarResumoDiario();
+  } catch (err) {
+    setMensagemModal("❌ Erro ao tentar iniciar a leitura dos e-mails.");
+  }
 
-        if (json.sucesso !== undefined) {
-          setMensagemModal(`✅ Concluído: ${json.sucesso} novos, ${json.existentes} existentes, ${json.falhas} falhados.`);
-        } else {
-          setMensagemModal("⚠️ Concluído, mas sem dados detalhados.");
-        }
-      } catch {
-        setMensagemModal("⚠️ Concluído, mas não foi possível obter o resumo.");
+  // ⏳ Após 60 segundos, buscar o resultado da leitura
+  setTimeout(async () => {
+    try {
+      const res = await fetch("https://controlo-bilhetes.onrender.com/resultado_leitura_email");
+      const json = await res.json();
+
+      if (json.sucesso !== undefined) {
+        setMensagemModal(`✅ Concluído: ${json.sucesso} novos, ${json.existentes} existentes, ${json.falhas} falhados.`);
+      } else {
+        setMensagemModal("⚠️ Concluído, mas sem dados detalhados.");
       }
+    } catch {
+      setMensagemModal("⚠️ Concluído, mas não foi possível obter o resumo.");
+    }
 
-      setTimeout(() => {
-        setMostrarModal(false);
-        setMensagemModal("");
-      }, 8000);
-    }, 60000);
-  };
+    // ⏹️ Fechar o modal após mais 8 segundos
+    setTimeout(() => {
+      setMostrarModal(false);
+      setMensagemModal("");
+    }, 8000);
+  }, 60000); // Esperar 60 segundos
+};
+
+
 
   const forcarLeituraEmail = () => {
-    fetch("https://controlo-bilhetes.onrender.com/forcar_leitura_email", {
-      method: "POST",
-      headers: { "Authorization": `Bearer ${token}` }
-    })
-      .then(res => res.json())
-      .then(data => alert(data.detail || "Ação enviada."))
-      .catch(err => alert("Erro ao tentar disparar leitura de e-mails."));
-  };
-
-
-
+  fetch("https://controlo-bilhetes.onrender.com/forcar_leitura_email", {
+    method: "POST"
+  })
+    .then(res => res.json())
+    .then(data => alert(data.detail || "Ação enviada."))
+    .catch(err => alert("Erro ao tentar disparar leitura de e-mails."));
+};
 
 
   const [modoEdicao, setModoEdicao] = useState(null);
@@ -130,15 +90,10 @@ export default function ListagemVendas(props) {
       buscarEventosDropdown();
     }
   }, [props.atualizarEventos]);
-  
+
   const [erroIDExistente, setErroIDExistente] = useState(false);
-  cconst buscarRegistos = () => {
-  const token = "supersecreto"; // mais tarde podes ir buscar ao localStorage
-  fetch("https://controlo-bilhetes.onrender.com/listagem_vendas", {
-    headers: {
-      "Authorization": `Bearer ${token}`
-    }
-  })
+  const buscarRegistos = () => {
+  fetch("https://controlo-bilhetes.onrender.com/listagem_vendas")
     .then(res => res.json())
     .then(data => {
       const ordenado = ordenarRegistos(data, colunaOrdenacao, ordemAscendente);
@@ -146,19 +101,19 @@ export default function ListagemVendas(props) {
     })
     .catch(err => console.error("Erro ao buscar registos:", err));
 };
-
   const buscarResumoDiario = () => {
-      const token = "supersecreto";
-      fetch("https://controlo-bilhetes.onrender.com/resumo_diario", {
-        headers: {
-          "Authorization": `Bearer ${token}`
-        }
-      })
-        .then(res => res.json())
-        .then(data => setResumoDiario(data))
-        .catch(err => console.error("Erro ao buscar resumo diário:", err));
+    fetch("https://controlo-bilhetes.onrender.com/resumo_diario")
+      .then(res => res.json())
+      .then(data => setResumoDiario(data))
+      .catch(err => console.error("Erro ao buscar resumo diário:", err));
+  };
 
-
+  const buscarEventosDropdown = () => {
+    fetch("https://controlo-bilhetes.onrender.com/eventos_dropdown")
+      .then(res => res.json())
+      .then(data => setEventosDropdown(data))
+      .catch(err => console.error("Erro ao buscar eventos:", err));
+  };
   const ordenarEventosDropdown = (data) => {
   return [...data].sort((a, b) => {
     const nomeA = a.nome.toLowerCase();
@@ -179,16 +134,11 @@ export default function ListagemVendas(props) {
 };
 
 const buscarEventosDropdown = () => {
-  const token = "supersecreto";
-fetch("https://controlo-bilhetes.onrender.com/eventos_dropdown", {
-  headers: {
-    "Authorization": `Bearer ${token}`
-  }
-})
-  .then(res => res.json())
-  .then(data => setEventosDropdown(ordenarEventosDropdown(data)))
-  .catch(err => console.error("Erro ao buscar eventos:", err));
-
+  fetch("https://controlo-bilhetes.onrender.com/eventos_dropdown")
+    .then(res => res.json())
+    .then(data => setEventosDropdown(ordenarEventosDropdown(data)))
+    .catch(err => console.error("Erro ao buscar eventos:", err));
+};
 
 
   const handleChange = e => {
@@ -197,23 +147,19 @@ fetch("https://controlo-bilhetes.onrender.com/eventos_dropdown", {
   };
 
   const adicionarRegisto = () => {
-  const token = "supersecreto";
   fetch("https://controlo-bilhetes.onrender.com/listagem_vendas", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       ...novoRegisto,
       id_venda: parseInt(novoRegisto.id_venda),
-      ganho: Math.ceil(parseFloat(novoRegisto.ganho)),
-      data_venda: novoRegisto.data_venda?.split("T")[0]
+      ganho: Math.ceil(parseFloat(novoRegisto.ganho)),  // Arredondado para cima
+      data_venda: novoRegisto.data_venda?.split("T")[0] // 🔴 Adicione isto se ainda não estiver
     })
   })
     .then(res => {
       if (res.status === 409) {
-        setErroIDExistente(true);
+        setErroIDExistente(true);  // Mostra modal
         return null;
       }
       return res.json();
@@ -237,34 +183,28 @@ fetch("https://controlo-bilhetes.onrender.com/eventos_dropdown", {
     });
 };
 
-
   const ativarEdicao = (id, registo) => {
     setModoEdicao(id);
     setRegistoEditado({ ...registo });
   };
 
   const atualizarRegisto = () => {
-  const token = "supersecreto";
-  fetch(`https://controlo-bilhetes.onrender.com/listagem_vendas/${modoEdicao}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`
-    },
-    body: JSON.stringify({
-      ...registoEditado,
-      id_venda: parseInt(registoEditado.id_venda),
-      ganho: parseFloat(registoEditado.ganho),
-      data_venda: registoEditado.data_venda?.split("T")[0]
+    fetch(`https://controlo-bilhetes.onrender.com/listagem_vendas/${modoEdicao}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ...registoEditado,
+        id_venda: parseInt(registoEditado.id_venda),
+        ganho: parseFloat(registoEditado.ganho),
+        data_venda: registoEditado.data_venda?.split("T")[0]
+      })
     })
-  })
-    .then(() => {
-      setModoEdicao(null);
-      buscarRegistos();
-      buscarResumoDiario();
-    });
-};
-
+      .then(() => {
+        setModoEdicao(null);
+        buscarRegistos();
+        buscarResumoDiario();
+      });
+  };
   const handleOrdenarPor = (coluna) => {
   if (coluna === colunaOrdenacao) {
     setOrdemAscendente(!ordemAscendente);
@@ -280,22 +220,17 @@ fetch("https://controlo-bilhetes.onrender.com/eventos_dropdown", {
 const cancelarEliminar = () => setIdsAEliminar([]);
 
 const eliminarConfirmado = async () => {
-  const token = "supersecreto";
   await Promise.all(
     idsAEliminar.map(id =>
       fetch(`https://controlo-bilhetes.onrender.com/listagem_vendas/${id}`, {
-        method: "DELETE",
-        headers: {
-          "Authorization": `Bearer ${token}`
-        }
+        method: "DELETE"
       })
     )
   );
   setIdsAEliminar([]);
   buscarRegistos();
-  buscarResumoDiario();
+  buscarResumoDiario();  // 🔴 Esta linha garante atualização do resumo
 };
-
   const [colunaOrdenacao, setColunaOrdenacao] = useState("data_venda");
 const [ordemAscendente, setOrdemAscendente] = useState(false);
   const ordenarRegistos = (dados, coluna, ascendente) => {
@@ -335,7 +270,7 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
       ))}
     </select>
   </div>
-  
+
   <div>
     <label className="block text-sm font-medium">ID Venda</label>
     <input
@@ -367,7 +302,7 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
               <option key={e.id} value={e.nome}>{e.nome}</option>
             ))}
           </select>
-          
+
           <input name="estadio" className="input" placeholder="Bilhete" value={novoRegisto.estadio} onChange={handleChange} />
           <input name="ganho" type="number" className="input" placeholder="Ganho (€)" value={novoRegisto.ganho} onChange={handleChange} />
           <select name="estado" className="input" value={novoRegisto.estado} onChange={handleChange}>
@@ -393,7 +328,7 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
   🔄 Verificar E-mails
 </button>
 
-            
+
           </div>
         </div>
         <table className="min-w-full border text-sm text-left text-gray-600">
