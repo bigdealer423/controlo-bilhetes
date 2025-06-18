@@ -108,12 +108,32 @@ export default function ListagemVendas(props) {
       .catch(err => console.error("Erro ao buscar resumo diário:", err));
   };
 
-  const buscarEventosDropdown = () => {
-    fetch("https://controlo-bilhetes.onrender.com/eventos_dropdown")
-      .then(res => res.json())
-      .then(data => setEventosDropdown(data))
-      .catch(err => console.error("Erro ao buscar eventos:", err));
-  };
+  const ordenarEventosDropdown = (data) => {
+  return [...data].sort((a, b) => {
+    const nomeA = a.nome.toLowerCase();
+    const nomeB = b.nome.toLowerCase();
+
+    const prioridade = (nome) => {
+      if (nome.startsWith("sl benfica")) return 0;
+      if (nome.startsWith("benfica")) return 1;
+      return 2;
+    };
+
+    const pA = prioridade(nomeA);
+    const pB = prioridade(nomeB);
+
+    if (pA !== pB) return pA - pB;
+    return nomeA.localeCompare(nomeB);
+  });
+};
+
+const buscarEventosDropdown = () => {
+  fetch("https://controlo-bilhetes.onrender.com/eventos_dropdown")
+    .then(res => res.json())
+    .then(data => setEventosDropdown(ordenarEventosDropdown(data)))
+    .catch(err => console.error("Erro ao buscar eventos:", err));
+};
+
 
   const handleChange = e => {
     const { name, value } = e.target;
