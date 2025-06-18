@@ -348,13 +348,64 @@ return (
 </tr>
 {vendas.filter(v => v.evento === r.evento).map(v => (
   <tr key={"v" + v.id} className="border-l-4 border-blue-600 bg-blue-50 text-xs border-t">
-    <td className="p-2">{v.id_venda}</td>
-    <td className="p-2" colSpan="2">{v.estadio}</td>
-    <td className="p-2">{v.ganho} €</td>
-    <td className="p-2">{v.estado}</td>
-    <td className="p-2" colSpan="4"></td>
+    {modoEdicaoVenda === v.id ? (
+      <>
+        <td className="p-2">
+          <input
+            type="number"
+            className="input"
+            value={vendaEditada.id_venda}
+            onChange={e => setVendaEditada({ ...vendaEditada, id_venda: e.target.value })}
+          />
+        </td>
+        <td className="p-2" colSpan="2">
+          <input
+            className="input"
+            value={vendaEditada.estadio}
+            onChange={e => setVendaEditada({ ...vendaEditada, estadio: e.target.value })}
+          />
+        </td>
+        <td className="p-2">
+          <input
+            type="number"
+            className="input"
+            value={vendaEditada.ganho}
+            onChange={e => setVendaEditada({ ...vendaEditada, ganho: e.target.value })}
+          />
+        </td>
+        <td className="p-2">
+          <select
+            className="input"
+            value={vendaEditada.estado}
+            onChange={e => setVendaEditada({ ...vendaEditada, estado: e.target.value })}
+          >
+            <option value="Entregue">Entregue</option>
+            <option value="Por entregar">Por entregar</option>
+            <option value="Disputa">Disputa</option>
+            <option value="Pago">Pago</option>
+          </select>
+        </td>
+        <td colSpan="4" className="p-2">
+          <button className="text-green-600 mr-2" onClick={() => guardarVenda(vendaEditada)}>Guardar</button>
+          <button className="text-gray-500" onClick={() => setModoEdicaoVenda(null)}>Cancelar</button>
+        </td>
+      </>
+    ) : (
+      <>
+        <td className="p-2">{v.id_venda}</td>
+        <td className="p-2" colSpan="2">{v.estadio}</td>
+        <td className="p-2">{v.ganho} €</td>
+        <td className="p-2">{v.estado}</td>
+        <td className="p-2" colSpan="4">
+          <button onClick={() => { setModoEdicaoVenda(v.id); setVendaEditada(v); }} className="text-blue-600 hover:underline">
+            Editar
+          </button>
+        </td>
+      </>
+    )}
   </tr>
 ))}
+
    <tr className="bg-yellow-50 text-sm border-t border-l-4 border-yellow-600">
   <td colSpan="9" className="p-2 font-semibold">
     Compras ({compras.filter(c => c.evento === r.evento).reduce((acc, c) => acc + Number(c.quantidade || 0), 0)})
@@ -371,15 +422,49 @@ return (
 </tr>
 {compras.filter(c => c.evento === r.evento).map(c => (
   <tr key={"c" + c.id} className="border-l-4 border-yellow-600 bg-yellow-50 text-xs border-t">
-    <td className="p-2">{c.local_compras}</td>
-    <td className="p-2">{c.bancada}</td>
-    <td className="p-2">{c.setor}</td>
-    <td className="p-2">{c.fila}</td>
-    <td className="p-2">{c.quantidade}</td>
-    <td className="p-2">{c.gasto} €</td>
-    <td className="p-2" colSpan="3"></td>
+    {modoEdicaoCompra === c.id ? (
+      <>
+        <td className="p-2">
+          <input className="input" value={compraEditada.local_compras} onChange={e => setCompraEditada({ ...compraEditada, local_compras: e.target.value })} />
+        </td>
+        <td className="p-2">
+          <input className="input" value={compraEditada.bancada} onChange={e => setCompraEditada({ ...compraEditada, bancada: e.target.value })} />
+        </td>
+        <td className="p-2">
+          <input className="input" value={compraEditada.setor} onChange={e => setCompraEditada({ ...compraEditada, setor: e.target.value })} />
+        </td>
+        <td className="p-2">
+          <input className="input" value={compraEditada.fila} onChange={e => setCompraEditada({ ...compraEditada, fila: e.target.value })} />
+        </td>
+        <td className="p-2">
+          <input type="number" className="input" value={compraEditada.quantidade} onChange={e => setCompraEditada({ ...compraEditada, quantidade: e.target.value })} />
+        </td>
+        <td className="p-2">
+          <input type="number" className="input" value={compraEditada.gasto} onChange={e => setCompraEditada({ ...compraEditada, gasto: e.target.value })} />
+        </td>
+        <td className="p-2" colSpan="3">
+          <button className="text-green-600 mr-2" onClick={() => guardarCompra(compraEditada)}>Guardar</button>
+          <button className="text-gray-500" onClick={() => setModoEdicaoCompra(null)}>Cancelar</button>
+        </td>
+      </>
+    ) : (
+      <>
+        <td className="p-2">{c.local_compras}</td>
+        <td className="p-2">{c.bancada}</td>
+        <td className="p-2">{c.setor}</td>
+        <td className="p-2">{c.fila}</td>
+        <td className="p-2">{c.quantidade}</td>
+        <td className="p-2">{c.gasto} €</td>
+        <td className="p-2" colSpan="3">
+          <button onClick={() => { setModoEdicaoCompra(c.id); setCompraEditada(c); }} className="text-blue-600 hover:underline">
+            Editar
+          </button>
+        </td>
+      </>
+    )}
   </tr>
 ))}
+
                   </>
                 )}
               </>
