@@ -24,9 +24,14 @@ export default function ListagemVendas(props) {
   setMostrarModal(true);
 
   try {
-    const res = await fetch("https://controlo-bilhetes.onrender.com/forcar_leitura_email", {
-      method: "POST"
-    });
+    const token = "supersecreto";
+const res = await fetch("https://controlo-bilhetes.onrender.com/forcar_leitura_email", {
+  method: "POST",
+  headers: {
+    "Authorization": `Bearer ${token}`
+  }
+});
+
 
     if (!res.ok) {
       throw new Error("Falha na resposta");
@@ -43,7 +48,9 @@ export default function ListagemVendas(props) {
   // ⏳ Após 60 segundos, buscar o resultado da leitura
   setTimeout(async () => {
     try {
-      const res = await fetch("https://controlo-bilhetes.onrender.com/resultado_leitura_email");
+      const res = await fetch("https://controlo-bilhetes.onrender.com/resultado_leitura_email", {
+  headers: {
+    "Authorization": `Bearer ${token}`
       const json = await res.json();
 
       if (json.sucesso !== undefined) {
@@ -66,9 +73,14 @@ export default function ListagemVendas(props) {
 
 
   const forcarLeituraEmail = () => {
-  fetch("https://controlo-bilhetes.onrender.com/forcar_leitura_email", {
-    method: "POST"
-  })
+  const token = "supersecreto";
+fetch("https://controlo-bilhetes.onrender.com/forcar_leitura_email", {
+  method: "POST",
+  headers: {
+    "Authorization": `Bearer ${token}`
+  }
+})
+
     .then(res => res.json())
     .then(data => alert(data.detail || "Ação enviada."))
     .catch(err => alert("Erro ao tentar disparar leitura de e-mails."));
@@ -92,8 +104,13 @@ export default function ListagemVendas(props) {
   }, [props.atualizarEventos]);
   
   const [erroIDExistente, setErroIDExistente] = useState(false);
-  const buscarRegistos = () => {
-  fetch("https://controlo-bilhetes.onrender.com/listagem_vendas")
+  cconst buscarRegistos = () => {
+  const token = "supersecreto"; // mais tarde podes ir buscar ao localStorage
+  fetch("https://controlo-bilhetes.onrender.com/listagem_vendas", {
+    headers: {
+      "Authorization": `Bearer ${token}`
+    }
+  })
     .then(res => res.json())
     .then(data => {
       const ordenado = ordenarRegistos(data, colunaOrdenacao, ordemAscendente);
@@ -101,6 +118,7 @@ export default function ListagemVendas(props) {
     })
     .catch(err => console.error("Erro ao buscar registos:", err));
 };
+
   const buscarResumoDiario = () => {
     fetch("https://controlo-bilhetes.onrender.com/resumo_diario")
       .then(res => res.json())
@@ -141,19 +159,23 @@ const buscarEventosDropdown = () => {
   };
 
   const adicionarRegisto = () => {
+  const token = "supersecreto";
   fetch("https://controlo-bilhetes.onrender.com/listagem_vendas", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
+    },
     body: JSON.stringify({
       ...novoRegisto,
       id_venda: parseInt(novoRegisto.id_venda),
-      ganho: Math.ceil(parseFloat(novoRegisto.ganho)),  // Arredondado para cima
-      data_venda: novoRegisto.data_venda?.split("T")[0] // 🔴 Adicione isto se ainda não estiver
+      ganho: Math.ceil(parseFloat(novoRegisto.ganho)),
+      data_venda: novoRegisto.data_venda?.split("T")[0]
     })
   })
     .then(res => {
       if (res.status === 409) {
-        setErroIDExistente(true);  // Mostra modal
+        setErroIDExistente(true);
         return null;
       }
       return res.json();
@@ -177,28 +199,34 @@ const buscarEventosDropdown = () => {
     });
 };
 
+
   const ativarEdicao = (id, registo) => {
     setModoEdicao(id);
     setRegistoEditado({ ...registo });
   };
 
   const atualizarRegisto = () => {
-    fetch(`https://controlo-bilhetes.onrender.com/listagem_vendas/${modoEdicao}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        ...registoEditado,
-        id_venda: parseInt(registoEditado.id_venda),
-        ganho: parseFloat(registoEditado.ganho),
-        data_venda: registoEditado.data_venda?.split("T")[0]
-      })
+  const token = "supersecreto";
+  fetch(`https://controlo-bilhetes.onrender.com/listagem_vendas/${modoEdicao}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
+    },
+    body: JSON.stringify({
+      ...registoEditado,
+      id_venda: parseInt(registoEditado.id_venda),
+      ganho: parseFloat(registoEditado.ganho),
+      data_venda: registoEditado.data_venda?.split("T")[0]
     })
-      .then(() => {
-        setModoEdicao(null);
-        buscarRegistos();
-        buscarResumoDiario();
-      });
-  };
+  })
+    .then(() => {
+      setModoEdicao(null);
+      buscarRegistos();
+      buscarResumoDiario();
+    });
+};
+
   const handleOrdenarPor = (coluna) => {
   if (coluna === colunaOrdenacao) {
     setOrdemAscendente(!ordemAscendente);
@@ -214,17 +242,22 @@ const buscarEventosDropdown = () => {
 const cancelarEliminar = () => setIdsAEliminar([]);
 
 const eliminarConfirmado = async () => {
+  const token = "supersecreto";
   await Promise.all(
     idsAEliminar.map(id =>
       fetch(`https://controlo-bilhetes.onrender.com/listagem_vendas/${id}`, {
-        method: "DELETE"
+        method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
       })
     )
   );
   setIdsAEliminar([]);
   buscarRegistos();
-  buscarResumoDiario();  // 🔴 Esta linha garante atualização do resumo
+  buscarResumoDiario();
 };
+
   const [colunaOrdenacao, setColunaOrdenacao] = useState("data_venda");
 const [ordemAscendente, setOrdemAscendente] = useState(false);
   const ordenarRegistos = (dados, coluna, ascendente) => {
