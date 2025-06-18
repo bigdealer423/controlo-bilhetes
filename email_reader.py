@@ -285,7 +285,7 @@ def verificar_emails_entregues(username, password, dias=2):
            "Obrigado por entregar os ingressos para o pedido" in conteudo:
 
             # Extrai ID após a palavra "pedido"
-            match = re.search(r'pedido\s*(\d{9})', conteudo, re.IGNORECASE)
+            match = re.search(r'pedido\s*(\d{9})\b', conteudo, re.IGNORECASE)
             if match:
                 id_venda = match.group(1)
                 print(f"🔎 Pedido confirmado: {id_venda}")
