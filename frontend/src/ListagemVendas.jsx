@@ -111,11 +111,7 @@ export default function ListagemVendas(props) {
       .catch(err => alert("Erro ao tentar disparar leitura de e-mails."));
   };
 
-  // ... restante JSX e funções mantêm-se iguais
-  return (
-    <div>IMPLEMENTAÇÃO COMPLETA COM JSX AQUI</div>
-  );
-}
+
 
 
 
