@@ -47,7 +47,8 @@ export default function ListagemVendas(props) {
       const json = await res.json();
 
       if (json.sucesso !== undefined) {
-        setMensagemModal(`✅ Concluído: ${json.sucesso} novos, ${json.existentes} existentes, ${json.falhas} falhados.`);
+      const entregues = json.entregues || 0;
+        setMensagemModal(`✅ Concluído: ${json.sucesso} novos, ${json.existentes} existentes, ${json.falhas} falhados, ${entregues} entregues.`);
       } else {
         setMensagemModal("⚠️ Concluído, mas sem dados detalhados.");
       }
