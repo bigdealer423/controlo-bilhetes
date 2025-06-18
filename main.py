@@ -1,8 +1,9 @@
 from sqlalchemy import extract
 import os
 import requests
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, HTTPException, Depends, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from typing import List
 from datetime import datetime, date
@@ -26,7 +27,6 @@ resumo_mais_recente = {}
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
-
 # CORS
 app.add_middleware(
     CORSMiddleware,
@@ -41,9 +41,16 @@ def root():
     return {"status": "API online"}
 
 
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+def get_current_user(token: str = Depends(oauth2_scheme)):
+    if token != "supersecreto":  # valor simples para já
+        raise HTTPException(status_code=401, detail="Token inválido")
+    return {"username": "bigdealer"}
+
 # ---------------- LISTAGEM DE VENDAS ----------------
 @app.get("/listagem_vendas")
-def listar_vendas(db: Session = Depends(get_db)):
+def listar_vendas(current_user=Depends(get_current_user)):
     return db.query(ListagemVendas).all()
 
 @app.get("/listagem_vendas/{id_venda}")
