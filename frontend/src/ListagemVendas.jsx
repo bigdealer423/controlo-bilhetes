@@ -120,15 +120,15 @@ fetch("https://controlo-bilhetes.onrender.com/forcar_leitura_email", {
 };
 
   const buscarResumoDiario = () => {
-        fconst token = "supersecreto";
-    fetch("https://controlo-bilhetes.onrender.com/resumo_diario", {
-      headers: {
-        "Authorization": `Bearer ${token}`
-      }
-    })
-      .then(res => res.json())
-      .then(data => setResumoDiario(data))
-      .catch(err => console.error("Erro ao buscar resumo diário:", err));
+      const token = "supersecreto";
+      fetch("https://controlo-bilhetes.onrender.com/resumo_diario", {
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      })
+        .then(res => res.json())
+        .then(data => setResumoDiario(data))
+        .catch(err => console.error("Erro ao buscar resumo diário:", err));
 
 
   const ordenarEventosDropdown = (data) => {
@@ -151,11 +151,16 @@ fetch("https://controlo-bilhetes.onrender.com/forcar_leitura_email", {
 };
 
 const buscarEventosDropdown = () => {
-  fetch("https://controlo-bilhetes.onrender.com/eventos_dropdown")
-    .then(res => res.json())
-    .then(data => setEventosDropdown(ordenarEventosDropdown(data)))
-    .catch(err => console.error("Erro ao buscar eventos:", err));
-};
+  const token = "supersecreto";
+fetch("https://controlo-bilhetes.onrender.com/eventos_dropdown", {
+  headers: {
+    "Authorization": `Bearer ${token}`
+  }
+})
+  .then(res => res.json())
+  .then(data => setEventosDropdown(ordenarEventosDropdown(data)))
+  .catch(err => console.error("Erro ao buscar eventos:", err));
+
 
 
   const handleChange = e => {
