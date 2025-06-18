@@ -133,12 +133,7 @@ export default function ListagemVendas(props) {
   });
 };
 
-const buscarEventosDropdown = () => {
-  fetch("https://controlo-bilhetes.onrender.com/eventos_dropdown")
-    .then(res => res.json())
-    .then(data => setEventosDropdown(ordenarEventosDropdown(data)))
-    .catch(err => console.error("Erro ao buscar eventos:", err));
-};
+
 
 
   const handleChange = e => {
