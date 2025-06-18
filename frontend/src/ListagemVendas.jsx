@@ -16,6 +16,8 @@ export default function ListagemVendas(props) {
   const [respostaAtualizacao, setRespostaAtualizacao] = useState(null);
   const [mostrarModal, setMostrarModal] = useState(false);
   const [mensagemModal, setMensagemModal] = useState("");
+  const [filtroEvento, setFiltroEvento] = useState("");
+  const [filtroIdVenda, setFiltroIdVenda] = useState("");
 
    const forcarAtualizacaoEmail = async () => {
   setMensagemModal("⏳ A processar leitura de e-mails...");
@@ -228,6 +230,32 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
   <p>💰 Ganho de hoje: {resumoDiario.ganho} €</p>
 </div>
 
+<div className="mb-4 flex gap-4 items-end">
+  <div>
+    <label className="block text-sm font-medium">Evento</label>
+    <select
+      value={filtroEvento}
+      onChange={(e) => setFiltroEvento(e.target.value)}
+      className="border p-2 rounded"
+    >
+      <option value="">Todos</option>
+      {eventosDropdown.map(e => (
+        <option key={e.id} value={e.nome}>{e.nome}</option>
+      ))}
+    </select>
+  </div>
+  
+  <div>
+    <label className="block text-sm font-medium">ID Venda</label>
+    <input
+      type="text"
+      value={filtroIdVenda}
+      onChange={(e) => setFiltroIdVenda(e.target.value)}
+      className="border p-2 rounded"
+      placeholder="ex: 123456789"
+    />
+  </div>
+</div>
 
       <div className="bg-white shadow-md rounded p-4 mb-6">
         <h2 className="text-lg font-semibold mb-2">Adicionar Registo</h2>
