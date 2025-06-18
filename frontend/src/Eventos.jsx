@@ -12,6 +12,11 @@ export default function Eventos() {
   const [idAEliminar, setIdAEliminar] = useState(null);
   const location = useLocation();
   const [resumoMensal, setResumoMensal] = useState({ lucro: 0, pagamento: 0 });
+  const [modoEdicaoCompra, setModoEdicaoCompra] = useState(null);
+  const [compraEditada, setCompraEditada] = useState({});
+  const [modoEdicaoVenda, setModoEdicaoVenda] = useState(null);
+  const [vendaEditada, setVendaEditada] = useState({});
+
 
   useEffect(() => {
     const carregarDados = async () => {
@@ -172,6 +177,40 @@ const buscarDropdown = async () => {
     setIdAEliminar(null);
     }
   };
+
+  const guardarCompra = async (compra) => {
+  const res = await fetch(`https://controlo-bilhetes.onrender.com/compras/${compra.id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(compra)
+  });
+  if (res.ok) {
+    await buscarCompras();
+    await buscarEventos();
+    await buscarResumoMensal();
+    setModoEdicaoCompra(null);
+  }
+};
+
+const guardarVenda = async (venda) => {
+  const res = await fetch(`https://controlo-bilhetes.onrender.com/listagem_vendas/${venda.id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      ...venda,
+      ganho: parseFloat(venda.ganho),
+      id_venda: parseInt(venda.id_venda),
+      data_venda: venda.data_venda?.split("T")[0]
+    })
+  });
+  if (res.ok) {
+    await buscarVendas();
+    await buscarEventos();
+    await buscarResumoMensal();
+    setModoEdicaoVenda(null);
+  }
+};
+
 return (
     <div className="p-6 max-w-6xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">Resumo de Eventos</h1>
