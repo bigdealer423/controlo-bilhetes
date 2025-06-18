@@ -3,7 +3,6 @@ import os
 import requests
 from fastapi import FastAPI, HTTPException, Depends, status
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from typing import List
 from datetime import datetime, date
@@ -41,7 +40,7 @@ def root():
     return {"status": "API online"}
 
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
 
 def get_current_user(token: str = Depends(oauth2_scheme)):
     if token != "supersecreto":  # valor simples para já
@@ -50,8 +49,7 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
 
 # ---------------- LISTAGEM DE VENDAS ----------------
 @app.get("/listagem_vendas")
-def listar_vendas(current_user=Depends(get_current_user)):
-    return db.query(ListagemVendas).all()
+def obter_vendas(db: Session = Depends(get_db)):)
 
 @app.get("/listagem_vendas/{id_venda}")
 def obter_venda_por_id(id_venda: int, db: Session = Depends(get_db)):
