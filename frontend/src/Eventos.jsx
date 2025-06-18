@@ -56,16 +56,36 @@ const buscarResumoMensal = async () => {
   }
 };
   
+const ordenarEventosDropdown = (data) => {
+  return [...data].sort((a, b) => {
+    const nomeA = a.nome.toLowerCase();
+    const nomeB = b.nome.toLowerCase();
+
+    const prioridade = (nome) => {
+      if (nome.startsWith("sl benfica")) return 0;
+      if (nome.startsWith("benfica")) return 1;
+      return 2;
+    };
+
+    const pA = prioridade(nomeA);
+    const pB = prioridade(nomeB);
+
+    if (pA !== pB) return pA - pB;
+    return nomeA.localeCompare(nomeB);
+  });
+};
+
 const buscarDropdown = async () => {
   const res = await fetch("https://controlo-bilhetes.onrender.com/eventos_dropdown");
   if (res.ok) {
     const data = await res.json();
     console.log("🔽 Dados dropdown:", data);
-    setEventosDropdown(data);
+    setEventosDropdown(ordenarEventosDropdown(data)); // <- aplicação da ordenação aqui
   } else {
     console.error("Erro ao carregar dropdown.");
   }
 };
+
 
   const buscarTudo = async () => {
     await Promise.all([buscarDropdown(), buscarVendas(), buscarCompras()]);
