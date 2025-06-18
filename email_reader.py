@@ -1,3 +1,4 @@
+PERIODO_DIAS = 60
 from dotenv import load_dotenv
 import os
 import smtplib
@@ -277,55 +278,70 @@ def verificar_emails_entregues(username, password, dias=2):
 
     for msg_id in ids:
         conteudo, _ = extract_email_content_and_date(mail, msg_id)
+        print(f"🔍 Conteúdo do email:\n{conteudo}\n")
+
         if not conteudo:
             continue
 
-        # Verifica se contém as frases-chave
-        if "Agradecemos por confirmar a transferência do pedido" in conteudo or \
-           "Obrigado por entregar os ingressos para o pedido" in conteudo:
+        # Normalizar acentuação
+        conteudo_normalizado = unicodedata.normalize('NFD', conteudo).encode('ascii', 'ignore').decode('utf-8')
 
-            # Extrai ID após a palavra "pedido"
-            match = re.search(r'pedido\s*(\d{9})\b', conteudo, re.IGNORECASE)
-            if match:
-                id_venda = match.group(1)
-                print(f"🔎 Pedido confirmado: {id_venda}")
+        # Frases alvo
+        frases_chave = [
+            "Agradecemos por confirmar a transferencia do pedido",
+            "Obrigado por entregar os ingressos para o pedido"
+        ]
 
-                # Atualiza o estado via API se existir
-                url = f"https://controlo-bilhetes.onrender.com/listagem_vendas/{id_venda}"
-                try:
-                    res = requests.get(url)
-                    if res.status_code == 200:
-                        dados = res.json()
-                        dados["estado"] = "Entregue"
-                        update = requests.put(f"https://controlo-bilhetes.onrender.com/listagem_vendas/{dados['id']}", json=dados)
-                        if update.status_code == 200:
-                            print(f"✅ Estado atualizado para 'Entregue' no ID {id_venda}")
-                            ids_atualizados.append(id_venda)
+        # Verifica se contém alguma das frases
+        for frase in frases_chave:
+            if frase in conteudo_normalizado:
+                match = re.search(rf"{re.escape(frase)}[^\d]*(\d+)", conteudo_normalizado)
+                if match:
+                    id_venda = match.group(1).strip().strip(".")
+                    print(f"🔎 Pedido confirmado: {id_venda}")
+
+                    # Atualiza o estado via API se existir
+                    url = f"https://controlo-bilhetes.onrender.com/listagem_vendas/{id_venda}"
+                    try:
+                        res = requests.get(url)
+                        if res.status_code == 200:
+                            dados = res.json()
+                            if dados["estado"] != "Entregue":
+                                dados["estado"] = "Entregue"
+                                update = requests.put(f"https://controlo-bilhetes.onrender.com/listagem_vendas/{dados['id']}", json=dados)
+                                if update.status_code == 200:
+                                    print(f"✅ Estado atualizado para 'Entregue' no ID {id_venda}")
+                                    ids_atualizados.append(id_venda)
+                                else:
+                                    print(f"❌ Falha ao atualizar ID {id_venda}: {update.status_code}")
+                            else:
+                                print(f"ℹ️ ID {id_venda} já está como 'Entregue'.")
                         else:
-                            print(f"❌ Falha ao atualizar ID {id_venda}: {update.status_code}")
-                    else:
-                        print(f"⚠️ ID {id_venda} não existe na base de dados.")
-                except Exception as e:
-                    print(f"Erro na comunicação com API para ID {id_venda}: {e}")
+                            print(f"⚠️ ID {id_venda} não existe na base de dados.")
+                    except Exception as e:
+                        print(f"Erro na comunicação com API para ID {id_venda}: {e}")
+                break  # Se encontrar uma frase válida, não precisa verificar a segunda
 
     return {
-    "total_verificados": len(ids),
-    "alterados_para_entregue": len(ids_atualizados),
-    "ids_entregues": ids_atualizados
-}
+        "total_verificados": len(ids),
+        "alterados_para_entregue": len(ids_atualizados),
+        "ids_entregues": ids_atualizados
+    }
 
 
 
 
 
 if __name__ == "__main__":
-    auto_update_email_data(username, password)
+    auto_update_email_data(username, password, date_from=(datetime.today() - timedelta(days=PERIODO_DIAS)).strftime("%d-%b-%Y"))
+
 
     # Pequeno delay para garantir que os registos novos foram processados e guardados
     time.sleep(5)
     
     # Captura o resultado das entregas
-    entregues_resumo = verificar_emails_entregues(username, password)
+    entregues_resumo = verificar_emails_entregues(username, password, dias=PERIODO_DIAS)
+
 
     # Atualiza o ficheiro local de resumo com entregues
     try:
