@@ -60,11 +60,16 @@ def connect_email(username, password):
     mail.login(username, password)
     return mail
 
-def search_emails(mail, subject="Os seus bilhetes foram vendidos", sender="viagogo"):
+def search_emails(mail, subject="Os seus bilhetes foram vendidos", sender="viagogo", date_from=None):
     mail.select("inbox")
-    dois_dias_atras = (datetime.today() - timedelta(days=2)).strftime("%d-%b-%Y")
-    status, messages = mail.search(None, f'(SUBJECT "{subject}" FROM "{sender}" SINCE {dois_dias_atras})')
+    if date_from is None:
+        date_from = (datetime.today() - timedelta(days=2)).strftime("%d-%b-%Y")
+    else:
+        date_from = datetime.strptime(date_from, "%d-%b-%Y").strftime("%d-%b-%Y")
+        
+    status, messages = mail.search(None, f'(SUBJECT "{subject}" FROM "{sender}" SINCE {date_from})')
     return messages[0].split()
+
 
 def extract_email_content_and_date(mail, email_id):
     _, msg = mail.fetch(email_id, "(RFC822)")
