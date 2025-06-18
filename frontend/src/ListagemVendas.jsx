@@ -120,11 +120,16 @@ fetch("https://controlo-bilhetes.onrender.com/forcar_leitura_email", {
 };
 
   const buscarResumoDiario = () => {
-    fetch("https://controlo-bilhetes.onrender.com/resumo_diario")
+        fconst token = "supersecreto";
+    fetch("https://controlo-bilhetes.onrender.com/resumo_diario", {
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    })
       .then(res => res.json())
       .then(data => setResumoDiario(data))
       .catch(err => console.error("Erro ao buscar resumo diário:", err));
-  };
+
 
   const ordenarEventosDropdown = (data) => {
   return [...data].sort((a, b) => {
