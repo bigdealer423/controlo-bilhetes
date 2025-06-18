@@ -30,14 +30,15 @@ export default function EventoModal({ visivel, fechar, onAtualizar }) {
   }, [visivel]);
 
   const buscarEventos = async () => {
-    try {
-      const res = await fetch("https://controlo-bilhetes.onrender.com/eventos_dropdown");
-      const data = await res.json();
-      setEventos(data);
-    } catch (err) {
-      console.error("Erro ao buscar eventos:", err);
-    }
-  };
+  try {
+    const res = await fetch("https://controlo-bilhetes.onrender.com/eventos_dropdown");
+    const data = await res.json();
+    setEventos(ordenarEventosDropdown(data));
+  } catch (err) {
+    console.error("Erro ao buscar eventos:", err);
+  }
+};
+
 
   const adicionarEvento = async () => {
     if (!novoEvento.trim()) return;
