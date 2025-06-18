@@ -1,5 +1,25 @@
 import { useEffect, useState } from "react";
 
+const ordenarEventosDropdown = (data) => {
+  return [...data].sort((a, b) => {
+    const nomeA = a.nome.toLowerCase();
+    const nomeB = b.nome.toLowerCase();
+
+    const prioridade = (nome) => {
+      if (nome.startsWith("sl benfica")) return 0;
+      if (nome.startsWith("benfica")) return 1;
+      return 2;
+    };
+
+    const pA = prioridade(nomeA);
+    const pB = prioridade(nomeB);
+
+    if (pA !== pB) return pA - pB;
+    return nomeA.localeCompare(nomeB);
+  });
+};
+
+
 export default function Compras() {
   const [compras, setCompras] = useState([]);
   const [comprasFiltradas, setComprasFiltradas] = useState([]);
@@ -30,10 +50,10 @@ export default function Compras() {
   };
 
   const buscarEventos = async () => {
-    const res = await fetch("https://controlo-bilhetes.onrender.com/eventos_dropdown");
-    const data = await res.json();
-    setEventosDropdown(data);
-  };
+  const res = await fetch("https://controlo-bilhetes.onrender.com/eventos_dropdown");
+  const data = await res.json();
+  setEventosDropdown(ordenarEventosDropdown(data)); // aplica a ordenação
+};
 
   const handleChange = e => {
     const { name, value } = e.target;
