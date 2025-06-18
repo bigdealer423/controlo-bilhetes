@@ -332,7 +332,14 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
   </tr>
 </thead>
           <tbody>
-            {registos.map(r => (
+            {registos
+              .filter(v => {
+                const correspondeEvento = filtroEvento === "" || v.evento === filtroEvento;
+                const correspondeID = filtroIdVenda === "" || v.id_venda.toString().includes(filtroIdVenda);
+                return correspondeEvento && correspondeID;
+              })
+              .map(r => (
+
               <tr key={r.id} className="border-t">
                 {modoEdicao === r.id ? (
                   <>
