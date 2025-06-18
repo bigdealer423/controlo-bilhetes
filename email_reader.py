@@ -162,7 +162,7 @@ def processar_email(content, data_venda):
 
     return enviar_para_fastapi(id_encomenda, evento, ganho_total, data_venda, data_evento, bilhetes)
 
-def auto_update_email_data(username, password, date_from="01-May-2025"):
+def auto_update_email_data(username, password, date_from=None):
     mail = connect_email(username, password)
     mensagens = search_emails(mail, date_from=date_from)
     print(f"📬 Emails encontrados: {len(mensagens)}")
