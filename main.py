@@ -64,6 +64,7 @@ def criar_venda(venda: ListagemVendasCreate, db: Session = Depends(get_db)):
         db.add(nova_venda)
         db.commit()
         db.refresh(nova_venda)
+        atualizar_ganhos_gastos_eventos(db)
         return nova_venda
     
     except HTTPException:
@@ -79,6 +80,7 @@ def eliminar_venda(venda_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Venda não encontrada")
     db.delete(venda)
     db.commit()
+    atualizar_ganhos_gastos_eventos(db)
     return {"detail": "Venda eliminada com sucesso"}
 
 @app.put("/listagem_vendas/{venda_id}")
@@ -90,6 +92,7 @@ def atualizar_venda(venda_id: int, venda: ListagemVendasUpdate, db: Session = De
         setattr(existente, key, value)
     db.commit()
     db.refresh(existente)
+    atualizar_ganhos_gastos_eventos(db)
     return existente
 
 # ---------------- EVENTOS DROPDOWN ----------------
@@ -188,6 +191,7 @@ def criar_compra(compra: CompraCreate, db: Session = Depends(get_db)):
     db.add(nova_compra)
     db.commit()
     db.refresh(nova_compra)
+    atualizar_ganhos_gastos_eventos(db)
     return nova_compra
 
 @app.delete("/compras/{compra_id}")
@@ -197,6 +201,7 @@ def eliminar_compra(compra_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Compra não encontrada")
     db.delete(compra)
     db.commit()
+    atualizar_ganhos_gastos_eventos(db)
     return {"detail": "Compra eliminada com sucesso"}
 
 @app.put("/compras/{compra_id}", response_model=CompraOut)
@@ -210,6 +215,7 @@ def atualizar_compra(compra_id: int, compra: CompraCreate, db: Session = Depends
 
     db.commit()
     db.refresh(compra_existente)
+    atualizar_ganhos_gastos_eventos(db)
     return compra_existente
 
 # ---------------- HEALTH CHECK ----------------
