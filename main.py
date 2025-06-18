@@ -118,18 +118,38 @@ def eliminar_evento_dropdown(evento_id: int, db: Session = Depends(get_db)):
     return {"detail": "Evento eliminado com sucesso"}
 
 # ---------------- EVENTOS COMPLETOS ----------------
+# ✅ Função auxiliar para recalcular e guardar valores corretos
+def atualizar_ganhos_gastos_eventos(db: Session):
+    eventos = db.query(EventoCompletoModel).all()
+    compras = db.query(Compra).all()
+    vendas = db.query(ListagemVendas).all()
+
+    for evento in eventos:
+        total_gasto = sum(c.gasto for c in compras if c.evento == evento.evento)
+        total_ganho = sum(v.ganho for v in vendas if v.evento == evento.evento)
+
+        evento.gasto = total_gasto
+        evento.ganho = total_ganho
+
+    db.commit()
+
+# ✅ Endpoint para listar eventos já atualizados
 @app.get("/eventos_completos2", response_model=List[EventoCompletoOut])
 def listar_eventos_completos2(db: Session = Depends(get_db)):
+    atualizar_ganhos_gastos_eventos(db)
     return db.query(EventoCompletoModel).order_by(EventoCompletoModel.data_evento).all()
 
+# ✅ Criação de novo evento
 @app.post("/eventos_completos2", response_model=EventoCompletoOut)
 def criar_evento_completo(evento: EventoCompletoCreate, db: Session = Depends(get_db)):
     novo_evento = EventoCompletoModel(**evento.dict())
     db.add(novo_evento)
     db.commit()
     db.refresh(novo_evento)
+    atualizar_ganhos_gastos_eventos(db)
     return novo_evento
 
+# ✅ Eliminação de evento
 @app.delete("/eventos_completos2/{evento_id}")
 def eliminar_evento_completo(evento_id: int, db: Session = Depends(get_db)):
     evento = db.query(EventoCompletoModel).filter(EventoCompletoModel.id == evento_id).first()
@@ -137,8 +157,10 @@ def eliminar_evento_completo(evento_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Evento não encontrado")
     db.delete(evento)
     db.commit()
+    atualizar_ganhos_gastos_eventos(db)
     return {"detail": "Evento completo eliminado com sucesso"}
 
+# ✅ Atualização de evento
 @app.put("/eventos_completos2/{evento_id}", response_model=EventoCompletoOut)
 def atualizar_evento_completo(evento_id: int, evento: EventoCompletoCreate, db: Session = Depends(get_db)):
     evento_existente = db.query(EventoCompletoModel).filter(EventoCompletoModel.id == evento_id).first()
@@ -150,7 +172,10 @@ def atualizar_evento_completo(evento_id: int, evento: EventoCompletoCreate, db: 
 
     db.commit()
     db.refresh(evento_existente)
+    atualizar_ganhos_gastos_eventos(db)
     return evento_existente
+
+
 
 # ---------------- COMPRAS ----------------
 @app.get("/compras", response_model=List[CompraOut])
