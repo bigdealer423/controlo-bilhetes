@@ -1,6 +1,7 @@
 from dotenv import load_dotenv
 import os
 import smtplib
+import time
 
 load_dotenv()  # Carrega as variáveis do ficheiro .env
 
