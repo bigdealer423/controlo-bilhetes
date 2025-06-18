@@ -49,7 +49,7 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
 
 # ---------------- LISTAGEM DE VENDAS ----------------
 @app.get("/listagem_vendas")
-def obter_vendas(db: Session = Depends(get_db)):)
+def obter_vendas(db: Session = Depends(get_db)):
 
 @app.get("/listagem_vendas/{id_venda}")
 def obter_venda_por_id(id_venda: int, db: Session = Depends(get_db)):
