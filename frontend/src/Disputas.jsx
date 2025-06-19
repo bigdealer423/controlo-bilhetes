@@ -87,7 +87,7 @@ export default function Disputas() {
                     <td className="p-2">
                       <input
                         type="number"
-                        className="input bg-blue-50" // Alterei para destacar o campo
+                        className="input bg-blue-50"
                         value={registoEditado.cobranca}
                         onChange={(e) =>
                           setRegistoEditado({
@@ -101,7 +101,7 @@ export default function Disputas() {
                     <td className="p-2">
                       <input
                         type="date"
-                        className="input bg-blue-50" // Alterei para destacar o campo
+                        className="input bg-blue-50"
                         value={registoEditado.data_disputa}
                         onChange={(e) =>
                           setRegistoEditado({
@@ -126,15 +126,17 @@ export default function Disputas() {
                     <td className="p-2">{disputa.cobranca}</td>
                     <td className="p-2">{disputa.data_disputa}</td>
                     <td className="p-2">
-                      <button
-                        onClick={() => ativarEdicao(disputa.id_venda, disputa)}
-                        className="text-blue-600 hover:underline mr-2"
-                      >
-                        Editar
-                      </button>
-                      <button className="text-red-600 hover:underline">
-                        Eliminar
-                      </button>
+                      <div className="flex flex-col">
+                        <button
+                          onClick={() => ativarEdicao(disputa.id_venda, disputa)}
+                          className="text-blue-600 hover:underline mb-1"
+                        >
+                          Editar
+                        </button>
+                        <button className="text-red-600 hover:underline">
+                          Eliminar
+                        </button>
+                      </div>
                     </td>
                   </>
                 )}
