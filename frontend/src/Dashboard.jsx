@@ -16,7 +16,7 @@ export default function Dashboard({ onAtualizarEventos }) {
 
   const handleLogout = () => {
     logout();
-    navigate("/login");
+    //navigate("/login"); //
   };
 
   const handleRodaDentadaClick = (e, rota) => {
@@ -36,7 +36,7 @@ export default function Dashboard({ onAtualizarEventos }) {
 
   useEffect(() => {
     if (location.pathname === "/dashboard") {
-      navigate("/listagem-vendas");
+      // navigate("/listagem-vendas");
     }
   }, [location.pathname, navigate]);
 
