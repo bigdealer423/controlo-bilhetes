@@ -20,7 +20,7 @@ export default function Dashboard({ onAtualizarEventos }) {
   };
 
   const handleRodaDentadaClick = (e, rota) => {
-    e.stopPropagation();  // Impede a navegação imediata
+    e.stopPropagation();  // Impede a navegação imediata ao clicar no ícone de configurações
     setMostrarModal(true);  // Abre o modal
     setProximaRota(rota);  // Guarda a próxima rota que deve ser acessada após fechar o modal
   };
