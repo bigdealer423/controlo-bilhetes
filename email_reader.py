@@ -336,74 +336,100 @@ def verificar_emails_entregues(username, password, dias=PERIODO_DIAS):
 
 
 
-    def verificar_emails_entregues(username, password, dias=PERIODO_DIAS):
-        mail = connect_email(username, password)
-        mail.select("inbox")
-    
-        data_limite = (datetime.today() - timedelta(days=PERIODO_DIAS)).strftime("%d-%b-%Y")
-        status, mensagens = mail.search(None, f'(SUBJECT "viagogo Pagamento" FROM "viagogo" SINCE {data_limite})')
-        ids = mensagens[0].split()
-        print(f"📩 Emails a verificar para pagamentos: {len(ids)}")
-    
-        ids_pagamento_confirmado = []
-        ids_disputa = []
-    
-        for msg_id in ids:
-            conteudo, _ = extract_email_content_and_date(mail, msg_id)
-            if not conteudo:
-                continue
-    
-            conteudo_normalizado = unicodedata.normalize('NFD', conteudo).encode('ascii', 'ignore').decode('utf-8')
-    
-            # Extrair ID da venda (9 dígitos) e valor do pagamento
-            blocos = re.findall(r'(\d{9}).*?([0-9]+[\.,][0-9]{2})\s*€', conteudo_normalizado)
-            for id_venda, valor_str in blocos:
-                valor_pagamento = float(valor_str.replace(",", ".").replace(" ", ""))
-    
-                print(f"🧾 Pagamento: ID {id_venda} | Valor recebido: {valor_pagamento}")
-    
-                # Verificar na base de dados
-                url = f"https://controlo-bilhetes.onrender.com/listagem_vendas/{id_venda}"
-                try:
-                    res = requests.get(url)
-                    if res.status_code == 200:
-                        dados = res.json()
-                        valor_esperado = float(dados.get("ganho", 0))
-    
-                        if round(valor_pagamento, 2) == round(valor_esperado, 2):
-                            novo_estado = "Pago"
-                            ids_pagamento_confirmado.append(id_venda)
-                        else:
-                            novo_estado = "Disputa"
-                            ids_disputa.append(id_venda)
-    
-                        if dados["estado"] != novo_estado:
-                            dados["estado"] = novo_estado
-                            update = requests.put(f"https://controlo-bilhetes.onrender.com/listagem_vendas/{dados['id']}", json=dados)
-                            if update.status_code == 200:
-                                print(f"✅ Estado atualizado para '{novo_estado}' no ID {id_venda}")
-                            else:
-                                print(f"❌ Falha ao atualizar ID {id_venda}: {update.status_code}")
+    def verificar_emails_pagamento(username, password, dias=PERIODO_DIAS):
+    mail = connect_email(username, password)
+    mail.select("inbox")
+
+    data_limite = (datetime.today() - timedelta(days=dias)).strftime("%d-%b-%Y")
+    status, mensagens = mail.search(None, f'(SUBJECT "viagogo Pagamento" FROM "viagogo" SINCE {data_limite})')
+    ids = mensagens[0].split()
+    print(f"📩 Emails a verificar para pagamentos: {len(ids)}")
+
+    ids_pagamento_confirmado = []
+    ids_disputa = []
+
+    for msg_id in ids:
+        conteudo, _ = extract_email_content_and_date(mail, msg_id)
+        if not conteudo:
+            continue
+
+        conteudo_normalizado = unicodedata.normalize('NFD', conteudo).encode('ascii', 'ignore').decode('utf-8')
+
+        blocos = re.findall(r'(\d{9}).*?([0-9]+[\.,][0-9]{2})\s*€', conteudo_normalizado)
+        for id_venda, valor_str in blocos:
+            valor_pagamento = float(valor_str.replace(",", ".").replace(" ", ""))
+            print(f"🧾 Pagamento: ID {id_venda} | Valor recebido: {valor_pagamento}")
+
+            url = f"https://controlo-bilhetes.onrender.com/listagem_vendas/{id_venda}"
+            try:
+                res = requests.get(url)
+                if res.status_code == 200:
+                    dados = res.json()
+                    valor_esperado = float(dados.get("ganho", 0))
+
+                    if round(valor_pagamento, 2) == round(valor_esperado, 2):
+                        novo_estado = "Pago"
+                        ids_pagamento_confirmado.append(id_venda)
                     else:
-                        print(f"⚠️ ID {id_venda} não encontrado no sistema.")
-                except Exception as e:
-                    print(f"Erro ao verificar pagamento para ID {id_venda}: {e}")
-    
-        return {
-            "total_verificados": len(ids),
-            "pagos": len(ids_pagamento_confirmado),
-            "disputas": ids_disputa
+                        novo_estado = "Disputa"
+                        ids_disputa.append(id_venda)
+
+                    if dados["estado"] != novo_estado:
+                        dados["estado"] = novo_estado
+                        update = requests.put(f"https://controlo-bilhetes.onrender.com/listagem_vendas/{dados['id']}", json=dados)
+                        if update.status_code == 200:
+                            print(f"✅ Estado atualizado para '{novo_estado}' no ID {id_venda}")
+                        else:
+                            print(f"❌ Falha ao atualizar ID {id_venda}: {update.status_code}")
+                else:
+                    print(f"⚠️ ID {id_venda} não encontrado no sistema.")
+            except Exception as e:
+                print(f"Erro ao verificar pagamento para ID {id_venda}: {e}")
+
+    return {
+        "total_verificados": len(ids),
+        "pagos": len(ids_pagamento_confirmado),
+        "disputas": ids_disputa
+    }
+
+# =============================
+# Execução principal do script
+# =============================
+if __name__ == "__main__":
+    auto_update_email_data(username, password, date_from=(datetime.today() - timedelta(days=PERIODO_DIAS)).strftime("%d-%b-%Y"))
+
+    # Pequeno delay para garantir que os registos novos foram processados e guardados
+    time.sleep(5)
+
+    # Captura o resultado das entregas
+    entregues_resumo = verificar_emails_entregues(username, password, dias=PERIODO_DIAS)
+    resultado_pagamentos = verificar_emails_pagamento(username, password, dias=PERIODO_DIAS)
+
+    # Atualiza o resumo com resultados
+    try:
+        with open("resumo_leitura.json", "r+") as f:
+            resumo = json.load(f)
+            resumo["entregues"] = entregues_resumo["alterados_para_entregue"]
+            resumo["ids_entregues"] = entregues_resumo["ids_entregues"]
+            resumo["pagos"] = resultado_pagamentos["pagos"]
+            resumo["disputas"] = resultado_pagamentos["disputas"]
+            f.seek(0)
+            json.dump(resumo, f, indent=2)
+            f.truncate()
+    except Exception as e:
+        print(f"❌ Erro ao atualizar resumo com entregues: {e}")
+        resumo = {
+            "total_lidos": 0,
+            "sucesso": 0,
+            "falhas": 0,
+            "existentes": 0,
+            "entregues": entregues_resumo.get("alterados_para_entregue", 0),
+            "ids_entregues": entregues_resumo.get("ids_entregues", []),
+            "pagos": resultado_pagamentos.get("pagos", 0),
+            "disputas": resultado_pagamentos.get("disputas", [])
         }
 
-
-    # 2. Executar a função
-    resultado_pagamentos = verificar_emails_pagamento(username, password)
-    
-    # 3. Atualizar o resumo com os dados
-    resumo["pagos"] = resultado_pagamentos["pagos"]
-    resumo["disputas"] = resultado_pagamentos["disputas"]
-    
-    # 4. Só agora chamar enviar_resumo_email com esses valores definidos
+    # Enviar resumo por email
     enviar_resumo_email(
         total_emails=resumo["total_lidos"],
         sucesso=resumo["sucesso"],
@@ -416,37 +442,11 @@ def verificar_emails_entregues(username, password, dias=PERIODO_DIAS):
         disputas=resumo.get("disputas", [])
     )
 
-    if __name__ == "__main__":
-    auto_update_email_data(username, password, date_from=(datetime.today() - timedelta(days=PERIODO_DIAS)).strftime("%d-%b-%Y"))
-
-
-    # Pequeno delay para garantir que os registos novos foram processados e guardados
-    time.sleep(5)
-    
-    # Captura o resultado das entregas
-    entregues_resumo = verificar_emails_entregues(username, password, dias=PERIODO_DIAS)
-    resultado_pagamentos = verificar_emails_pagamento(username, password, dias=PERIODO_DIAS)
-    resumo["pagos"] = resultado_pagamentos["pagos"]
-    resumo["disputas"] = resultado_pagamentos["disputas"]
-
-
-
-    # Atualiza o ficheiro local de resumo com entregues
-    try:
-        with open("resumo_leitura.json", "r+") as f:
-            resumo = json.load(f)
-            resumo["entregues"] = entregues_resumo["alterados_para_entregue"]
-            resumo["ids_entregues"] = entregues_resumo["ids_entregues"]
-            f.seek(0)
-            json.dump(resumo, f, indent=2)
-            f.truncate()
-    except Exception as e:
-        print(f"❌ Erro ao atualizar resumo com entregues: {e}")
-        
     # Atualiza API
     try:
         requests.post("https://controlo-bilhetes.onrender.com/guardar_resumo", json=resumo)
         print("📡 Resumo enviado para a API FastAPI com sucesso.")
     except Exception as e:
         print(f"❌ Falha ao enviar resumo para API: {e}")
+
 
