@@ -6,8 +6,7 @@ function Disputas() {
   const [modalVisivel, setModalVisivel] = useState(false);
   const [disputaSelecionada, setDisputaSelecionada] = useState(null);
 
-    // Suponha que você tenha as disputas associadas às vendas na sua tabela
-  const [disputas, setDisputas] = useState([]);
+
   
   // Use o useEffect para buscar os dados da Listagem Vendas (se aplicável)
   useEffect(() => {
