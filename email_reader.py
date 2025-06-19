@@ -1,4 +1,4 @@
-PERIODO_DIAS = 5
+PERIODO_DIAS = 2
 
 from dotenv import load_dotenv
 import os
