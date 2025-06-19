@@ -41,10 +41,10 @@ export default function Dashboard({ onAtualizarEventos }) {
     };
   
     // UseEffect para redirecionar para "Listagem de Vendas" caso esteja na rota /dashboard
-    useEffect(() => {
-    e.stopPropagation(); // Impede que a navegação aconteça imediatamente
-    setMostrarModal(true);  // Abre o modal
-  };
+  useEffect(() => {
+  e.stopPropagation(); // Impede que a navegação aconteça imediatamente
+  setMostrarModal(true);  // Abre o modal
+};
 
   // UseEffect para redirecionar para "Listagem de Vendas" caso esteja na rota /dashboard
   useEffect(() => {
