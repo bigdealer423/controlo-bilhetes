@@ -42,34 +42,53 @@ export default function ListagemVendas(props) {
   }
 
   // ⏳ Após 60 segundos, buscar o resultado da leitura
-  setTimeout(async () => {
-  try {
-    const res = await fetch("https://controlo-bilhetes.onrender.com/resultado_leitura_email");
-    const json = await res.json();
+    try {
+    const res = await fetch("https://controlo-bilhetes.onrender.com/forcar_leitura_email", {
+      method: "POST"
+    });
 
-    if (json.sucesso !== undefined) {
-      const entregues = json.entregues || 0;
-      const pagos = json.pagos || 0;
-      const disputas = json.disputas ? json.disputas.length : 0;
-
-      const mensagem = `✅ Concluído: ${json.sucesso} novos, ${json.existentes} existentes, ${json.falhas} falhados, ${entregues} entregues, ${pagos} pagos, ${disputas} disputas.`;
-
-      setMensagemModal(mensagem);
-      toast.success(mensagem);
-    } else {
-      setMensagemModal("⚠️ Concluído, mas sem dados detalhados.");
-      toast.warning("⚠️ Concluído, mas sem dados detalhados.");
+    if (!res.ok) {
+      throw new Error("Falha na resposta");
     }
-  } catch (error) {
-    setMensagemModal("⚠️ Concluído, mas não foi possível obter o resumo.");
-    toast.error("⚠️ Concluído, mas falhou ao obter o resumo.");
+
+    const data = await res.json();
+    setMensagemModal(`✅ ${data.mensagem}`);
+    buscarRegistos();
+    buscarResumoDiario();
+  } catch (err) {
+    setMensagemModal("❌ Erro ao tentar iniciar a leitura dos e-mails.");
+    return; // evita correr o setTimeout se falhar
   }
 
-  setTimeout(() => {
-    setMostrarModal(false);
-    setMensagemModal("");
-  }, 8000);
-}, 60000); // ← Aqui é onde fecha o setTimeout
+  // Agora sim, fora do bloco try/catch
+  setTimeout(async () => {
+    try {
+      const res = await fetch("https://controlo-bilhetes.onrender.com/resultado_leitura_email");
+      const json = await res.json();
+
+      if (json.sucesso !== undefined) {
+        const entregues = json.entregues || 0;
+        const pagos = json.pagos || 0;
+        const disputas = json.disputas ? json.disputas.length : 0;
+
+        const mensagem = `✅ Concluído: ${json.sucesso} novos, ${json.existentes} existentes, ${json.falhas} falhados, ${entregues} entregues, ${pagos} pagos, ${disputas} disputas.`;
+        setMensagemModal(mensagem);
+        toast.success(mensagem);
+      } else {
+        setMensagemModal("⚠️ Concluído, mas sem dados detalhados.");
+        toast.warning("⚠️ Concluído, mas sem dados detalhados.");
+      }
+    } catch (error) {
+      setMensagemModal("⚠️ Concluído, mas não foi possível obter o resumo.");
+      toast.error("⚠️ Concluído, mas falhou ao obter o resumo.");
+    }
+
+    setTimeout(() => {
+      setMostrarModal(false);
+      setMensagemModal("");
+    }, 8000);
+  }, 60000);
+
 
 
 
