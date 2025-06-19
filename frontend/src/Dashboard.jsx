@@ -29,6 +29,10 @@ export default function Dashboard({ onAtualizarEventos }) {
     { nome: "Outro Menu", rota: "/outro" }
   ];
 
+  const handleRodaDentadaClick = (e) => {
+    e.stopPropagation();  // Evita que a navegação aconteça imediatamente
+    setMostrarModal(true);  // Abre o modal
+  };
   useEffect(() => {
   if (location.pathname === "/dashboard") {
     // Redireciona uma vez para a página inicial após login
