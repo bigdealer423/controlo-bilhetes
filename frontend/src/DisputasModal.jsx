@@ -2,15 +2,23 @@ import React, { useState, useEffect } from 'react';
 import './DisputasModal.css';  // Importe o arquivo CSS aqui
 
 function DisputasModal({ visivel, fechar, dadosDisputa, onSalvar, onEliminar }) {
-  // Evita o erro caso dadosDisputa seja null ou undefined
+  // Se dadosDisputa for null ou undefined, exibe "Carregando..."
   if (!dadosDisputa) {
     return <div>Carregando...</div>;
   }
 
+  // Estado para os campos do formulário
   const [campoCobrança, setCampoCobrança] = useState(dadosDisputa.cobranca || '');
   const [campoDataDisputa, setCampoDataDisputa] = useState(dadosDisputa.dataDisputa || '');
   const [campoTexto, setCampoTexto] = useState(dadosDisputa.texto || '');
   const [arquivos, setArquivos] = useState([]);
+
+  // Atualiza os campos sempre que dadosDisputa mudar
+  useEffect(() => {
+    setCampoCobrança(dadosDisputa.cobranca || '');
+    setCampoDataDisputa(dadosDisputa.dataDisputa || '');
+    setCampoTexto(dadosDisputa.texto || '');
+  }, [dadosDisputa]); // Atualiza quando os dadosDisputa mudarem
 
   const handleSalvar = () => {
     const novaDisputa = {
