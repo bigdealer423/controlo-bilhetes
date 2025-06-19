@@ -81,6 +81,10 @@ def extract_email_content_and_date(mail, email_id):
             msg = email.message_from_bytes(response_part[1])
             raw_date = msg["Date"]
             data_venda = datetime.fromtimestamp(mktime_tz(parsedate_tz(raw_date)))
+
+            # ⚠️ Nova lógica: concatenar todo o conteúdo visível
+            full_content = ""
+            
             for part in msg.walk():
                 if part.get_content_type() == "text/html":
                     html = part.get_payload(decode=True).decode(errors='ignore')
@@ -89,6 +93,11 @@ def extract_email_content_and_date(mail, email_id):
                 elif part.get_content_type() == "text/plain":
                     text = part.get_payload(decode=True).decode(errors='ignore')
                     return text, data_venda
+
+            # Prioridade ao texto completo (html com fallback)
+            content = BeautifulSoup(full_content, "html.parser").get_text()
+            return content, data_venda
+            
     return "", datetime.now()
 
 def processar_email(content, data_venda):
