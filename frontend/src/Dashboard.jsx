@@ -87,5 +87,5 @@ export default function Dashboard({ onAtualizarEventos }) {
       fechar={() => setMostrarModal(false)}  // Garante que o modal pode ser fechado
       onAtualizar={onAtualizarEventos}
     />
-    </div>
-);
+  </div>
+);  // <-- Verifique se essa linha de fechamento está aqui.
