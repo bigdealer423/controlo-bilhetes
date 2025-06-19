@@ -71,15 +71,13 @@ export default function EventoModal({ visivel, fechar, onAtualizar }) {
   if (!visivel) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-      {/* fundo para fechar o modal ao clicar fora */}
+    <div
+      className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
+      onClick={fechar}
+    >
       <div
-        className="absolute inset-0"
-        onClick={fechar}
-      />
-      {/* conteúdo do modal */}
-      <div
-        className="relative bg-white p-6 rounded shadow-lg w-96 z-10"
+        className="bg-white p-6 rounded shadow-lg w-96"
+        onClick={(e) => e.stopPropagation()} // ⛔ Impede que o clique no interior feche o modal
       >
         <h2 className="text-lg font-bold mb-4">Gerir Eventos</h2>
         <div className="flex gap-2 mb-4">
