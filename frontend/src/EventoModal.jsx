@@ -72,32 +72,39 @@ export default function EventoModal({ visivel, fechar, onAtualizar }) {
 
   if (!visivel) return null;
 
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded shadow-lg w-96">
-        <h2 className="text-lg font-bold mb-4">Gerir Eventos</h2>
-        <div className="flex gap-2 mb-4">
-          <input
-            type="text"
-            className="border px-2 py-1 flex-grow"
-            placeholder="Novo evento"
-            value={novoEvento}
-            onChange={e => setNovoEvento(e.target.value)}
-          />
-          <button onClick={adicionarEvento} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Adicionar</button>
-        </div>
-        <ul className="max-h-40 overflow-y-auto">
-          {eventos.map(e => (
-            <li key={e.id} className="flex justify-between items-center border-b py-1">
-              <span>{e.nome}</span>
-              <button onClick={() => eliminarEvento(e.id)} className="text-red-600 hover:underline">Eliminar</button>
-            </li>
-          ))}
-        </ul>
-        <div className="text-right mt-4">
-          <button onClick={fechar} className="text-gray-600 hover:text-black">Fechar</button>
-        </div>
+return (
+  <div
+    className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
+    onClick={fechar} // Clica fora → fecha
+  >
+    <div
+      className="bg-white p-6 rounded shadow-lg w-96"
+      onClick={(e) => e.stopPropagation()} // Clica dentro → NÃO fecha
+    >
+      <h2 className="text-lg font-bold mb-4">Gerir Eventos</h2>
+      <div className="flex gap-2 mb-4">
+        <input
+          type="text"
+          className="border px-2 py-1 flex-grow"
+          placeholder="Novo evento"
+          value={novoEvento}
+          onChange={e => setNovoEvento(e.target.value)}
+        />
+        <button onClick={adicionarEvento} className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">
+          Adicionar
+        </button>
+      </div>
+      <ul className="max-h-40 overflow-y-auto">
+        {eventos.map(e => (
+          <li key={e.id} className="flex justify-between items-center border-b py-1">
+            <span>{e.nome}</span>
+            <button onClick={() => eliminarEvento(e.id)} className="text-red-600 hover:underline">Eliminar</button>
+          </li>
+        ))}
+      </ul>
+      <div className="text-right mt-4">
+        <button onClick={fechar} className="text-gray-600 hover:text-black">Fechar</button>
       </div>
     </div>
-  );
-}
+  </div>
+);
