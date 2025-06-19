@@ -33,7 +33,9 @@ export default function EventoModal({ visivel, fechar, onAtualizar }) {
   try {
     const res = await fetch("https://controlo-bilhetes.onrender.com/eventos_dropdown");
     const data = await res.json();
-    setEventos(ordenarEventosDropdown(data));
+    const ordenados = ordenarEventosDropdown(data);
+    setEventos(ordenados);
+    onAtualizar?.();  // Opcional, notifica o pai que houve atualização
   } catch (err) {
     console.error("Erro ao buscar eventos:", err);
   }
