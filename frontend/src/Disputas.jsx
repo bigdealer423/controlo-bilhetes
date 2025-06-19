@@ -2,6 +2,11 @@ import { useEffect, useState } from "react";
 
 export default function Disputas() {
   const [disputas, setDisputas] = useState([]);
+  const [modoEdicao, setModoEdicao] = useState(null);
+  const [registoEditado, setRegistoEditado] = useState({
+    cobranca: "",
+    data_disputa: "",
+  });
 
   useEffect(() => {
     fetch("https://controlo-bilhetes.onrender.com/disputas")
@@ -11,6 +16,41 @@ export default function Disputas() {
       })
       .catch(err => console.error("Erro ao buscar disputas:", err));
   }, []);
+
+  // Função para ativar o modo de edição
+  const ativarEdicao = (id, disputa) => {
+    setModoEdicao(id);
+    setRegistoEditado({
+      cobranca: disputa.cobranca,
+      data_disputa: disputa.data_disputa,
+    });
+  };
+
+  // Função para atualizar o registo editado
+  const atualizarRegisto = (id) => {
+    const dadosAtualizados = {
+      cobranca: registoEditado.cobranca,
+      data_disputa: registoEditado.data_disputa,
+    };
+
+    fetch(`https://controlo-bilhetes.onrender.com/disputas/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(dadosAtualizados),
+    })
+      .then(() => {
+        setModoEdicao(null);
+        // Atualiza os dados na tabela após a edição
+        setDisputas((prevDisputas) =>
+          prevDisputas.map((disputa) =>
+            disputa.id_venda === id
+              ? { ...disputa, ...dadosAtualizados }
+              : disputa
+          )
+        );
+      })
+      .catch((err) => console.error("Erro ao atualizar disputa:", err));
+  };
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
@@ -32,20 +72,72 @@ export default function Disputas() {
             </tr>
           </thead>
           <tbody>
-            {disputas.map(disputa => (
+            {disputas.map((disputa) => (
               <tr key={disputa.id_venda} className="border-t">
+                {/* Campos não editáveis */}
                 <td className="p-2">{disputa.id_venda}</td>
                 <td className="p-2">{disputa.data_evento}</td>
                 <td className="p-2">{disputa.evento}</td>
                 <td className="p-2">{disputa.estadio}</td>
                 <td className="p-2">{disputa.ganho} €</td>
-                <td className="p-2">{disputa.cobranca}</td>
-                <td className="p-2">{disputa.estado}</td>
-                <td className="p-2">{disputa.data_disputa}</td>
-                <td className="p-2">
-                  <button className="text-blue-600 hover:underline mr-2">Editar</button>
-                  <button className="text-red-600 hover:underline">Eliminar</button>
-                </td>
+
+                {/* Campos editáveis apenas durante a edição */}
+                {modoEdicao === disputa.id_venda ? (
+                  <>
+                    <td className="p-2">
+                      <input
+                        type="number"
+                        className="input"
+                        value={registoEditado.cobranca}
+                        onChange={(e) =>
+                          setRegistoEditado({
+                            ...registoEditado,
+                            cobranca: e.target.value,
+                          })
+                        }
+                      />
+                    </td>
+                    <td className="p-2">
+                      <input
+                        type="date"
+                        className="input"
+                        value={registoEditado.data_disputa}
+                        onChange={(e) =>
+                          setRegistoEditado({
+                            ...registoEditado,
+                            data_disputa: e.target.value,
+                          })
+                        }
+                      />
+                    </td>
+                    <td className="p-2">
+                      <button
+                        onClick={() => atualizarRegisto(disputa.id_venda)}
+                        className="text-green-600 hover:underline mr-2"
+                      >
+                        Salvar
+                      </button>
+                    </td>
+                  </>
+                ) : (
+                  <>
+                    {/* Campos não editáveis */}
+                    <td className="p-2">{disputa.cobranca}</td>
+                    <td className="p-2">{disputa.estado}</td>
+                    <td className="p-2">{disputa.data_disputa}</td>
+                    <td className="p-2">
+                      <button
+                        onClick={() => ativarEdicao(disputa.id_venda, disputa)}
+                        className="text-blue-600 hover:underline mr-2"
+                      >
+                        Editar
+                      </button>
+                      <button className="text-red-600 hover:underline">
+                        Eliminar
+                      </button>
+                    </td>
+                  </>
+                )}
               </tr>
             ))}
           </tbody>
