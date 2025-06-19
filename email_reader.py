@@ -356,22 +356,29 @@ def verificar_emails_pagamento(username, password, dias=PERIODO_DIAS):
 
     ids_pagamento_confirmado = []
     ids_disputa = []
-    
+
     for msg_id in ids:
         conteudo, _ = extract_email_content_and_date(mail, msg_id)
         if not conteudo:
             print("⚠️ Email sem conteúdo útil. Ignorado.")
             continue
-        print("📨 Email completo (debug):")
-        print(conteudo)
-        print("------------------------------------------------------------")
 
         conteudo_normalizado = unicodedata.normalize('NFD', conteudo).encode('ascii', 'ignore').decode('utf-8')
-        print("🔍 Conteúdo normalizado do email:")
-        print(conteudo_normalizado[:2000])  # mostra só os primeiros 2000 caracteres
-        
-        
-        blocos = re.findall(r'(\d{18})\d{2}-[A-Za-z]{3}-\d{2}\s\d{2}:\d{2}\s(?:AM|PM)?([\d\.,]+)', conteudo_normalizado)
+        print("🔍 Conteúdo normalizado:")
+        print(conteudo_normalizado[:2000])  # Mostra só os primeiros 2000 caracteres
+
+        # 1. Extrair referência de pagamento
+        match_ref = re.search(r'Referencia de pagamento n\.?\s*(\d+)', conteudo_normalizado)
+        if not match_ref:
+            print("❌ Referência de pagamento não encontrada.")
+            continue
+
+        ref_pagamento = match_ref.group(1)
+        print(f"🔑 Referência de pagamento encontrada: {ref_pagamento}")
+
+        # 2. Procurar IDs e valores associados
+        pattern = rf'({ref_pagamento}\d{{9}}).*?([\d\.,]+)\s*€?'
+        blocos = re.findall(pattern, conteudo_normalizado)
         print("🧪 Blocos encontrados no conteúdo:")
         print(blocos)
 
@@ -379,9 +386,14 @@ def verificar_emails_pagamento(username, password, dias=PERIODO_DIAS):
             print("⚠️ Nenhum bloco de ID + valor encontrado neste email.")
 
         for id_completo, valor_str in blocos:
-            id_venda = id_completo[-9:]  # Assume que o ID de venda são os últimos 9 dígitos
-            valor_pagamento = float(valor_str.replace(",", ".").replace(" ", ""))
-            print(f"🔍 Encontrado ID de venda: {id_venda} | Valor recebido: {valor_pagamento:.2f}€")
+            id_venda = id_completo[-9:]
+            try:
+                valor_pagamento = float(valor_str.replace(",", ".").replace(" ", ""))
+            except Exception as e:
+                print(f"❌ Erro ao converter valor: '{valor_str}' - {e}")
+                continue
+
+            print(f"🔍 ID Venda: {id_venda} | Valor: {valor_pagamento:.2f}€")
 
             url = f"https://controlo-bilhetes.onrender.com/listagem_vendas/{id_venda}"
             try:
