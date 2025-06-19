@@ -13,6 +13,7 @@ export default function Disputas() {
 
   // Carregar informações do modal a partir do localStorage ao iniciar
   useEffect(() => {
+    // Tentar carregar informações persistidas do localStorage
     const dadosModal = localStorage.getItem("modalEditado");
     if (dadosModal) {
       setRegistoEditado(JSON.parse(dadosModal));
@@ -45,7 +46,7 @@ export default function Disputas() {
   // Função para fechar o modal
   const fecharModal = () => {
     setModalAberto(false);
-    localStorage.removeItem("modalEditado"); // Remover os dados do localStorage
+    localStorage.removeItem("modalEditado"); // Remover os dados do localStorage ao fechar
   };
 
   // Função para atualizar os campos de texto
