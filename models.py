@@ -122,6 +122,14 @@ class CompraOut(CompraCreate):
     class Config:
         from_attributes = True
 
+class Disputa(BaseModel):
+    data_disputa: date
+    cobranca: float
+    texto_adicional: str
+
+    class Config:
+        orm_mode = True  # Permite que o Pydantic use dados de um modelo ORM
+
 # Criação automática das tabelas
 from database import engine
 Base.metadata.create_all(bind=engine)
