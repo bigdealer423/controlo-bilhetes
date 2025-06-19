@@ -1,4 +1,5 @@
 from sqlalchemy import extract
+from fastapi import File, UploadFile
 import os
 import requests
 from fastapi import FastAPI, HTTPException, Depends, status
