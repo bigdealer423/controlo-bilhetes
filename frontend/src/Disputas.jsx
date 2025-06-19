@@ -57,7 +57,7 @@ export default function Disputas() {
       <h1 className="text-2xl font-bold mb-4">Disputas</h1>
 
       <div className="bg-white shadow-md rounded p-4 mb-6">
-        <table className="min-w-full border text-sm text-left text-gray-600">
+        <table className="min-w-full table-auto border text-sm text-left text-gray-600">
           <thead className="bg-gray-100">
             <tr>
               <th className="p-2">ID Venda</th>
@@ -129,7 +129,7 @@ export default function Disputas() {
                       {/* Alinhamento à direita para os botões */}
                       <button
                         onClick={() => ativarEdicao(disputa.id_venda, disputa)}
-                        className="text-blue-600 hover:underline mr-2"
+                        className="text-blue-600 hover:underline mb-1"
                       >
                         Editar
                       </button>
