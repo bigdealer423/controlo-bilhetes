@@ -270,7 +270,8 @@ def enviar_resumo_email(total_emails, sucesso, falha, ja_existentes, ids_erro=No
         traceback.print_exc()
 import json
 
-def verificar_emails_entregues(username, password):
+def verificar_emails_entregues(username, password, dias=PERIODO_DIAS):
+
     mail = connect_email(username, password)
     mail.select("inbox")
 
