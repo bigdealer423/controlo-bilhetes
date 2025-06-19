@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from typing import List
 from datetime import datetime, date
 from sqlalchemy import func
+from io import BytesIO
 from database import engine, get_db
 from models import (
     Base,
@@ -73,6 +74,11 @@ def atualizar_disputa(id_venda: int, dados: Disputa, db: Session = Depends(get_d
     
     # Retornar a disputa atualizada
     return disputa
+
+@app.post("/uploadfile/")
+async def upload_file(file: UploadFile = File(...)):
+    content = await file.read()  # Lê o conteúdo do arquivo binário
+    return {"filename": file.filename, "size": len(content)}
 # ---------------- LISTAGEM DE VENDAS ----------------
 @app.get("/listagem_vendas")
 def obter_vendas(db: Session = Depends(get_db)):
