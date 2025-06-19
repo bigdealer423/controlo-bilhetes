@@ -19,11 +19,16 @@ export default function Dashboard({ onAtualizarEventos }) {
     //navigate("/login"); //
   };
 
-  const handleRodaDentadaClick = (e, rota) => {
-    e.stopPropagation();  // Impede a navegação imediata ao clicar no ícone de configurações
-    setMostrarModal(true);  // Abre o modal
-    setProximaRota(rota);  // Guarda a próxima rota que deve ser acessada após fechar o modal
-  };
+  const handleRodaDentadaClick = (e) => {
+  e.stopPropagation();  // Impede que a navegação aconteça imediatamente
+  console.log("Modal aberto, mostrando:", mostrarModal);
+  setMostrarModal(true);  // Abre o modal
+};
+
+useEffect(() => {
+  console.log("Modal visível:", mostrarModal);
+}, [mostrarModal]);
+
 
   const menus = [
     { nome: "Listagem de Vendas", rota: "/listagem-vendas" },
@@ -56,45 +61,51 @@ export default function Dashboard({ onAtualizarEventos }) {
   };
 
   return (
-    <div className="bg-gray-100 p-3 flex justify-between items-center border-b mb-4">
-      <div className="flex gap-2 flex-wrap">
-        {menus.map((menu) => (
-          <button
-            key={menu.rota}
-            onClick={(e) => handleMenuClick(e, menu.rota)}  // Usando a nova função para navegar
-            className={`px-3 py-1 text-sm rounded ${
-              rotaAtual === menu.rota
-                ? "bg-blue-600 text-white"
-                : "bg-white text-gray-700 border hover:bg-blue-50"
-            }`}
-          >
-            {menu.nome}
-          </button>
-        ))}
-      </div>
-
-      <div className="flex items-center space-x-4 ml-4">
+  <div className="bg-gray-100 p-3 flex justify-between items-center border-b mb-4">
+    <div className="flex gap-2 flex-wrap">
+      {menus.map((menu) => (
         <button
-          onClick={(e) => handleRodaDentadaClick(e, rotaAtual)}  // Aqui, tratando o clique no botão de configurações
-          className="text-gray-700 hover:text-black"
-          title="Definições"
+          key={menu.rota}
+          onClick={(e) => {
+            e.stopPropagation();  // Impede que o clique propague e acione a navegação
+            handleMenuClick(e, menu.rota);  // Usando a função de navegação
+          }}
+          className={`px-3 py-1 text-sm rounded ${
+            rotaAtual === menu.rota
+              ? "bg-blue-600 text-white"
+              : "bg-white text-gray-700 border hover:bg-blue-50"
+          }`}
         >
-          <FiSettings size={20} />
+          {menu.nome}
         </button>
-
-        <button
-          onClick={handleLogout}
-          className="text-red-600 hover:text-red-800 text-sm border border-red-600 px-2 py-1 rounded"
-        >
-          Logout
-        </button>
-      </div>
-
-      <EventoModal
-        visivel={mostrarModal}
-        fechar={fecharModal}  // Fechar o modal e navegar
-        onAtualizar={onAtualizarEventos}
-      />
+      ))}
     </div>
-  );
-}
+
+    <div className="flex items-center space-x-4 ml-4">
+      <button
+        onClick={(e) => {
+          e.stopPropagation();  // Impede que o clique no ícone de configurações dispare navegação
+          handleRodaDentadaClick(e, rotaAtual);  // Abre o modal
+        }}
+        className="text-gray-700 hover:text-black"
+        title="Definições"
+      >
+        <FiSettings size={20} />
+      </button>
+
+      <button
+        onClick={handleLogout}
+        className="text-red-600 hover:text-red-800 text-sm border border-red-600 px-2 py-1 rounded"
+      >
+        Logout
+      </button>
+    </div>
+
+    <EventoModal
+      visivel={mostrarModal}
+      fechar={fecharModal}  // Fechar o modal e navegar
+      onAtualizar={onAtualizarEventos}
+    />
+  </div>
+);
+
