@@ -125,18 +125,17 @@ export default function Disputas() {
                     {/* Campos não editáveis */}
                     <td className="p-2">{disputa.cobranca}</td>
                     <td className="p-2">{disputa.data_disputa}</td>
-                    <td className="p-2">
-                      <div className="flex flex-col">
-                        <button
-                          onClick={() => ativarEdicao(disputa.id_venda, disputa)}
-                          className="text-blue-600 hover:underline mb-1"
-                        >
-                          Editar
-                        </button>
-                        <button className="text-red-600 hover:underline">
-                          Eliminar
-                        </button>
-                      </div>
+                    <td className="p-2 flex justify-end">
+                      {/* Alinhamento à direita para os botões */}
+                      <button
+                        onClick={() => ativarEdicao(disputa.id_venda, disputa)}
+                        className="text-blue-600 hover:underline mr-2"
+                      >
+                        Editar
+                      </button>
+                      <button className="text-red-600 hover:underline">
+                        Eliminar
+                      </button>
                     </td>
                   </>
                 )}
