@@ -371,7 +371,7 @@ def verificar_emails_pagamento(username, password, dias=PERIODO_DIAS):
         print(conteudo_normalizado[:2000])  # mostra só os primeiros 2000 caracteres
         
         # Novo padrão: 18 dígitos seguidos por valor (ex: 61969360564181891 + 559.52)
-        blocos = re.findall(r'(\d{18})(?:\d{2}-[A-Za-z]{3}-\d{2})\s\d{2}:\d{2}\s(?:AM|PM)(\d+[.,]\d+)', conteudo_normalizado)
+        blocos = re.findall(r'(\d{18})(?:\d{2}-[A-Za-z]{3}-\d{2})\s\d{2}:\d{2}\s(?:AM|PM)?([0-9]+[.,][0-9]+)', conteudo_normalizado)
         print("🧪 Blocos encontrados no conteúdo:")
         print(blocos)
 
