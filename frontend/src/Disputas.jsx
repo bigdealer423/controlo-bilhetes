@@ -26,8 +26,8 @@ export default function Disputas() {
       id_venda: disputa.id_venda,
       data_disputa: disputa.data_disputa,
       cobranca: disputa.cobranca,
-      texto_adicional: "", // Inicializa o campo de texto vazio
-      arquivos: [], // Inicializa o array de arquivos vazio
+      texto_adicional: disputa.texto_adicional || "", // Preenche o texto se houver
+      arquivos: disputa.arquivos || [], // Preenche com os arquivos anexados, se houver
     });
     setModalAberto(true);
   };
@@ -56,24 +56,26 @@ export default function Disputas() {
 
   // Função para salvar a edição no backend
   const salvarEdicao = () => {
-    const dadosAtualizados = {
-      data_disputa: registoEditado.data_disputa,
-      cobranca: registoEditado.cobranca,
-      texto_adicional: registoEditado.texto_adicional,
-      arquivos: registoEditado.arquivos,
-    };
+    const formData = new FormData();
+    formData.append("data_disputa", registoEditado.data_disputa);
+    formData.append("cobranca", registoEditado.cobranca);
+    formData.append("texto_adicional", registoEditado.texto_adicional);
+
+    // Adiciona os arquivos ao FormData
+    registoEditado.arquivos.forEach(file => {
+      formData.append("arquivos", file);
+    });
 
     fetch(`https://controlo-bilhetes.onrender.com/disputas/${registoEditado.id_venda}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(dadosAtualizados),
+      body: formData,
     })
       .then(() => {
         // Atualiza a tabela após salvar
         setDisputas(prevDisputas =>
           prevDisputas.map(disputa =>
             disputa.id_venda === registoEditado.id_venda
-              ? { ...disputa, ...dadosAtualizados }
+              ? { ...disputa, ...registoEditado }
               : disputa
           )
         );
@@ -184,21 +186,3 @@ export default function Disputas() {
 
             <div className="flex justify-end gap-4">
               <button
-                onClick={salvarEdicao}
-                className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-              >
-                Salvar
-              </button>
-              <button
-                onClick={fecharModal}
-                className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
-              >
-                Cancelar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
