@@ -36,16 +36,16 @@ export default function Dashboard({ onAtualizarEventos }) {
 
   // Função que abre o modal da roda dentada sem fechar a navegação
   const handleRodaDentadaClick = (e) => {
-    e.stopPropagation(); // Impede que a navegação aconteça imediatamente
-    setMostrarModal(true);  // Abre o modal
-  };
-
-  // UseEffect para redirecionar para "Listagem de Vendas" caso esteja na rota /dashboard
-  useEffect(() => {
-  if (location.pathname === "/dashboard" && !mostrarModal) {
-    navigate("/listagem-vendas");
-  }
-}, [location.pathname, navigate, mostrarModal]);
+      e.stopPropagation(); // Impede que a navegação aconteça imediatamente
+      setMostrarModal(true);  // Abre o modal
+    };
+  
+    // UseEffect para redirecionar para "Listagem de Vendas" caso esteja na rota /dashboard
+    useEffect(() => {
+    if (location.pathname === "/dashboard" && !mostrarModal) {
+      navigate("/listagem-vendas");
+    }
+  }, [location.pathname, navigate, mostrarModal]);
 
 
   return (
