@@ -47,13 +47,21 @@ export default function Dashboard({ onAtualizarEventos }) {
     }
   };
 
+  // Lidar com a navegação das abas
+  const handleMenuClick = (e, rota) => {
+    e.preventDefault();
+    if (rota === rotaAtual) return;  // Não faz nada se for a mesma rota
+    setMostrarModal(false);  // Fecha o modal, se estiver aberto
+    navigate(rota);  // Navega para a nova rota
+  };
+
   return (
     <div className="bg-gray-100 p-3 flex justify-between items-center border-b mb-4">
       <div className="flex gap-2 flex-wrap">
         {menus.map((menu) => (
           <button
             key={menu.rota}
-            onClick={(e) => handleRodaDentadaClick(e, menu.rota)}  // Passando a rota para ser guardada
+            onClick={(e) => handleMenuClick(e, menu.rota)}  // Usando a nova função para navegar
             className={`px-3 py-1 text-sm rounded ${
               rotaAtual === menu.rota
                 ? "bg-blue-600 text-white"
@@ -67,7 +75,7 @@ export default function Dashboard({ onAtualizarEventos }) {
 
       <div className="flex items-center space-x-4 ml-4">
         <button
-          onClick={(e) => handleRodaDentadaClick(e, rotaAtual)}  // Aqui também
+          onClick={(e) => handleRodaDentadaClick(e, rotaAtual)}  // Aqui, tratando o clique no botão de configurações
           className="text-gray-700 hover:text-black"
           title="Definições"
         >
