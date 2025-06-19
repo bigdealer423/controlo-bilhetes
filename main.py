@@ -21,7 +21,8 @@ from models import (
     Compra,
     CompraCreate,
     CompraOut,
-    ListagemVendasBase
+    ListagemVendasBase,
+    Disputa
 )
 resumo_mais_recente = {}
 Base.metadata.create_all(bind=engine)
@@ -44,7 +45,7 @@ def root():
 
 
 # ---------------- DISPUTAS ----------------
-# Exemplo de função para obter disputas
+# Rota para obter disputas
 @app.get("/disputas", response_model=List[ListagemVendasBase])
 def get_disputas(db: Session = Depends(get_db)):
     # Consulta para pegar apenas as vendas com estado 'Disputa'
@@ -53,7 +54,7 @@ def get_disputas(db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Nenhuma disputa encontrada")
     return disputas  # Aqui, o FastAPI vai converter a lista de objetos SQLAlchemy para Pydantic
 
-# Função para atualizar disputa
+# Rota para atualizar disputa
 @app.put("/disputas/{id_venda}")
 def atualizar_disputa(id_venda: int, dados: Disputa, db: Session = Depends(get_db)):
     # Verificar se a disputa existe
@@ -72,7 +73,6 @@ def atualizar_disputa(id_venda: int, dados: Disputa, db: Session = Depends(get_d
     
     # Retornar a disputa atualizada
     return disputa
-
 # ---------------- LISTAGEM DE VENDAS ----------------
 @app.get("/listagem_vendas")
 def obter_vendas(db: Session = Depends(get_db)):
