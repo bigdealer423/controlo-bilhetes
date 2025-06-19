@@ -369,7 +369,7 @@ if __name__ == "__main__":
         entregues=resumo.get("entregues", 0),
         ids_entregues=resumo.get("ids_entregues", []),
         pagos = resumo.get("pagos", 0),
-        disputas = resumo.get("disputas", [])
+        disputas = resumo.get("disputas", []),
 
         corpo += f"\n💰 Pagamentos confirmados: {pagos}"
         if disputas:
