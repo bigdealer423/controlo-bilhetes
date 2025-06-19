@@ -19,7 +19,6 @@ export default function Dashboard({ onAtualizarEventos }) {
   logout();
   navigate("/login");
 };
-
   const handleRodaDentadaClick = (e) => {
   e.stopPropagation();  // Impede a propagação para a navegação
   e.preventDefault();   // Impede o comportamento padrão (se for um link ou botão)
