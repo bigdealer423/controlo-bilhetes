@@ -1,8 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './DisputasModal.css';  // Importe o arquivo CSS aqui
 
-
 function DisputasModal({ visivel, fechar, dadosDisputa, onSalvar, onEliminar }) {
+  // Evita o erro caso dadosDisputa seja null ou undefined
+  if (!dadosDisputa) {
+    return <div>Carregando...</div>;
+  }
+
   const [campoCobrança, setCampoCobrança] = useState(dadosDisputa.cobranca || '');
   const [campoDataDisputa, setCampoDataDisputa] = useState(dadosDisputa.dataDisputa || '');
   const [campoTexto, setCampoTexto] = useState(dadosDisputa.texto || '');
