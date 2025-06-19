@@ -23,7 +23,7 @@ export default function Disputas() {
               <th className="p-2">ID Venda</th>
               <th className="p-2">Data Evento</th>
               <th className="p-2">Evento</th>
-              <th className="p-2">Bilhetes</th>
+              <th className="p-2">Estadio</th>
               <th className="p-2">Ganho (€)</th>
               <th className="p-2">Cobrança</th>
               <th className="p-2">Estado</th>
@@ -37,7 +37,7 @@ export default function Disputas() {
                 <td className="p-2">{disputa.id_venda}</td>
                 <td className="p-2">{disputa.data_evento}</td>
                 <td className="p-2">{disputa.evento}</td>
-                <td className="p-2">{disputa.bilhetes}</td>
+                <td className="p-2">{disputa.estadio}</td>
                 <td className="p-2">{disputa.ganho} €</td>
                 <td className="p-2">{disputa.cobranca}</td>
                 <td className="p-2">{disputa.estado}</td>
