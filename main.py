@@ -42,13 +42,13 @@ def root():
 
 
 # ---------------- DISPUTAS ----------------
-@app.get("/disputas", response_model=List[ListagemVendas])
+@app.get("/disputas", response_model=List[ListagemVendasBase])  # Use o Pydantic aqui
 def get_disputas(db: Session = Depends(get_db)):
     # Consulta para pegar apenas as vendas com estado 'Disputa'
     disputas = db.query(ListagemVendas).filter(ListagemVendas.estado == 'Disputa').all()
     if not disputas:
         raise HTTPException(status_code=404, detail="Nenhuma disputa encontrada")
-    return disputas  # Isso deve ser uma lista de objetos
+    return disputas  # Aqui, o FastAPI vai converter a lista de objetos SQLAlchemy para Pydantic
 
 
 # ---------------- LISTAGEM DE VENDAS ----------------
