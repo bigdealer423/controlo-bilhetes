@@ -240,12 +240,15 @@ def enviar_resumo_email(total_emails, sucesso, falha, ja_existentes, ids_erro=No
 ⚠️ Já existiam: {ja_existentes}
 ❌ Com erro: {falha}
 📦 Alterados para 'Entregue': {entregues}
+💰 Pagamentos confirmados: {pagos}
 """
 
     if ids_erro:
         corpo += "\n🔝 IDs com erro:\n" + "\n".join(ids_erro)
     if ids_entregues:
         corpo += "\n📬 IDs entregues:\n" + "\n".join(ids_entregues)
+     if disputas:
+        corpo += "\n⚠️ IDs com disputa:\n" + "\n".join(disputas)
 
 
     msg = MIMEMultipart()
@@ -369,11 +372,7 @@ if __name__ == "__main__":
         entregues=resumo.get("entregues", 0),
         ids_entregues=resumo.get("ids_entregues", []),
         pagos = resumo.get("pagos", 0),
-        disputas = resumo.get("disputas", []),
-
-        corpo += f"\n💰 Pagamentos confirmados: {pagos}"
-        if disputas:
-            corpo += "\n⚠️ IDs com disputa:\n" + "\n".join(disputas)
+        disputas = resumo.get("disputas", [])   
     )
 
     def verificar_emails_pagamento(username, password):
