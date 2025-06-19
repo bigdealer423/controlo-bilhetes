@@ -366,16 +366,16 @@ if __name__ == "__main__":
         ids_entregues=resumo.get("ids_entregues", [])
     )
 
-    def verificar_emails_pagamentos(username, password, dias=60):
+    def verificar_emails_pagamento(username, password):
         mail = connect_email(username, password)
         mail.select("inbox")
     
-        data_limite = (datetime.today() - timedelta(days=dias)).strftime("%d-%b-%Y")
+        data_limite = (datetime.today() - timedelta(days=PERIODO_DIAS)).strftime("%d-%b-%Y")
         status, mensagens = mail.search(None, f'(SUBJECT "viagogo Pagamento" FROM "viagogo" SINCE {data_limite})')
         ids = mensagens[0].split()
         print(f"📩 Emails a verificar para pagamentos: {len(ids)}")
     
-        ids_pagos = []
+        ids_pagamento_confirmado = []
         ids_disputa = []
     
         for msg_id in ids:
@@ -385,48 +385,46 @@ if __name__ == "__main__":
     
             conteudo_normalizado = unicodedata.normalize('NFD', conteudo).encode('ascii', 'ignore').decode('utf-8')
     
-            match_id = re.search(r'ID\s*da\s*encomenda\s*[:\-]?\s*(\d+)', conteudo_normalizado, re.IGNORECASE)
-            match_valor = re.search(r'Pagamento\s*[:\-]?\s*([\d\.,]+)\s*\u20ac', conteudo_normalizado, re.IGNORECASE)
+            # Extrair ID da venda (9 dígitos) e valor do pagamento
+            blocos = re.findall(r'(\d{9}).*?([0-9]+[\.,][0-9]{2})\s*€', conteudo_normalizado)
+            for id_venda, valor_str in blocos:
+                valor_pagamento = float(valor_str.replace(",", ".").replace(" ", ""))
     
-            if match_id and match_valor:
-                id_venda = match_id.group(1).strip()
-                valor_pagamento_str = match_valor.group(1).replace(".", "").replace(",", ".")
-                try:
-                    valor_pagamento = round(float(valor_pagamento_str))
-                except:
-                    print(f"❌ Valor de pagamento inválido para ID {id_venda}: {valor_pagamento_str}")
-                    continue
+                print(f"🧾 Pagamento: ID {id_venda} | Valor recebido: {valor_pagamento}")
     
+                # Verificar na base de dados
+                url = f"https://controlo-bilhetes.onrender.com/listagem_vendas/{id_venda}"
                 try:
-                    res = requests.get(f"https://controlo-bilhetes.onrender.com/listagem_vendas/{id_venda}")
+                    res = requests.get(url)
                     if res.status_code == 200:
                         dados = res.json()
-                        ganho_registado = round(float(dados['ganho']))
-                        estado_alvo = "Pago" if valor_pagamento == ganho_registado else "Disputa"
+                        valor_esperado = float(dados.get("ganho", 0))
     
-                        if dados["estado"] != estado_alvo:
-                            dados["estado"] = estado_alvo
+                        if round(valor_pagamento, 2) == round(valor_esperado, 2):
+                            novo_estado = "Pago"
+                            ids_pagamento_confirmado.append(id_venda)
+                        else:
+                            novo_estado = "Disputa"
+                            ids_disputa.append(id_venda)
+    
+                        if dados["estado"] != novo_estado:
+                            dados["estado"] = novo_estado
                             update = requests.put(f"https://controlo-bilhetes.onrender.com/listagem_vendas/{dados['id']}", json=dados)
                             if update.status_code == 200:
-                                print(f"✅ Estado atualizado para '{estado_alvo}' no ID {id_venda}")
-                                if estado_alvo == "Pago":
-                                    ids_pagos.append(id_venda)
-                                else:
-                                    ids_disputa.append(id_venda)
+                                print(f"✅ Estado atualizado para '{novo_estado}' no ID {id_venda}")
                             else:
                                 print(f"❌ Falha ao atualizar ID {id_venda}: {update.status_code}")
-                        else:
-                            print(f"ℹ️ ID {id_venda} já está como '{estado_alvo}'")
                     else:
-                        print(f"⚠️ ID {id_venda} não existe na base de dados.")
+                        print(f"⚠️ ID {id_venda} não encontrado no sistema.")
                 except Exception as e:
-                    print(f"❌ Erro na comunicação com API para ID {id_venda}: {e}")
+                    print(f"Erro ao verificar pagamento para ID {id_venda}: {e}")
     
         return {
-            "pagos": len(ids_pagos),
-            "ids_pagos": ids_pagos,
-            "ids_disputa": ids_disputa
+            "total_verificados": len(ids),
+            "pagos": len(ids_pagamento_confirmado),
+            "disputas": ids_disputa
         }
+
 
     # Atualiza API
     try:
