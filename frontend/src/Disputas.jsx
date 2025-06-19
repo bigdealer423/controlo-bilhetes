@@ -12,12 +12,19 @@ export default function Disputas() {
   });
 
   useEffect(() => {
+    // Carregar dados de disputas do backend
     fetch("https://controlo-bilhetes.onrender.com/disputas")
       .then(res => res.json())
       .then(data => {
         setDisputas(data);
       })
       .catch(err => console.error("Erro ao buscar disputas:", err));
+
+    // Tentar carregar informações persistidas do localStorage
+    const dadosModal = localStorage.getItem("modalEditado");
+    if (dadosModal) {
+      setRegistoEditado(JSON.parse(dadosModal));
+    }
   }, []);
 
   // Função para abrir o modal com duplo clique
@@ -30,11 +37,22 @@ export default function Disputas() {
       arquivos: disputa.arquivos || [],
     });
     setModalAberto(true);
+
+    // Persistir no localStorage
+    localStorage.setItem("modalEditado", JSON.stringify({
+      id_venda: disputa.id_venda,
+      data_disputa: disputa.data_disputa,
+      cobranca: disputa.cobranca,
+      texto_adicional: disputa.texto_adicional || "",
+      arquivos: disputa.arquivos || [],
+    }));
   };
 
   // Função para fechar o modal
   const fecharModal = () => {
     setModalAberto(false);
+    // Remover o estado do localStorage ao fechar
+    localStorage.removeItem("modalEditado");
   };
 
   // Função para atualizar os campos de texto
@@ -44,6 +62,12 @@ export default function Disputas() {
       ...prevState,
       [name]: value,
     }));
+
+    // Persistir a mudança no localStorage
+    localStorage.setItem("modalEditado", JSON.stringify({
+      ...registoEditado,
+      [name]: value,
+    }));
   };
 
   // Função para lidar com o upload de arquivos
@@ -51,6 +75,12 @@ export default function Disputas() {
     setRegistoEditado(prevState => ({
       ...prevState,
       arquivos: [...prevState.arquivos, ...e.target.files],
+    }));
+
+    // Persistir a mudança no localStorage
+    localStorage.setItem("modalEditado", JSON.stringify({
+      ...registoEditado,
+      arquivos: [...registoEditado.arquivos, ...e.target.files],
     }));
   };
 
@@ -181,7 +211,7 @@ export default function Disputas() {
                         href={URL.createObjectURL(file)}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-blue-600 hover:underline"
+                        className="text-blue-500 hover:underline"
                       >
                         {file.name}
                       </a>
