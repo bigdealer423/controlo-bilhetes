@@ -10,7 +10,7 @@ function Disputas() {
   
   // Use o useEffect para buscar os dados da Listagem Vendas (se aplicável)
   useEffect(() => {
-    fetch('/api/listagem-vendas')  // Se estiver usando uma API
+    fetch('https://controlo-bilhetes.vercel.app/listagem-vendas')  // Se estiver usando uma API
       .then((response) => response.json())
       .then((data) => {
         setDisputas(data);  // Preenche a lista de disputas com dados da Listagem Vendas
