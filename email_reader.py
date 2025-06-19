@@ -337,60 +337,77 @@ def verificar_emails_entregues(username, password, dias=PERIODO_DIAS):
 
 
 def verificar_emails_pagamento(username, password, dias=PERIODO_DIAS):
-        mail = connect_email(username, password)
-        mail.select("inbox")
-    
-        data_limite = (datetime.today() - timedelta(days=dias)).strftime("%d-%b-%Y")
-        status, mensagens = mail.search(None, f'(SUBJECT "viagogo Pagamento" FROM "viagogo" SINCE {data_limite})')
-        ids = mensagens[0].split()
-        print(f"📩 Emails a verificar para pagamentos: {len(ids)}")
-    
-        ids_pagamento_confirmado = []
-        ids_disputa = []
-    
-        for msg_id in ids:
-            conteudo, _ = extract_email_content_and_date(mail, msg_id)
-            if not conteudo:
-                continue
-    
-            conteudo_normalizado = unicodedata.normalize('NFD', conteudo).encode('ascii', 'ignore').decode('utf-8')
-    
-            blocos = re.findall(r'(\d{9,18})[^\d€]{1,50}?([0-9]+[\.,][0-9]{2})\s*€', conteudo_normalizado)
-            for id_venda, valor_str in blocos:
-                valor_pagamento = float(valor_str.replace(",", ".").replace(" ", ""))
-                print(f"🧾 Pagamento: ID {id_venda} | Valor recebido: {valor_pagamento}")
-    
-                url = f"https://controlo-bilhetes.onrender.com/listagem_vendas/{id_venda}"
-                try:
-                    res = requests.get(url)
-                    if res.status_code == 200:
-                        dados = res.json()
-                        valor_esperado = float(dados.get("ganho", 0))
-    
-                        if abs(valor_pagamento - valor_esperado) <= 1:
-                            novo_estado = "Pago"
-                            ids_pagamento_confirmado.append(id_venda)
-                        else:
-                            novo_estado = "Disputa"
-                            ids_disputa.append(id_venda)
-    
-                        if dados["estado"] != novo_estado:
-                            dados["estado"] = novo_estado
-                            update = requests.put(f"https://controlo-bilhetes.onrender.com/listagem_vendas/{dados['id']}", json=dados)
-                            if update.status_code == 200:
-                                print(f"✅ Estado atualizado para '{novo_estado}' no ID {id_venda}")
-                            else:
-                                print(f"❌ Falha ao atualizar ID {id_venda}: {update.status_code}")
+    mail = connect_email(username, password)
+    mail.select("inbox")
+
+    data_limite = (datetime.today() - timedelta(days=dias)).strftime("%d-%b-%Y")
+    status, mensagens = mail.search(None, f'(SUBJECT "viagogo Pagamento" FROM "viagogo" SINCE {data_limite})')
+    ids = mensagens[0].split()
+    print(f"📩 Emails a verificar para pagamentos: {len(ids)}")
+
+    ids_pagamento_confirmado = []
+    ids_disputa = []
+
+    for msg_id in ids:
+        conteudo, _ = extract_email_content_and_date(mail, msg_id)
+        if not conteudo:
+            print("⚠️ Email sem conteúdo útil. Ignorado.")
+            continue
+
+        conteudo_normalizado = unicodedata.normalize('NFD', conteudo).encode('ascii', 'ignore').decode('utf-8')
+
+        blocos = re.findall(r'(\d{9}).*?(-?[0-9]+[\.,][0-9]{2})\s*€', conteudo_normalizado)
+        if not blocos:
+            print("⚠️ Nenhum bloco de ID + valor encontrado neste email.")
+        for id_venda, valor_str in blocos:
+            valor_pagamento = float(valor_str.replace(",", ".").replace(" ", ""))
+            print(f"🔍 Encontrado ID: {id_venda} | Valor recebido: {valor_pagamento:.2f}€")
+
+            url = f"https://controlo-bilhetes.onrender.com/listagem_vendas/{id_venda}"
+            try:
+                res = requests.get(url)
+                if res.status_code == 200:
+                    dados = res.json()
+                    valor_esperado = float(dados.get("ganho", 0))
+                    diferenca = abs(valor_pagamento - valor_esperado)
+
+                    print(f"🔎 Valor esperado no sistema: {valor_esperado:.2f}€ | Diferença: {diferenca:.2f}€")
+
+                    if diferenca <= 1:
+                        novo_estado = "Pago"
+                        ids_pagamento_confirmado.append(id_venda)
+                        print(f"✅ Estado atribuído: {novo_estado}")
+                    elif diferenca > 50 and valor_pagamento < 0:
+                        novo_estado = "Disputa"
+                        ids_disputa.append(id_venda)
+                        print(f"⚠️ Estado atribuído: {novo_estado} (valor negativo e diferença > 50€)")
                     else:
-                        print(f"⚠️ ID {id_venda} não encontrado no sistema.")
-                except Exception as e:
-                    print(f"Erro ao verificar pagamento para ID {id_venda}: {e}")
-    
-        return {
-            "total_verificados": len(ids),
-            "pagos": len(ids_pagamento_confirmado),
-            "disputas": ids_disputa
-        }
+                        print("ℹ️ Diferença moderada. Nenhuma alteração de estado aplicada.")
+                        continue
+
+                    if dados["estado"] != novo_estado:
+                        dados["estado"] = novo_estado
+                        update = requests.put(f"https://controlo-bilhetes.onrender.com/listagem_vendas/{dados['id']}", json=dados)
+                        if update.status_code == 200:
+                            print(f"📤 Estado atualizado com sucesso no sistema.")
+                        else:
+                            print(f"❌ Falha ao atualizar estado na API: {update.status_code}")
+                    else:
+                        print("ℹ️ Estado já estava correto. Nenhuma alteração feita.")
+                else:
+                    print(f"⚠️ ID {id_venda} não encontrado na base de dados.")
+            except Exception as e:
+                print(f"❌ Erro na verificação do ID {id_venda}: {e}")
+
+    print(f"\n✅ Total confirmados como pagos: {len(ids_pagamento_confirmado)}")
+    print(f"⚠️ Total com disputa: {len(ids_disputa)}")
+
+    return {
+        "total_verificados": len(ids),
+        "pagos": len(ids_pagamento_confirmado),
+        "disputas": ids_disputa
+    }
+
 
 # =============================
 # Execução principal do script
