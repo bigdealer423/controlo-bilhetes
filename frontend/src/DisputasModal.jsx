@@ -1,128 +1,98 @@
 import React, { useState, useEffect } from 'react';
-import './DisputasModal.css';  // Importe o arquivo CSS aqui
+import DisputasModal from './DisputasModal';
 
-function DisputasModal({ visivel, fechar, dadosDisputa, onSalvar, onEliminar }) {
-  if (!dadosDisputa) {
-    return <div>Carregando...</div>;
-  }
+function ListagemVendas() {
+  const [registos, setRegistos] = useState([]);
+  const [disputas, setDisputas] = useState([]); // Estado para armazenar as disputas
 
-  const [campoCobrança, setCampoCobrança] = useState(dadosDisputa.cobranca || '');
-  const [campoDataDisputa, setCampoDataDisputa] = useState(dadosDisputa.dataDisputa || '');
-  const [campoTexto, setCampoTexto] = useState(dadosDisputa.texto || '');
-  const [arquivos, setArquivos] = useState([]);
-
-  // Atualiza os campos sempre que dadosDisputa mudar
   useEffect(() => {
-    setCampoCobrança(dadosDisputa.cobranca || '');
-    setCampoDataDisputa(dadosDisputa.dataDisputa || '');
-    setCampoTexto(dadosDisputa.texto || '');
-  }, [dadosDisputa]);
+    // Simulando a obtenção de dados da API
+    const dadosFicticios = [
+      { id: 1, evento: 'Evento A', ganho: 500, estado: 'Por entregar' },
+      { id: 2, evento: 'Evento B', ganho: 1000, estado: 'Disputa' },
+      { id: 3, evento: 'Evento C', ganho: 700, estado: 'Pago' }
+    ];
+    setRegistos(dadosFicticios); // Preenche a lista de vendas
+  }, []);
 
-  const handleSalvar = () => {
-    const novaDisputa = {
-      ...dadosDisputa,
-      cobranca: campoCobrança,
-      dataDisputa: campoDataDisputa,
-      texto: campoTexto,
-      arquivos: arquivos,
-    };
-    onSalvar(novaDisputa);
-    fechar();
-  };
-
-  const handleAdicionarArquivo = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setArquivos([...arquivos, file]);
-    }
-  };
-
-  const handleEliminarArquivo = (index) => {
-    setArquivos(arquivos.filter((_, i) => i !== index));
+  // Função para alterar o estado de uma venda para 'Disputa'
+  const mudarParaDisputa = (id) => {
+    // Atualiza o estado da venda para "Disputa"
+    setRegistos(prevRegistos =>
+      prevRegistos.map(registo =>
+        registo.id === id ? { ...registo, estado: 'Disputa' } : registo
+      )
+    );
+    // Adiciona a venda à lista de disputas
+    const vendaDisputa = registos.find(registo => registo.id === id);
+    setDisputas(prevDisputas => [...prevDisputas, vendaDisputa]);
   };
 
   return (
-    <div
-      className={`modal ${visivel ? 'modal-show' : ''}`}
-      onClick={fechar}
-    >
-      <div className="modal-conteudo" onClick={(e) => e.stopPropagation()}>
-        <button className="fechar" onClick={fechar}>
-          X
-        </button>
-        <h2>Editar Disputa</h2>
-        
-        {/* Tabela dentro do modal */}
+    <div>
+      <h2>Listagem de Vendas</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>ID Venda</th>
+            <th>Evento</th>
+            <th>Ganhos</th>
+            <th>Estado</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          {registos.map((registo) => (
+            <tr key={registo.id}>
+              <td>{registo.id}</td>
+              <td>{registo.evento}</td>
+              <td>{registo.ganho}</td>
+              <td>{registo.estado}</td>
+              <td>
+                <button onClick={() => mudarParaDisputa(registo.id)}>
+                  Mudar para Disputa
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      {/* Aqui você renderiza a aba Disputas */}
+      <div>
+        <h2>Disputas</h2>
         <table>
           <thead>
             <tr>
-              <th>Campo</th>
-              <th>Valor</th>
+              <th>ID Venda</th>
+              <th>Evento</th>
+              <th>Ganhos</th>
+              <th>Estado</th>
+              <th>Data Disputa</th>
+              <th>Cobrança</th>
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>Cobrança</td>
-              <td>
-                <input
-                  type="text"
-                  value={campoCobrança}
-                  onChange={(e) => setCampoCobrança(e.target.value)}
-                />
-              </td>
-            </tr>
-            <tr>
-              <td>Data da Disputa</td>
-              <td>
-                <input
-                  type="date"
-                  value={campoDataDisputa}
-                  onChange={(e) => setCampoDataDisputa(e.target.value)}
-                />
-              </td>
-            </tr>
-            <tr>
-              <td>Texto Adicional</td>
-              <td>
-                <textarea
-                  value={campoTexto}
-                  onChange={(e) => setCampoTexto(e.target.value)}
-                  rows="5"
-                />
-              </td>
-            </tr>
-            <tr>
-              <td>Adicionar Arquivo</td>
-              <td>
-                <input type="file" onChange={handleAdicionarArquivo} />
-              </td>
-            </tr>
-            {arquivos.length > 0 && (
-              <tr>
-                <td>Arquivos Anexados</td>
+            {disputas.map((disputa) => (
+              <tr key={disputa.id}>
+                <td>{disputa.id}</td>
+                <td>{disputa.evento}</td>
+                <td>{disputa.ganho}</td>
+                <td>{disputa.estado}</td>
                 <td>
-                  {arquivos.map((arquivo, index) => (
-                    <div key={index} className="arquivo">
-                      <span>{arquivo.name}</span>
-                      <button onClick={() => handleEliminarArquivo(index)}>Remover</button>
-                      <a href={URL.createObjectURL(arquivo)} target="_blank" rel="noopener noreferrer">
-                        Visualizar
-                      </a>
-                    </div>
-                  ))}
+                  {/* Aqui você pode renderizar os campos editáveis, como a data de disputa e cobrança */}
+                  <input type="date" value={disputa.dataDisputa || ''} />
+                </td>
+                <td>
+                  <input type="number" value={disputa.cobranca || ''} />
                 </td>
               </tr>
-            )}
+            ))}
           </tbody>
         </table>
-
-        <div className="botoes">
-          <button onClick={handleSalvar}>Salvar</button>
-          <button onClick={() => onEliminar(dadosDisputa.id)}>Eliminar</button>
-        </div>
       </div>
     </div>
   );
 }
 
-export default DisputasModal;
+export default ListagemVendas;
