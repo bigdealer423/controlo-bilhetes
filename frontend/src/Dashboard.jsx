@@ -55,14 +55,17 @@ export default function Dashboard({ onAtualizarEventos }) {
         ))}
       </div>
 
-      <div className="flex items-center space-x-4 ml-4">
-  <button
-    onClick={() => setMostrarModal(true)}
-    className="text-gray-700 hover:text-black"
-    title="Definições"
-  >
-    <FiSettings size={20} />
-  </button>
+      <button
+  onClick={(e) => {
+    e.stopPropagation(); // impede que o clique suba na hierarquia
+    setTimeout(() => setMostrarModal(true), 100); // espera breve antes de abrir
+  }}
+  className="text-gray-700 hover:text-black"
+  title="Definições"
+>
+  <FiSettings size={20} />
+</button>
+
 
   <button
     onClick={handleLogout}
