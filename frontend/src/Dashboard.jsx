@@ -11,7 +11,6 @@ export default function Dashboard({ onAtualizarEventos }) {
   const { logout } = useAuth();
 
   const [mostrarModal, setMostrarModal] = useState(false);
-  const [eventosDropdown, setEventosDropdown] = useState([]);  // Estado para armazenar a lista de eventos das dropdowns
 
   // Função para logout
   const handleLogout = () => {
@@ -37,34 +36,15 @@ export default function Dashboard({ onAtualizarEventos }) {
 
   // Função que abre o modal da roda dentada sem fechar a navegação
   const handleRodaDentadaClick = (e) => {
+      e.stopPropagation(); // Impede que a navegação aconteça imediatamente
+      setMostrarModal(true);  // Abre o modal
+    };
+  
+    // UseEffect para redirecionar para "Listagem de Vendas" caso esteja na rota /dashboard
+    useEffect(() => {
     e.stopPropagation(); // Impede que a navegação aconteça imediatamente
     setMostrarModal(true);  // Abre o modal
   };
-
-  // Função chamada quando o usuário adiciona ou fecha o modal
-  const handleAdicionarOuFechar = () => {
-    // Aqui você pode atualizar os eventos na dropdown
-    atualizarEventosDropdown();  // Chama a função para atualizar os eventos
-    setMostrarModal(false);  // Fecha o modal
-  };
-
-  // Função que simula a atualização dos eventos (pode ser chamada de dentro de onAtualizarEventos)
-  const atualizarEventosDropdown = () => {
-    // Aqui você pode buscar os eventos mais recentes do backend, API, ou banco de dados
-    // Para fins de exemplo, vamos simular a atualização com um conjunto de eventos fictícios:
-    const novosEventos = [
-      { id: 1, nome: "Evento 1" },
-      { id: 2, nome: "Evento 2" },
-      { id: 3, nome: "Evento 3" },
-      { id: 4, nome: "Evento 4" }
-    ];
-    setEventosDropdown(novosEventos); // Atualiza o estado com os novos eventos
-  };
-
-  // UseEffect para inicializar os eventos quando o componente for carregado
-  useEffect(() => {
-    atualizarEventosDropdown();  // Atualiza os eventos logo ao carregar a página
-  }, []);
 
   // UseEffect para redirecionar para "Listagem de Vendas" caso esteja na rota /dashboard
   useEffect(() => {
@@ -73,32 +53,24 @@ export default function Dashboard({ onAtualizarEventos }) {
     }
   }, [location.pathname, navigate, mostrarModal]);
 
+
   return (
     <div className="bg-gray-100 p-3 flex justify-between items-center border-b mb-4">
       <div className="flex gap-2 flex-wrap">
-        {menus.map((menu) => (
-          <button
-            key={menu.rota}
-            onClick={(e) => handleMenuClick(e, menu.rota)}  // Impede navegação imediata
-            className={`px-3 py-1 text-sm rounded ${
-              rotaAtual === menu.rota
-                ? "bg-blue-600 text-white"
-                : "bg-white text-gray-700 border hover:bg-blue-50"
-            }`}
-          >
-            {menu.nome}
+
           </button>
         ))}
       </div>
+  
 
       <div className="flex items-center space-x-4 ml-4">
         <button
           onClick={(e) => handleRodaDentadaClick(e)}  // Garante que a roda dentada apenas abre o modal
-          className="text-gray-700 hover:text-black"
-          title="Definições"
+
         >
           <FiSettings size={20} />
         </button>
+  
 
         <button
           onClick={handleLogout}
@@ -107,38 +79,14 @@ export default function Dashboard({ onAtualizarEventos }) {
           Logout
         </button>
       </div>
+  
 
-      {/* Dropdowns */}
-      <div className="dropdowns">
-        <select>
-          {eventosDropdown.map((evento) => (
-            <option key={evento.id} value={evento.id}>
-              {evento.nome}
-            </option>
-          ))}
-        </select>
-        <select>
-          {eventosDropdown.map((evento) => (
-            <option key={evento.id} value={evento.id}>
-              {evento.nome}
-            </option>
-          ))}
-        </select>
-        <select>
-          {eventosDropdown.map((evento) => (
-            <option key={evento.id} value={evento.id}>
-              {evento.nome}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {/* Modal de "Gerir Eventos" */}
       <EventoModal
         visivel={mostrarModal}
-        fechar={() => setMostrarModal(false)}
-        onAtualizar={handleAdicionarOuFechar}  // Atualiza as dropdowns ao fechar ou adicionar evento
+        fechar={() => setMostrarModal(false)}  // Garante que o modal pode ser fechadoAdd commentMore actions
+        onAtualizar={onAtualizarEventos}
       />
     </div>
-  );
+  );  // <-- Verifique se essa linha de fechamento está aqui.
+  ); // <-- Verifique se essa linha de fechamento está aqui.
 }
