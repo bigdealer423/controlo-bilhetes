@@ -1,4 +1,5 @@
 PERIODO_DIAS = 10
+
 from dotenv import load_dotenv
 import os
 import smtplib
@@ -364,16 +365,17 @@ if __name__ == "__main__":
 
     # Atualiza email enviado
     enviar_resumo_email(
-        total_emails=resumo["total_lidos"],
-        sucesso=resumo["sucesso"],
-        falha=resumo["falhas"],
-        ja_existentes=resumo["existentes"],
-        ids_erro=resumo.get("ids_falhados", []),
-        entregues=resumo.get("entregues", 0),
-        ids_entregues=resumo.get("ids_entregues", []),
-        pagos = resumo.get("pagos", 0),
-        disputas = resumo.get("disputas", [])   
-    )
+    total_emails=resumo["total_lidos"],
+    sucesso=resumo["sucesso"],
+    falha=resumo["falhas"],
+    ja_existentes=resumo["existentes"],
+    ids_erro=resumo.get("ids_falhados", []),
+    entregues=resumo.get("entregues", 0),
+    ids_entregues=resumo.get("ids_entregues", []),
+    pagos=resumo.get("pagos", 0),
+    disputas=resumo.get("disputas", [])
+)
+
 
     def verificar_emails_pagamento(username, password):
         mail = connect_email(username, password)
