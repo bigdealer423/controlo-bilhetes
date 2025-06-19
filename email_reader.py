@@ -363,17 +363,7 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"❌ Erro ao atualizar resumo com entregues: {e}")
 
-    # Atualiza email enviado
-    enviar_resumo_email(
-    total_emails=resumo["total_lidos"],
-    sucesso=resumo["sucesso"],
-    falha=resumo["falhas"],
-    ja_existentes=resumo["existentes"],
-    ids_erro=resumo.get("ids_falhados", []),
-    entregues=resumo.get("entregues", 0),
-    ids_entregues=resumo.get("ids_entregues", []),
-    pagos=resumo.get("pagos", 0),
-    disputas=resumo.get("disputas", [])
+    
 )
 
 
@@ -437,6 +427,25 @@ if __name__ == "__main__":
         }
 
 
+    # 2. Executar a função
+    resultado_pagamentos = verificar_emails_pagamento(username, password)
+    
+    # 3. Atualizar o resumo com os dados
+    resumo["pagos"] = resultado_pagamentos["pagos"]
+    resumo["disputas"] = resultado_pagamentos["disputas"]
+    
+    # 4. Só agora chamar enviar_resumo_email com esses valores definidos
+    enviar_resumo_email(
+        total_emails=resumo["total_lidos"],
+        sucesso=resumo["sucesso"],
+        falha=resumo["falhas"],
+        ja_existentes=resumo["existentes"],
+        ids_erro=resumo.get("ids_falhados", []),
+        entregues=resumo.get("entregues", 0),
+        ids_entregues=resumo.get("ids_entregues", []),
+        pagos=resumo.get("pagos", 0),
+        disputas=resumo.get("disputas", [])
+    )
     # Atualiza API
     try:
         requests.post("https://controlo-bilhetes.onrender.com/guardar_resumo", json=resumo)
