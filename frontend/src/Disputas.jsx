@@ -106,4 +106,43 @@ export default function Disputas() {
                         onChange={(e) =>
                           setRegistoEditado({
                             ...registoEditado,
-                            data_dispu_
+                            data_disputa: e.target.value,
+                          })
+                        }
+                      />
+                    </td>
+                    <td className="p-2">
+                      <button
+                        onClick={() => atualizarRegisto(disputa.id_venda)}
+                        className="text-green-600 hover:underline mr-2"
+                      >
+                        Salvar
+                      </button>
+                    </td>
+                  </>
+                ) : (
+                  <>
+                    {/* Campos não editáveis */}
+                    <td className="p-2">{disputa.cobranca}</td>
+                    <td className="p-2">{disputa.data_disputa}</td>
+                    <td className="p-2">
+                      <button
+                        onClick={() => ativarEdicao(disputa.id_venda, disputa)}
+                        className="text-blue-600 hover:underline mr-2"
+                      >
+                        Editar
+                      </button>
+                      <button className="text-red-600 hover:underline">
+                        Eliminar
+                      </button>
+                    </td>
+                  </>
+                )}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
