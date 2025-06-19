@@ -7,6 +7,7 @@ function Disputas() {
   const [disputaSelecionada, setDisputaSelecionada] = useState(null);
 
   const abrirModal = (disputa) => {
+    console.log('Abrindo modal para a disputa:', disputa); // Verifique se a disputa está com os dados corretos
     setDisputaSelecionada(disputa);
     setModalVisivel(true);
   };
