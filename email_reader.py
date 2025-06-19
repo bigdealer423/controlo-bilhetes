@@ -215,13 +215,7 @@ def auto_update_email_data(username, password, date_from=None):
     with open("resumo_leitura.json", "w") as f:
         json.dump(resumo, f, indent=2)
 
-    enviar_resumo_email(
-        total_emails=resumo["total_lidos"],
-        sucesso=resumo["sucesso"],
-        falha=resumo["falhas"],
-        ja_existentes=resumo["existentes"],
-        ids_erro=ids_erro
-    )
+   
 
     try:
         requests.post("https://controlo-bilhetes.onrender.com/guardar_resumo", json=resumo)
