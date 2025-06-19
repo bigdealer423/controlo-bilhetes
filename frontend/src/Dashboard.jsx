@@ -56,15 +56,15 @@ export default function Dashboard({ onAtualizarEventos }) {
       </div>
 
       <button
-  onClick={(e) => {
-    e.stopPropagation(); // impede que o clique suba na hierarquia
-    setTimeout(() => setMostrarModal(true), 100); // espera breve antes de abrir
-  }}
-  className="text-gray-700 hover:text-black"
-  title="Definições"
->
-  <FiSettings size={20} />
-</button>
+    onClick={(e) => {
+      e.stopPropagation(); // impede que o clique suba na hierarquia
+      setTimeout(() => setMostrarModal(true), 100); // espera breve antes de abrir
+    }}
+    className="text-gray-700 hover:text-black"
+    title="Definições"
+  >
+    <FiSettings size={20} />
+  </button>
 
 
   <button
