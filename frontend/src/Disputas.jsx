@@ -28,7 +28,7 @@ export default function Disputas() {
       .catch((err) => console.error("Erro ao buscar disputas:", err));
   }, []);
 
-  // Abrir o modal ao clicar (duplo clique)
+  // Função para abrir o modal com duplo clique na linha
   const abrirModal = (disputa) => {
     const dadosModal = {
       id_venda: disputa.id_venda,
@@ -41,14 +41,14 @@ export default function Disputas() {
     setRegistoEditado(dadosModal);
     setModalAberto(true);
 
-    // Persistir dados no localStorage
+    // Persistir os dados no `localStorage` sempre que o modal for aberto
     localStorage.setItem("modalEditado", JSON.stringify(dadosModal));
   };
 
   // Fechar o modal e remover dados do localStorage
   const fecharModal = () => {
     setModalAberto(false);
-    localStorage.removeItem("modalEditado");
+    localStorage.removeItem("modalEditado"); // Limpar os dados do localStorage ao fechar
   };
 
   // Atualizar os campos do estado com a edição
@@ -56,6 +56,7 @@ export default function Disputas() {
     const { name, value } = e.target;
     setRegistoEditado((prevState) => {
       const updatedState = { ...prevState, [name]: value };
+      // Persistir os dados no localStorage após cada alteração
       localStorage.setItem("modalEditado", JSON.stringify(updatedState));
       return updatedState;
     });
@@ -69,6 +70,7 @@ export default function Disputas() {
         ...prevState,
         arquivos: [...prevState.arquivos, ...newFiles],
       };
+      // Persistir os arquivos no localStorage
       localStorage.setItem("modalEditado", JSON.stringify(updatedState));
       return updatedState;
     });
@@ -81,7 +83,7 @@ export default function Disputas() {
     formData.append("cobranca", registoEditado.cobranca);
     formData.append("texto_adicional", registoEditado.texto_adicional);
 
-    // Adicionar arquivos ao FormData
+    // Adiciona os arquivos ao FormData
     registoEditado.arquivos.forEach((file) => {
       formData.append("arquivos", file);
     });
