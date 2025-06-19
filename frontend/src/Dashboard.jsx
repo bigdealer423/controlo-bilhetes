@@ -30,10 +30,12 @@ export default function Dashboard({ onAtualizarEventos }) {
   ];
 
   useEffect(() => {
-    if (location.pathname === "/dashboard") {
-      navigate("/listagem-vendas");
-    }
-  }, [location.pathname, navigate]);
+  if (location.pathname === "/dashboard") {
+    // Redireciona uma vez para a página inicial após login
+    navigate("/listagem-vendas", { replace: true });
+  }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, []);
 
  
 
