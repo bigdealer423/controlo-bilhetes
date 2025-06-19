@@ -341,6 +341,10 @@ if __name__ == "__main__":
     
     # Captura o resultado das entregas
     entregues_resumo = verificar_emails_entregues(username, password, dias=PERIODO_DIAS)
+    resultado_pagamentos = verificar_emails_pagamento(username, password, dias=PERIODO_DIAS)
+    resumo["pagos"] = resultado_pagamentos["pagos"]
+    resumo["disputas"] = resultado_pagamentos["disputas"]
+
 
 
     # Atualiza o ficheiro local de resumo com entregues
@@ -364,6 +368,12 @@ if __name__ == "__main__":
         ids_erro=resumo.get("ids_falhados", []),
         entregues=resumo.get("entregues", 0),
         ids_entregues=resumo.get("ids_entregues", [])
+        pagos = resumo.get("pagos", 0)
+        disputas = resumo.get("disputas", [])
+
+        corpo += f"\n💰 Pagamentos confirmados: {pagos}"
+        if disputas:
+            corpo += "\n⚠️ IDs com disputa:\n" + "\n".join(disputas)
     )
 
     def verificar_emails_pagamento(username, password):
