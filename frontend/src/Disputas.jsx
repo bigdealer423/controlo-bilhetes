@@ -11,9 +11,8 @@ export default function Disputas() {
     arquivos: [],
   });
 
-  // Carregar as disputas do backend e verificar localStorage para dados persistidos
+  // Carregar dados do modal do localStorage ao carregar a página
   useEffect(() => {
-    // Tentar carregar dados do modal persistidos do localStorage
     const dadosModal = localStorage.getItem("modalEditado");
     if (dadosModal) {
       setRegistoEditado(JSON.parse(dadosModal));
@@ -28,7 +27,7 @@ export default function Disputas() {
       .catch((err) => console.error("Erro ao buscar disputas:", err));
   }, []);
 
-  // Função para abrir o modal com duplo clique na linha
+  // Função para abrir o modal com os dados da disputa
   const abrirModal = (disputa) => {
     const dadosModal = {
       id_venda: disputa.id_venda,
@@ -41,28 +40,27 @@ export default function Disputas() {
     setRegistoEditado(dadosModal);
     setModalAberto(true);
 
-    // Persistir os dados no `localStorage` sempre que o modal for aberto
+    // Salvar os dados do modal no localStorage
     localStorage.setItem("modalEditado", JSON.stringify(dadosModal));
   };
 
-  // Fechar o modal e remover dados do localStorage
+  // Função para fechar o modal
   const fecharModal = () => {
     setModalAberto(false);
-    localStorage.removeItem("modalEditado"); // Limpar os dados do localStorage ao fechar
+    localStorage.removeItem("modalEditado"); // Remover os dados do localStorage
   };
 
-  // Atualizar os campos do estado com a edição
+  // Atualizar campos do modal
   const handleChange = (e) => {
     const { name, value } = e.target;
     setRegistoEditado((prevState) => {
       const updatedState = { ...prevState, [name]: value };
-      // Persistir os dados no localStorage após cada alteração
-      localStorage.setItem("modalEditado", JSON.stringify(updatedState));
+      localStorage.setItem("modalEditado", JSON.stringify(updatedState)); // Atualizar no localStorage
       return updatedState;
     });
   };
 
-  // Lidar com a mudança de arquivos
+  // Lidar com upload de arquivos
   const handleFileChange = (e) => {
     const newFiles = e.target.files;
     setRegistoEditado((prevState) => {
@@ -70,8 +68,7 @@ export default function Disputas() {
         ...prevState,
         arquivos: [...prevState.arquivos, ...newFiles],
       };
-      // Persistir os arquivos no localStorage
-      localStorage.setItem("modalEditado", JSON.stringify(updatedState));
+      localStorage.setItem("modalEditado", JSON.stringify(updatedState)); // Atualizar no localStorage
       return updatedState;
     });
   };
@@ -83,7 +80,6 @@ export default function Disputas() {
     formData.append("cobranca", registoEditado.cobranca);
     formData.append("texto_adicional", registoEditado.texto_adicional);
 
-    // Adiciona os arquivos ao FormData
     registoEditado.arquivos.forEach((file) => {
       formData.append("arquivos", file);
     });
