@@ -39,15 +39,16 @@ const fetchEventos = async () => {
         />
 
         <Route
-          path="/dashboard"
+          path="/"
           element={
             isAuthenticated ? (
-              <Dashboard onAtualizarEventos={forcarAtualizacaoEventos} />
+              <Navigate to="/listagem-vendas" replace />
             ) : (
-              <Navigate to="/" replace />
+              <LoginPage />
             )
           }
         />
+
 
         <Route
           path="/listagem-vendas"
