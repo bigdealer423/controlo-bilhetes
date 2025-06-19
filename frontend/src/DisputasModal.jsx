@@ -1,4 +1,11 @@
 import React, { useState } from 'react';
+import './DisputasModal.css';  // Importe o arquivo CSS aqui
+
+function DisputasModal({ visivel, fechar, dadosDisputa, onSalvar, onEliminar }) {
+  // código do modal...
+}
+
+export default DisputasModal;
 
 function DisputasModal({ visivel, fechar, dadosDisputa, onSalvar, onEliminar }) {
   const [campoCobrança, setCampoCobrança] = useState(dadosDisputa.cobranca || '');
