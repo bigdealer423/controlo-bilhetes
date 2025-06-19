@@ -20,6 +20,11 @@ export default function Dashboard({ onAtualizarEventos }) {
   navigate("/login");
 };
 
+  const handleRodaDentadaClick = (e) => {
+  e.stopPropagation();  // Impede a propagação para a navegação
+  e.preventDefault();   // Impede o comportamento padrão (se for um link ou botão)
+  setMostrarModal(true);  // Abre o modal
+};
   const menus = [
     { nome: "Listagem de Vendas", rota: "/listagem-vendas" },
     { nome: "Eventos", rota: "/eventos" },
@@ -29,11 +34,7 @@ export default function Dashboard({ onAtualizarEventos }) {
     { nome: "Outro Menu", rota: "/outro" }
   ];
 
-  const handleRodaDentadaClick = (e) => {
-  e.stopPropagation();  // Impede a propagação para a navegação
-  e.preventDefault();   // Impede o comportamento padrão (se for um link ou botão)
-  setMostrarModal(true);  // Abre o modal
-};
+  
 
   useEffect(() => {
   if (location.pathname === "/dashboard") {
