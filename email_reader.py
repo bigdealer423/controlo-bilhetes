@@ -356,7 +356,7 @@ def verificar_emails_pagamento(username, password, dias=PERIODO_DIAS):
 
         conteudo_normalizado = unicodedata.normalize('NFD', conteudo).encode('ascii', 'ignore').decode('utf-8')
 
-        blocos = re.findall(r'(\d{9,})\D*?€\s*(-?[0-9]+(?:[\.,][0-9]{2}))', conteudo_normalizado)
+        blocos = re.findall(r'(\d{9})[^€\d]{0,100}€\s*(-?[0-9]+(?:[\.,][0-9]{2}))', conteudo_normalizado)
         print("🧪 Blocos encontrados no conteúdo:")
         print(blocos)
         if not blocos:
