@@ -39,8 +39,8 @@ export default function Disputas() {
       body: JSON.stringify(dadosAtualizados),
     })
       .then(() => {
+        // Atualiza a tabela e sai do modo de edição
         setModoEdicao(null);
-        // Atualiza os dados na tabela após a edição
         setDisputas((prevDisputas) =>
           prevDisputas.map((disputa) =>
             disputa.id_venda === id
