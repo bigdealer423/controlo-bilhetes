@@ -1,4 +1,4 @@
-PERIODO_DIAS = 60
+PERIODO_DIAS = 10
 from dotenv import load_dotenv
 import os
 import smtplib
@@ -265,11 +265,11 @@ def enviar_resumo_email(total_emails, sucesso, falha, ja_existentes, ids_erro=No
         traceback.print_exc()
 import json
 
-def verificar_emails_entregues(username, password, dias=2):
+def verificar_emails_entregues(username, password):
     mail = connect_email(username, password)
     mail.select("inbox")
 
-    data_limite = (datetime.today() - timedelta(days=dias)).strftime("%d-%b-%Y")
+    data_limite = (datetime.today() - timedelta(days=PERIODO_DIAS)).strftime("%d-%b-%Y")
     status, mensagens = mail.search(None, f'(FROM "viagogo" SINCE {data_limite})')
     ids = mensagens[0].split()
     print(f"📩 Emails a verificar para entregas: {len(ids)}")
