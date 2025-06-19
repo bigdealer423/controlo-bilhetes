@@ -87,7 +87,7 @@ export default function Disputas() {
                     <td className="p-2">
                       <input
                         type="number"
-                        className="input"
+                        className="input bg-blue-50" // Alterei para destacar o campo
                         value={registoEditado.cobranca}
                         onChange={(e) =>
                           setRegistoEditado({
@@ -97,52 +97,13 @@ export default function Disputas() {
                         }
                       />
                     </td>
+                    <td className="p-2">{disputa.estado}</td>
                     <td className="p-2">
                       <input
                         type="date"
-                        className="input"
+                        className="input bg-blue-50" // Alterei para destacar o campo
                         value={registoEditado.data_disputa}
                         onChange={(e) =>
                           setRegistoEditado({
                             ...registoEditado,
-                            data_disputa: e.target.value,
-                          })
-                        }
-                      />
-                    </td>
-                    <td className="p-2">
-                      <button
-                        onClick={() => atualizarRegisto(disputa.id_venda)}
-                        className="text-green-600 hover:underline mr-2"
-                      >
-                        Salvar
-                      </button>
-                    </td>
-                  </>
-                ) : (
-                  <>
-                    {/* Campos não editáveis */}
-                    <td className="p-2">{disputa.cobranca}</td>
-                    <td className="p-2">{disputa.estado}</td>
-                    <td className="p-2">{disputa.data_disputa}</td>
-                    <td className="p-2">
-                      <button
-                        onClick={() => ativarEdicao(disputa.id_venda, disputa)}
-                        className="text-blue-600 hover:underline mr-2"
-                      >
-                        Editar
-                      </button>
-                      <button className="text-red-600 hover:underline">
-                        Eliminar
-                      </button>
-                    </td>
-                  </>
-                )}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
-}
+                            data_dispu_
