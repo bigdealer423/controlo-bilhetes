@@ -367,7 +367,7 @@ def verificar_emails_pagamento(username, password, dias=PERIODO_DIAS):
                         dados = res.json()
                         valor_esperado = float(dados.get("ganho", 0))
     
-                        if round(valor_pagamento, 2) == round(valor_esperado, 2):
+                        if abs(valor_pagamento - valor_esperado) <= 1:
                             novo_estado = "Pago"
                             ids_pagamento_confirmado.append(id_venda)
                         else:
