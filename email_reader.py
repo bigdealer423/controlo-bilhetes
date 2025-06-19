@@ -336,38 +336,6 @@ def verificar_emails_entregues(username, password, dias=PERIODO_DIAS):
 
 
 
-
-
-if __name__ == "__main__":
-    auto_update_email_data(username, password, date_from=(datetime.today() - timedelta(days=PERIODO_DIAS)).strftime("%d-%b-%Y"))
-
-
-    # Pequeno delay para garantir que os registos novos foram processados e guardados
-    time.sleep(5)
-    
-    # Captura o resultado das entregas
-    entregues_resumo = verificar_emails_entregues(username, password, dias=PERIODO_DIAS)
-    resultado_pagamentos = verificar_emails_pagamento(username, password, dias=PERIODO_DIAS)
-    resumo["pagos"] = resultado_pagamentos["pagos"]
-    resumo["disputas"] = resultado_pagamentos["disputas"]
-
-
-
-    # Atualiza o ficheiro local de resumo com entregues
-    try:
-        with open("resumo_leitura.json", "r+") as f:
-            resumo = json.load(f)
-            resumo["entregues"] = entregues_resumo["alterados_para_entregue"]
-            resumo["ids_entregues"] = entregues_resumo["ids_entregues"]
-            f.seek(0)
-            json.dump(resumo, f, indent=2)
-            f.truncate()
-    except Exception as e:
-        print(f"❌ Erro ao atualizar resumo com entregues: {e}")
-
-
-
-
     def verificar_emails_entregues(username, password, dias=PERIODO_DIAS):
         mail = connect_email(username, password)
         mail.select("inbox")
@@ -447,6 +415,34 @@ if __name__ == "__main__":
         pagos=resumo.get("pagos", 0),
         disputas=resumo.get("disputas", [])
     )
+
+    if __name__ == "__main__":
+    auto_update_email_data(username, password, date_from=(datetime.today() - timedelta(days=PERIODO_DIAS)).strftime("%d-%b-%Y"))
+
+
+    # Pequeno delay para garantir que os registos novos foram processados e guardados
+    time.sleep(5)
+    
+    # Captura o resultado das entregas
+    entregues_resumo = verificar_emails_entregues(username, password, dias=PERIODO_DIAS)
+    resultado_pagamentos = verificar_emails_pagamento(username, password, dias=PERIODO_DIAS)
+    resumo["pagos"] = resultado_pagamentos["pagos"]
+    resumo["disputas"] = resultado_pagamentos["disputas"]
+
+
+
+    # Atualiza o ficheiro local de resumo com entregues
+    try:
+        with open("resumo_leitura.json", "r+") as f:
+            resumo = json.load(f)
+            resumo["entregues"] = entregues_resumo["alterados_para_entregue"]
+            resumo["ids_entregues"] = entregues_resumo["ids_entregues"]
+            f.seek(0)
+            json.dump(resumo, f, indent=2)
+            f.truncate()
+    except Exception as e:
+        print(f"❌ Erro ao atualizar resumo com entregues: {e}")
+        
     # Atualiza API
     try:
         requests.post("https://controlo-bilhetes.onrender.com/guardar_resumo", json=resumo)
