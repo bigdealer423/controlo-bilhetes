@@ -7,6 +7,7 @@ export function AuthProvider({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
+  try {
     const token = localStorage.getItem("authToken");
     const expires = parseInt(localStorage.getItem("authExpires") || "0", 10);
     const agora = new Date().getTime();
@@ -16,7 +17,12 @@ export function AuthProvider({ children }) {
     } else {
       setIsAuthenticated(false);
     }
-  }, []);
+  } catch (error) {
+    console.error("Erro ao verificar o token:", error);
+    setIsAuthenticated(false);  // Em caso de erro, considerar como não autenticado
+  }
+}, []);
+
 
   const login = () => {
     const duracao = 60 * 60 * 1000; // 1 hora
