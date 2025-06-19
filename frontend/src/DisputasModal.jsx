@@ -2,12 +2,10 @@ import React, { useState, useEffect } from 'react';
 import './DisputasModal.css';  // Importe o arquivo CSS aqui
 
 function DisputasModal({ visivel, fechar, dadosDisputa, onSalvar, onEliminar }) {
-  // Se dadosDisputa for null ou undefined, exibe "Carregando..."
   if (!dadosDisputa) {
     return <div>Carregando...</div>;
   }
 
-  // Estado para os campos do formulário
   const [campoCobrança, setCampoCobrança] = useState(dadosDisputa.cobranca || '');
   const [campoDataDisputa, setCampoDataDisputa] = useState(dadosDisputa.dataDisputa || '');
   const [campoTexto, setCampoTexto] = useState(dadosDisputa.texto || '');
@@ -18,7 +16,7 @@ function DisputasModal({ visivel, fechar, dadosDisputa, onSalvar, onEliminar }) 
     setCampoCobrança(dadosDisputa.cobranca || '');
     setCampoDataDisputa(dadosDisputa.dataDisputa || '');
     setCampoTexto(dadosDisputa.texto || '');
-  }, [dadosDisputa]); // Atualiza quando os dadosDisputa mudarem
+  }, [dadosDisputa]);
 
   const handleSalvar = () => {
     const novaDisputa = {
@@ -54,50 +52,69 @@ function DisputasModal({ visivel, fechar, dadosDisputa, onSalvar, onEliminar }) 
         </button>
         <h2>Editar Disputa</h2>
         
-        <div className="campo">
-          <label>Cobrança</label>
-          <input
-            type="text"
-            value={campoCobrança}
-            onChange={(e) => setCampoCobrança(e.target.value)}
-          />
-        </div>
-
-        <div className="campo">
-          <label>Data da Disputa</label>
-          <input
-            type="date"
-            value={campoDataDisputa}
-            onChange={(e) => setCampoDataDisputa(e.target.value)}
-          />
-        </div>
-
-        <div className="campo">
-          <label>Texto Adicional</label>
-          <textarea
-            value={campoTexto}
-            onChange={(e) => setCampoTexto(e.target.value)}
-            rows="5"
-          />
-        </div>
-
-        <div className="campo">
-          <label>Adicionar Arquivo</label>
-          <input type="file" onChange={handleAdicionarArquivo} />
-        </div>
-
-        <div className="arquivos">
-          <h3>Arquivos Anexados</h3>
-          {arquivos.map((arquivo, index) => (
-            <div key={index} className="arquivo">
-              <span>{arquivo.name}</span>
-              <button onClick={() => handleEliminarArquivo(index)}>Remover</button>
-              <a href={URL.createObjectURL(arquivo)} target="_blank" rel="noopener noreferrer">
-                Visualizar
-              </a>
-            </div>
-          ))}
-        </div>
+        {/* Tabela dentro do modal */}
+        <table>
+          <thead>
+            <tr>
+              <th>Campo</th>
+              <th>Valor</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Cobrança</td>
+              <td>
+                <input
+                  type="text"
+                  value={campoCobrança}
+                  onChange={(e) => setCampoCobrança(e.target.value)}
+                />
+              </td>
+            </tr>
+            <tr>
+              <td>Data da Disputa</td>
+              <td>
+                <input
+                  type="date"
+                  value={campoDataDisputa}
+                  onChange={(e) => setCampoDataDisputa(e.target.value)}
+                />
+              </td>
+            </tr>
+            <tr>
+              <td>Texto Adicional</td>
+              <td>
+                <textarea
+                  value={campoTexto}
+                  onChange={(e) => setCampoTexto(e.target.value)}
+                  rows="5"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td>Adicionar Arquivo</td>
+              <td>
+                <input type="file" onChange={handleAdicionarArquivo} />
+              </td>
+            </tr>
+            {arquivos.length > 0 && (
+              <tr>
+                <td>Arquivos Anexados</td>
+                <td>
+                  {arquivos.map((arquivo, index) => (
+                    <div key={index} className="arquivo">
+                      <span>{arquivo.name}</span>
+                      <button onClick={() => handleEliminarArquivo(index)}>Remover</button>
+                      <a href={URL.createObjectURL(arquivo)} target="_blank" rel="noopener noreferrer">
+                        Visualizar
+                      </a>
+                    </div>
+                  ))}
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
 
         <div className="botoes">
           <button onClick={handleSalvar}>Salvar</button>
