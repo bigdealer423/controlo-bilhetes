@@ -5,8 +5,6 @@ import EventoModal from "./EventoModal";
 import { FiSettings } from "react-icons/fi";
 import { useAuth } from "./AuthContext";
 
-
-
 export default function Dashboard({ onAtualizarEventos }) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -14,16 +12,19 @@ export default function Dashboard({ onAtualizarEventos }) {
   const { logout } = useAuth();
 
   const [mostrarModal, setMostrarModal] = useState(false);
+  const [proximaRota, setProximaRota] = useState(null);  // Rota que deve ser navegada após fechar o modal
 
   const handleLogout = () => {
-  logout();
-  navigate("/login");
-};
-  const handleRodaDentadaClick = (e) => {
-  e.stopPropagation();  // Impede a propagação para a navegação
-  e.preventDefault();   // Impede o comportamento padrão (se for um link ou botão)
-  setMostrarModal(true);  // Abre o modal
-};
+    logout();
+    navigate("/login");
+  };
+
+  const handleRodaDentadaClick = (e, rota) => {
+    e.stopPropagation();  // Impede a navegação imediata
+    setMostrarModal(true);  // Abre o modal
+    setProximaRota(rota);  // Guarda a próxima rota que deve ser acessada após fechar o modal
+  };
+
   const menus = [
     { nome: "Listagem de Vendas", rota: "/listagem-vendas" },
     { nome: "Eventos", rota: "/eventos" },
@@ -33,17 +34,18 @@ export default function Dashboard({ onAtualizarEventos }) {
     { nome: "Outro Menu", rota: "/outro" }
   ];
 
-  
-
   useEffect(() => {
-  if (location.pathname === "/dashboard") {
-    // Redireciona uma vez para a página inicial após login
-    navigate("/listagem-vendas", { replace: true });
-  }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-}, []);
+    if (location.pathname === "/dashboard") {
+      navigate("/listagem-vendas");
+    }
+  }, [location.pathname, navigate]);
 
- 
+  const fecharModal = () => {
+    setMostrarModal(false);
+    if (proximaRota) {
+      navigate(proximaRota);  // Navega para a rota que foi guardada
+    }
+  };
 
   return (
     <div className="bg-gray-100 p-3 flex justify-between items-center border-b mb-4">
@@ -51,7 +53,7 @@ export default function Dashboard({ onAtualizarEventos }) {
         {menus.map((menu) => (
           <button
             key={menu.rota}
-            onClick={() => navigate(menu.rota)}
+            onClick={(e) => handleRodaDentadaClick(e, menu.rota)}  // Passando a rota para ser guardada
             className={`px-3 py-1 text-sm rounded ${
               rotaAtual === menu.rota
                 ? "bg-blue-600 text-white"
@@ -64,27 +66,25 @@ export default function Dashboard({ onAtualizarEventos }) {
       </div>
 
       <div className="flex items-center space-x-4 ml-4">
-            <button
-              onClick={() => setMostrarModal(true)}
-              className="text-gray-700 hover:text-black"
-              title="Definições"
-            >
-              <FiSettings size={20} />
-            </button>
-    
-            <button
-              onClick={handleLogout}
-              className="text-red-600 hover:text-red-800 text-sm border border-red-600 px-2 py-1 rounded"
-            >
-              Logout
-            </button>
-        </div>
+        <button
+          onClick={(e) => handleRodaDentadaClick(e, rotaAtual)}  // Aqui também
+          className="text-gray-700 hover:text-black"
+          title="Definições"
+        >
+          <FiSettings size={20} />
+        </button>
 
-      
+        <button
+          onClick={handleLogout}
+          className="text-red-600 hover:text-red-800 text-sm border border-red-600 px-2 py-1 rounded"
+        >
+          Logout
+        </button>
+      </div>
 
       <EventoModal
         visivel={mostrarModal}
-        fechar={() => setMostrarModal(false)}
+        fechar={fecharModal}  // Fechar o modal e navegar
         onAtualizar={onAtualizarEventos}
       />
     </div>
