@@ -11,77 +11,66 @@ export default function Disputas() {
     arquivos: [],
   });
 
+  // Carregar informações do modal a partir do localStorage ao iniciar
   useEffect(() => {
-    // Carregar dados de disputas do backend
+    const dadosModal = localStorage.getItem("modalEditado");
+    if (dadosModal) {
+      setRegistoEditado(JSON.parse(dadosModal));
+    }
+
     fetch("https://controlo-bilhetes.onrender.com/disputas")
       .then(res => res.json())
       .then(data => {
         setDisputas(data);
       })
       .catch(err => console.error("Erro ao buscar disputas:", err));
-
-    // Tentar carregar informações persistidas do localStorage
-    const dadosModal = localStorage.getItem("modalEditado");
-    if (dadosModal) {
-      setRegistoEditado(JSON.parse(dadosModal));
-    }
   }, []);
 
   // Função para abrir o modal com duplo clique
   const abrirModal = (disputa) => {
-    setRegistoEditado({
+    const dadosModal = {
       id_venda: disputa.id_venda,
       data_disputa: disputa.data_disputa,
       cobranca: disputa.cobranca,
       texto_adicional: disputa.texto_adicional || "",
       arquivos: disputa.arquivos || [],
-    });
+    };
+    setRegistoEditado(dadosModal);
     setModalAberto(true);
 
-    // Persistir no localStorage
-    localStorage.setItem("modalEditado", JSON.stringify({
-      id_venda: disputa.id_venda,
-      data_disputa: disputa.data_disputa,
-      cobranca: disputa.cobranca,
-      texto_adicional: disputa.texto_adicional || "",
-      arquivos: disputa.arquivos || [],
-    }));
+    // Persistir dados do modal no localStorage
+    localStorage.setItem("modalEditado", JSON.stringify(dadosModal));
   };
 
   // Função para fechar o modal
   const fecharModal = () => {
     setModalAberto(false);
-    // Remover o estado do localStorage ao fechar
-    localStorage.removeItem("modalEditado");
+    localStorage.removeItem("modalEditado"); // Remover os dados do localStorage
   };
 
   // Função para atualizar os campos de texto
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setRegistoEditado(prevState => ({
-      ...prevState,
-      [name]: value,
-    }));
-
-    // Persistir a mudança no localStorage
-    localStorage.setItem("modalEditado", JSON.stringify({
-      ...registoEditado,
-      [name]: value,
-    }));
+    setRegistoEditado((prevState) => {
+      const updatedState = { ...prevState, [name]: value };
+      // Persistir dados atualizados no localStorage
+      localStorage.setItem("modalEditado", JSON.stringify(updatedState));
+      return updatedState;
+    });
   };
 
   // Função para lidar com o upload de arquivos
   const handleFileChange = (e) => {
-    setRegistoEditado(prevState => ({
-      ...prevState,
-      arquivos: [...prevState.arquivos, ...e.target.files],
-    }));
-
-    // Persistir a mudança no localStorage
-    localStorage.setItem("modalEditado", JSON.stringify({
-      ...registoEditado,
-      arquivos: [...registoEditado.arquivos, ...e.target.files],
-    }));
+    const newFiles = e.target.files;
+    setRegistoEditado((prevState) => {
+      const updatedState = {
+        ...prevState,
+        arquivos: [...prevState.arquivos, ...newFiles],
+      };
+      // Persistir arquivos no localStorage
+      localStorage.setItem("modalEditado", JSON.stringify(updatedState));
+      return updatedState;
+    });
   };
 
   // Função para salvar a edição no backend
@@ -92,7 +81,7 @@ export default function Disputas() {
     formData.append("texto_adicional", registoEditado.texto_adicional);
 
     // Adiciona os arquivos ao FormData
-    registoEditado.arquivos.forEach(file => {
+    registoEditado.arquivos.forEach((file) => {
       formData.append("arquivos", file);
     });
 
@@ -102,8 +91,8 @@ export default function Disputas() {
     })
       .then(() => {
         // Atualiza a tabela após salvar
-        setDisputas(prevDisputas =>
-          prevDisputas.map(disputa =>
+        setDisputas((prevDisputas) =>
+          prevDisputas.map((disputa) =>
             disputa.id_venda === registoEditado.id_venda
               ? { ...disputa, ...registoEditado }
               : disputa
@@ -208,7 +197,7 @@ export default function Disputas() {
                   registoEditado.arquivos.map((file, index) => (
                     <li key={index} className="text-sm">
                       <a
-                        href={URL.createObjectURL(file)}
+                        href={URL.createObjectURL(file)} // Visualizar ou baixar o arquivo
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-blue-500 hover:underline"
