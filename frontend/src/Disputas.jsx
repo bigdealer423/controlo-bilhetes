@@ -17,6 +17,19 @@ function Disputas() {
     setDisputas(dadosFicticios); // Atualiza a lista de disputas
   }, []);
 
+
+  // Suponha que você tenha as disputas associadas às vendas na sua tabela
+  const [disputas, setDisputas] = useState([]);
+  
+  // Use o useEffect para buscar os dados da Listagem Vendas (se aplicável)
+  useEffect(() => {
+    fetch('/api/listagem-vendas')  // Se estiver usando uma API
+      .then((response) => response.json())
+      .then((data) => {
+        setDisputas(data);  // Preenche a lista de disputas com dados da Listagem Vendas
+      });
+  }, []);
+
   const abrirModal = (disputa) => {
     console.log('Abrindo modal para a disputa:', disputa); // Verifique se a disputa está com os dados corretos
     setDisputaSelecionada(disputa);  // Passa os dados da disputa para o modal
