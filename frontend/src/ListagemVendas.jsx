@@ -121,11 +121,15 @@ export default function ListagemVendas(props) {
   };
 
   const buscarEventosDropdown = () => {
-    fetch("https://controlo-bilhetes.onrender.com/eventos_dropdown")
-      .then(res => res.json())
-      .then(data => setEventosDropdown(data))
-      .catch(err => console.error("Erro ao buscar eventos:", err));
-  };
+  fetch("https://controlo-bilhetes.onrender.com/eventos_dropdown")
+    .then(res => res.json())
+    .then(data => {
+      const ordenados = ordenarEventosDropdown(data);
+      setEventosDropdown(ordenados);
+    })
+    .catch(err => console.error("Erro ao buscar eventos:", err));
+};
+
   const ordenarEventosDropdown = (data) => {
   return [...data].sort((a, b) => {
     const nomeA = a.nome.toLowerCase();
