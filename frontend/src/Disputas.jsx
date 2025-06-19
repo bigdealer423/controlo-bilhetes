@@ -20,11 +20,10 @@ export default function Disputas() {
       })
       .catch(err => console.error("Erro ao buscar disputas:", err));
 
-    // Tentar carregar o estado do modal do localStorage
+    // Tentar carregar o estado do modal do localStorage ao iniciar
     const dadosModal = localStorage.getItem("modalEditado");
     if (dadosModal) {
-      const dados = JSON.parse(dadosModal);
-      setRegistoEditado(dados); // Restaurar os dados persistidos
+      setRegistoEditado(JSON.parse(dadosModal));
     }
   }, []);
 
@@ -47,7 +46,7 @@ export default function Disputas() {
   // Função para fechar o modal
   const fecharModal = () => {
     setModalAberto(false);
-    localStorage.removeItem("modalEditado"); // Limpar os dados do localStorage quando fechar o modal
+    localStorage.removeItem("modalEditado"); // Limpar os dados do localStorage ao fechar
   };
 
   // Função para atualizar os campos de texto no estado
