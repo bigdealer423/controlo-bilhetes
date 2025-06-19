@@ -336,7 +336,7 @@ def verificar_emails_entregues(username, password, dias=PERIODO_DIAS):
 
 
 
-    def verificar_emails_pagamento(username, password, dias=PERIODO_DIAS):
+def verificar_emails_pagamento(username, password, dias=PERIODO_DIAS):
         mail = connect_email(username, password)
         mail.select("inbox")
     
