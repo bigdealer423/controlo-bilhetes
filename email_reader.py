@@ -247,7 +247,7 @@ def enviar_resumo_email(total_emails, sucesso, falha, ja_existentes, ids_erro=No
         corpo += "\n🔝 IDs com erro:\n" + "\n".join(ids_erro)
     if ids_entregues:
         corpo += "\n📬 IDs entregues:\n" + "\n".join(ids_entregues)
-     if disputas:
+    if disputas:
         corpo += "\n⚠️ IDs com disputa:\n" + "\n".join(disputas)
 
 
