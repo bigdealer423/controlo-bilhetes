@@ -362,6 +362,9 @@ def verificar_emails_pagamento(username, password, dias=PERIODO_DIAS):
         if not conteudo:
             print("⚠️ Email sem conteúdo útil. Ignorado.")
             continue
+            print("📨 Email completo (debug):")
+            print(conteudo)
+            print("------------------------------------------------------------")
 
         conteudo_normalizado = unicodedata.normalize('NFD', conteudo).encode('ascii', 'ignore').decode('utf-8')
         print("🔍 Conteúdo normalizado do email:")
@@ -413,9 +416,7 @@ def verificar_emails_pagamento(username, password, dias=PERIODO_DIAS):
 
     print(f"\n✅ Total confirmados como pagos: {len(ids_pagamento_confirmado)}")
     print(f"⚠️ Total com disputa: {len(ids_disputa)}")
-    print("📨 Email completo (debug):")
-    print(conteudo)
-    print("------------------------------------------------------------")
+    
 
     return {
         "total_verificados": len(ids),
