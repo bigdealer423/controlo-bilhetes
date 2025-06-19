@@ -20,7 +20,8 @@ from models import (
     EventoCompletoOut,
     Compra,
     CompraCreate,
-    CompraOut
+    CompraOut,
+    ListagemVendasBase
 )
 resumo_mais_recente = {}
 Base.metadata.create_all(bind=engine)
