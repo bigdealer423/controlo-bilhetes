@@ -36,15 +36,9 @@ export default function Dashboard({ onAtualizarEventos }) {
 
   // Função que abre o modal da roda dentada sem fechar a navegação
   const handleRodaDentadaClick = (e) => {
-      e.stopPropagation(); // Impede que a navegação aconteça imediatamente
-      setMostrarModal(true);  // Abre o modal
-    };
-  
-    // UseEffect para redirecionar para "Listagem de Vendas" caso esteja na rota /dashboard
-  useEffect(() => {
-  e.stopPropagation(); // Impede que a navegação aconteça imediatamente
-  setMostrarModal(true);  // Abre o modal
-};
+    e.stopPropagation(); // Impede que a navegação aconteça imediatamente
+    setMostrarModal(true);  // Abre o modal
+  };
 
   // UseEffect para redirecionar para "Listagem de Vendas" caso esteja na rota /dashboard
   useEffect(() => {
@@ -53,24 +47,32 @@ export default function Dashboard({ onAtualizarEventos }) {
     }
   }, [location.pathname, navigate, mostrarModal]);
 
-
   return (
     <div className="bg-gray-100 p-3 flex justify-between items-center border-b mb-4">
       <div className="flex gap-2 flex-wrap">
-
+        {menus.map((menu) => (
+          <button
+            key={menu.rota}
+            onClick={(e) => handleMenuClick(e, menu.rota)}  // Impede navegação imediata
+            className={`px-3 py-1 text-sm rounded ${
+              rotaAtual === menu.rota
+                ? "bg-blue-600 text-white"
+                : "bg-white text-gray-700 border hover:bg-blue-50"
+            }`}
+          >
+            {menu.nome}
           </button>
         ))}
       </div>
-  
 
       <div className="flex items-center space-x-4 ml-4">
         <button
           onClick={(e) => handleRodaDentadaClick(e)}  // Garante que a roda dentada apenas abre o modal
-
+          className="text-gray-700 hover:text-black"
+          title="Definições"
         >
           <FiSettings size={20} />
         </button>
-  
 
         <button
           onClick={handleLogout}
@@ -79,14 +81,12 @@ export default function Dashboard({ onAtualizarEventos }) {
           Logout
         </button>
       </div>
-  
 
       <EventoModal
         visivel={mostrarModal}
-        fechar={() => setMostrarModal(false)}  // Garante que o modal pode ser fechadoAdd commentMore actions
+        fechar={() => setMostrarModal(false)}  // Garante que o modal pode ser fechado
         onAtualizar={onAtualizarEventos}
       />
     </div>
-  );  // <-- Verifique se essa linha de fechamento está aqui.
-  ); // <-- Verifique se essa linha de fechamento está aqui.
+  );
 }
