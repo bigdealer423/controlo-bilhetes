@@ -220,7 +220,8 @@ def auto_update_email_data(username, password, date_from=None):
     except Exception as e:
         print(f"❌ Falha ao enviar resumo para API: {e}")
 
-def enviar_resumo_email(total_emails, sucesso, falha, ja_existentes, ids_erro=None, entregues=0, ids_entregues=None):
+def enviar_resumo_email(total_emails, sucesso, falha, ja_existentes, ids_erro=None, entregues=0, ids_entregues=None, pagos=0, disputas=None):
+
 
     remetente = os.getenv("SMTP_EMAIL")
     destinatario = os.getenv("SMTP_DEST")
