@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { toast } from "react-toastify"
+import { toast } from "react-toastify";
 
 export default function ListagemVendas(props) {
   const [registos, setRegistos] = useState([]);
