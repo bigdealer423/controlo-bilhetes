@@ -377,7 +377,7 @@ def verificar_emails_pagamento(username, password, dias=PERIODO_DIAS):
         print(f"🔑 Referência de pagamento encontrada: {ref_pagamento}")
 
         # 2. Procurar IDs e valores associados
-        pattern = rf'({ref_pagamento}\d{{9}})[^\d\n]{{0,100}}?(\d{{1,5}}[.,]\d{{2}})\s?(?:€|$)'
+        pattern = rf'({ref_pagamento}\d{{9}}).*?([\d\.,]+)\s*€?'
         blocos = re.findall(pattern, conteudo_normalizado)
         print("🧪 Blocos encontrados no conteúdo:")
         print(blocos)
