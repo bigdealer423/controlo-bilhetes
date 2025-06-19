@@ -36,17 +36,16 @@ export default function Dashboard({ onAtualizarEventos }) {
 
   // Função que abre o modal da roda dentada sem fechar a navegação
   const handleRodaDentadaClick = (e) => {
-      e.stopPropagation(); // Impede que a navegação aconteça imediatamente
-      setMostrarModal(true);  // Abre o modal
-    };
-  
-    // UseEffect para redirecionar para "Listagem de Vendas" caso esteja na rota /dashboard
-    useEffect(() => {
+    e.stopPropagation(); // Impede que a navegação aconteça imediatamente
+    setMostrarModal(true);  // Abre o modal
+  };
+
+  // UseEffect para redirecionar para "Listagem de Vendas" caso esteja na rota /dashboard
+  useEffect(() => {
     if (location.pathname === "/dashboard" && !mostrarModal) {
       navigate("/listagem-vendas");
     }
   }, [location.pathname, navigate, mostrarModal]);
-
 
   return (
     <div className="bg-gray-100 p-3 flex justify-between items-center border-b mb-4">
@@ -65,7 +64,7 @@ export default function Dashboard({ onAtualizarEventos }) {
           </button>
         ))}
       </div>
-  
+
       <div className="flex items-center space-x-4 ml-4">
         <button
           onClick={(e) => handleRodaDentadaClick(e)}  // Garante que a roda dentada apenas abre o modal
@@ -74,7 +73,7 @@ export default function Dashboard({ onAtualizarEventos }) {
         >
           <FiSettings size={20} />
         </button>
-  
+
         <button
           onClick={handleLogout}
           className="text-red-600 hover:text-red-800 text-sm border border-red-600 px-2 py-1 rounded"
@@ -82,11 +81,12 @@ export default function Dashboard({ onAtualizarEventos }) {
           Logout
         </button>
       </div>
-  
+
       <EventoModal
         visivel={mostrarModal}
         fechar={() => setMostrarModal(false)}  // Garante que o modal pode ser fechado
         onAtualizar={onAtualizarEventos}
       />
     </div>
-  );  // <-- Verifique se essa linha de fechamento está aqui.
+  ); // <-- Verifique se essa linha de fechamento está aqui.
+}
