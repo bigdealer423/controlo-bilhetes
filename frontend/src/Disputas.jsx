@@ -11,23 +11,24 @@ export default function Disputas() {
     arquivos: [],
   });
 
-  // Carregar informações do modal a partir do localStorage ao iniciar
   useEffect(() => {
-    // Tentar carregar informações persistidas do localStorage
-    const dadosModal = localStorage.getItem("modalEditado");
-    if (dadosModal) {
-      setRegistoEditado(JSON.parse(dadosModal));
-    }
-
+    // Carregar as disputas do backend
     fetch("https://controlo-bilhetes.onrender.com/disputas")
       .then(res => res.json())
       .then(data => {
         setDisputas(data);
       })
       .catch(err => console.error("Erro ao buscar disputas:", err));
+
+    // Tentar carregar o estado do modal do localStorage
+    const dadosModal = localStorage.getItem("modalEditado");
+    if (dadosModal) {
+      const dados = JSON.parse(dadosModal);
+      setRegistoEditado(dados); // Restaurar os dados persistidos
+    }
   }, []);
 
-  // Função para abrir o modal com duplo clique
+  // Função para abrir o modal com duplo clique na linha
   const abrirModal = (disputa) => {
     const dadosModal = {
       id_venda: disputa.id_venda,
@@ -39,22 +40,22 @@ export default function Disputas() {
     setRegistoEditado(dadosModal);
     setModalAberto(true);
 
-    // Persistir dados do modal no localStorage
+    // Persistir os dados no localStorage sempre que o modal for aberto
     localStorage.setItem("modalEditado", JSON.stringify(dadosModal));
   };
 
   // Função para fechar o modal
   const fecharModal = () => {
     setModalAberto(false);
-    localStorage.removeItem("modalEditado"); // Remover os dados do localStorage ao fechar
+    localStorage.removeItem("modalEditado"); // Limpar os dados do localStorage quando fechar o modal
   };
 
-  // Função para atualizar os campos de texto
+  // Função para atualizar os campos de texto no estado
   const handleChange = (e) => {
     const { name, value } = e.target;
     setRegistoEditado((prevState) => {
       const updatedState = { ...prevState, [name]: value };
-      // Persistir dados atualizados no localStorage
+      // Persistir os dados no localStorage após cada alteração
       localStorage.setItem("modalEditado", JSON.stringify(updatedState));
       return updatedState;
     });
@@ -68,13 +69,13 @@ export default function Disputas() {
         ...prevState,
         arquivos: [...prevState.arquivos, ...newFiles],
       };
-      // Persistir arquivos no localStorage
+      // Persistir os arquivos no localStorage
       localStorage.setItem("modalEditado", JSON.stringify(updatedState));
       return updatedState;
     });
   };
 
-  // Função para salvar a edição no backend
+  // Função para salvar os dados no backend
   const salvarEdicao = () => {
     const formData = new FormData();
     formData.append("data_disputa", registoEditado.data_disputa);
