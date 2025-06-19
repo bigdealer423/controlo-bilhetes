@@ -128,7 +128,7 @@ class Disputa(BaseModel):
     texto_adicional: str
 
     class Config:
-        orm_mode = True  # Permite que o Pydantic use dados de um modelo ORM
+        from_attributes = True  # Alterado para 'from_attributes' no Pydantic V2
 
 # Criação automática das tabelas
 from database import engine
