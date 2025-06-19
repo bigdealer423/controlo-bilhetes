@@ -11,14 +11,15 @@ export default function Disputas() {
     arquivos: [],
   });
 
+  // Carregar as disputas do backend e verificar localStorage para dados persistidos
   useEffect(() => {
-    // Tentar carregar os dados do modal do `localStorage` ao iniciar
+    // Tentar carregar dados do modal persistidos do localStorage
     const dadosModal = localStorage.getItem("modalEditado");
     if (dadosModal) {
       setRegistoEditado(JSON.parse(dadosModal));
     }
 
-    // Buscar as disputas do backend
+    // Buscar disputas do backend
     fetch("https://controlo-bilhetes.onrender.com/disputas")
       .then((res) => res.json())
       .then((data) => {
@@ -27,7 +28,7 @@ export default function Disputas() {
       .catch((err) => console.error("Erro ao buscar disputas:", err));
   }, []);
 
-  // Função para abrir o modal com duplo clique
+  // Abrir o modal ao clicar (duplo clique)
   const abrirModal = (disputa) => {
     const dadosModal = {
       id_venda: disputa.id_venda,
@@ -40,29 +41,27 @@ export default function Disputas() {
     setRegistoEditado(dadosModal);
     setModalAberto(true);
 
-    // Persistir os dados no `localStorage` sempre que o modal for aberto
+    // Persistir dados no localStorage
     localStorage.setItem("modalEditado", JSON.stringify(dadosModal));
   };
 
-  // Função para fechar o modal
+  // Fechar o modal e remover dados do localStorage
   const fecharModal = () => {
     setModalAberto(false);
-    // Remover os dados do `localStorage` quando fechar o modal
     localStorage.removeItem("modalEditado");
   };
 
-  // Função para atualizar os campos de texto no estado
+  // Atualizar os campos do estado com a edição
   const handleChange = (e) => {
     const { name, value } = e.target;
     setRegistoEditado((prevState) => {
       const updatedState = { ...prevState, [name]: value };
-      // Persistir os dados atualizados no `localStorage`
       localStorage.setItem("modalEditado", JSON.stringify(updatedState));
       return updatedState;
     });
   };
 
-  // Função para lidar com o upload de arquivos
+  // Lidar com a mudança de arquivos
   const handleFileChange = (e) => {
     const newFiles = e.target.files;
     setRegistoEditado((prevState) => {
@@ -70,20 +69,19 @@ export default function Disputas() {
         ...prevState,
         arquivos: [...prevState.arquivos, ...newFiles],
       };
-      // Persistir os arquivos no `localStorage`
       localStorage.setItem("modalEditado", JSON.stringify(updatedState));
       return updatedState;
     });
   };
 
-  // Função para salvar os dados no backend
+  // Salvar os dados no backend
   const salvarEdicao = () => {
     const formData = new FormData();
     formData.append("data_disputa", registoEditado.data_disputa);
     formData.append("cobranca", registoEditado.cobranca);
     formData.append("texto_adicional", registoEditado.texto_adicional);
 
-    // Adiciona os arquivos ao FormData
+    // Adicionar arquivos ao FormData
     registoEditado.arquivos.forEach((file) => {
       formData.append("arquivos", file);
     });
@@ -96,7 +94,6 @@ export default function Disputas() {
       }
     )
       .then(() => {
-        // Atualiza a tabela após salvar
         setDisputas((prevDisputas) =>
           prevDisputas.map((disputa) =>
             disputa.id_venda === registoEditado.id_venda
@@ -120,7 +117,7 @@ export default function Disputas() {
               <th className="p-2">ID Venda</th>
               <th className="p-2">Data Evento</th>
               <th className="p-2">Evento</th>
-              <th className="p-2">Estadio</th>
+              <th className="p-2">Estádio</th>
               <th className="p-2">Ganho (€)</th>
               <th className="p-2">Cobrança</th>
               <th className="p-2">Estado</th>
