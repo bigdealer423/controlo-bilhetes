@@ -42,11 +42,11 @@ export default function Dashboard({ onAtualizarEventos }) {
 
   // UseEffect para redirecionar para "Listagem de Vendas" caso esteja na rota /dashboard
   useEffect(() => {
-  // Evitar redirecionamento caso já esteja no lugar correto ou com o modal aberto
   if (location.pathname === "/dashboard" && !mostrarModal) {
     navigate("/listagem-vendas");
   }
 }, [location.pathname, navigate, mostrarModal]);
+
 
   return (
     <div className="bg-gray-100 p-3 flex justify-between items-center border-b mb-4">
