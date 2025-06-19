@@ -347,7 +347,7 @@ def verificar_emails_pagamento(username, password, dias=PERIODO_DIAS):
 
     ids_pagamento_confirmado = []
     ids_disputa = []
-
+    
     for msg_id in ids:
         conteudo, _ = extract_email_content_and_date(mail, msg_id)
         if not conteudo:
@@ -356,7 +356,9 @@ def verificar_emails_pagamento(username, password, dias=PERIODO_DIAS):
 
         conteudo_normalizado = unicodedata.normalize('NFD', conteudo).encode('ascii', 'ignore').decode('utf-8')
 
-        blocos = re.findall(r'(\d{9}).*?(-?[0-9]+[\.,][0-9]{2})\s*€', conteudo_normalizado)
+        blocos = re.findall(r'(\d{9,})[^\d€]+(-?[0-9\.,]+)\s*€', conteudo_normalizado)
+        print("🧪 Blocos encontrados no conteúdo:")
+        print(blocos)
         if not blocos:
             print("⚠️ Nenhum bloco de ID + valor encontrado neste email.")
         for id_venda, valor_str in blocos:
