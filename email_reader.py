@@ -367,7 +367,7 @@ if __name__ == "__main__":
 
 
 
-    def verificar_emails_pagamento(username, password):
+    def verificar_emails_entregues(username, password, dias=PERIODO_DIAS):
         mail = connect_email(username, password)
         mail.select("inbox")
     
