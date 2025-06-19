@@ -369,14 +369,19 @@ def verificar_emails_pagamento(username, password, dias=PERIODO_DIAS):
         conteudo_normalizado = unicodedata.normalize('NFD', conteudo).encode('ascii', 'ignore').decode('utf-8')
         print("🔍 Conteúdo normalizado do email:")
         print(conteudo_normalizado[:2000])  # mostra só os primeiros 2000 caracteres
-        blocos = re.findall(r'(\d{9,})[^\d€]{0,100}?€\s*([-\d\.,]+)', conteudo_normalizado)
+        
+        # Novo padrão: 18 dígitos seguidos por valor (ex: 61969360564181891 + 559.52)
+        blocos = re.findall(r'(\d{18})[^\d]{0,40}([0-9]+[\.,][0-9]{2,})', conteudo_normalizado)
         print("🧪 Blocos encontrados no conteúdo:")
         print(blocos)
+
         if not blocos:
             print("⚠️ Nenhum bloco de ID + valor encontrado neste email.")
-        for id_venda, valor_str in blocos:
+
+        for id_completo, valor_str in blocos:
+            id_venda = id_completo[-9:]  # Assume que o ID de venda são os últimos 9 dígitos
             valor_pagamento = float(valor_str.replace(",", ".").replace(" ", ""))
-            print(f"🔍 Encontrado ID: {id_venda} | Valor recebido: {valor_pagamento:.2f}€")
+            print(f"🔍 Encontrado ID de venda: {id_venda} | Valor recebido: {valor_pagamento:.2f}€")
 
             url = f"https://controlo-bilhetes.onrender.com/listagem_vendas/{id_venda}"
             try:
@@ -414,9 +419,10 @@ def verificar_emails_pagamento(username, password, dias=PERIODO_DIAS):
             except Exception as e:
                 print(f"❌ Erro na verificação do ID {id_venda}: {e}")
 
+        print("------------------------------------------------------------")
+
     print(f"\n✅ Total confirmados como pagos: {len(ids_pagamento_confirmado)}")
     print(f"⚠️ Total com disputa: {len(ids_disputa)}")
-    
 
     return {
         "total_verificados": len(ids),
