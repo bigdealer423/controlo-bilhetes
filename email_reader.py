@@ -364,8 +364,9 @@ def verificar_emails_pagamento(username, password, dias=PERIODO_DIAS):
             continue
 
         conteudo_normalizado = unicodedata.normalize('NFD', conteudo).encode('ascii', 'ignore').decode('utf-8')
-
-        blocos = re.findall(r'(\d{9,})[^\d€]+(-?[0-9\.,]+)\s*€', conteudo_normalizado)
+        print("🔍 Conteúdo normalizado do email:")
+        print(conteudo_normalizado[:2000])  # mostra só os primeiros 2000 caracteres
+        blocos = re.findall(r'(\d{9,})[^\d€]{0,100}?€\s*([-\d\.,]+)', conteudo_normalizado)
         print("🧪 Blocos encontrados no conteúdo:")
         print(blocos)
         if not blocos:
@@ -412,6 +413,9 @@ def verificar_emails_pagamento(username, password, dias=PERIODO_DIAS):
 
     print(f"\n✅ Total confirmados como pagos: {len(ids_pagamento_confirmado)}")
     print(f"⚠️ Total com disputa: {len(ids_disputa)}")
+    print("📨 Email completo (debug):")
+    print(conteudo)
+    print("------------------------------------------------------------")
 
     return {
         "total_verificados": len(ids),
