@@ -6,23 +6,18 @@ function Disputas() {
   const [modalVisivel, setModalVisivel] = useState(false);
   const [disputaSelecionada, setDisputaSelecionada] = useState(null);
 
+    // Suponha que você tenha as disputas associadas às vendas na sua tabela
+  const [disputas, setDisputas] = useState([]);
+  
   // Use o useEffect para buscar os dados da Listagem Vendas (se aplicável)
   useEffect(() => {
-    // Simulando a obtenção de dados do backend ou uma API
-    const dadosFicticios = [
-      { id: 1, dataEvento: '2023-07-20', evento: 'Evento A', bilhetes: 50, ganhos: 500, cobranca: 450, dataDisputa: '2023-07-22' },
-      { id: 2, dataEvento: '2023-07-21', evento: 'Evento B', bilhetes: 100, ganhos: 1000, cobranca: 950, dataDisputa: '2023-07-23' },
-    ];
-    setDisputas(dadosFicticios); // Atualiza a lista de disputas com dados fictícios
+    fetch('/api/listagem-vendas')  // Se estiver usando uma API
+      .then((response) => response.json())
+      .then((data) => {
+        setDisputas(data);  // Preenche a lista de disputas com dados da Listagem Vendas
+      });
+  }, []);
 
-    // Se você estiver usando uma API, descomente isso
-    // fetch('/api/listagem-vendas')
-    //   .then((response) => response.json())
-    //   .then((data) => {
-    //     setDisputas(data);  // Atualiza a lista de disputas com os dados da API
-    //   })
-    //   .catch((error) => console.error('Erro ao carregar disputas:', error));
-  }, []); // O array vazio garante que a chamada seja feita apenas uma vez após a montagem do componente
 
   const abrirModal = (disputa) => {
     console.log('Abrindo modal para a disputa:', disputa);
