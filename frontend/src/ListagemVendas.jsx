@@ -24,23 +24,7 @@ export default function ListagemVendas(props) {
   setMensagemModal("⏳ A processar leitura de e-mails...");
   setMostrarModal(true);
 
-  try {
-    const res = await fetch("https://controlo-bilhetes.onrender.com/forcar_leitura_email", {
-      method: "POST"
-    });
-
-    if (!res.ok) {
-      throw new Error("Falha na resposta");
-    }
-
-    const data = await res.json();
-    setMensagemModal(`✅ ${data.mensagem}`);
-    buscarRegistos();
-    buscarResumoDiario();
-  } catch (err) {
-    setMensagemModal("❌ Erro ao tentar iniciar a leitura dos e-mails.");
-  }
-
+  
   // ⏳ Após 60 segundos, buscar o resultado da leitura
     try {
     const res = await fetch("https://controlo-bilhetes.onrender.com/forcar_leitura_email", {
