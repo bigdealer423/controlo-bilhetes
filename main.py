@@ -42,7 +42,8 @@ def root():
 
 
 # ---------------- DISPUTAS ----------------
-@app.get("/disputas", response_model=List[ListagemVendasBase])  # Use o Pydantic aqui
+# Exemplo de função para obter disputas
+@app.get("/disputas", response_model=List[ListagemVendasBase])
 def get_disputas(db: Session = Depends(get_db)):
     # Consulta para pegar apenas as vendas com estado 'Disputa'
     disputas = db.query(ListagemVendas).filter(ListagemVendas.estado == 'Disputa').all()
@@ -50,9 +51,25 @@ def get_disputas(db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Nenhuma disputa encontrada")
     return disputas  # Aqui, o FastAPI vai converter a lista de objetos SQLAlchemy para Pydantic
 
+# Função para atualizar disputa
 @app.put("/disputas/{id_venda}")
-def atualizar_disputa(id_venda: int, dados: Disputa):
-    # Código para atualizar a disputa
+def atualizar_disputa(id_venda: int, dados: Disputa, db: Session = Depends(get_db)):
+    # Verificar se a disputa existe
+    disputa = db.query(ListagemVendas).filter(ListagemVendas.id_venda == id_venda).first()
+    
+    if not disputa:
+        raise HTTPException(status_code=404, detail="Disputa não encontrada")
+
+    # Atualizar os dados da disputa com as informações recebidas no corpo da requisição
+    disputa.data_disputa = dados.data_disputa
+    disputa.cobranca = dados.cobranca
+    disputa.texto_adicional = dados.texto_adicional
+
+    # Persistir as mudanças no banco de dados
+    db.commit()
+    
+    # Retornar a disputa atualizada
+    return disputa
 
 # ---------------- LISTAGEM DE VENDAS ----------------
 @app.get("/listagem_vendas")
