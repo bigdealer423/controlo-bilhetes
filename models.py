@@ -68,6 +68,9 @@ class ListagemVendasBase(BaseModel):
     ganho: float
     estado: EstadoVenda
 
+class Config:
+        orm_mode = True  # Isso permite a conversão entre SQLAlchemy e Pydantic
+
 class ListagemVendasCreate(ListagemVendasBase):
     pass
 
