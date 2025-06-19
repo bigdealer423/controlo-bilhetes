@@ -11,20 +11,20 @@ export default function Disputas() {
     arquivos: [],
   });
 
-  // Carregar dados do modal do localStorage ao carregar a página
   useEffect(() => {
-    const dadosModal = localStorage.getItem("modalEditado");
-    if (dadosModal) {
-      setRegistoEditado(JSON.parse(dadosModal));
-    }
-
-    // Buscar disputas do backend
+    // Carregar disputas do backend e verificar localStorage para dados persistidos
     fetch("https://controlo-bilhetes.onrender.com/disputas")
       .then((res) => res.json())
       .then((data) => {
         setDisputas(data);
       })
       .catch((err) => console.error("Erro ao buscar disputas:", err));
+
+    // Carregar dados do modal do localStorage ao carregar a página
+    const dadosModal = localStorage.getItem("modalEditado");
+    if (dadosModal) {
+      setRegistoEditado(JSON.parse(dadosModal));
+    }
   }, []);
 
   // Função para abrir o modal com os dados da disputa
@@ -50,17 +50,18 @@ export default function Disputas() {
     localStorage.removeItem("modalEditado"); // Remover os dados do localStorage
   };
 
-  // Atualizar campos do modal
+  // Atualizar campos do estado com a edição
   const handleChange = (e) => {
     const { name, value } = e.target;
     setRegistoEditado((prevState) => {
       const updatedState = { ...prevState, [name]: value };
-      localStorage.setItem("modalEditado", JSON.stringify(updatedState)); // Atualizar no localStorage
+      // Atualizar no localStorage
+      localStorage.setItem("modalEditado", JSON.stringify(updatedState));
       return updatedState;
     });
   };
 
-  // Lidar com upload de arquivos
+  // Lidar com a mudança de arquivos
   const handleFileChange = (e) => {
     const newFiles = e.target.files;
     setRegistoEditado((prevState) => {
@@ -68,21 +69,31 @@ export default function Disputas() {
         ...prevState,
         arquivos: [...prevState.arquivos, ...newFiles],
       };
-      localStorage.setItem("modalEditado", JSON.stringify(updatedState)); // Atualizar no localStorage
+      // Atualizar no localStorage
+      localStorage.setItem("modalEditado", JSON.stringify(updatedState));
       return updatedState;
     });
   };
 
-  // Salvar os dados no backend
+  // Função que salva a edição e faz a requisição para o backend
   const salvarEdicao = () => {
+    if (!registoEditado.id_venda) {
+      console.error("ID da venda não encontrado.");
+      return;
+    }
+
     const formData = new FormData();
     formData.append("data_disputa", registoEditado.data_disputa);
     formData.append("cobranca", registoEditado.cobranca);
     formData.append("texto_adicional", registoEditado.texto_adicional);
 
+    // Adicionar os arquivos ao FormData
     registoEditado.arquivos.forEach((file) => {
       formData.append("arquivos", file);
     });
+
+    // Confirmação do ID de venda na URL
+    console.log(`Tentando atualizar disputa com ID de venda: ${registoEditado.id_venda}`);
 
     fetch(
       `https://controlo-bilhetes.onrender.com/disputas/${registoEditado.id_venda}`,
@@ -91,6 +102,12 @@ export default function Disputas() {
         body: formData,
       }
     )
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Erro ao atualizar disputa: ${response.statusText}`);
+        }
+        return response.json();
+      })
       .then(() => {
         setDisputas((prevDisputas) =>
           prevDisputas.map((disputa) =>
