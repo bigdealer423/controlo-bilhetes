@@ -362,9 +362,9 @@ def verificar_emails_pagamento(username, password, dias=PERIODO_DIAS):
         if not conteudo:
             print("⚠️ Email sem conteúdo útil. Ignorado.")
             continue
-            print("📨 Email completo (debug):")
-            print(conteudo)
-            print("------------------------------------------------------------")
+        print("📨 Email completo (debug):")
+        print(conteudo)
+        print("------------------------------------------------------------")
 
         conteudo_normalizado = unicodedata.normalize('NFD', conteudo).encode('ascii', 'ignore').decode('utf-8')
         print("🔍 Conteúdo normalizado do email:")
