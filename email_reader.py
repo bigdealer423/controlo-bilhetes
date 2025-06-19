@@ -367,8 +367,8 @@ if __name__ == "__main__":
         ja_existentes=resumo["existentes"],
         ids_erro=resumo.get("ids_falhados", []),
         entregues=resumo.get("entregues", 0),
-        ids_entregues=resumo.get("ids_entregues", [])
-        pagos = resumo.get("pagos", 0)
+        ids_entregues=resumo.get("ids_entregues", []),
+        pagos = resumo.get("pagos", 0),
         disputas = resumo.get("disputas", [])
 
         corpo += f"\n💰 Pagamentos confirmados: {pagos}"
