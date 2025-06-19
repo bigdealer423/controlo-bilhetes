@@ -26,8 +26,8 @@ export default function Disputas() {
       id_venda: disputa.id_venda,
       data_disputa: disputa.data_disputa,
       cobranca: disputa.cobranca,
-      texto_adicional: disputa.texto_adicional || "", // Preenche o texto se houver
-      arquivos: disputa.arquivos || [], // Preenche com os arquivos anexados, se houver
+      texto_adicional: disputa.texto_adicional || "",
+      arquivos: disputa.arquivos || [],
     });
     setModalAberto(true);
   };
@@ -176,7 +176,16 @@ export default function Disputas() {
               <ul>
                 {registoEditado.arquivos.length > 0 ? (
                   registoEditado.arquivos.map((file, index) => (
-                    <li key={index} className="text-sm">{file.name}</li>
+                    <li key={index} className="text-sm">
+                      <a
+                        href={URL.createObjectURL(file)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:underline"
+                      >
+                        {file.name}
+                      </a>
+                    </li>
                   ))
                 ) : (
                   <li className="text-sm text-gray-500">Nenhum arquivo anexado.</li>
