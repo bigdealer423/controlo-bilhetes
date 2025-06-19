@@ -12,22 +12,22 @@ export default function Disputas() {
   });
 
   useEffect(() => {
-    // Carregar as disputas do backend
-    fetch("https://controlo-bilhetes.onrender.com/disputas")
-      .then(res => res.json())
-      .then(data => {
-        setDisputas(data);
-      })
-      .catch(err => console.error("Erro ao buscar disputas:", err));
-
-    // Tentar carregar o estado do modal do localStorage ao iniciar
+    // Tentar carregar os dados do modal do `localStorage` ao iniciar
     const dadosModal = localStorage.getItem("modalEditado");
     if (dadosModal) {
       setRegistoEditado(JSON.parse(dadosModal));
     }
+
+    // Buscar as disputas do backend
+    fetch("https://controlo-bilhetes.onrender.com/disputas")
+      .then((res) => res.json())
+      .then((data) => {
+        setDisputas(data);
+      })
+      .catch((err) => console.error("Erro ao buscar disputas:", err));
   }, []);
 
-  // Função para abrir o modal com duplo clique na linha
+  // Função para abrir o modal com duplo clique
   const abrirModal = (disputa) => {
     const dadosModal = {
       id_venda: disputa.id_venda,
@@ -36,17 +36,19 @@ export default function Disputas() {
       texto_adicional: disputa.texto_adicional || "",
       arquivos: disputa.arquivos || [],
     };
+
     setRegistoEditado(dadosModal);
     setModalAberto(true);
 
-    // Persistir os dados no localStorage sempre que o modal for aberto
+    // Persistir os dados no `localStorage` sempre que o modal for aberto
     localStorage.setItem("modalEditado", JSON.stringify(dadosModal));
   };
 
   // Função para fechar o modal
   const fecharModal = () => {
     setModalAberto(false);
-    localStorage.removeItem("modalEditado"); // Limpar os dados do localStorage ao fechar
+    // Remover os dados do `localStorage` quando fechar o modal
+    localStorage.removeItem("modalEditado");
   };
 
   // Função para atualizar os campos de texto no estado
@@ -54,7 +56,7 @@ export default function Disputas() {
     const { name, value } = e.target;
     setRegistoEditado((prevState) => {
       const updatedState = { ...prevState, [name]: value };
-      // Persistir os dados no localStorage após cada alteração
+      // Persistir os dados atualizados no `localStorage`
       localStorage.setItem("modalEditado", JSON.stringify(updatedState));
       return updatedState;
     });
@@ -68,7 +70,7 @@ export default function Disputas() {
         ...prevState,
         arquivos: [...prevState.arquivos, ...newFiles],
       };
-      // Persistir os arquivos no localStorage
+      // Persistir os arquivos no `localStorage`
       localStorage.setItem("modalEditado", JSON.stringify(updatedState));
       return updatedState;
     });
@@ -86,10 +88,13 @@ export default function Disputas() {
       formData.append("arquivos", file);
     });
 
-    fetch(`https://controlo-bilhetes.onrender.com/disputas/${registoEditado.id_venda}`, {
-      method: "PUT",
-      body: formData,
-    })
+    fetch(
+      `https://controlo-bilhetes.onrender.com/disputas/${registoEditado.id_venda}`,
+      {
+        method: "PUT",
+        body: formData,
+      }
+    )
       .then(() => {
         // Atualiza a tabela após salvar
         setDisputas((prevDisputas) =>
