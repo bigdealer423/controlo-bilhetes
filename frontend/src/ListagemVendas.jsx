@@ -24,9 +24,7 @@ export default function ListagemVendas(props) {
   setMensagemModal("⏳ A processar leitura de e-mails...");
   setMostrarModal(true);
 
-  
-  // ⏳ Após 60 segundos, buscar o resultado da leitura
-    try {
+  try {
     const res = await fetch("https://controlo-bilhetes.onrender.com/forcar_leitura_email", {
       method: "POST"
     });
@@ -44,7 +42,7 @@ export default function ListagemVendas(props) {
     return; // evita correr o setTimeout se falhar
   }
 
-  // Agora sim, fora do bloco try/catch
+  // ⏳ Após 60 segundos, buscar o resultado da leitura
   setTimeout(async () => {
     try {
       const res = await fetch("https://controlo-bilhetes.onrender.com/resultado_leitura_email");
@@ -72,6 +70,8 @@ export default function ListagemVendas(props) {
       setMensagemModal("");
     }, 8000);
   }, 60000);
+};
+
 
 
 
