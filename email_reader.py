@@ -355,7 +355,7 @@ def verificar_emails_pagamento(username, password, dias=PERIODO_DIAS):
     
             conteudo_normalizado = unicodedata.normalize('NFD', conteudo).encode('ascii', 'ignore').decode('utf-8')
     
-            blocos = re.findall(r'(\d{9}).*?([0-9]+[\.,][0-9]{2})\s*€', conteudo_normalizado)
+            blocos = re.findall(r'(\d{9,18})[^\d€]{1,50}?([0-9]+[\.,][0-9]{2})\s*€', conteudo_normalizado)
             for id_venda, valor_str in blocos:
                 valor_pagamento = float(valor_str.replace(",", ".").replace(" ", ""))
                 print(f"🧾 Pagamento: ID {id_venda} | Valor recebido: {valor_pagamento}")
