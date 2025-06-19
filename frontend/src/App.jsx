@@ -12,7 +12,21 @@ import { useAuth } from "./AuthContext";
 export default function App() {
   const { isAuthenticated } = useAuth();
 
-  const forcarAtualizacaoEventos = () => window.location.reload();
+  const forcarAtualizacaoEventos = () => {
+  // Exemplo de como você pode atualizar o estado dos eventos
+  fetchEventos();  // Aqui, 'fetchEventos' seria uma função para buscar eventos da API ou atualizar os dados
+};
+
+const fetchEventos = async () => {
+  try {
+    const response = await fetch("/api/eventos");
+    const eventos = await response.json();
+    setEventos(eventos);  // Atualiza o estado dos eventos com os dados mais recentes
+  } catch (error) {
+    console.error("Erro ao buscar eventos:", error);
+  }
+};
+
 
   return (
     <Router>
