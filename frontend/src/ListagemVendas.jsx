@@ -48,27 +48,27 @@ export default function ListagemVendas(props) {
       const json = await res.json();
 
       if (json.sucesso !== undefined) {
-  const entregues = json.entregues || 0;
-  const pagos = json.pagos || 0;
-  const disputas = json.disputas ? json.disputas.length : 0;
+        const entregues = json.entregues || 0;
+        const pagos = json.pagos || 0;
+        const disputas = json.disputas ? json.disputas.length : 0;
+      
+        const mensagem = `✅ Concluído: ${json.sucesso} novos, ${json.existentes} existentes, ${json.falhas} falhados, ${entregues} entregues, ${pagos} pagos, ${disputas} disputas.`;
+        
+        setMensagemModal(mensagem);
+        toast.success(mensagem);
+      } else {
+        setMensagemModal("⚠️ Concluído, mas sem dados detalhados.");
+        toast.warning("⚠️ Concluído, mas sem dados detalhados.");
+      }
+      
 
-  const mensagem = `✅ Concluído: ${json.sucesso} novos, ${json.existentes} existentes, ${json.falhas} falhados, ${entregues} entregues, ${pagos} pagos, ${disputas} disputas.`;
-  
-  setMensagemModal(mensagem);
-  toast.success(mensagem);
-} else {
-  setMensagemModal("⚠️ Concluído, mas sem dados detalhados.");
-  toast.warning("⚠️ Concluído, mas sem dados detalhados.");
-}
-
-
-    // ⏹️ Fechar o modal após mais 8 segundos
-    setTimeout(() => {
-      setMostrarModal(false);
-      setMensagemModal("");
-    }, 8000);
-  }, 60000); // Esperar 60 segundos
-};
+      // ⏹️ Fechar o modal após mais 8 segundos
+      setTimeout(() => {
+        setMostrarModal(false);
+        setMensagemModal("");
+      }, 8000);
+    }, 60000); // Esperar 60 segundos
+  };
 
 
 
