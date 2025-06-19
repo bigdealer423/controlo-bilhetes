@@ -12,16 +12,13 @@ export default function Dashboard({ onAtualizarEventos }) {
 
   const [mostrarModal, setMostrarModal] = useState(false);
 
+  // Função para logout
   const handleLogout = () => {
     logout();
     navigate("/login");
   };
 
-  const handleRodaDentadaClick = (e) => {
-    e.stopPropagation();  // Impede que a navegação aconteça imediatamente
-    setMostrarModal(true);  // Abre o modal
-  };
-
+  // Menus de navegação
   const menus = [
     { nome: "Listagem de Vendas", rota: "/listagem-vendas" },
     { nome: "Eventos", rota: "/eventos" },
@@ -31,6 +28,19 @@ export default function Dashboard({ onAtualizarEventos }) {
     { nome: "Outro Menu", rota: "/outro" }
   ];
 
+  // Função de clique nos menus
+  const handleMenuClick = (e, menuRota) => {
+    e.stopPropagation(); // Impede a navegação imediata
+    navigate(menuRota);  // Navega para a página
+  };
+
+  // Função que abre o modal da roda dentada sem fechar a navegação
+  const handleRodaDentadaClick = (e) => {
+    e.stopPropagation(); // Impede que a navegação aconteça imediatamente
+    setMostrarModal(true);  // Abre o modal
+  };
+
+  // UseEffect para redirecionar para "Listagem de Vendas" caso esteja na rota /dashboard
   useEffect(() => {
     if (location.pathname === "/dashboard") {
       navigate("/listagem-vendas");
@@ -43,7 +53,7 @@ export default function Dashboard({ onAtualizarEventos }) {
         {menus.map((menu) => (
           <button
             key={menu.rota}
-            onClick={() => navigate(menu.rota)}  // Usando a nova função para navegar
+            onClick={(e) => handleMenuClick(e, menu.rota)}  // Usando a nova função para navegar
             className={`px-3 py-1 text-sm rounded ${
               rotaAtual === menu.rota
                 ? "bg-blue-600 text-white"
@@ -72,10 +82,10 @@ export default function Dashboard({ onAtualizarEventos }) {
         </button>
       </div>
 
-      {/* Passando a função de fechar do modal */}
+      {/* Condição para renderizar o modal com base na visibilidade */}
       <EventoModal
         visivel={mostrarModal}
-        fechar={() => setMostrarModal(false)}
+        fechar={() => setMostrarModal(false)}  // Fechar o modal ao clicar em fechar
         onAtualizar={onAtualizarEventos}
       />
     </div>
