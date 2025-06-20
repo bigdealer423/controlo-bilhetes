@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useRef } from "react";
 
-
 export default function Eventos() {
   const [registos, setRegistos] = useState([]);
   const [eventosDropdown, setEventosDropdown] = useState([]);
   const [modoEdicao, setModoEdicao] = useState(null);
+  const [eventoEditado, setEventoEditado] = useState({});
   const [linhaExpandida, setLinhaExpandida] = useState(null);
   const [vendas, setVendas] = useState([]);
   const [compras, setCompras] = useState([]);
@@ -18,7 +18,6 @@ export default function Eventos() {
   const [compraEditada, setCompraEditada] = useState({});
   const [modoEdicaoVenda, setModoEdicaoVenda] = useState(null);
   const [vendaEditada, setVendaEditada] = useState({});
-  const debounceTimers = useRef({});
 
   useEffect(() => {
     const carregarDados = async () => {
@@ -35,63 +34,54 @@ export default function Eventos() {
   }, [vendas, compras]);
 
   useEffect(() => {
-  buscarDropdown();
-}, []);
+    buscarDropdown();
+  }, []);
 
   useEffect(() => {
-  buscarResumoMensal();
-}, []);
-
-  useEffect(() => {
-  if (compras.length && vendas.length) {
     buscarResumoMensal();
-  }
-}, [compras, vendas]);
+  }, []);
 
-const buscarResumoMensal = async () => {
-  try {
-    const res = await fetch("https://controlo-bilhetes.onrender.com/resumo_mensal_eventos");
-    const data = await res.json();
-    setResumoMensal(data);
-  } catch (err) {
-    console.error("Erro ao buscar resumo mensal:", err);
-  }
-};
-  
-const ordenarEventosDropdown = (data) => {
-  return [...data].sort((a, b) => {
-    const nomeA = a.nome.toLowerCase();
-    const nomeB = b.nome.toLowerCase();
+  useEffect(() => {
+    if (compras.length && vendas.length) {
+      buscarResumoMensal();
+    }
+  }, [compras, vendas]);
 
-    const prioridade = (nome) => {
-      if (nome.startsWith("sl benfica")) return 0;
-      if (nome.startsWith("benfica")) return 1;
-      return 2;
-    };
+  const buscarResumoMensal = async () => {
+    try {
+      const res = await fetch("https://controlo-bilhetes.onrender.com/resumo_mensal_eventos");
+      const data = await res.json();
+      setResumoMensal(data);
+    } catch (err) {
+      console.error("Erro ao buscar resumo mensal:", err);
+    }
+  };
 
-    const pA = prioridade(nomeA);
-    const pB = prioridade(nomeB);
+  const ordenarEventosDropdown = (data) => {
+    return [...data].sort((a, b) => {
+      const nomeA = a.nome.toLowerCase();
+      const nomeB = b.nome.toLowerCase();
 
-    if (pA !== pB) return pA - pB;
-    return nomeA.localeCompare(nomeB);
-  });
-};
+      const prioridade = (nome) => {
+        if (nome.startsWith("sl benfica")) return 0;
+        if (nome.startsWith("benfica")) return 1;
+        return 2;
+      };
 
-const buscarDropdown = async () => {
-  const res = await fetch("https://controlo-bilhetes.onrender.com/eventos_dropdown");
-  if (res.ok) {
-    const data = await res.json();
-    console.log("🔽 Dados dropdown:", data);
-    setEventosDropdown(ordenarEventosDropdown(data)); // <- aplicação da ordenação aqui
-  } else {
-    console.error("Erro ao carregar dropdown.");
-  }
-};
+      const pA = prioridade(nomeA);
+      const pB = prioridade(nomeB);
 
+      if (pA !== pB) return pA - pB;
+      return nomeA.localeCompare(nomeB);
+    });
+  };
 
-  const buscarTudo = async () => {
-    await Promise.all([buscarDropdown(), buscarVendas(), buscarCompras()]);
-    await buscarEventos();
+  const buscarDropdown = async () => {
+    const res = await fetch("https://controlo-bilhetes.onrender.com/eventos_dropdown");
+    if (res.ok) {
+      const data = await res.json();
+      setEventosDropdown(ordenarEventosDropdown(data));
+    }
   };
 
   const buscarEventos = async () => {
@@ -100,42 +90,23 @@ const buscarDropdown = async () => {
       let eventos = await res.json();
 
       eventos = await Promise.all(eventos.map(async evento => {
-        const totalGasto = compras
-          .filter(c => c.evento === evento.evento)
-          .reduce((acc, curr) => acc + parseFloat(curr.gasto || 0), 0);
+        const totalGasto = compras.filter(c => c.evento === evento.evento).reduce((acc, curr) => acc + parseFloat(curr.gasto || 0), 0);
+        const totalGanho = vendas.filter(v => v.evento === evento.evento).reduce((acc, curr) => acc + parseFloat(curr.ganho || 0), 0);
 
-        const totalGanho = vendas
-          .filter(v => v.evento === evento.evento)
-          .reduce((acc, curr) => acc + parseFloat(curr.ganho || 0), 0);
-
-        // Atualiza o evento no backend
         await fetch(`https://controlo-bilhetes.onrender.com/eventos_completos2/${evento.id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            ...evento,
-            gasto: totalGasto,
-            ganho: totalGanho
-          })
+          body: JSON.stringify({ ...evento, gasto: totalGasto, ganho: totalGanho })
         });
-         // Atualiza o evento localmente
-        return {
-        ...evento,
-        gasto: totalGasto,
-        ganho: totalGanho,
-      };
-    }));
 
-      // Ordenação por data (mais antiga primeiro)
+        return { ...evento, gasto: totalGasto, ganho: totalGanho };
+      }));
+
       eventos.sort((a, b) => new Date(a.data_evento) - new Date(b.data_evento));
 
       setRegistos(eventos);
-    } else {
-      console.error("Erro ao carregar eventos.");
     }
   };
-
-
 
   const buscarVendas = async () => {
     const res = await fetch("https://controlo-bilhetes.onrender.com/listagem_vendas");
@@ -147,39 +118,19 @@ const buscarDropdown = async () => {
     if (res.ok) setCompras(await res.json());
   };
 
-  const atualizarCampo = (id, campo, valor) => {
-    if (!debounceTimers.current[id]) {
-      debounceTimers.current[id] = {};
+  const guardarEvento = async () => {
+    const res = await fetch(`https://controlo-bilhetes.onrender.com/eventos_completos2/${eventoEditado.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(eventoEditado)
+    });
+    if (res.ok) {
+      await buscarEventos();
+      await buscarResumoMensal();
+      setModoEdicao(null);
+      setEventoEditado({});
     }
-  
-    clearTimeout(debounceTimers.current[id][campo]);
-  
-    debounceTimers.current[id][campo] = setTimeout(async () => {
-      const registo = registos.find(r => r.id === id);
-      if (!registo) return;
-  
-      const atualizado = { ...registo, [campo]: valor };
-      const res = await fetch(`https://controlo-bilhetes.onrender.com/eventos_completos2/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(atualizado)
-      });
-  
-      if (res.ok) {
-        // ✅ Atualiza só a linha localmente (evita buscarEventos)
-        setRegistos(prev =>
-          prev.map(r => (r.id === id ? atualizado : r))
-        );
-  
-        // Só buscarResumoMensal se campos críticos forem alterados
-        if (["ganho", "gasto", "estado"].includes(campo)) {
-          await buscarResumoMensal();
-        }
-      }
-    }, 500);
   };
-
-
 
   const adicionarLinha = async () => {
     const novo = {
@@ -196,10 +147,10 @@ const buscarDropdown = async () => {
       body: JSON.stringify(novo)
     });
     if (res.ok) {
-      await buscarEventos();         // ⏳ Esperar que os eventos sejam atualizados
-      await buscarResumoMensal();    // ✅ Só depois atualizar o resumo mensal
+      await buscarEventos();
+      await buscarResumoMensal();
     }
-};
+  };
 
   const confirmarEliminar = (id) => {
     setIdAEliminar(id);
@@ -211,12 +162,16 @@ const buscarDropdown = async () => {
       method: "DELETE"
     });
     if (res.ok) {
-    await buscarEventos();         // ⏳ Correção crítica
-    await buscarResumoMensal();    // ✅ Atualização correta do resumo
-    setMostrarModal(false);
-    setIdAEliminar(null);
+      await buscarEventos();
+      await buscarResumoMensal();
+      setMostrarModal(false);
+      setIdAEliminar(null);
     }
   };
+
+  // o resto do código JSX continua igual
+}
+
 
   const guardarCompra = async (compra) => {
   const res = await fetch(`https://controlo-bilhetes.onrender.com/compras/${compra.id}`, {
