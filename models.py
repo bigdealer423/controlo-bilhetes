@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, String, ForeignKey, Float, Date, Enum, D
 from sqlalchemy.ext.declarative import declarative_base
 from pydantic import BaseModel
 from datetime import date
+from sqlalchemy.orm import relationship
 import enum
 
 Base = declarative_base()
