@@ -66,17 +66,22 @@ def atualizar_disputa(id_venda: int, dados: Disputa, db: Session = Depends(get_d
     if not disputa:
         raise HTTPException(status_code=404, detail="Disputa não encontrada")
     
-    print(f"Disputa encontrada: {disputa}")  # Verificar se a disputa foi encontrada corretamente
     # Atualizar os dados da disputa com as informações recebidas no corpo da requisição
     disputa.data_disputa = dados.data_disputa
     disputa.cobranca = dados.cobranca
     disputa.texto_adicional = dados.texto_adicional
+    
+    # Para arquivos
+    if dados.arquivos:
+        for arquivo in dados.arquivos:
+            # Lógica para processar e armazenar arquivos (se necessário)
+            pass
 
     db.commit()
     db.refresh(disputa)
     
-    print(f"Disputa atualizada: {disputa}")  # Verificar se os dados foram atualizados corretamente
     return disputa
+
 
 
 @app.post("/uploadfile/")
