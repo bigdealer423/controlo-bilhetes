@@ -88,17 +88,11 @@ formData.append("cobranca", registoEditado.cobranca);
 formData.append("texto_adicional", registoEditado.texto_adicional);
 
 // Adicionar os arquivos ao FormData
-registoEditado.arquivos.forEach((file, index) => {
-  formData.append("arquivos", file); // Certifique-se que o backend está esperando "arquivos" para o campo de arquivos
+registoEditado.arquivos.forEach((file) => {
+  formData.append("arquivos", file);  // "arquivos" deve ser um campo de lista no backend
 });
 
-// Logs para depuração: verificar os dados antes de enviar
-console.log("Dados para salvar:", registoEditado);
-
-// Confirmação do ID de venda na URL
-console.log(`Tentando atualizar disputa com ID de venda: ${registoEditado.id_venda}`);
-
-// Requisição PUT para atualizar os dados da disputa
+// Enviar a requisição
 fetch(
   `https://controlo-bilhetes.onrender.com/disputas/${registoEditado.id_venda}`,
   {
@@ -113,7 +107,8 @@ fetch(
     return response.json();
   })
   .then((data) => {
-    console.log("Resposta da API:", data);  // Log da resposta para ver se os dados foram realmente atualizados
+    console.log("Resposta da API:", data);
+    // Atualizar o estado com a resposta da API
     setDisputas((prevDisputas) =>
       prevDisputas.map((disputa) =>
         disputa.id_venda === registoEditado.id_venda
@@ -126,7 +121,7 @@ fetch(
   .catch((err) => {
     console.error("Erro ao atualizar disputa:", err);
   });
-};
+
 
 
   return (
