@@ -11,7 +11,20 @@ export default function Disputas() {
     arquivos: [],
   });
 
-// Carregar disputas do backend
+import { useEffect, useState } from "react";
+
+export default function Disputas() {
+  const [disputas, setDisputas] = useState([]);
+  const [modalAberto, setModalAberto] = useState(false);
+  const [registoEditado, setRegistoEditado] = useState({
+    id_venda: "",
+    data_disputa: "",
+    cobranca: "",
+    texto_adicional: "",
+    arquivos: [],
+  });
+
+  // Carregar disputas do backend
   useEffect(() => {
     fetch("https://controlo-bilhetes.onrender.com/disputas")
       .then((res) => res.json())
@@ -26,13 +39,14 @@ export default function Disputas() {
       .catch((err) => console.error("Erro ao buscar disputas:", err));
   }, []); // Fechamento correto do useEffect
 
-
-    // Carregar dados do modal do localStorage
-    const dadosModal = localStorage.getItem("modalEditado");
-    if (dadosModal) {
-      setRegistoEditado(JSON.parse(dadosModal));
-    }
-  }, []);
+  // Aqui continua o restante do componente...
+  return (
+    <div>
+      <h1>Disputas</h1>
+      {/* Renderização das disputas */}
+    </div>
+  );
+}
 
   // Função para abrir o modal com os dados da disputa
   const abrirModal = (disputa) => {
