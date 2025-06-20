@@ -16,10 +16,15 @@ export default function Disputas() {
     fetch("https://controlo-bilhetes.onrender.com/disputas")
       .then((res) => res.json())
       .then((data) => {
-        console.log("Disputas recebidas:", data); // Adicione essa linha para verificar a resposta
-        setDisputas(data);
+        // Verifique se os dados são um array antes de atualizar o estado
+        if (Array.isArray(data)) {
+          setDisputas(data);
+        } else {
+          console.error("A resposta não é um array:", data);
+        }
       })
       .catch((err) => console.error("Erro ao buscar disputas:", err));
+
 
     // Carregar dados do modal do localStorage
     const dadosModal = localStorage.getItem("modalEditado");
