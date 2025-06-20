@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";  // Importações devem vir sempre no topo
+import { useEffect, useState } from "react";
 
 export default function Disputas() {
   const [disputas, setDisputas] = useState([]);
@@ -24,17 +24,7 @@ export default function Disputas() {
         }
       })
       .catch((err) => console.error("Erro ao buscar disputas:", err));
-  }, []); // Fechamento correto do useEffect
-
-  // Aqui continua o restante do componente...
-  return (
-    <div>
-      <h1>Disputas</h1>
-      {/* Renderização das disputas */}
-    </div>
-  );
-}
-
+  }, []); // UseEffect fechado corretamente
 
   // Função para abrir o modal com os dados da disputa
   const abrirModal = (disputa) => {
