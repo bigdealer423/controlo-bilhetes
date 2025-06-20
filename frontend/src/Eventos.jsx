@@ -145,21 +145,30 @@ const buscarDropdown = async () => {
     if (res.ok) setCompras(await res.json());
   };
 
-  const atualizarCampo = async (id, campo, valor) => {
-    const registo = registos.find(r => r.id === id);
-    if (!registo) return;
-
-    const atualizado = { ...registo, [campo]: valor };
-    const res = await fetch("https://controlo-bilhetes.onrender.com/eventos_completos2/" + id, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(atualizado)
-    });
-    if (res.ok) {
-      await buscarEventos();
-      await buscarResumoMensal(); // ✅ só corre se a atualização for bem-sucedida
+  const atualizarCampo = (id, campo, valor) => {
+    if (!debounceTimers.current[id]) {
+      debounceTimers.current[id] = {};
     }
+  
+    clearTimeout(debounceTimers.current[id][campo]);
+  
+    debounceTimers.current[id][campo] = setTimeout(async () => {
+      const registo = registos.find(r => r.id === id);
+      if (!registo) return;
+  
+      const atualizado = { ...registo, [campo]: valor };
+      const res = await fetch(`https://controlo-bilhetes.onrender.com/eventos_completos2/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(atualizado)
+      });
+      if (res.ok) {
+        await buscarEventos();
+        await buscarResumoMensal();
+      }
+    }, 500); // ⏱ Debounce de 500ms
   };
+
 
   const adicionarLinha = async () => {
     const novo = {
