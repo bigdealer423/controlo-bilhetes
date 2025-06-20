@@ -1,17 +1,20 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Float, Date, Enum, DateTime
+from sqlalchemy import Column, Integer, String, Float, Date, Enum
 from sqlalchemy.ext.declarative import declarative_base
-from database import engine  # Certifique-se de importar o engine
 from pydantic import BaseModel
 from datetime import date
-from sqlalchemy.orm import relationship
 import enum
 
 Base = declarative_base()
 
+# -------------------- ENUM --------------------
 
+class EstadoVenda(str, enum.Enum):
+    entregue = "Entregue"
+    por_entregar = "Por entregar"
+    disputa = "Disputa"
+    pago = "Pago"
 
 # -------------------- MODELOS SQLAlchemy --------------------
-
 
 class ListagemVendas(Base):
     __tablename__ = "listagem_vendas"
@@ -24,8 +27,6 @@ class ListagemVendas(Base):
     estadio = Column(String, nullable=False)
     ganho = Column(Float, nullable=False)
     estado = Column(Enum(EstadoVenda), nullable=False)
-
-    
 
 class EventoDropdown(Base):
     __tablename__ = "eventos_dropdown"
@@ -121,12 +122,15 @@ class CompraOut(CompraCreate):
     class Config:
         from_attributes = True
 
+class Disputa(BaseModel):
+    data_disputa: date
+    cobranca: float
+    texto_adicional: str
 
+    class Config:
+        orm_mode = True  # Permite que o Pydantic use dados de um modelo ORM
+        from_attributes = True  # Alterado para 'from_attributes' no Pydantic V2
 
-# Para sincronizar com o banco de dados, é necessário criar as tabelas usando o SQLAlchemy
-Base.metadata.create_all(bind=engine)
-
-
-# Criação automática das tabelas
+# Criação automática das tabelasAdd commentMore actions
 from database import engine
 Base.metadata.create_all(bind=engine)
