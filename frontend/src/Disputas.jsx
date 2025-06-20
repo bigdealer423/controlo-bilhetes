@@ -11,9 +11,9 @@ export default function Disputas() {
     arquivos: [],
   });
 
-  // Carregar disputas do backend
+// Carregar disputas do backend
   useEffect(() => {
-  fetch("https://controlo-bilhetes.onrender.com/disputas")
+    fetch("https://controlo-bilhetes.onrender.com/disputas")
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data)) {
@@ -24,8 +24,7 @@ export default function Disputas() {
         }
       })
       .catch((err) => console.error("Erro ao buscar disputas:", err));
-  }, []);
-
+  }, []); // Fechamento correto do useEffect
 
 
     // Carregar dados do modal do localStorage
