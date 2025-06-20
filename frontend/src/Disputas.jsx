@@ -83,46 +83,45 @@ export default function Disputas() {
     }
 
     const formData = new FormData();
-formData.append("data_disputa", registoEditado.data_disputa);
-formData.append("cobranca", registoEditado.cobranca);
-formData.append("texto_adicional", registoEditado.texto_adicional);
+    formData.append("data_disputa", registoEditado.data_disputa);
+    formData.append("cobranca", registoEditado.cobranca);
+    formData.append("texto_adicional", registoEditado.texto_adicional);
 
-// Adicionar os arquivos ao FormData
-registoEditado.arquivos.forEach((file) => {
-  formData.append("arquivos", file);  // "arquivos" deve ser um campo de lista no backend
-});
+    // Adicionar os arquivos ao FormData
+    registoEditado.arquivos.forEach((file) => {
+      formData.append("arquivos", file);  // "arquivos" deve ser um campo de lista no backend
+    });
 
-// Enviar a requisição
-fetch(
-  `https://controlo-bilhetes.onrender.com/disputas/${registoEditado.id_venda}`,
-  {
-    method: "PUT",
-    body: formData,
-  }
-)
-  .then((response) => {
-    if (!response.ok) {
-      throw new Error(`Erro ao atualizar disputa: ${response.statusText}`);
-    }
-    return response.json();
-  })
-  .then((data) => {
-    console.log("Resposta da API:", data);
-    // Atualizar o estado com a resposta da API
-    setDisputas((prevDisputas) =>
-      prevDisputas.map((disputa) =>
-        disputa.id_venda === registoEditado.id_venda
-          ? { ...disputa, ...registoEditado }
-          : disputa
-      )
-    );
-    fecharModal();
-  })
-  .catch((err) => {
-    console.error("Erro ao atualizar disputa:", err);
-  });
-
-
+    // Enviar a requisição
+    fetch(
+      `https://controlo-bilhetes.onrender.com/disputas/${registoEditado.id_venda}`,
+      {
+        method: "PUT",
+        body: formData,
+      }
+    )
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Erro ao atualizar disputa: ${response.statusText}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log("Resposta da API:", data);
+        // Atualizar o estado com a resposta da API
+        setDisputas((prevDisputas) =>
+          prevDisputas.map((disputa) =>
+            disputa.id_venda === registoEditado.id_venda
+              ? { ...disputa, ...registoEditado }
+              : disputa
+          )
+        );
+        fecharModal();
+      })
+      .catch((err) => {
+        console.error("Erro ao atualizar disputa:", err);
+      });
+  };
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
