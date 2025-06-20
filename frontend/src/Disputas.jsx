@@ -13,17 +13,19 @@ export default function Disputas() {
 
   // Carregar disputas do backend
   useEffect(() => {
-    fetch("https://controlo-bilhetes.onrender.com/disputas")
-      .then((res) => res.json())
-      .then((data) => {
-        // Verifique se os dados são um array antes de atualizar o estado
-        if (Array.isArray(data)) {
-          setDisputas(data);
-        } else {
-          console.error("A resposta não é um array:", data);
-        }
-      })
-      .catch((err) => console.error("Erro ao buscar disputas:", err));
+  fetch("https://controlo-bilhetes.onrender.com/disputas")
+    .then((res) => res.json())
+    .then((data) => {
+      if (Array.isArray(data)) {
+        setDisputas(data);
+        console.log("Dados de disputas:", data);  // Log adicional para verificar os dados
+      } else {
+        console.error("A resposta não é um array:", data);
+      }
+    })
+    .catch((err) => console.error("Erro ao buscar disputas:", err));
+}, []);
+
 
 
     // Carregar dados do modal do localStorage
