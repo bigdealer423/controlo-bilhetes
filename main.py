@@ -59,12 +59,14 @@ def get_disputas(db: Session = Depends(get_db)):
 
 # Rota para atualizar disputa
 @app.put("/disputas/{id_venda}")
-async def atualizar_disputa(id_venda: int, 
-                             data_disputa: str, 
-                             cobranca: float, 
-                             texto_adicional: str, 
-                             arquivos: List[UploadFile] = File(None), 
-                             db: Session = Depends(get_db)):
+async def atualizar_disputa(
+    id_venda: int,
+    data_disputa: str = Form(...),
+    cobranca: float = Form(...),
+    texto_adicional: str = Form(...),
+    arquivos: List[UploadFile] = File(...),  # Aceita uma lista de arquivos
+    db: Session = Depends(get_db)
+):
     # Verificar se a disputa existe
     disputa = db.query(ListagemVendas).filter(ListagemVendas.id_venda == id_venda).first()
     
