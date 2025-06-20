@@ -48,14 +48,30 @@ def root():
 
 # ---------------- DISPUTAS ----------------
 # Rota para obter disputas
-@app.get("/disputas", response_model=List[ListagemVendasBase])
-def get_disputas(db: Session = Depends(get_db)):
-    print("CORS Test - Requisição recebida")
-    # Consulta para pegar apenas as vendas com estado 'Disputa'
-    disputas = db.query(ListagemVendas).filter(ListagemVendas.estado == 'Disputa').all()
-    if not disputas:
-        raise HTTPException(status_code=404, detail="Nenhuma disputa encontrada")
-    return disputas  # Aqui, o FastAPI vai converter a lista de objetos SQLAlchemy para Pydantic
+@app.post("/copiar_disputas")
+def copiar_disputas(db: Session = Depends(get_db)):
+    # Buscar as vendas com estado 'Disputa'
+    vendas_disputa = db.query(ListagemVendas).filter(ListagemVendas.estado == 'Disputa').all()
+
+    if not vendas_disputa:
+        raise HTTPException(status_code=404, detail="Nenhuma venda em disputa encontrada")
+
+    # Copiar as vendas com estado 'Disputa' para a tabela Disputas
+    for venda in vendas_disputa:
+        # Criar um novo objeto de disputa com os dados da venda
+        disputa = Disputa(
+            id_venda=venda.id_venda,
+            data_disputa=datetime.now(),  # Pode adicionar a data atual ou qualquer outro valor
+            cobranca=venda.ganho,  # Use o valor que achar adequado
+            texto_adicional="",  # Você pode adicionar um campo adicional ou vazio aqui
+            arquivos=[]  # Atribua arquivos ou deixe vazio
+        )
+        # Adicionar à tabela Disputas
+        db.add(disputa)
+
+    # Confirmar as alterações no banco de dados
+    db.commit()
+    return {"detail": f"{len(vendas_disputa)} vendas foram copiadas para Disputas."}
 
 
 
