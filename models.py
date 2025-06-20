@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, Float, Date, Enum, DateTime
 from sqlalchemy.ext.declarative import declarative_base
+from .database import engine  # Certifique-se de importar o engine
 from pydantic import BaseModel
 from datetime import date
 from sqlalchemy.orm import relationship
