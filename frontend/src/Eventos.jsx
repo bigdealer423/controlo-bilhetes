@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
+import { useRef } from "react";
+
 
 export default function Eventos() {
   const [registos, setRegistos] = useState([]);
@@ -16,7 +18,7 @@ export default function Eventos() {
   const [compraEditada, setCompraEditada] = useState({});
   const [modoEdicaoVenda, setModoEdicaoVenda] = useState(null);
   const [vendaEditada, setVendaEditada] = useState({});
-
+  const debounceTimers = useRef({});
 
   useEffect(() => {
     const carregarDados = async () => {
