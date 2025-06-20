@@ -11,11 +11,13 @@ export default function Disputas() {
     arquivos: [],
   });
 
-  // Carregar disputas do backend
+  // Carregar disputas do backend usando useEffect
   useEffect(() => {
+    // Fetch da API para obter as disputas
     fetch("https://controlo-bilhetes.onrender.com/disputas")
       .then((res) => res.json())
       .then((data) => {
+        // Verificar se a resposta é um array
         if (Array.isArray(data)) {
           setDisputas(data);
           console.log("Dados de disputas:", data);  // Log adicional para verificar os dados
@@ -24,7 +26,7 @@ export default function Disputas() {
         }
       })
       .catch((err) => console.error("Erro ao buscar disputas:", err));
-  }, []); // UseEffect fechado corretamente
+  }, []);  // Esse useEffect será executado uma vez quando o componente for montado.
 
   // Função para abrir o modal com os dados da disputa
   const abrirModal = (disputa) => {
@@ -54,20 +56,6 @@ export default function Disputas() {
     const { name, value } = e.target;
     setRegistoEditado((prevState) => {
       const updatedState = { ...prevState, [name]: value };
-      // Atualizar no localStorage
-      localStorage.setItem("modalEditado", JSON.stringify(updatedState));
-      return updatedState;
-    });
-  };
-
-  // Lidar com a mudança de arquivos
-  const handleFileChange = (e) => {
-    const newFiles = e.target.files;
-    setRegistoEditado((prevState) => {
-      const updatedState = {
-        ...prevState,
-        arquivos: [...prevState.arquivos, ...newFiles],
-      };
       // Atualizar no localStorage
       localStorage.setItem("modalEditado", JSON.stringify(updatedState));
       return updatedState;
@@ -166,7 +154,7 @@ export default function Disputas() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <div className="bg-white rounded p-6 shadow-lg w-96">
             <h2 className="text-lg font-semibold mb-4">Editar Disputa</h2>
-            
+            {/* Formulário de edição */}
             <div className="mb-4">
               <label className="block text-sm font-medium">Data Disputa</label>
               <input
@@ -177,7 +165,7 @@ export default function Disputas() {
                 className="input w-full"
               />
             </div>
-            
+
             <div className="mb-4">
               <label className="block text-sm font-medium">Cobrança</label>
               <input
