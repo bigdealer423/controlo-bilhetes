@@ -95,6 +95,7 @@ export default function Disputas() {
     // Confirmação do ID de venda na URL
     console.log(`Tentando atualizar disputa com ID de venda: ${registoEditado.id_venda}`);
 
+    // Requisição PUT para atualizar os dados da disputa
     fetch(
       `https://controlo-bilhetes.onrender.com/disputas/${registoEditado.id_venda}`,
       {
@@ -118,7 +119,9 @@ export default function Disputas() {
         );
         fecharModal();
       })
-      .catch((err) => console.error("Erro ao atualizar disputa:", err));
+      .catch((err) => {
+        console.error("Erro ao atualizar disputa:", err);
+      });
   };
 
   return (
