@@ -8,13 +8,7 @@ import enum
 
 Base = declarative_base()
 
-# -------------------- ENUM --------------------
 
-class EstadoVenda(str, enum.Enum):
-    entregue = "Entregue"
-    por_entregar = "Por entregar"
-    disputa = "Disputa"
-    pago = "Pago"
 
 # -------------------- MODELOS SQLAlchemy --------------------
 
