@@ -16,6 +16,21 @@ class EstadoVenda(str, enum.Enum):
 
 # -------------------- MODELOS SQLAlchemy --------------------
 
+class Disputa(Base):
+    __tablename__ = 'disputas'
+    
+    id = Column(Integer, primary_key=True, index=True)
+    id_venda = Column(Integer, ForeignKey("listagem_vendas.id_venda"))
+    data_disputa = Column(DateTime)
+    cobranca = Column(String)
+    texto_adicional = Column(String)
+    
+    # Relacionamento com a tabela ListagemVendas
+    venda = relationship("ListagemVendas", back_populates="disputas")
+
+# Para sincronizar com o banco de dados, é necessário criar as tabelas usando o SQLAlchemy
+Base.metadata.create_all(bind=engine)
+
 class ListagemVendas(Base):
     __tablename__ = "listagem_vendas"
 
