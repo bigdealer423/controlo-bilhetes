@@ -50,6 +50,7 @@ def root():
 # Rota para obter disputas
 @app.get("/disputas", response_model=List[ListagemVendasBase])
 def get_disputas(db: Session = Depends(get_db)):
+    print("CORS Test - Requisição recebida")
     # Consulta para pegar apenas as vendas com estado 'Disputa'
     disputas = db.query(ListagemVendas).filter(ListagemVendas.estado == 'Disputa').all()
     if not disputas:
