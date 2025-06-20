@@ -92,6 +92,9 @@ export default function Disputas() {
       formData.append("arquivos", file);
     });
 
+    // Logs para depuração: verificar os dados antes de enviar
+    console.log("Dados para salvar:", registoEditado);
+
     // Confirmação do ID de venda na URL
     console.log(`Tentando atualizar disputa com ID de venda: ${registoEditado.id_venda}`);
 
@@ -109,7 +112,8 @@ export default function Disputas() {
         }
         return response.json();
       })
-      .then(() => {
+      .then((data) => {
+        console.log("Resposta da API:", data);  // Log da resposta para ver se os dados foram realmente atualizados
         setDisputas((prevDisputas) =>
           prevDisputas.map((disputa) =>
             disputa.id_venda === registoEditado.id_venda
