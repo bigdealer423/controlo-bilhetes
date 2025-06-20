@@ -125,7 +125,7 @@ class CompraOut(CompraCreate):
     class Config:
         from_attributes = True
 
-class Disputa(BaseModel):
+class DisputaBase(BaseModel):
     data_disputa: date
     cobranca: float
     texto_adicional: str
