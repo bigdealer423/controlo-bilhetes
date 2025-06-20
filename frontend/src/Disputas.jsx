@@ -11,8 +11,8 @@ export default function Disputas() {
     arquivos: [],
   });
 
+  // Carregar disputas do backend
   useEffect(() => {
-    // Carregar disputas do backend e verificar localStorage para dados persistidos
     fetch("https://controlo-bilhetes.onrender.com/disputas")
       .then((res) => res.json())
       .then((data) => {
@@ -20,7 +20,7 @@ export default function Disputas() {
       })
       .catch((err) => console.error("Erro ao buscar disputas:", err));
 
-    // Carregar dados do modal do localStorage ao carregar a página
+    // Carregar dados do modal do localStorage
     const dadosModal = localStorage.getItem("modalEditado");
     if (dadosModal) {
       setRegistoEditado(JSON.parse(dadosModal));
