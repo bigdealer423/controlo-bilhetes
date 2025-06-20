@@ -48,12 +48,6 @@ def root():
 
 
 
-
-
-@app.post("/uploadfile/")
-async def upload_file(file: UploadFile = File(...)):
-    content = await file.read()  # Lê o conteúdo do arquivo binário
-    return {"filename": file.filename, "size": len(content)}
 # ---------------- LISTAGEM DE VENDAS ----------------
 @app.get("/listagem_vendas")
 def obter_vendas(db: Session = Depends(get_db)):
