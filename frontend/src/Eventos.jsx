@@ -118,6 +118,15 @@ export default function Eventos() {
     if (res.ok) setCompras(await res.json());
   };
 
+  const atualizarCampo = (id, campo, valor) => {
+  setRegistos(registos =>
+    registos.map(r =>
+      r.id === id ? { ...r, [campo]: valor } : r
+    )
+  );
+};
+
+  
   const guardarEvento = async () => {
     const res = await fetch(`https://controlo-bilhetes.onrender.com/eventos_completos2/${eventoEditado.id}`, {
       method: "PUT",
