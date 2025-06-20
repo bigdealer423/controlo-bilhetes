@@ -2,7 +2,7 @@ from sqlalchemy import extract
 from fastapi import File, UploadFile
 import os
 import requests
-from fastapi import FastAPI, HTTPException, Depends, status
+from fastapi import FastAPI, Form, HTTPException, Depends, status
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from typing import List
@@ -58,15 +58,32 @@ def get_disputas(db: Session = Depends(get_db)):
     return disputas  # Aqui, o FastAPI vai converter a lista de objetos SQLAlchemy para Pydantic
 
 # Rota para atualizar disputa
+from fastapi import FastAPI, Form, HTTPException, Depends
+from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy.orm import Session
+from typing import List
+from database import engine, get_db
+from models import ListagemVendas, Disputa
+
+app = FastAPI()
+
+# CORS Middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["https://controlo-bilhetes.vercel.app"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 @app.put("/disputas/{id_venda}")
-async def atualizar_disputa(
-    id_venda: int,
-    data_disputa: str = Form(...),
-    cobranca: float = Form(...),
-    texto_adicional: str = Form(...),
-    arquivos: List[UploadFile] = File(...),  # Aceita uma lista de arquivos
-    db: Session = Depends(get_db)
-):
+def atualizar_disputa(id_venda: int, 
+                       data_disputa: str = Form(...), 
+                       cobranca: float = Form(...), 
+                       texto_adicional: str = Form(...), 
+                       arquivos: List[UploadFile] = File(...), 
+                       db: Session = Depends(get_db)):
+    
     # Verificar se a disputa existe
     disputa = db.query(ListagemVendas).filter(ListagemVendas.id_venda == id_venda).first()
     
@@ -78,20 +95,16 @@ async def atualizar_disputa(
     disputa.cobranca = cobranca
     disputa.texto_adicional = texto_adicional
     
-    # Para arquivos
-    if arquivos:
-        for arquivo in arquivos:
-            # Lógica para processar e armazenar arquivos (se necessário)
-            file_location = f"some_path/{arquivo.filename}"
-            with open(file_location, "wb") as f:
-                f.write(await arquivo.read())  # Salva o arquivo no servidor
-            
-            # Aqui, você pode salvar informações sobre os arquivos no banco de dados, se necessário
+    # Aqui, se necessário, você pode salvar os arquivos recebidos (não implementado neste exemplo)
+    for arquivo in arquivos:
+        # Lógica para salvar o arquivo (por exemplo, salvar no sistema de arquivos ou no banco de dados)
+        pass
 
     db.commit()
     db.refresh(disputa)
     
     return disputa
+
 
 
 
