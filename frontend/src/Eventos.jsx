@@ -164,12 +164,21 @@ const buscarDropdown = async () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(atualizado)
       });
+  
       if (res.ok) {
-        await buscarEventos();
-        await buscarResumoMensal();
+        // ✅ Atualiza só a linha localmente (evita buscarEventos)
+        setRegistos(prev =>
+          prev.map(r => (r.id === id ? atualizado : r))
+        );
+  
+        // Só buscarResumoMensal se campos críticos forem alterados
+        if (["ganho", "gasto", "estado"].includes(campo)) {
+          await buscarResumoMensal();
+        }
       }
-    }, 500); // ⏱ Debounce de 500ms
+    }, 500);
   };
+
 
 
   const adicionarLinha = async () => {
