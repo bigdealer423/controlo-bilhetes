@@ -1,17 +1,4 @@
-import { useEffect, useState } from "react";
-
-export default function Disputas() {
-  const [disputas, setDisputas] = useState([]);
-  const [modalAberto, setModalAberto] = useState(false);
-  const [registoEditado, setRegistoEditado] = useState({
-    id_venda: "",
-    data_disputa: "",
-    cobranca: "",
-    texto_adicional: "",
-    arquivos: [],
-  });
-
-import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";  // Importações devem vir sempre no topo
 
 export default function Disputas() {
   const [disputas, setDisputas] = useState([]);
@@ -47,6 +34,7 @@ export default function Disputas() {
     </div>
   );
 }
+
 
   // Função para abrir o modal com os dados da disputa
   const abrirModal = (disputa) => {
