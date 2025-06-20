@@ -59,7 +59,12 @@ def get_disputas(db: Session = Depends(get_db)):
 
 # Rota para atualizar disputa
 @app.put("/disputas/{id_venda}")
-def atualizar_disputa(id_venda: int, dados: Disputa, db: Session = Depends(get_db)):
+async def atualizar_disputa(id_venda: int, 
+                             data_disputa: str, 
+                             cobranca: float, 
+                             texto_adicional: str, 
+                             arquivos: List[UploadFile] = File(None), 
+                             db: Session = Depends(get_db)):
     # Verificar se a disputa existe
     disputa = db.query(ListagemVendas).filter(ListagemVendas.id_venda == id_venda).first()
     
@@ -67,15 +72,19 @@ def atualizar_disputa(id_venda: int, dados: Disputa, db: Session = Depends(get_d
         raise HTTPException(status_code=404, detail="Disputa não encontrada")
     
     # Atualizar os dados da disputa com as informações recebidas no corpo da requisição
-    disputa.data_disputa = dados.data_disputa
-    disputa.cobranca = dados.cobranca
-    disputa.texto_adicional = dados.texto_adicional
+    disputa.data_disputa = data_disputa
+    disputa.cobranca = cobranca
+    disputa.texto_adicional = texto_adicional
     
     # Para arquivos
-    if dados.arquivos:
-        for arquivo in dados.arquivos:
+    if arquivos:
+        for arquivo in arquivos:
             # Lógica para processar e armazenar arquivos (se necessário)
-            pass
+            file_location = f"some_path/{arquivo.filename}"
+            with open(file_location, "wb") as f:
+                f.write(await arquivo.read())  # Salva o arquivo no servidor
+            
+            # Aqui, você pode salvar informações sobre os arquivos no banco de dados, se necessário
 
     db.commit()
     db.refresh(disputa)
