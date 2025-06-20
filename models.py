@@ -31,6 +31,9 @@ class ListagemVendas(Base):
     ganho = Column(Float, nullable=False)
     estado = Column(Enum(EstadoVenda), nullable=False)
 
+    # Relacionamento com Disputa
+    disputas = relationship("DisputaDB", back_populates="venda")
+
 class EventoDropdown(Base):
     __tablename__ = "eventos_dropdown"
 
