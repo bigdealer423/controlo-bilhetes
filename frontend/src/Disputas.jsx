@@ -16,6 +16,7 @@ export default function Disputas() {
     fetch("https://controlo-bilhetes.onrender.com/disputas")
       .then((res) => res.json())
       .then((data) => {
+        console.log("Disputas recebidas:", data); // Adicione essa linha para verificar a resposta
         setDisputas(data);
       })
       .catch((err) => console.error("Erro ao buscar disputas:", err));
