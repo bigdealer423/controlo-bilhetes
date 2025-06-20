@@ -31,8 +31,7 @@ class ListagemVendas(Base):
     ganho = Column(Float, nullable=False)
     estado = Column(Enum(EstadoVenda), nullable=False)
 
-    # Relacionamento com Disputa
-    disputas = relationship("DisputaDB", back_populates="venda")
+    
 
 class EventoDropdown(Base):
     __tablename__ = "eventos_dropdown"
@@ -128,25 +127,7 @@ class CompraOut(CompraCreate):
     class Config:
         from_attributes = True
 
-class DisputaBase(BaseModel):
-    data_disputa: date
-    cobranca: float
-    texto_adicional: str
 
-    class Config:
-        from_attributes = True  # Alterado para 'from_attributes' no Pydantic V2
-
-class Disputa(Base):
-    __tablename__ = 'disputas'
-    
-    id = Column(Integer, primary_key=True, index=True)
-    id_venda = Column(Integer, ForeignKey("listagem_vendas.id_venda"))
-    data_disputa = Column(DateTime)
-    cobranca = Column(String)
-    texto_adicional = Column(String)
-    
-    # Relacionamento com a tabela ListagemVendas
-    venda = relationship("ListagemVendas", back_populates="disputas")
 
 # Para sincronizar com o banco de dados, é necessário criar as tabelas usando o SQLAlchemy
 Base.metadata.create_all(bind=engine)
