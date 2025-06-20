@@ -1,3 +1,3 @@
-export default function Outro() {
-  return <div className="p-6">Outro menu (a definir)</div>;
+export default function Disputas() {
+  return <div className="p-6">Disputas (a definir)</div>;
 }
