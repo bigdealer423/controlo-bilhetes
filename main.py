@@ -55,7 +55,8 @@ def get_disputas(db: Session = Depends(get_db)):
     disputas = db.query(ListagemVendas).filter(ListagemVendas.estado == 'Disputa').all()
     if not disputas:
         raise HTTPException(status_code=404, detail="Nenhuma disputa encontrada")
-    return disputas
+    return disputas  # Aqui, o FastAPI vai converter a lista de objetos SQLAlchemy para Pydantic
+
 
 
 # Rota para atualizar disputa
