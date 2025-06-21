@@ -307,11 +307,20 @@ return (
                   </td>
                   <td className="p-2 space-x-2">
                     <button
-                      onClick={() => setModoEdicao(modoEdicao === r.id ? null : r.id)}
+                      onClick={() => {
+                        if (modoEdicao === r.id) {
+                          setEventoEditado(r);
+                          guardarEvento();
+                        } else {
+                          setModoEdicao(r.id);
+                          setEventoEditado(r);
+                        }
+                      }}
                       className="text-blue-600 hover:underline"
                     >
                       {modoEdicao === r.id ? "Guardar" : "Editar"}
                     </button>
+
                     <button
                       onClick={() => confirmarEliminar(r.id)}
                       className="text-red-600 hover:underline"
