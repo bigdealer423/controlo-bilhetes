@@ -127,11 +127,11 @@ export default function Eventos() {
 };
 
   
-  const guardarEvento = async (eventoeditado) => {
-    const res = await fetch(`https://controlo-bilhetes.onrender.com/eventos_completos2/${eventoEditado.id}`, {
+  const guardarEvento = async (evento) => {
+    const res = await fetch(`https://controlo-bilhetes.onrender.com/eventos_completos2/${evento.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(eventoEditado)
+      body: JSON.stringify(evento)
     });
     if (res.ok) {
       await buscarEventos();
