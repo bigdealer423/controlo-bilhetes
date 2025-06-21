@@ -127,7 +127,7 @@ export default function Eventos() {
 };
 
   
-  const guardarEvento = async () => {
+  const guardarEvento = async (eventoeditado) => {
     const res = await fetch(`https://controlo-bilhetes.onrender.com/eventos_completos2/${eventoEditado.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -137,7 +137,6 @@ export default function Eventos() {
       await buscarEventos();
       await buscarResumoMensal();
       setModoEdicao(null);
-      setEventoEditado({});
     }
   };
 
@@ -309,11 +308,9 @@ return (
                     <button
                       onClick={() => {
                         if (modoEdicao === r.id) {
-                          setEventoEditado(r);
-                          guardarEvento();
+                          guardarEvento(r);
                         } else {
                           setModoEdicao(r.id);
-                          setEventoEditado(r);
                         }
                       }}
                       className="text-blue-600 hover:underline"
