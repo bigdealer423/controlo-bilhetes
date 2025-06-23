@@ -289,7 +289,7 @@ def obter_resumo():
 
 # ---------------- RESUMO MENSAL EVENTOS ----------------
 from sqlalchemy import extract
-from models import EventoCompletoModel, ListagemVendas, CompraModel
+from models import EventoCompleto, ListagemVendas, CompraModel
 from sqlalchemy.orm import Session
 from fastapi import Depends
 from datetime import datetime
