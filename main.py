@@ -294,32 +294,26 @@ def resumo_mensal_eventos(db: Session = Depends(get_db)):
     mes = hoje.month
     ano = hoje.year
 
-    eventos_do_mes = db.query(EventoCompletoModel).filter(
-        extract('month', EventoCompletoModel.data_evento) == mes,
-        extract('year', EventoCompletoModel.data_evento) == ano
+    eventos_do_mes = db.query(EventoCompleto).filter(
+        extract('month', EventoCompleto.data_evento) == mes,
+        extract('year', EventoCompleto.data_evento) == ano
     ).all()
 
-    # Mas todos os eventos para o "a aguardar pagamento"
     todos_eventos = db.query(EventoCompleto).all()
 
     lucro_mensal = 0
     pagamento = 0
 
     for evento in eventos_do_mes:
-        lucro = evento.ganho - evento.gasto
-
-        # ✅ Contabiliza no lucro se
-        #   - Estado é "Pago"
-        #   - OU Estado ≠ "Pago" e ganho > 0
-        if evento.estado == "Pago" or (evento.estado != "Pago" and evento.ganho > 0):
+        lucro = (evento.ganho or 0) - (evento.gasto or 0)
+        if evento.estado == "Pago" or (evento.estado != "Pago" and (evento.ganho or 0) > 0):
             lucro_mensal += lucro
 
-        # ✅ A aguardar pagamento = ganho de eventos com estado diferente de "Pago"
+    for evento in todos_eventos:
         if evento.estado != "Pago":
-            pagamento += evento.ganho
+            pagamento += evento.ganho or 0
 
     return {
         "lucro": round(lucro_mensal),
         "pagamento": round(pagamento)
-
-    }        
+    }
