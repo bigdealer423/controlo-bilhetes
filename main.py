@@ -299,6 +299,9 @@ def resumo_mensal_eventos(db: Session = Depends(get_db)):
         extract('year', EventoCompletoModel.data_evento) == ano
     ).all()
 
+    # Mas todos os eventos para o "a aguardar pagamento"
+    todos_eventos = db.query(EventoCompleto).all()
+
     lucro_mensal = 0
     pagamento = 0
 
