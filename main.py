@@ -305,7 +305,7 @@ def resumo_mensal_eventos(db: Session = Depends(get_db)):
     for evento in eventos_do_mes:
         lucro = evento.ganho - evento.gasto
 
-        # ✅ Contabiliza no lucro se:More actions
+        # ✅ Contabiliza no lucro se
         #   - Estado é "Pago"
         #   - OU Estado ≠ "Pago" e ganho > 0
         if evento.estado == "Pago" or (evento.estado != "Pago" and evento.ganho > 0):
