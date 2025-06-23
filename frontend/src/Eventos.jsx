@@ -42,10 +42,11 @@ export default function Eventos() {
   }, []);
 
   useEffect(() => {
-    if (compras.length && vendas.length) {
-      buscarResumoMensal();
-    }
-  }, [compras, vendas]);
+  if (compras.length && vendas.length) {
+    buscarEventos().then(() => buscarResumoMensal());
+  }
+}, [compras, vendas]);
+
 
   const buscarResumoMensal = async () => {
     try {
