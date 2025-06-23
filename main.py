@@ -288,19 +288,12 @@ def obter_resumo():
     return resumo_mais_recente or {"mensagem": "Sem resumo disponível ainda."}
 
 # ---------------- RESUMO MENSAL EVENTOS ----------------
-from sqlalchemy import extract
-from models import EventoCompleto, ListagemVendas, Compra
-from sqlalchemy.orm import Session
-from fastapi import Depends
-from datetime import datetime
-
-@app.get("/resumo_mensal_eventos")
+@app.get("/resumo_mensal_eventos")More actions
 def resumo_mensal_eventos(db: Session = Depends(get_db)):
     hoje = datetime.now()
     mes = hoje.month
     ano = hoje.year
 
-    # Filtra eventos do mês atual
     eventos_do_mes = db.query(EventoCompletoModel).filter(
         extract('month', EventoCompletoModel.data_evento) == mes,
         extract('year', EventoCompletoModel.data_evento) == ano
@@ -310,22 +303,20 @@ def resumo_mensal_eventos(db: Session = Depends(get_db)):
     pagamento = 0
 
     for evento in eventos_do_mes:
-        # Calcula ganhos e gastos com base nas tabelas de vendas e compras
-        vendas = db.query(ListagemVendas).filter(ListagemVendas.evento == evento.evento).all()
-        compras = db.query(CompraModel).filter(CompraModel.evento == evento.evento).all()
+        lucro = evento.ganho - evento.gasto
 
-        total_ganho = sum(v.ganho for v in vendas)
-        total_gasto = sum(c.gasto for c in compras)
-        lucro = total_ganho - total_gasto
-
-        if evento.estado == "Pago" or (evento.estado != "Pago" and total_ganho > 0):
+        # ✅ Contabiliza no lucro se:More actions
+        #   - Estado é "Pago"
+        #   - OU Estado ≠ "Pago" e ganho > 0
+        if evento.estado == "Pago" or (evento.estado != "Pago" and evento.ganho > 0):
             lucro_mensal += lucro
 
+        # ✅ A aguardar pagamento = ganho de eventos com estado diferente de "Pago"
         if evento.estado != "Pago":
-            pagamento += total_ganho
+            pagamento += evento.ganho
 
     return {
         "lucro": round(lucro_mensal),
         "pagamento": round(pagamento)
-    }
 
+    }        
