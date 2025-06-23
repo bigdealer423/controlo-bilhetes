@@ -294,26 +294,37 @@ def resumo_mensal_eventos(db: Session = Depends(get_db)):
     mes = hoje.month
     ano = hoje.year
 
-    eventos_do_mes = db.query(EventoCompleto).filter(
-        extract('month', EventoCompleto.data_evento) == mes,
-        extract('year', EventoCompleto.data_evento) == ano
+    # Eventos do mês atual
+    eventos_mes = db.query(EventoCompleto).filter(
+        extract("month", EventoCompleto.data_evento) == mes,
+        extract("year", EventoCompleto.data_evento) == ano
     ).all()
 
+    # Todos os eventos (para pagamento)
     todos_eventos = db.query(EventoCompleto).all()
 
-    lucro_mensal = 0
+    lucro = 0
     pagamento = 0
 
-    for evento in eventos_do_mes:
-        lucro = (evento.ganho or 0) - (evento.gasto or 0)
-        if evento.estado == "Pago" or (evento.estado != "Pago" and (evento.ganho or 0) > 0):
-            lucro_mensal += lucro
+    # ✅ LUCRO: eventos do mês atual, estado="Pago" ou ganho>0
+    for evento in eventos_mes:
+        ganho = evento.ganho or 0
+        gasto = evento.gasto or 0
+        estado = (evento.estado or "").strip().lower()
 
+        if estado == "pago" or ganho > 0:
+            lucro += ganho - gasto
+
+    # ✅ PAGAMENTO: eventos com estado ≠ "Pago" e ganho > 0
     for evento in todos_eventos:
-        if evento.estado != "Pago":
-            pagamento += evento.ganho or 0
+        ganho = evento.ganho or 0
+        estado = (evento.estado or "").strip().lower()
+
+        if estado != "pago" and ganho > 0:
+            pagamento += ganho
 
     return {
-        "lucro": round(lucro_mensal),
+        "lucro": round(lucro),
         "pagamento": round(pagamento)
     }
+
