@@ -41,7 +41,7 @@ export default function Eventos() {
     buscarResumoMensal();
   }, []);
 
-  useEffect(() =>
+  useEffect(() => {
     if (compras.length && vendas.length) {
       buscarResumoMensal();
     }
