@@ -295,13 +295,13 @@ def resumo_mensal_eventos(db: Session = Depends(get_db)):
     ano = hoje.year
 
     # Eventos do mês atual
-    eventos_mes = db.query(EventoCompleto).filter(
-        extract("month", EventoCompleto.data_evento) == mes,
-        extract("year", EventoCompleto.data_evento) == ano
+    eventos_mes = db.query(EventoCompletoModel).filter(
+        extract("month", EventoCompletoModel.data_evento) == mes,
+        extract("year", EventoCompletoModel.data_evento) == ano
     ).all()
 
     # Todos os eventos (para pagamento)
-    todos_eventos = db.query(EventoCompleto).all()
+    todos_eventos = db.query(EventoCompletoModel).all()
 
     lucro = 0
     pagamento = 0
