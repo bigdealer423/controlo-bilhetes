@@ -288,7 +288,7 @@ def obter_resumo():
     return resumo_mais_recente or {"mensagem": "Sem resumo disponível ainda."}
 
 # ---------------- RESUMO MENSAL EVENTOS ----------------
-@app.get("/resumo_mensal_eventos")More actions
+@app.get("/resumo_mensal_eventos")
 def resumo_mensal_eventos(db: Session = Depends(get_db)):
     hoje = datetime.now()
     mes = hoje.month
