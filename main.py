@@ -195,6 +195,14 @@ def atualizar_evento_completo(evento_id: int, evento: EventoCompletoCreate, db: 
 def listar_compras(db: Session = Depends(get_db)):
     return db.query(Compra).all()
 
+@app.get("/compras/{compra_id}", response_model=CompraOut)
+def obter_compra_por_id(compra_id: int, db: Session = Depends(get_db)):
+    compra = db.query(Compra).filter(Compra.id == compra_id).first()
+    if not compra:
+        raise HTTPException(status_code=404, detail="Compra não encontrada")
+    return compra
+
+
 @app.post("/compras", response_model=CompraOut)
 def criar_compra(compra: CompraCreate, db: Session = Depends(get_db)):
     nova_compra = Compra(**compra.dict())
