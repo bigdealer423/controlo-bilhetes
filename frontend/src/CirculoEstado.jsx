@@ -70,12 +70,14 @@ export default function CirculoEstado({ tipo, id, texto_estado, nota_estado }) {
       />
 
       {/* Nota */}
-      <textarea
-        className="border rounded text-sm p-1 w-32 resize-none"
-        value={nota}
-        placeholder="Nota..."
-        onChange={(e) => setNota(e.target.value)}
-      />
+      <input
+  type="text"
+  className="border rounded text-sm p-1 w-48"
+  value={nota}
+  placeholder="Nota..."
+  onChange={(e) => setNota(e.target.value)}
+/>
+
 
       {/* Botão de guardar */}
       {houveAlteracao && (
