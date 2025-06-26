@@ -63,6 +63,48 @@ export default function Eventos() {
   saveAs(blob, "eventos.xlsx");
 }
 
+  const atualizarNota = async (tipo, id, nota) => {
+    const url = `https://controlo-bilhetes.onrender.com/${tipo}/${id}`;
+    const body = tipo === "compras" ? { texto_estado: nota } : { texto_estado: nota };
+
+    await fetch(url, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+  };
+
+  const handleTooltipChange = (tipo, id, value) => {
+    setTooltips(prev => ({ ...prev, [`${tipo}-${id}`]: value }));
+    atualizarNota(tipo, id, value);
+  };
+
+  const corCirculo = (texto) => {
+    if (texto === "verde") return "bg-green-500";
+    if (texto === "vermelho") return "bg-red-500";
+    return "bg-gray-400";
+  };
+
+  const CirculoEstado = ({ tipo, id, texto_estado = "", editavel = false }) => {
+    const key = `${tipo}-${id}`;
+    return (
+      <div className="flex items-center gap-2">
+        <div
+          className={`w-4 h-4 rounded-full ${corCirculo(texto_estado)} border`}
+          title={tooltips[key] || ""}
+        ></div>
+        {editavel && (
+          <input
+            className="input text-xs max-w-[100px]"
+            value={tooltips[key] ?? texto_estado ?? ""}
+            onChange={(e) => handleTooltipChange(tipo, id, e.target.value)}
+            placeholder="Nota"
+          />
+        )}
+      </div>
+    );
+  };
+
   const buscarResumoMensal = async () => {
     try {
       const res = await fetch("https://controlo-bilhetes.onrender.com/resumo_mensal_eventos");
