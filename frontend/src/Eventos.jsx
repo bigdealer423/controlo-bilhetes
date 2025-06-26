@@ -22,6 +22,7 @@ export default function Eventos() {
   const [compraEditada, setCompraEditada] = useState({});
   const [modoEdicaoVenda, setModoEdicaoVenda] = useState(null);
   const [vendaEditada, setVendaEditada] = useState({});
+  const [tooltips, setTooltips] = useState({});
 
   useEffect(() => {
     const carregarDados = async () => {
