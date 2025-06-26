@@ -405,8 +405,10 @@ return (
   <td className="p-2" colSpan="2">Bilhetes</td>
   <td className="p-2">Ganho</td>
   <td className="p-2">Estado</td>
-  <td colSpan="5"></td>
+  <td className="p-2" colSpan="2">Nota</td>
+  <td className="p-2" colSpan="2"></td>
 </tr>
+
 {vendas.filter(v => v.evento === r.evento).map(v => (
   <tr key={"v" + v.id} className="border-l-4 border-blue-600 bg-blue-50 text-xs border-t">
     {modoEdicaoVenda === v.id ? (
@@ -530,14 +532,15 @@ return (
         <td className="p-2">{c.quantidade}</td>
         <td className="p-2">{c.gasto} €</td>
         <td className="p-2" colSpan="2">
-  <CirculoEstado
-    tipo="listagem_vendas"
-    id={v.id}
-    texto_estado={v.circulo_estado_venda}
-    nota_estado={v.nota_estado_venda}
-    setVendas={setVendas}
-  />
-</td>
+        <CirculoEstado
+          tipo="compras"
+          id={c.id}
+          texto_estado={c.circulo_estado_compra}
+          nota_estado={c.nota_estado_compra}
+          setCompras={setCompras}
+        />
+      </td>
+
         <td className="p-2" colSpan="3">
           <button onClick={() => { setModoEdicaoCompra(c.id); setCompraEditada(c); }} className="text-blue-600 hover:underline">
             Editar
