@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import { FaFileExcel } from "react-icons/fa"
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
+
 
 export default function ListagemVendas(props) {
   const [registos, setRegistos] = useState([]);
@@ -77,15 +79,19 @@ export default function ListagemVendas(props) {
 
 
 
-function exportarParaExcel(dados) {
-  const worksheet = XLSX.utils.json_to_sheet(dados);
+function exportarParaExcel(registos) {
+  const worksheet = XLSX.utils.json_to_sheet(registos);
   const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, "Vendas");
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Listagem");
 
   const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
-  const data = new Blob([excelBuffer], { type: "application/octet-stream" });
-  saveAs(data, "listagem_vendas.xlsx");
+  const blob = new Blob([excelBuffer], {
+    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  });
+
+  saveAs(blob, "listagem_vendas.xlsx");
 }
+
 
 
 
@@ -350,9 +356,12 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
   className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700"
 >
   🔄 Verificar E-mails
-</button>
-<button onClick={() => exportarParaExcel(registos)}>
-  Exportar para Excel
+<button
+  onClick={() => exportarParaExcel(registos)}
+  className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-xl shadow-md transition"
+>
+  <FaFileExcel size={18} />
+  Exportar Excel
 </button>
 
           </div>
