@@ -400,12 +400,12 @@ return (
     })
   </td>
 </tr>
-<tr className="...">
+<tr className="border-l-4 border-yellow-600 bg-yellow-100 text-xs font-semibold">
   <td className="p-2">ID Venda</td>
   <td className="p-2">Bilhetes</td>
   <td className="p-2">Ganho</td>
-  <td className="p-2">Estado</td>   // texto simples
-  <td className="p-2">Nota</td>     // aqui vai o CirculoEstado + input
+  <td className="p-2">Estado</td>   
+  <td className="p-2">Nota</td>     
   <td className="p-2">Ações</td>
 </tr>
 
