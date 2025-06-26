@@ -330,17 +330,12 @@ def resumo_mensal_eventos(db: Session = Depends(get_db)):
     
 from sqlalchemy import text
 
+
 @app.post("/atualizar_tabela_compras")
 def atualizar_tabela_compras(db: Session = Depends(get_db)):
     try:
-        db.execute("""
-            ALTER TABLE compras
-            ADD COLUMN IF NOT EXISTS circulo_estado_compra VARCHAR DEFAULT 'cinzento';
-        """)
-        db.execute("""
-            ALTER TABLE compras
-            ADD COLUMN IF NOT EXISTS nota_estado_compra TEXT DEFAULT '';
-        """)
+        db.execute(text("ALTER TABLE compras ADD COLUMN IF NOT EXISTS circulo_estado_compra VARCHAR DEFAULT 'cinzento';"))
+        db.execute(text("ALTER TABLE compras ADD COLUMN IF NOT EXISTS nota_estado_compra TEXT DEFAULT '';"))
         db.commit()
         return {"status": "Colunas adicionadas com sucesso ✅"}
     except Exception as e:
