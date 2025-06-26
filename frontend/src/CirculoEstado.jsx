@@ -77,11 +77,12 @@ export default function CirculoEstado({ tipo, id, texto_estado, nota_estado, set
 
       <input
         type="text"
-        className="border rounded text-sm p-1 w-48"
+        className="border rounded text-xs px-1 py-0.5 w-40 leading-tight h-6"
         value={nota}
         placeholder="Nota..."
         onChange={(e) => setNota(e.target.value)}
       />
+
 
       {houveAlteracao && (
         <button onClick={guardarAlteracoes} title="Guardar alterações">💾</button>
