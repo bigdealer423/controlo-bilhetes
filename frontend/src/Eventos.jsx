@@ -402,13 +402,13 @@ return (
 </tr>
 <tr className="border-l-4 border-blue-600 bg-blue-100 text-xs font-semibold">
   <td className="p-2">ID Venda</td>
-  <td className="p-2" colSpan="2">Bilhetes</td>
-  <td className="p-2"></td> {/* nova célula vazia para empurrar o resto */}
+  <td className="p-2" colSpan="3">Bilhetes</td> {/* agora ocupa mais espaço */}
   <td className="p-2">Ganho</td>
   <td className="p-2">Estado</td>
   <td className="p-2">Nota</td>
   <td className="p-2">Ações</td>
 </tr>
+
 
 
 {vendas.filter(v => v.evento === r.evento).map(v =>
@@ -457,10 +457,9 @@ return (
   ) : (
     <tr key={"v" + v.id} className="border-l-4 border-blue-600 bg-blue-50 text-xs border-t">
       <td className="p-2">{v.id_venda}</td>
-      <td className="p-2 whitespace-nowrap overflow-hidden text-ellipsis max-w-[200px]" colSpan="2">{v.estadio}</td>
-      <td className="p-2"></td> {/* nova célula vazia */}
+      <td className="p-2" colSpan="3">{v.estadio}</td> {/* colSpan=3 para bater certo */}
       <td className="p-2">{v.ganho} €</td>
-      <td className="p-2 whitespace-nowrap">{v.estado}</td>
+      <td className="p-2">{v.estado}</td>
       <td className="p-2">
         <CirculoEstado
           tipo="listagem_vendas"
