@@ -328,11 +328,7 @@ def resumo_mensal_eventos(db: Session = Depends(get_db)):
         "pagamento": round(pagamento)
     }
     
-from sqlalchemy import text  # IMPORTA ISTO NO TOPO
-from sqlalchemy.orm import Session
-from fastapi import Depends
-from database import get_db
-
+from sqlalchemy import text
 
 @app.post("/atualizar_tabela_vendas")
 def atualizar_tabela_vendas(db: Session = Depends(get_db)):
@@ -349,4 +345,5 @@ def atualizar_tabela_vendas(db: Session = Depends(get_db)):
         return {"status": "Colunas adicionadas com sucesso ✅"}
     except Exception as e:
         return {"erro": str(e)}
+
 
