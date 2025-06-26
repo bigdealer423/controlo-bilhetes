@@ -350,7 +350,9 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
 >
   🔄 Verificar E-mails
 </button>
-
+<button onClick={() => exportarParaExcel(registos)}>
+  Exportar para Excel
+</button>
 
           </div>
         </div>
