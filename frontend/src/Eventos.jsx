@@ -458,33 +458,33 @@ return (
     </tr>
   ) : (
     <tr key={"v" + v.id} className="border-l-4 border-blue-600 bg-blue-50 text-xs border-t">
-  <td className="p-2">{v.id_venda}</td>
-  {/* colSpan=3 para bater certo */}
-  <td className="p-2" colSpan="3">{v.estadio}</td>
-  <td className="p-2">{v.ganho} €</td>
-  <td className="p-2">{v.estado}</td>
-  <td className="p-2">
-    <CirculoEstado
-      tipo="listagem_vendas"
-      id={v.id}
-      texto_estado={v.circulo_estado_venda}
-      nota_estado={v.nota_estado_venda}
-      setVendas={setVendas}
-    />
-  </td>
-  <td className="p-2">
-    <button
-      onClick={() => {
-        setModoEdicaoVenda(v.id);
-        setVendaEditada(v);
-      }}
-      className="text-blue-600 hover:underline"
-    >
-      Editar
-    </button>
-  </td>
-  <td className="p-2"></td> {/* coluna extra para preencher */}
-</tr>
+      <td className="p-2">{v.id_venda}</td>
+      {/* colSpan=3 para bater certo */}
+      <td className="p-2" colSpan="3">{v.estadio}</td>
+      <td className="p-2">{v.ganho} €</td>
+      <td className="p-2">{v.estado}</td>
+      <td className="p-2">
+        <CirculoEstado
+          tipo="listagem_vendas"
+          id={v.id}
+          texto_estado={v.circulo_estado_venda}
+          nota_estado={v.nota_estado_venda}
+          setVendas={setVendas}
+        />
+      </td>
+      <td className="p-2">
+        <button
+          onClick={() => {
+            setModoEdicaoVenda(v.id);
+            setVendaEditada(v);
+          }}
+          className="text-blue-600 hover:underline"
+        >
+          Editar
+        </button>
+      </td>
+      <td className="p-2"></td> {/* coluna extra para preencher */}
+    </tr>
 
 
 
