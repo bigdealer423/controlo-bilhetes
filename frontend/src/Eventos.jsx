@@ -475,7 +475,7 @@ return (
               Editar
             </button>
           </td>
-</tr>
+  </tr>
 ))}
 
    <tr className="bg-yellow-50 text-sm border-t border-l-4 border-yellow-600">
