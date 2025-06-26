@@ -327,4 +327,24 @@ def resumo_mensal_eventos(db: Session = Depends(get_db)):
         "lucro": round(lucro),
         "pagamento": round(pagamento)
     }
+    
+from sqlalchemy.orm import Session
+from fastapi import Depends
+from database import get_db
+
+@app.post("/atualizar_tabela_vendas")
+def atualizar_tabela_vendas(db: Session = Depends(get_db)):
+    try:
+        db.execute("""
+            ALTER TABLE listagem_vendas
+            ADD COLUMN IF NOT EXISTS circulo_estado_venda VARCHAR DEFAULT 'cinzento';
+        """)
+        db.execute("""
+            ALTER TABLE listagem_vendas
+            ADD COLUMN IF NOT EXISTS nota_estado_venda TEXT DEFAULT '';
+        """)
+        db.commit()
+        return {"status": "Colunas adicionadas com sucesso ✅"}
+    except Exception as e:
+        return {"erro": str(e)}
 
