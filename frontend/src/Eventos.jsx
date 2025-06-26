@@ -402,12 +402,14 @@ return (
 </tr>
 <tr className="border-l-4 border-blue-600 bg-blue-100 text-xs font-semibold">
   <td className="p-2">ID Venda</td>
-  <td className="p-2" colSpan="3">Bilhetes</td> {/* agora ocupa mais espaço */}
+  <td className="p-2" colSpan="3">Bilhetes</td>
   <td className="p-2">Ganho</td>
   <td className="p-2">Estado</td>
   <td className="p-2">Nota</td>
   <td className="p-2">Ações</td>
+  <td className="p-2"></td> {/* ← coluna vazia para manter 9 colunas */}
 </tr>
+
 
 
 
@@ -480,9 +482,8 @@ return (
           Editar
         </button>
       </td>
+      <td className="p-2"></td> {/* ← coluna extra para preencher */}
     </tr>
-  )
-)}
 
 
    <tr className="bg-yellow-50 text-sm border-t border-l-4 border-yellow-600">
