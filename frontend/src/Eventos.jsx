@@ -458,13 +458,14 @@ return (
         <td className="p-2">{v.ganho} €</td>
         <td className="p-2 whitespace-nowrap">{v.estado}</td>
         <td className="p-2">
-      <CirculoEstado
-      tipo="listagem_vendas"
-      id={v.id}
-      texto_estado={v.circulo_estado_venda}
-      nota_estado={v.nota_estado_venda}
-      setVendas={setVendas}
-    />
+              <CirculoEstado
+              tipo="listagem_vendas"
+              id={v.id}
+              texto_estado={v.circulo_estado_venda}
+              nota_estado={v.nota_estado_venda}
+              setVendas={setVendas}
+            />
+          </td>
         <td className="p-2" colSpan="4">
           <button onClick={() => { setModoEdicaoVenda(v.id); setVendaEditada(v); }} className="text-blue-600 hover:underline">
             Editar
