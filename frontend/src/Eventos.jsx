@@ -400,15 +400,15 @@ return (
     })
   </td>
 </tr>
-<tr className="border-l-4 border-blue-600 bg-blue-100 text-xs font-semibold">
+<tr className="...">
   <td className="p-2">ID Venda</td>
   <td className="p-2">Bilhetes</td>
   <td className="p-2">Ganho</td>
-  <td className="p-2">Estado</td>
-  <td className="p-2">Nota</td>
+  <td className="p-2">Estado</td>   // texto simples
+  <td className="p-2">Nota</td>     // aqui vai o CirculoEstado + input
   <td className="p-2">Ações</td>
-  <td colSpan="3"></td>
 </tr>
+
 
 {vendas.filter(v => v.evento === r.evento).map(v => (
   <tr key={"v" + v.id} className="border-l-4 border-blue-600 bg-blue-50 text-xs border-t">
@@ -464,22 +464,19 @@ return (
         <td className="p-2 whitespace-nowrap">{v.estado}</td>
         <td className="p-2">
   <CirculoEstado
-    tipo="listagem_vendas"
-    id={v.id}
-    texto_estado={v.circulo_estado_venda}
-    nota_estado={v.nota_estado_venda}
-    setVendas={setVendas}
-  />
-</td>
-<td className="p-2">
-  <button onClick={() => { setModoEdicaoVenda(v.id); setVendaEditada(v); }} className="text-blue-600 hover:underline">
-    Editar
-  </button>
-</td>
-<td colSpan="3"></td>
-      </>
-    )}
-  </tr>
+      tipo="listagem_vendas"
+      id={v.id}
+      texto_estado={v.circulo_estado_venda}
+      nota_estado={v.nota_estado_venda}
+      setVendas={setVendas}
+    />
+  </td>
+  <td className="p-2">
+    <button onClick={() => { setModoEdicaoVenda(v.id); setVendaEditada(v); }} className="text-blue-600 hover:underline">
+      Editar
+    </button>
+  </td>
+</tr>
 ))}
 
    <tr className="bg-yellow-50 text-sm border-t border-l-4 border-yellow-600">
