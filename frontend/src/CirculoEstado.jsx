@@ -11,94 +11,68 @@ const cores = {
 export default function CirculoEstado({ tipo, id, texto_estado, nota_estado }) {
   const [cor, setCor] = useState(texto_estado || "cinzento");
   const [nota, setNota] = useState(nota_estado || "");
-  const [editando, setEditando] = useState(false);
+  const [editar, setEditar] = useState(false);
+  const [mensagem, setMensagem] = useState("");
 
-  const API_URL = "https://controlo-bilhetes.onrender.com";
+  const atualizarBackend = async () => {
+    // Determinar o endpoint correto
+    const endpoint = tipo === "listagem_vendas" ? "listagem_vendas" : "compras";
 
-  const atualizarEstado = async (novaCor, novaNota) => {
-    try {
-      const endpoint = tipo === "listagem_vendas"
-        ? `${API_URL}/listagem_vendas/${id}`
-        : `${API_URL}/compras/${id}`;
+    // Buscar os dados atuais do registo
+    const res = await fetch(`https://controlo-bilhetes.onrender.com/${endpoint}/${id}`);
+    if (!res.ok) {
+      setMensagem("❌ Erro ao buscar dados.");
+      return;
+    }
+    const dadosAtuais = await res.json();
 
-      // Buscar os dados atuais antes de atualizar
-      const res = await fetch(endpoint);
-      const dadosAtuais = await res.json();
+    // Atualizar os dados
+    const atualizados = {
+      ...dadosAtuais,
+      [`circulo_estado_${tipo === "listagem_vendas" ? "venda" : "compra"}`]: cor,
+      [`nota_estado_${tipo === "listagem_vendas" ? "venda" : "compra"}`]: nota
+    };
 
-      const payloadAtualizado = {
-        ...dadosAtuais,
-        [tipo === "listagem_vendas" ? "circulo_estado_venda" : "circulo_estado_compra"]: novaCor,
-        [tipo === "listagem_vendas" ? "nota_estado_venda" : "nota_estado_compra"]: novaNota,
-      };
+    const resposta = await fetch(`https://controlo-bilhetes.onrender.com/${endpoint}/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(atualizados)
+    });
 
-      const metodo = "PUT";
-      await fetch(endpoint, {
-        method: metodo,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payloadAtualizado),
-      });
-
-      setCor(novaCor);
-      setNota(novaNota);
-    } catch (erro) {
-      console.error("Erro ao atualizar estado:", erro);
+    if (resposta.ok) {
+      setMensagem("✅ Guardado");
+      setTimeout(() => setMensagem(""), 2000);
+    } else {
+      setMensagem("❌ Erro ao guardar.");
     }
   };
 
-  const handleCorClick = (novaCor) => {
-    atualizarEstado(novaCor, nota);
-  };
-
-  const handleNotaChange = (e) => setNota(e.target.value);
-
-  const handleGuardarNota = () => {
-    atualizarEstado(cor, nota);
-    setEditando(false);
-  };
-
   return (
-    <div className="flex items-center gap-2">
-      {/* Tooltip com campo de texto */}
-      <Tooltip>
-        <div className="relative group">
-          <FaCircle
-            className={`cursor-pointer ${cores[cor]} text-lg`}
-            onClick={() => setEditando((e) => !e)}
+    <div className="flex flex-col gap-1 items-start">
+      <div className="flex items-center gap-2">
+        {/* Círculos */}
+        {["vermelho", "verde", "cinzento"].map((c) => (
+          <button
+            key={c}
+            className={`w-4 h-4 rounded-full border ${c === "vermelho" ? "bg-red-500" : c === "verde" ? "bg-green-500" : "bg-gray-400"}`}
+            onClick={() => {
+              setCor(c);
+              setEditar(true);
+            }}
           />
-          <div className="absolute left-8 z-10 hidden group-hover:flex flex-col p-2 rounded-md shadow bg-white border text-sm w-60">
-            <textarea
-              className="border rounded p-1 text-sm"
-              placeholder="Nota..."
-              value={nota}
-              onChange={handleNotaChange}
-              rows={3}
-            />
-            <button
-              onClick={handleGuardarNota}
-              className="mt-2 px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
-            >
-              Guardar Nota
-            </button>
-          </div>
-        </div>
-      </Tooltip>
+        ))}
+        <button onClick={atualizarBackend} className="text-sm ml-2">💾</button>
+        {mensagem && <span className="text-xs text-gray-600">{mensagem}</span>}
+      </div>
 
-      {/* Alternador de cor se estiver em modo edição */}
-      {editando && (
-        <div className="flex gap-2">
-          <FaCircle
-            className="text-green-500 cursor-pointer"
-            onClick={() => handleCorClick("verde")}
-          />
-          <FaCircle
-            className="text-red-500 cursor-pointer"
-            onClick={() => handleCorClick("vermelho")}
-          />
-          <FaCircle
-            className="text-gray-400 cursor-pointer"
-            onClick={() => handleCorClick("cinzento")}
-          />
-        </div>
+      {/* Área de Nota */}
+      {editar && (
+        <textarea
+          className="border rounded text-sm p-1 mt-1 w-full"
+          value={nota}
+          placeholder="Nota..."
+          onChange={(e) => setNota(e.target.value)}
+        />
       )}
     </div>
   );
