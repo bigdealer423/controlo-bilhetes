@@ -524,7 +524,9 @@ return (
         <td className="p-2">{c.local_compras}</td>
         <td className="p-2">{c.bancada}</td>
         <td className="p-2">{c.setor}</td>
-        <td className="p-2">{c.fila}</td>
+        <td className="p-2 whitespace-nowrap overflow-hidden text-ellipsis max-w-[150px]" title={c.fila}>
+  {c.fila}
+</td>
         <td className="p-2">{c.quantidade}</td>
         <td className="p-2">{c.gasto} €</td>
         <td className="p-2">
