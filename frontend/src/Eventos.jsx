@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useRef } from "react";
+import { FaFileExcel } from "react-icons/fa";
+import * as XLSX from "xlsx";
+import saveAs from "file-saver";
 
 export default function Eventos() {
   const [registos, setRegistos] = useState([]);
@@ -47,6 +50,18 @@ export default function Eventos() {
     }
   }, [compras, vendas]);
 
+  function exportarEventosParaExcel(eventos) {
+  const worksheet = XLSX.utils.json_to_sheet(eventos);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Eventos");
+
+  const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+  const blob = new Blob([excelBuffer], {
+    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  });
+
+  saveAs(blob, "eventos.xlsx");
+}
 
   const buscarResumoMensal = async () => {
     try {
@@ -220,6 +235,17 @@ return (
       <h1 className="text-2xl font-bold mb-4">Resumo de Eventos</h1>
 
       <div className="bg-yellow-100 border-l-4 border-yellow-600 text-yellow-800 p-4 mb-6 rounded">
+
+        <div className="flex justify-end mb-4">
+  <button
+    onClick={() => exportarEventosParaExcel(registos)}
+    className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-xl shadow-md transition"
+  >
+    <FaFileExcel size={18} />
+    Exportar Excel
+  </button>
+</div>
+
   <p className="font-semibold">Resumo Mensal</p>
   <p>📆 Lucro de {new Date().toLocaleString("pt-PT", { month: "long", year: "numeric" })}: <strong>{resumoMensal.lucro} €</strong></p>
 <p>💸 A aguardar pagamento: <strong>{resumoMensal.pagamento} €</strong></p>
