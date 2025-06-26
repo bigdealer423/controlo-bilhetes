@@ -53,17 +53,17 @@ export default function Eventos() {
   }, [compras, vendas]);
 
   function exportarEventosParaExcel(eventos) {
-  const worksheet = XLSX.utils.json_to_sheet(eventos);
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, "Eventos");
+    const worksheet = XLSX.utils.json_to_sheet(eventos);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Eventos");
 
-  const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
-  const blob = new Blob([excelBuffer], {
-    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-  });
+    const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+    const blob = new Blob([excelBuffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
 
-  saveAs(blob, "eventos.xlsx");
-}
+    saveAs(blob, "eventos.xlsx");
+  }
 
   const atualizarNota = async (tipo, id, nota) => {
     const url = `https://controlo-bilhetes.onrender.com/${tipo}/${id}`;
@@ -85,26 +85,6 @@ export default function Eventos() {
     if (texto === "verde") return "bg-green-500";
     if (texto === "vermelho") return "bg-red-500";
     return "bg-gray-400";
-  };
-
-  const CirculoEstado = ({ tipo, id, texto_estado = "", editavel = false }) => {
-    const key = `${tipo}-${id}`;
-    return (
-      <div className="flex items-center gap-2">
-        <div
-          className={`w-4 h-4 rounded-full ${corCirculo(texto_estado)} border`}
-          title={tooltips[key] || ""}
-        ></div>
-        {editavel && (
-          <input
-            className="input text-xs max-w-[100px]"
-            value={tooltips[key] ?? texto_estado ?? ""}
-            onChange={(e) => handleTooltipChange(tipo, id, e.target.value)}
-            placeholder="Nota"
-          />
-        )}
-      </div>
-    );
   };
 
   const buscarResumoMensal = async () => {
@@ -179,14 +159,13 @@ export default function Eventos() {
   };
 
   const atualizarCampo = (id, campo, valor) => {
-  setRegistos(registos =>
-    registos.map(r =>
-      r.id === id ? { ...r, [campo]: valor } : r
-    )
-  );
-};
+    setRegistos(registos =>
+      registos.map(r =>
+        r.id === id ? { ...r, [campo]: valor } : r
+      )
+    );
+  };
 
-  
   const guardarEvento = async (evento) => {
     const res = await fetch(`https://controlo-bilhetes.onrender.com/eventos_completos2/${evento.id}`, {
       method: "PUT",
@@ -237,10 +216,6 @@ export default function Eventos() {
     }
   };
 
-  // o resto do código JSX continua igual
-
-
-
   const guardarCompra = async (compra) => {
     const res = await fetch(`https://controlo-bilhetes.onrender.com/compras/${compra.id}`, {
       method: "PUT",
@@ -254,7 +229,7 @@ export default function Eventos() {
       setModoEdicaoCompra(null);
     }
   };
-  
+
   const guardarVenda = async (venda) => {
     const res = await fetch(`https://controlo-bilhetes.onrender.com/listagem_vendas/${venda.id}`, {
       method: "PUT",
