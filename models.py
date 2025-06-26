@@ -20,13 +20,17 @@ class ListagemVendas(Base):
     __tablename__ = "listagem_vendas"
 
     id = Column(Integer, primary_key=True, index=True)
-    id_venda = Column(Integer, unique=True, index=True)  # <- Aqui adiciona-se unique=True
-    data_venda = Column(Date)  # ✅ Aqui
+    id_venda = Column(Integer, unique=True, index=True)
+    data_venda = Column(Date)
     data_evento = Column(Date, nullable=False)
     evento = Column(String, nullable=False)
     estadio = Column(String, nullable=False)
     ganho = Column(Float, nullable=False)
     estado = Column(Enum(EstadoVenda), nullable=False)
+
+    # Novos campos
+    circulo_estado_venda = Column(String, default="cinzento")  # "vermelho", "verde", "cinzento"
+    nota_estado_venda = Column(String, default="")
 
 class EventoDropdown(Base):
     __tablename__ = "eventos_dropdown"
@@ -47,6 +51,7 @@ class EventoCompleto(Base):
 
 class Compra(Base):
     __tablename__ = "compras"
+
     id = Column(Integer, primary_key=True, index=True)
     local_compras = Column(String, nullable=False)
     evento = Column(String, nullable=False)
@@ -56,20 +61,25 @@ class Compra(Base):
     quantidade = Column(Integer, nullable=False)
     gasto = Column(Float, nullable=False)
 
+    # Novos campos
+    circulo_estado_compra = Column(String, default="cinzento")
+    nota_estado_compra = Column(String, default="")
+
 # -------------------- SCHEMAS Pydantic --------------------
 
-# Listagem de Vendas
 class ListagemVendasBase(BaseModel):
     id_venda: int
-    data_venda: date  # novo campo que adicionou
+    data_venda: date
     data_evento: date
     evento: str
     estadio: str
     ganho: float
     estado: EstadoVenda
+    circulo_estado_venda: str = "cinzento"
+    nota_estado_venda: str = ""
 
-class Config:
-        orm_mode = True  # Isso permite a conversão entre SQLAlchemy e Pydantic
+    class Config:
+        orm_mode = True
 
 class ListagemVendasCreate(ListagemVendasBase):
     pass
@@ -79,16 +89,16 @@ class ListagemVendasUpdate(ListagemVendasBase):
 
 class ListagemVendasOut(ListagemVendasBase):
     id: int
+
     class Config:
         from_attributes = True
 
-# Dropdown de Eventos
 class EventoDropdownCreate(BaseModel):
     nome: str
+
     class Config:
         from_attributes = True
 
-# Eventos Completos
 class EventoCompletoBase(BaseModel):
     data_evento: date
     evento: str
@@ -102,10 +112,10 @@ class EventoCompletoCreate(EventoCompletoBase):
 
 class EventoCompletoOut(EventoCompletoBase):
     id: int
+
     class Config:
         from_attributes = True
 
-# Compras
 class CompraCreate(BaseModel):
     local_compras: str
     evento: str
@@ -114,11 +124,15 @@ class CompraCreate(BaseModel):
     fila: str
     quantidade: int
     gasto: float
+    circulo_estado_compra: str = "cinzento"
+    nota_estado_compra: str = ""
+
     class Config:
         from_attributes = True
 
 class CompraOut(CompraCreate):
     id: int
+
     class Config:
         from_attributes = True
 
@@ -128,9 +142,9 @@ class Disputa(BaseModel):
     texto_adicional: str
 
     class Config:
-        orm_mode = True  # Permite que o Pydantic use dados de um modelo ORM
-        from_attributes = True  # Alterado para 'from_attributes' no Pydantic V2
+        orm_mode = True
+        from_attributes = True
 
-# Criação automática das tabelasAdd commentMore actions
+# Criação automática das tabelas
 from database import engine
 Base.metadata.create_all(bind=engine)
