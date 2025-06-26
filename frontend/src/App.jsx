@@ -8,6 +8,16 @@ import Disputas from "./Disputas";
 import Compras from "./Compras";
 import Outro from "./Outro";
 import { useAuth } from "./AuthContext";
+import { TooltipProvider } from "@radix-ui/react-tooltip";
+
+function App() {
+  return (
+    <TooltipProvider>
+      {/* o resto da tua aplicação */}
+    </TooltipProvider>
+  );
+}
+
 
 export default function App() {
   const { isAuthenticated } = useAuth();
