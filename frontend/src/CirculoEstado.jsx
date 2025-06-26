@@ -4,13 +4,18 @@ export default function CirculoEstado({ tipo, id, texto_estado, nota_estado }) {
   const [cor, setCor] = useState(texto_estado || "cinzento");
   const [nota, setNota] = useState(nota_estado || "");
   const [mensagem, setMensagem] = useState("");
+  const [original, setOriginal] = useState({ cor: texto_estado || "cinzento", nota: nota_estado || "" });
 
   const cores = ["verde", "vermelho", "cinzento"];
 
   const proximaCor = () => {
     const atualIndex = cores.indexOf(cor);
-    const novaCor = cores[(atualIndex + 1) % cores.length];
-    setCor(novaCor);
+    setCor(cores[(atualIndex + 1) % cores.length]);
+  };
+
+  const corAnterior = () => {
+    const atualIndex = cores.indexOf(cor);
+    setCor(cores[(atualIndex - 1 + cores.length) % cores.length]);
   };
 
   const guardarAlteracoes = async () => {
@@ -40,24 +45,31 @@ export default function CirculoEstado({ tipo, id, texto_estado, nota_estado }) {
 
     if (resposta.ok) {
       setMensagem("✅");
+      setOriginal({ cor, nota });
       setTimeout(() => setMensagem(""), 2000);
     } else {
       setMensagem("❌");
     }
   };
 
+  const houveAlteracao = cor !== original.cor || nota !== original.nota;
+
   return (
     <div className="flex items-center gap-2">
-      {/* Círculo com clique para mudar cor */}
+      {/* Círculo com clique esquerdo e direito */}
       <button
         onClick={proximaCor}
+        onContextMenu={(e) => {
+          e.preventDefault();
+          corAnterior();
+        }}
         className={`w-4 h-4 rounded-full border cursor-pointer ${
           cor === "verde" ? "bg-green-500" : cor === "vermelho" ? "bg-red-500" : "bg-gray-400"
         }`}
-        title="Clique para alterar cor"
+        title="Clique para mudar cor (esq: seguinte, dir: anterior)"
       />
 
-      {/* Campo de nota visível sempre */}
+      {/* Nota */}
       <textarea
         className="border rounded text-sm p-1 w-32 resize-none"
         value={nota}
@@ -65,10 +77,12 @@ export default function CirculoEstado({ tipo, id, texto_estado, nota_estado }) {
         onChange={(e) => setNota(e.target.value)}
       />
 
-      {/* Botão para guardar */}
-      <button onClick={guardarAlteracoes} title="Guardar alterações">💾</button>
+      {/* Botão de guardar */}
+      {houveAlteracao && (
+        <button onClick={guardarAlteracoes} title="Guardar alterações">💾</button>
+      )}
 
-      {/* Mensagem de feedback */}
+      {/* Feedback */}
       {mensagem && <span className="text-xs text-gray-500">{mensagem}</span>}
     </div>
   );
