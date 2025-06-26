@@ -356,6 +356,8 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
   className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700"
 >
   🔄 Verificar E-mails
+</button>  {/* <<< isto estava em falta */}
+
 <button
   onClick={() => exportarParaExcel(registos)}
   className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-xl shadow-md transition"
@@ -363,6 +365,7 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
   <FaFileExcel size={18} />
   Exportar Excel
 </button>
+
 
           </div>
         </div>
