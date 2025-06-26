@@ -1,4 +1,20 @@
 import { useEffect, useState } from "react";
+import { FaFileExcel } from "react-icons/fa";
+import * as XLSX from "xlsx";
+import saveAs from "file-saver";
+
+function exportarComprasParaExcel(registosCompras) {
+  const worksheet = XLSX.utils.json_to_sheet(registosCompras);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Compras");
+
+  const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+  const blob = new Blob([excelBuffer], {
+    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  });
+
+  saveAs(blob, "compras.xlsx");
+}
 
 const ordenarEventosDropdown = (data) => {
   return [...data].sort((a, b) => {
@@ -160,6 +176,18 @@ export default function Compras() {
           {modoEdicao ? "Atualizar" : "Guardar"}
         </button>
       </div>
+        <div className="flex justify-between items-center mb-2">
+          <h2 className="text-lg font-semibold">Compras</h2>
+          <div className="flex gap-2">
+            <button
+              onClick={() => exportarComprasParaExcel(comprasFiltradas)}
+              className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-xl shadow-md transition"
+            >
+              <FaFileExcel size={18} />
+              Exportar Excel
+            </button>
+          </div>
+        </div>
 
       {/* Tabela */}
       <div className="bg-white shadow-md rounded p-4 relative">
