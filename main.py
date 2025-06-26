@@ -15,6 +15,7 @@ from models import (
     ListagemVendas,
     ListagemVendasCreate,
     ListagemVendasUpdate,
+    ListagemVendasOut,
     EventoDropdown,
     EventoDropdownCreate,
     EventoCompleto as EventoCompletoModel,
