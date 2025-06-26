@@ -1,31 +1,35 @@
 import { useState } from "react";
-import { FaCircle } from "react-icons/fa";
-import { Tooltip } from "@radix-ui/react-tooltip";
-
 
 export default function CirculoEstado({ tipo, id, texto_estado, nota_estado }) {
   const [cor, setCor] = useState(texto_estado || "cinzento");
   const [nota, setNota] = useState(nota_estado || "");
-  const [editar, setEditar] = useState(false);
   const [mensagem, setMensagem] = useState("");
 
-  const atualizarBackend = async () => {
-    // Determinar o endpoint correto
-    const endpoint = tipo === "listagem_vendas" ? "listagem_vendas" : "compras";
+  const cores = ["verde", "vermelho", "cinzento"];
 
-    // Buscar os dados atuais do registo
+  const proximaCor = () => {
+    const atualIndex = cores.indexOf(cor);
+    const novaCor = cores[(atualIndex + 1) % cores.length];
+    setCor(novaCor);
+  };
+
+  const guardarAlteracoes = async () => {
+    const endpoint = tipo === "listagem_vendas" ? "listagem_vendas" : "compras";
+    const campoCor = tipo === "listagem_vendas" ? "circulo_estado_venda" : "circulo_estado_compra";
+    const campoNota = tipo === "listagem_vendas" ? "nota_estado_venda" : "nota_estado_compra";
+
     const res = await fetch(`https://controlo-bilhetes.onrender.com/${endpoint}/${id}`);
     if (!res.ok) {
       setMensagem("❌ Erro ao buscar dados.");
       return;
     }
-    const dadosAtuais = await res.json();
 
-    // Atualizar os dados
+    const dados = await res.json();
+
     const atualizados = {
-      ...dadosAtuais,
-      [`circulo_estado_${tipo === "listagem_vendas" ? "venda" : "compra"}`]: cor,
-      [`nota_estado_${tipo === "listagem_vendas" ? "venda" : "compra"}`]: nota
+      ...dados,
+      [campoCor]: cor,
+      [campoNota]: nota
     };
 
     const resposta = await fetch(`https://controlo-bilhetes.onrender.com/${endpoint}/${id}`, {
@@ -35,40 +39,37 @@ export default function CirculoEstado({ tipo, id, texto_estado, nota_estado }) {
     });
 
     if (resposta.ok) {
-      setMensagem("✅ Guardado");
+      setMensagem("✅");
       setTimeout(() => setMensagem(""), 2000);
     } else {
-      setMensagem("❌ Erro ao guardar.");
+      setMensagem("❌");
     }
   };
 
   return (
-    <div className="flex flex-col gap-1 items-start">
-      <div className="flex items-center gap-2">
-        {/* Círculos */}
-        {["vermelho", "verde", "cinzento"].map((c) => (
-          <button
-            key={c}
-            className={`w-4 h-4 rounded-full border ${c === "vermelho" ? "bg-red-500" : c === "verde" ? "bg-green-500" : "bg-gray-400"}`}
-            onClick={() => {
-              setCor(c);
-              setEditar(true);
-            }}
-          />
-        ))}
-        <button onClick={atualizarBackend} className="text-sm ml-2">💾</button>
-        {mensagem && <span className="text-xs text-gray-600">{mensagem}</span>}
-      </div>
+    <div className="flex items-center gap-2">
+      {/* Círculo com clique para mudar cor */}
+      <button
+        onClick={proximaCor}
+        className={`w-4 h-4 rounded-full border cursor-pointer ${
+          cor === "verde" ? "bg-green-500" : cor === "vermelho" ? "bg-red-500" : "bg-gray-400"
+        }`}
+        title="Clique para alterar cor"
+      />
 
-      {/* Área de Nota */}
-      {editar && (
-        <textarea
-          className="border rounded text-sm p-1 mt-1 w-full"
-          value={nota}
-          placeholder="Nota..."
-          onChange={(e) => setNota(e.target.value)}
-        />
-      )}
+      {/* Campo de nota visível sempre */}
+      <textarea
+        className="border rounded text-sm p-1 w-32 resize-none"
+        value={nota}
+        placeholder="Nota..."
+        onChange={(e) => setNota(e.target.value)}
+      />
+
+      {/* Botão para guardar */}
+      <button onClick={guardarAlteracoes} title="Guardar alterações">💾</button>
+
+      {/* Mensagem de feedback */}
+      {mensagem && <span className="text-xs text-gray-500">{mensagem}</span>}
     </div>
   );
 }
