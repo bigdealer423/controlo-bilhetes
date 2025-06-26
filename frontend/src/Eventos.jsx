@@ -402,11 +402,12 @@ return (
 </tr>
 <tr className="border-l-4 border-blue-600 bg-blue-100 text-xs font-semibold">
   <td className="p-2">ID Venda</td>
-  <td className="p-2" colSpan="2">Bilhetes</td>
+  <td className="p-2">Bilhetes</td>
   <td className="p-2">Ganho</td>
   <td className="p-2">Estado</td>
-  <td className="p-2" colSpan="2">Nota</td>
-  <td className="p-2" colSpan="2"></td>
+  <td className="p-2">Nota</td>
+  <td className="p-2">Ações</td>
+  <td colSpan="3"></td>
 </tr>
 
 {vendas.filter(v => v.evento === r.evento).map(v => (
@@ -461,20 +462,21 @@ return (
 </td>
         <td className="p-2">{v.ganho} €</td>
         <td className="p-2 whitespace-nowrap">{v.estado}</td>
-        <td className="p-2" colSpan="2">
-        <CirculoEstado
-          tipo="listagem_vendas"
-          id={v.id}
-          texto_estado={v.circulo_estado_venda}
-          nota_estado={v.nota_estado_venda}
-          setVendas={setVendas}
-        />
-      </td>
-      <td className="p-2" colSpan="2">
-        <button onClick={() => { setModoEdicaoVenda(v.id); setVendaEditada(v); }} className="text-blue-600 hover:underline">
-          Editar
-        </button>
-      </td>
+        <td className="p-2">
+  <CirculoEstado
+    tipo="listagem_vendas"
+    id={v.id}
+    texto_estado={v.circulo_estado_venda}
+    nota_estado={v.nota_estado_venda}
+    setVendas={setVendas}
+  />
+</td>
+<td className="p-2">
+  <button onClick={() => { setModoEdicaoVenda(v.id); setVendaEditada(v); }} className="text-blue-600 hover:underline">
+    Editar
+  </button>
+</td>
+<td colSpan="3"></td>
       </>
     )}
   </tr>
@@ -492,8 +494,11 @@ return (
   <td className="p-2">Fila</td>
   <td className="p-2">Qt</td>
   <td className="p-2">Gasto</td>
-  <td colSpan="3"></td>
+  <td className="p-2">Nota</td>
+  <td className="p-2">Ações</td>
+  <td></td>
 </tr>
+
 {compras.filter(c => c.evento === r.evento).map(c => (
   <tr key={"c" + c.id} className="border-l-4 border-yellow-600 bg-yellow-50 text-xs border-t">
     {modoEdicaoCompra === c.id ? (
@@ -531,21 +536,22 @@ return (
 </td>
         <td className="p-2">{c.quantidade}</td>
         <td className="p-2">{c.gasto} €</td>
-        <td className="p-2" colSpan="2">
-        <CirculoEstado
-          tipo="compras"
-          id={c.id}
-          texto_estado={c.circulo_estado_compra}
-          nota_estado={c.nota_estado_compra}
-          setCompras={setCompras}
-        />
-      </td>
+       <td className="p-2">
+  <CirculoEstado
+    tipo="compras"
+    id={c.id}
+    texto_estado={c.circulo_estado_compra}
+    nota_estado={c.nota_estado_compra}
+    setCompras={setCompras}
+  />
+</td>
+<td className="p-2">
+  <button onClick={() => { setModoEdicaoCompra(c.id); setCompraEditada(c); }} className="text-blue-600 hover:underline">
+    Editar
+  </button>
+</td>
+<td></td>
 
-        <td className="p-2" colSpan="3">
-          <button onClick={() => { setModoEdicaoCompra(c.id); setCompraEditada(c); }} className="text-blue-600 hover:underline">
-            Editar
-          </button>
-        </td>
       </>
     )}
   </tr>
