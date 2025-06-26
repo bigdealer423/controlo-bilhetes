@@ -23,6 +23,7 @@ export default function Eventos() {
   const [modoEdicaoVenda, setModoEdicaoVenda] = useState(null);
   const [vendaEditada, setVendaEditada] = useState({});
   const [tooltips, setTooltips] = useState({});
+  
 
   useEffect(() => {
     const carregarDados = async () => {
@@ -457,13 +458,13 @@ return (
         <td className="p-2">{v.ganho} €</td>
         <td className="p-2 whitespace-nowrap">{v.estado}</td>
         <td className="p-2">
-  <CirculoEstado
-  tipo="listagem_vendas"
-  id={v.id}
-  texto_estado={v.circulo_estado_venda}
-  nota_estado={v.nota_estado_venda}
-  setVendas={setVendas}
-/>
+      <CirculoEstado
+      tipo="listagem_vendas"
+      id={v.id}
+      texto_estado={v.circulo_estado_venda}
+      nota_estado={v.nota_estado_venda}
+      setVendas={setVendas}
+    />
         <td className="p-2" colSpan="4">
           <button onClick={() => { setModoEdicaoVenda(v.id); setVendaEditada(v); }} className="text-blue-600 hover:underline">
             Editar
@@ -524,13 +525,13 @@ return (
         <td className="p-2">{c.quantidade}</td>
         <td className="p-2">{c.gasto} €</td>
         <td className="p-2">
-  <CirculoEstado
-  tipo="compras"
-  id={c.id}
-  texto_estado={c.circulo_estado_compra}
-  nota_estado={c.nota_estado_compra}
-  setCompras={setCompras}
-/>
+      <CirculoEstado
+      tipo="compras"
+      id={c.id}
+      texto_estado={c.circulo_estado_compra}
+      nota_estado={c.nota_estado_compra}
+      setCompras={setCompras}
+    />
 </td>
         <td className="p-2" colSpan="3">
           <button onClick={() => { setModoEdicaoCompra(c.id); setCompraEditada(c); }} className="text-blue-600 hover:underline">
