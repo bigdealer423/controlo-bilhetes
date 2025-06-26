@@ -482,7 +482,7 @@ return (
           Editar
         </button>
       </td>
-      <td className="p-2"></td> {/* ← coluna extra para preencher */}
+      <td className="p-2"></td> 
     </tr>
 
 
