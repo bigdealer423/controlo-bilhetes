@@ -4,6 +4,7 @@ import { useRef } from "react";
 import { FaFileExcel } from "react-icons/fa";
 import * as XLSX from "xlsx";
 import saveAs from "file-saver";
+import CirculoEstado from "./CirculoEstado";
 
 export default function Eventos() {
   const [registos, setRegistos] = useState([]);
