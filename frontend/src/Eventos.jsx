@@ -410,73 +410,81 @@ return (
 </tr>
 
 
-{vendas.filter(v => v.evento === r.evento).map(v => (
-  <tr key={"v" + v.id} className="border-l-4 border-blue-600 bg-blue-50 text-xs border-t">
-    {modoEdicaoVenda === v.id ? (
-      <>
-        <td className="p-2">
-          <input
-            type="number"
-            className="input"
-            value={vendaEditada.id_venda}
-            onChange={e => setVendaEditada({ ...vendaEditada, id_venda: e.target.value })}
-          />
-        </td>
-        <td className="p-2" colSpan="2">
-          <input
-            className="input"
-            value={vendaEditada.estadio}
-            onChange={e => setVendaEditada({ ...vendaEditada, estadio: e.target.value })}
-          />
-        </td>
-        <td className="p-2">
-          <input
-            type="number"
-            className="input"
-            value={vendaEditada.ganho}
-            onChange={e => setVendaEditada({ ...vendaEditada, ganho: e.target.value })}
-          />
-        </td>
-        <td className="p-2">
-          <select
-            className="input"
-            value={vendaEditada.estado}
-            onChange={e => setVendaEditada({ ...vendaEditada, estado: e.target.value })}
-          >
-            <option value="Entregue">Entregue</option>
-            <option value="Por entregar">Por entregar</option>
-            <option value="Disputa">Disputa</option>
-            <option value="Pago">Pago</option>
-          </select>
-        </td>
-        <td colSpan="4" className="p-2">
-          <button className="text-green-600 mr-2" onClick={() => guardarVenda(vendaEditada)}>Guardar</button>
-          <button className="text-gray-500" onClick={() => setModoEdicaoVenda(null)}>Cancelar</button>
-        </td>
-      </>
-    ) : (
-      <>
-        <td className="p-2">{v.id_venda}</td>
-        <td className="p-2 whitespace-nowrap overflow-hidden text-ellipsis max-w-[200px]" colSpan="2">
-  {v.estadio}</td>
-        <td className="p-2">{v.ganho} €</td>
-        <td className="p-2 whitespace-nowrap">{v.estado}</td>
-        <td className="p-2">
-          <CirculoEstado
-              tipo="listagem_vendas"
-              id={v.id}
-              texto_estado={v.circulo_estado_venda}
-              nota_estado={v.nota_estado_venda}
-              setVendas={setVendas}
-            />
-          </td>
-          <td className="p-2">
-            <button onClick={() => { setModoEdicaoVenda(v.id); setVendaEditada(v); }} className="text-blue-600 hover:underline">
-              Editar
-            </button>
-          </td>
-  </tr>
-))}
+{vendas.filter(v => v.evento === r.evento).map(v =>
+  modoEdicaoVenda === v.id ? (
+    <tr key={"v" + v.id} className="border-l-4 border-blue-600 bg-blue-50 text-xs border-t">
+      <td className="p-2">
+        <input
+          type="number"
+          className="input"
+          value={vendaEditada.id_venda}
+          onChange={e => setVendaEditada({ ...vendaEditada, id_venda: e.target.value })}
+        />
+      </td>
+      <td className="p-2" colSpan="2">
+        <input
+          className="input"
+          value={vendaEditada.estadio}
+          onChange={e => setVendaEditada({ ...vendaEditada, estadio: e.target.value })}
+        />
+      </td>
+      <td className="p-2">
+        <input
+          type="number"
+          className="input"
+          value={vendaEditada.ganho}
+          onChange={e => setVendaEditada({ ...vendaEditada, ganho: e.target.value })}
+        />
+      </td>
+      <td className="p-2">
+        <select
+          className="input"
+          value={vendaEditada.estado}
+          onChange={e => setVendaEditada({ ...vendaEditada, estado: e.target.value })}
+        >
+          <option value="Entregue">Entregue</option>
+          <option value="Por entregar">Por entregar</option>
+          <option value="Disputa">Disputa</option>
+          <option value="Pago">Pago</option>
+        </select>
+      </td>
+      <td colSpan="4" className="p-2">
+        <button className="text-green-600 mr-2" onClick={() => guardarVenda(vendaEditada)}>Guardar</button>
+        <button className="text-gray-500" onClick={() => setModoEdicaoVenda(null)}>Cancelar</button>
+      </td>
+    </tr>
+  ) : (
+    <tr key={"v" + v.id} className="border-l-4 border-blue-600 bg-blue-50 text-xs border-t">
+      <td className="p-2">{v.id_venda}</td>
+      <td className="p-2 whitespace-nowrap overflow-hidden text-ellipsis max-w-[200px]" colSpan="2">
+        {v.estadio}
+      </td>
+      <td className="p-2">{v.ganho} €</td>
+      <td className="p-2 whitespace-nowrap">{v.estado}</td>
+      <td className="p-2">
+        <CirculoEstado
+          tipo="listagem_vendas"
+          id={v.id}
+          texto_estado={v.circulo_estado_venda}
+          nota_estado={v.nota_estado_venda}
+          setVendas={setVendas}
+        />
+      </td>
+      <td className="p-2">
+        <button
+          onClick={() => {
+            setModoEdicaoVenda(v.id);
+            setVendaEditada(v);
+          }}
+          className="text-blue-600 hover:underline"
+        >
+          Editar
+        </button>
+      </td>
+    </tr>
+  )
+)}
+
 
    <tr className="bg-yellow-50 text-sm border-t border-l-4 border-yellow-600">
   <td colSpan="9" className="p-2 font-semibold">
