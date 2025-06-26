@@ -2,11 +2,6 @@ import { useState } from "react";
 import { FaCircle } from "react-icons/fa";
 import { Tooltip } from "@radix-ui/react-tooltip";
 
-const cores = {
-  cinzento: "text-gray-400",
-  verde: "text-green-500",
-  vermelho: "text-red-500",
-};
 
 export default function CirculoEstado({ tipo, id, texto_estado, nota_estado }) {
   const [cor, setCor] = useState(texto_estado || "cinzento");
