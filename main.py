@@ -49,9 +49,10 @@ def root():
 
 
 # ---------------- LISTAGEM DE VENDAS ----------------
-@app.get("/listagem_vendas")
+@app.get("/listagem_vendas", response_model=List[ListagemVendasOut])
 def obter_vendas(db: Session = Depends(get_db)):
     return db.query(ListagemVendas).all()
+
 
 @app.get("/listagem_vendas/{id_venda}")
 def obter_venda_por_id(id_venda: int, db: Session = Depends(get_db)):
