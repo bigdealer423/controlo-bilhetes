@@ -454,7 +454,9 @@ return (
     ) : (
       <>
         <td className="p-2">{v.id_venda}</td>
-        <td className="p-2" colSpan="2">{v.estadio}</td>
+        <td className="p-2 whitespace-nowrap overflow-hidden text-ellipsis max-w-[200px]" colSpan="2">
+  {v.estadio}
+</td>
         <td className="p-2">{v.ganho} €</td>
         <td className="p-2 whitespace-nowrap">{v.estado}</td>
         <td className="p-2">
