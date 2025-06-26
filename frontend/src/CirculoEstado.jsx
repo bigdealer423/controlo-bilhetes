@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export default function CirculoEstado({ tipo, id, texto_estado, nota_estado }) {
+export default function CirculoEstado({ tipo, id, texto_estado, nota_estado, setVendas, setCompras }) {
   const [cor, setCor] = useState(texto_estado || "cinzento");
   const [nota, setNota] = useState(nota_estado || "");
   const [mensagem, setMensagem] = useState("");
@@ -47,6 +47,13 @@ export default function CirculoEstado({ tipo, id, texto_estado, nota_estado }) {
       setMensagem("✅");
       setOriginal({ cor, nota });
       setTimeout(() => setMensagem(""), 2000);
+
+      // ✅ Atualizar localmente a linha modificada
+      if (tipo === "listagem_vendas" && setVendas) {
+        setVendas(prev => prev.map(v => v.id === id ? { ...v, circulo_estado_venda: cor, nota_estado_venda: nota } : v));
+      } else if (tipo === "compras" && setCompras) {
+        setCompras(prev => prev.map(c => c.id === id ? { ...c, circulo_estado_compra: cor, nota_estado_compra: nota } : c));
+      }
     } else {
       setMensagem("❌");
     }
@@ -56,7 +63,6 @@ export default function CirculoEstado({ tipo, id, texto_estado, nota_estado }) {
 
   return (
     <div className="flex items-center gap-2">
-      {/* Círculo com clique esquerdo e direito */}
       <button
         onClick={proximaCor}
         onContextMenu={(e) => {
@@ -69,23 +75,20 @@ export default function CirculoEstado({ tipo, id, texto_estado, nota_estado }) {
         title="Clique para mudar cor (esq: seguinte, dir: anterior)"
       />
 
-      {/* Nota */}
       <input
-  type="text"
-  className="border rounded text-sm p-1 w-48"
-  value={nota}
-  placeholder="Nota..."
-  onChange={(e) => setNota(e.target.value)}
-/>
+        type="text"
+        className="border rounded text-sm p-1 w-48"
+        value={nota}
+        placeholder="Nota..."
+        onChange={(e) => setNota(e.target.value)}
+      />
 
-
-      {/* Botão de guardar */}
       {houveAlteracao && (
         <button onClick={guardarAlteracoes} title="Guardar alterações">💾</button>
       )}
 
-      {/* Feedback */}
       {mensagem && <span className="text-xs text-gray-500">{mensagem}</span>}
     </div>
   );
 }
+
