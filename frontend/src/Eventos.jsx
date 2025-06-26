@@ -485,7 +485,7 @@ return (
       </td>
       <td className="p-2"></td> {/* coluna extra para preencher */}
     </tr>
-
+)}
 
 
    <tr className="bg-yellow-50 text-sm border-t border-l-4 border-yellow-600">
