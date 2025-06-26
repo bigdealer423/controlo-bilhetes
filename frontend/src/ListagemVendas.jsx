@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 
 export default function ListagemVendas(props) {
   const [registos, setRegistos] = useState([]);
@@ -73,8 +75,7 @@ export default function ListagemVendas(props) {
 };
 
 
-import * as XLSX from "xlsx";
-import { saveAs } from "file-saver";
+
 
 function exportarParaExcel(dados) {
   const worksheet = XLSX.utils.json_to_sheet(dados);
