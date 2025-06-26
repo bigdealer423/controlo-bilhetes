@@ -236,7 +236,20 @@ return (
 
       <div className="bg-yellow-100 border-l-4 border-yellow-600 text-yellow-800 p-4 mb-6 rounded">
 
-        <div className="flex justify-end mb-4">
+  <p className="font-semibold">Resumo Mensal</p>
+  <p>📆 Lucro de {new Date().toLocaleString("pt-PT", { month: "long", year: "numeric" })}: <strong>{resumoMensal.lucro} €</strong></p>
+<p>💸 A aguardar pagamento: <strong>{resumoMensal.pagamento} €</strong></p>
+
+</div>
+
+      <div className="flex justify-between items-center mb-4">
+  <button
+    onClick={adicionarLinha}
+    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+  >
+    Adicionar Evento
+  </button>
+
   <button
     onClick={() => exportarEventosParaExcel(registos)}
     className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-xl shadow-md transition"
@@ -246,15 +259,6 @@ return (
   </button>
 </div>
 
-  <p className="font-semibold">Resumo Mensal</p>
-  <p>📆 Lucro de {new Date().toLocaleString("pt-PT", { month: "long", year: "numeric" })}: <strong>{resumoMensal.lucro} €</strong></p>
-<p>💸 A aguardar pagamento: <strong>{resumoMensal.pagamento} €</strong></p>
-
-</div>
-
-      <button onClick={adicionarLinha} className="mb-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-        Adicionar Evento
-      </button>
 
       <div className="bg-white shadow-md rounded p-4">
         <table className="min-w-full border text-sm text-left text-gray-600">
