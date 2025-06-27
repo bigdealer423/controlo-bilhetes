@@ -8,11 +8,12 @@ import os
 # ----------------- CONFIGURAÇÕES -----------------
 URL = 'https://bilheteira.fpf.pt/'
 HIST_FILE = 'fpf_hist.json'
-EMAIL_FROM = 'seuemail@gmail.com'
-EMAIL_TO = 'seuemaildestino@gmail.com'
-EMAIL_PASS = os.environ.get("EMAIL_PASS")  # guardado em Environment no Render
+EMAIL_FROM = os.getenv("EMAIL_USERNAME")
+EMAIL_TO = os.getenv("EMAIL_USERNAME")
+EMAIL_PASS = os.getenv("EMAIL_PASSWORD")  # guardado em Environment no Render
 SMTP_SERVER = 'smtp.gmail.com'
 SMTP_PORT = 587
+
 # --------------------------------------------------
 
 def carregar_historico():
