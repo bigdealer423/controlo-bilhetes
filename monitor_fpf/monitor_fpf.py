@@ -26,11 +26,18 @@ def guardar_historico(historico):
     with open(HIST_FILE, 'w') as f:
         json.dump(historico, f)
 
+PALAVRAS_CHAVE = ["Comprar", "Adquirir", "Bilhete", "Ingressos", "Buy"]
+
 def buscar_links_novos():
     resp = requests.get(URL, timeout=15)
     soup = BeautifulSoup(resp.text, 'html.parser')
-    links = [a['href'] for a in soup.find_all('a', href=True) if 'Comprar' in a.get_text()]
+    links = [
+        a['href']
+        for a in soup.find_all('a', href=True)
+        if any(palavra.lower() in a.get_text().lower() for palavra in PALAVRAS_CHAVE)
+    ]
     return links
+
 
 
 def enviar_email(novos_links):
