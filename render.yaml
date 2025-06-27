@@ -1,0 +1,8 @@
+services:
+  - type: cron
+    name: benfica-ticket-checker
+    schedule: "@hourly"  # corre de hora a hora (podes ajustar)
+    runtime: python
+    plan: free
+    buildCommand: "playwright install chromium"
+    startCommand: "python check_benfica_tickets.py"
