@@ -27,10 +27,8 @@ def guardar_historico(historico):
         json.dump(historico, f)
 
 def buscar_links_novos():
-    resp = requests.get(URL, timeout=15)
-    soup = BeautifulSoup(resp.text, 'html.parser')
-    links = [a['href'] for a in soup.find_all('a', href=True) if 'Comprar' in a.get_text()]
-    return links
+    # Forçar envio de email para teste
+    return ["https://bilheteira.fpf.pt/evento-teste-monitor"]
 
 def enviar_email(novos_links):
     msg = EmailMessage()
