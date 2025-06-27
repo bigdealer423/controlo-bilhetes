@@ -462,7 +462,7 @@ return (
       {/* colSpan=3 para bater certo */}
       <td className="p-2" colSpan="3">{v.estadio}</td>
       <td className="p-2">{v.ganho} €</td>
-      <td className="p-2">{v.estado}</td>
+      <td className="p-2 whitespace-nowrap">{v.estado}</td>
       <td className="p-2">
         <CirculoEstado
           tipo="listagem_vendas"
