@@ -68,7 +68,8 @@ export default function Eventos() {
 
   const atualizarNota = async (tipo, id, nota) => {
     const url = `https://controlo-bilhetes.onrender.com/${tipo}/${id}`;
-    const body = tipo === "compras" ? { texto_estado: nota } : { texto_estado: nota };
+    const body = { texto_estado: nota };
+
 
     await fetch(url, {
       method: "PUT",
