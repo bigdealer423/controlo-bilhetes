@@ -55,9 +55,9 @@ def obter_vendas(db: Session = Depends(get_db)):
     return db.query(ListagemVendas).all()
 
 
-@app.get("/listagem_vendas/{venda_id}")
-def obter_venda_por_id(venda_id: int, db: Session = Depends(get_db)):
-    venda = db.query(ListagemVendas).filter(ListagemVendas.id == venda_id).first()
+@app.get("/listagem_vendas/por_id_venda/{id_venda}")
+def get_venda_por_id_venda(id_venda: int, db: Session = Depends(get_db)):
+    venda = db.query(ListagemVendas).filter(ListagemVendas.id_venda == id_venda).first()
     if not venda:
         raise HTTPException(status_code=404, detail="Venda não encontrada")
     return venda
