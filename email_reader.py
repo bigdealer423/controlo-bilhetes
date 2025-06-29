@@ -310,7 +310,7 @@ def verificar_emails_entregues(username, password, dias=PERIODO_DIAS):
                     print(f"🔎 Pedido confirmado: {id_venda}")
 
                     # Atualiza o estado via API se existir
-                    url = f"https://controlo-bilhetes.onrender.com/listagem_vendas/{id_venda}"
+                    url = f"https://controlo-bilhetes.onrender.com/listagem_vendas/por_id_venda/{id_venda}"
                     try:
                         res = requests.get(url)
                         if res.status_code == 200:
@@ -389,7 +389,7 @@ def verificar_emails_pagamento(username, password, dias=PERIODO_DIAS):
 
             print(f"🔍 ID Venda: {id_venda} | Valor: {valor_pagamento:.2f}€")
 
-            url = f"https://controlo-bilhetes.onrender.com/listagem_vendas/{id_venda}"
+            url = f"https://controlo-bilhetes.onrender.com/listagem_vendas/por_id_venda/{id_venda}"
             try:
                 res = requests.get(url)
                 if res.status_code == 200:
