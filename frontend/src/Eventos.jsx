@@ -298,7 +298,17 @@ return (
           <tbody>
             {registos.map(r => (
               <>
-                <tr key={r.id} className={`cursor-pointer ${linhaExpandida === r.id ? "bg-blue-100 text-black font-semibold" : r.estado === "Pago" ? "bg-green-100" : ""}`}>
+                key={r.id}
+  className={`cursor-pointer ${
+    linhaExpandida === r.id
+      ? "bg-blue-100 text-black font-semibold"
+      : r.estado === "Pago"
+      ? "bg-green-100"
+      : r.estado === "Entregue"
+      ? "bg-yellow-200"
+      : ""
+  }`}
+>
                  <td className="p-2">
   {vendas.some(v => v.evento === r.evento) || compras.some(c => c.evento === r.evento) ? (
     <button onClick={() => setLinhaExpandida(linhaExpandida === r.id ? null : r.id)}>
