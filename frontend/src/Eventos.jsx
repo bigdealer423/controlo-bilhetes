@@ -23,6 +23,21 @@ export default function Eventos() {
   const [modoEdicaoVenda, setModoEdicaoVenda] = useState(null);
   const [vendaEditada, setVendaEditada] = useState({});
   const [tooltips, setTooltips] = useState({});
+  const [clubesInfo, setClubesInfo] = useState([]);
+
+  useEffect(() => {
+      const fetchClubes = async () => {
+          try {
+              const res = await fetch("https://controlo-bilhetes.onrender.com/clubes");
+              const data = await res.json();
+              setClubesInfo(data);
+          } catch (error) {
+              console.error("Erro ao carregar clubes:", error);
+          }
+      };
+      fetchClubes();
+  }, []);
+
   
 
   useEffect(() => {
@@ -251,6 +266,30 @@ export default function Eventos() {
     }
   };
 
+  const renderEventoComSimbolos = (eventoNome) => {
+    const partes = eventoNome.split(/vs|x|-|,|\//i).map(p => p.trim());
+
+    return partes.map((parte, idx) => {
+        const clubeMatch = clubesInfo.find(clube =>
+            parte.toLowerCase().includes(clube.nome.toLowerCase().slice(0, 5)) // aproximação
+        );
+
+        return (
+            <span key={idx} className="inline-flex items-center gap-1 mr-2">
+                {clubeMatch && clubeMatch.simbolo && (
+                    <img
+                        src={clubeMatch.simbolo}
+                        alt={clubeMatch.nome}
+                        className="w-5 h-5 object-contain inline-block"
+                    />
+                )}
+                {parte}
+                {idx !== partes.length - 1 && <span className="mx-1">vs</span>}
+            </span>
+        );
+    });
+};
+
 return (
     <div className="p-6 max-w-6xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">Resumo de Eventos</h1>
@@ -334,7 +373,7 @@ return (
   ))}
 </select>
   ) : (
-    r.evento
+    renderEventoComSimbolos(r.evento)
   )}
 </td>
                   <td className="p-2">
