@@ -1,4 +1,3 @@
-
 // InfoClubes.jsx
 import { useState } from 'react';
 import { FiChevronDown, FiChevronUp, FiPlus, FiEdit, FiTrash } from 'react-icons/fi';
@@ -57,51 +56,79 @@ export default function InfoClubes() {
 
   const cleanLinkText = (url) => {
     if (!url) return '';
-    return url.replace(/^(https?:\/\/)?(www\.)?/, '');
+    return url.replace(/^(https?:\\/\\/)?(www\\.)?/, '');
   };
 
   return (
     <div className="p-4">
       <h1 className="text-xl font-bold mb-4">Info Clubes</h1>
-                    <td className="p-2 border text-center">{clube.estadio}</td>
-                    <td className="p-2 border text-center">{clube.capacidade}</td>
-                    <td className="p-2 border text-center">
-                      <a href={formatLink(clube.site)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">Abrir</a>
-                      {clube.site && (
-                        <a href={formatLink(clube.site)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
-                          {cleanLinkText(clube.site)}
-                        </a>
-                      )}
-                    </td>
-                    <td className="p-2 border text-center">
-                      <a href={formatLink(clube.locaisVenda)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">Abrir</a>
-                      {clube.locaisVenda && (
-                        <a href={formatLink(clube.locaisVenda)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
-                          {cleanLinkText(clube.locaisVenda)}
-                        </a>
-                      )}
-                    </td>
-                    <td className="p-2 border text-center">{clube.continente ? 'Sim' : 'Não'}</td>
-                  </>
+
+      <button onClick={handleAddClube} className="mb-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Adicionar Clube</button>
+
+      <table className="min-w-full border border-gray-300">
+        <thead className="bg-gray-100">
+          <tr>
+            <th className="p-2 border">Nome</th>
+            <th className="p-2 border">Estádio</th>
+            <th className="p-2 border">Capacidade</th>
+            <th className="p-2 border">Site</th>
+            <th className="p-2 border">Locais Venda</th>
+            <th className="p-2 border">Continente?</th>
+            <th className="p-2 border">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          {clubes.map((clube, index) => (
+            <tr key={index} className="border-b hover:bg-gray-50">
+              <td className="p-2 border text-center">{clube.nome}</td>
+              <td className="p-2 border text-center">{clube.estadio}</td>
+              <td className="p-2 border text-center">{clube.capacidade}</td>
+              <td className="p-2 border text-center">
+                {clube.site && (
+                  <a href={formatLink(clube.site)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                    {cleanLinkText(clube.site)}
+                  </a>
                 )}
-                <td className="p-2 border text-center flex gap-2 justify-center">
-                  {editIndex === index ? (
-                    <button onClick={() => handleSaveEdit(index)} className="text-green-600"><FiPlus /></button>
-                  ) : (
-                    <button onClick={() => handleEdit(index)} className="text-blue-600"><FiEdit /></button>
-                  )}
-                  <button onClick={() => handleDelete(index)} className="text-red-600"><FiTrash /></button>
-                  <button onClick={() => handleExpand(index)} className="text-gray-600">{expanded === index ? <FiChevronUp /> : <FiChevronDown />}</button>
-                </td>
-              </tr>
+              </td>
+              <td className="p-2 border text-center">
+                {clube.locaisVenda && (
+                  <a href={formatLink(clube.locaisVenda)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                    {cleanLinkText(clube.locaisVenda)}
+                  </a>
+                )}
+              </td>
+              <td className="p-2 border text-center">{clube.continente ? 'Sim' : 'Não'}</td>
+              <td className="p-2 border text-center flex gap-2 justify-center">
+                {editIndex === index ? (
+                  <button onClick={() => handleSaveEdit(index)} className="text-green-600"><FiPlus /></button>
+                ) : (
+                  <button onClick={() => handleEdit(index)} className="text-blue-600"><FiEdit /></button>
+                )}
+                <button onClick={() => handleDelete(index)} className="text-red-600"><FiTrash /></button>
+                <button onClick={() => handleExpand(index)} className="text-gray-600">
+                  {expanded === index ? <FiChevronUp /> : <FiChevronDown />}
+                </button>
+              </td>
               {expanded === index && (
                 <tr className="bg-gray-50">
                   <td colSpan={7} className="p-4">
                     <div className="flex flex-col gap-4">
-                      <textarea className="border p-2 w-full rounded" rows={4} placeholder="Notas sobre este clube..." value={nota} onChange={(e) => setNota(e.target.value)} />
+                      <textarea
+                        className="border p-2 w-full rounded"
+                        rows={4}
+                        placeholder="Notas sobre este clube..."
+                        value={nota}
+                        onChange={(e) => setNota(e.target.value)}
+                      />
                       <label className="flex items-center gap-2 cursor-pointer">
                         <FaPaperclip /> Anexar ficheiros (PDF, imagens)
-                        <input type="file" accept="application/pdf,image/*" multiple className="hidden" onChange={(e) => handleFileChange(e, index)} />
+                        <input
+                          type="file"
+                          accept="application/pdf,image/*"
+                          multiple
+                          className="hidden"
+                          onChange={(e) => handleFileChange(e, index)}
+                        />
                       </label>
                       {ficheiros[index] && (
                         <ul className="list-disc ml-6">
@@ -114,7 +141,7 @@ export default function InfoClubes() {
                   </td>
                 </tr>
               )}
-            </>
+            </tr>
           ))}
         </tbody>
       </table>
