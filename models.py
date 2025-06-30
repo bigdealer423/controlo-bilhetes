@@ -144,7 +144,34 @@ class Disputa(BaseModel):
     class Config:
         orm_mode = True
         from_attributes = True
+# ------------------------------------------------------Clubesinfo------------------------------------
+class ClubesInfo(Base):
+    __tablename__ = "clubes_info"
 
+    id = Column(Integer, primary_key=True, index=True)
+    nome = Column(String, index=True)
+    estadio = Column(String, nullable=True)
+    capacidade = Column(String, nullable=True)
+    site = Column(String, nullable=True)
+    locais_venda = Column(String, nullable=True)
+    continente = Column(Boolean, default=False)
+    simbolo = Column(String, nullable=True)
+
+class ClubesInfoCreate(BaseModel):
+    nome: str
+    estadio: str = ""
+    capacidade: str = ""
+    site: str = ""
+    locais_venda: str = ""
+    continente: bool = False
+    simbolo: str = ""
+
+class ClubesInfoOut(ClubesInfoCreate):
+    id: int
+
+    class Config:
+        orm_mode = True
+# ------------------------------------------------------Clubesinfo------------------------------------
 # Criação automática das tabelas
 from database import engine
 Base.metadata.create_all(bind=engine)
