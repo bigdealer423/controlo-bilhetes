@@ -395,26 +395,27 @@ const fetchClubes = async () => {
                       {/* Ficheiros locais selecionados mas ainda não enviados */}
                       {ficheiros[index] && (
                           <ul className="list-disc ml-6">
-                            {Array.isArray(ficheiros[index]) && (
-                            <ul className="list-disc ml-6">
-                              {ficheiros[index].map((file, idx) => (
-                                <li key={idx} className="text-sm text-gray-700">
-                                  {typeof file === "string" ? (
-                                    <a
-                                      href={`https://controlo-bilhetes.onrender.com/uploads/clubes/${clubes[index].id}/${file}`}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="text-blue-600 underline"
-                                    >
-                                      {file}
-                                    </a>
-                                  ) : (
-                                    file.name
-                                  )}
-                                </li>
-                              ))}
-                            </ul>
-                          )}
+                              {Array.isArray(ficheiros[index]) && (
+                                  <ul className="list-disc ml-6">
+                                      {ficheiros[index].map((file, idx) => (
+                                          <li key={idx} className="text-sm text-gray-700">
+                                              {typeof file === "string" ? (
+                                                  <a
+                                                      href={`https://controlo-bilhetes.onrender.com/uploads/clubes/${clubes[index].id}/${file}`}
+                                                      target="_blank"
+                                                      rel="noopener noreferrer"
+                                                      className="text-blue-600 underline"
+                                                  >
+                                                      {file}
+                                                  </a>
+                                              ) : (
+                                                  file.name
+                                              )}
+                                          </li>
+                                      ))}
+                                  </ul>
+                              )}
+
 
       
                       {/* Ficheiros guardados no servidor */}
