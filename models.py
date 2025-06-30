@@ -79,7 +79,7 @@ class ListagemVendasBase(BaseModel):
     nota_estado_venda: str = ""
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class ListagemVendasCreate(ListagemVendasBase):
     pass
