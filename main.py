@@ -409,6 +409,23 @@ def delete_clube(clube_id: int, db: Session = Depends(get_db)):
     db.commit()
     return {"detail": "Clube eliminado com sucesso"}
 
+#---------------------------------------------Guardar ficheiros do InfoClubes------------------
+UPLOAD_FOLDER = "uploads/clubes"
+
+@app.post("/clubes/{clube_id}/upload")
+async def upload_ficheiros_clube(clube_id: int, files: list[UploadFile] = File(...)):
+    pasta_clube = os.path.join(UPLOAD_FOLDER, str(clube_id))
+    os.makedirs(pasta_clube, exist_ok=True)
+
+    saved_files = []
+
+    for file in files:
+        file_path = os.path.join(pasta_clube, file.filename)
+        with open(file_path, "wb") as f:
+            f.write(await file.read())
+        saved_files.append(file.filename)
+
+    return {"uploaded_files": saved_files}
 
 
 
