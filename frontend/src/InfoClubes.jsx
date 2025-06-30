@@ -120,7 +120,7 @@ export default function InfoClubes() {
 
   const cleanLinkText = (url) => {
     if (!url) return '';
-    return url.replace(/^(https?:\\/\\/)?(www\\.)?/, '');
+    return url.replace(/^(https?:\/\/)?(www\.)?/, '');
   };
 
   return (
