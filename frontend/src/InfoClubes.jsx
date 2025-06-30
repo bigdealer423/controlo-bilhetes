@@ -140,51 +140,112 @@ export default function InfoClubes() {
   {clubes.map((clube, index) => (
     <>
       <tr key={index} className="border-b hover:bg-gray-50">
+        {/* Nome e logo */}
         <td className="p-2 border text-center flex items-center justify-center gap-2">
-  {editIndex === index ? (
-    <>
-      <input
-        type="text"
-        placeholder="URL símbolo"
-        value={editClube.simbolo || ''}
-        onChange={e => setEditClube({ ...editClube, simbolo: e.target.value })}
-        className="border p-1 rounded w-24"
-      />
-      <input
-        type="text"
-        placeholder="Nome"
-        value={editClube.nome}
-        onChange={e => setEditClube({ ...editClube, nome: e.target.value })}
-        className="border p-1 rounded w-full"
-      />
-    </>
-  ) : (
-    <>
-      {clube.simbolo && (
-        <img src={clube.simbolo} alt="Logo" className="w-6 h-6 object-contain" />
-      )}
-      {clube.nome}
-    </>
-  )}
-</td>
+          {editIndex === index ? (
+            <>
+              <input
+                type="text"
+                placeholder="URL símbolo"
+                value={editClube.simbolo || ''}
+                onChange={e => setEditClube({ ...editClube, simbolo: e.target.value })}
+                className="border p-1 rounded w-24"
+              />
+              <input
+                type="text"
+                placeholder="Nome"
+                value={editClube.nome}
+                onChange={e => setEditClube({ ...editClube, nome: e.target.value })}
+                className="border p-1 rounded w-full"
+              />
+            </>
+          ) : (
+            <>
+              {clube.simbolo && (
+                <img src={clube.simbolo} alt="Logo" className="w-6 h-6 object-contain" />
+              )}
+              {clube.nome}
+            </>
+          )}
+        </td>
 
-        <td className="p-2 border text-center">{clube.estadio}</td>
-        <td className="p-2 border text-center">{clube.capacidade}</td>
+        {/* Estádio */}
         <td className="p-2 border text-center">
-          {clube.site && (
+          {editIndex === index ? (
+            <input
+              type="text"
+              value={editClube.estadio}
+              onChange={e => setEditClube({ ...editClube, estadio: e.target.value })}
+              className="border p-1 rounded w-full"
+            />
+          ) : (
+            clube.estadio
+          )}
+        </td>
+
+        {/* Capacidade */}
+        <td className="p-2 border text-center">
+          {editIndex === index ? (
+            <input
+              type="text"
+              value={editClube.capacidade}
+              onChange={e => setEditClube({ ...editClube, capacidade: e.target.value })}
+              className="border p-1 rounded w-full"
+            />
+          ) : (
+            clube.capacidade
+          )}
+        </td>
+
+        {/* Site */}
+        <td className="p-2 border text-center">
+          {editIndex === index ? (
+            <input
+              type="text"
+              value={editClube.site}
+              onChange={e => setEditClube({ ...editClube, site: e.target.value })}
+              className="border p-1 rounded w-full"
+            />
+          ) : clube.site ? (
             <a href={formatLink(clube.site)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
               {cleanLinkText(clube.site)}
             </a>
-          )}
+          ) : null}
         </td>
+
+        {/* Locais Venda */}
         <td className="p-2 border text-center">
-          {clube.locaisVenda && (
+          {editIndex === index ? (
+            <input
+              type="text"
+              value={editClube.locaisVenda}
+              onChange={e => setEditClube({ ...editClube, locaisVenda: e.target.value })}
+              className="border p-1 rounded w-full"
+            />
+          ) : clube.locaisVenda ? (
             <a href={formatLink(clube.locaisVenda)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
               {cleanLinkText(clube.locaisVenda)}
             </a>
+          ) : null}
+        </td>
+
+        {/* Continente */}
+        <td className="p-2 border text-center">
+          {editIndex === index ? (
+            <select
+              value={editClube.continente ? 'Sim' : 'Não'}
+              onChange={e => setEditClube({ ...editClube, continente: e.target.value === 'Sim' })}
+              className="border p-1 rounded w-full"
+            >
+              <option>Sim</option>
+              <option>Não</option>
+            </select>
+          ) : (
+            clube.continente ? 'Sim' : 'Não'
           )}
         </td>
-        <td className="p-2 border text-center">{clube.continente ? 'Sim' : 'Não'}</td>
+
+        {/* Ações */}
         <td className="p-2 border text-center flex gap-2 justify-center">
           {editIndex === index ? (
             <button onClick={() => handleSaveEdit(index)} className="text-green-600"><FiPlus /></button>
@@ -198,6 +259,7 @@ export default function InfoClubes() {
         </td>
       </tr>
 
+      {/* Expansão de notas e anexos */}
       {expanded === index && (
         <tr className="bg-gray-50">
           <td colSpan={7} className="p-4">
@@ -233,6 +295,7 @@ export default function InfoClubes() {
     </>
   ))}
 </tbody>
+
       </table>
     </div>
   );
