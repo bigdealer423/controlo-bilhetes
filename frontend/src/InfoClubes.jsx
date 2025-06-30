@@ -113,6 +113,11 @@ const fetchClubes = async () => {
     }
 };
 
+  const handleExpand = (index) => {
+    setExpanded(expanded === index ? null : index);
+};
+
+
 
   const formatLink = (url) => {
     if (!url) return '';
