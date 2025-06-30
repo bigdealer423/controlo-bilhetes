@@ -12,6 +12,8 @@ export default function InfoClubes() {
   const [editIndex, setEditIndex] = useState(null);
   const [editClube, setEditClube] = useState({});
   const [novoClube, setNovoClube] = useState({ nome: '', estadio: '', capacidade: '', site: '', locais_venda: '', continente: false });
+  const [filtroPesquisa, setFiltroPesquisa] = useState("");
+
 
   useEffect(() => {
     fetchClubes();
@@ -275,7 +277,9 @@ const fetchClubes = async () => {
           </tr>
         </thead>
         <tbody>
-  {clubes.map((clube, index) => (
+  {clubes
+  .filter(clube => (clube.nome || "").toLowerCase().includes(filtroPesquisa.toLowerCase()))
+  .map((clube, index) => (
     <React.Fragment key={index}>
       <tr className="border-b hover:bg-gray-50">
         {/* Nome e logo */}
