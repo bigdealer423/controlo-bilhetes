@@ -39,10 +39,30 @@ const fetchClubes = async () => {
     setNotas({ ...notas, [index]: value });
 };
 
-  const handleFileChange = (e, index) => {
+  const handleFileChange = async (e, index, clubeId) => {
     const files = e.target.files;
     setFicheiros({ ...ficheiros, [index]: files });
-  };
+
+    const formData = new FormData();
+    for (let i = 0; i < files.length; i++) {
+        formData.append("files", files[i]);
+    }
+
+    try {
+        const res = await fetch(`https://controlo-bilhetes.onrender.com/clubes/${clubeId}/upload`, {
+            method: "POST",
+            body: formData,
+        });
+        if (res.ok) {
+            console.log("Ficheiros enviados com sucesso");
+        } else {
+            console.error(await res.json());
+        }
+    } catch (error) {
+        console.error("Erro ao enviar ficheiros:", error);
+    }
+};
+
 
   const handleAddClube = async () => {
     if (!novoClube.nome.trim()) return;
@@ -352,8 +372,9 @@ const fetchClubes = async () => {
                   accept="application/pdf,image/*"
                   multiple
                   className="hidden"
-                  onChange={(e) => handleFileChange(e, index)}
-                />
+                  onChange={(e) => handleFileChange(e, index, clubes[index].id)}
+              />
+
               </label>
               {ficheiros[index] && (
                 <ul className="list-disc ml-6">
