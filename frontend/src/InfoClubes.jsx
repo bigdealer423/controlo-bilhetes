@@ -263,7 +263,14 @@ const fetchClubes = async () => {
   >
     Adicionar Clube
   </button>
-
+  {/* 🔍 Campo de pesquisa */}
+    <input
+      type="text"
+      placeholder="🔍 Pesquisar clube..."
+      value={filtroPesquisa}
+      onChange={(e) => setFiltroPesquisa(e.target.value)}
+      className="mb-4 p-2 border rounded w-full md:w-1/3"
+    />
       <table className="min-w-full border border-gray-300">
         <thead className="bg-gray-100">
           <tr>
