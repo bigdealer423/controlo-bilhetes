@@ -429,5 +429,9 @@ const fetchClubes = async () => {
       )}
     </React.Fragment>
   ))}
-</tbody>
+      </tbody>
+    </table>
+  </div>
+);
+}
 
