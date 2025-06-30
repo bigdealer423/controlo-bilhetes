@@ -368,36 +368,6 @@ def resumo_mensal_eventos(db: Session = Depends(get_db)):
     }
     
 
-# ---------------- CLUBES INFO ----------------
-from pydantic import BaseModel
-from typing import List
-from models import ClubeInfo
-
-class ClubeInfoCreate(BaseModel):
-    nome: str
-    estadio: str
-    capacidade: str
-    site: str
-    locais_venda: str
-    continente: bool
-    simbolo: str
-
-class ClubeInfoOut(ClubeInfoCreate):
-    id: int
-    class Config:
-        orm_mode = True
-
-@app.post("/clubes", response_model=ClubeInfoOut)
-def criar_clube(clube: ClubeInfoCreate, db: Session = Depends(get_db)):
-    clube_bd = ClubeInfo(**clube.dict())
-    db.add(clube_bd)
-    db.commit()
-    db.refresh(clube_bd)
-    return clube_bd
-
-@app.get("/clubes", response_model=List[ClubeInfoOut])
-def listar_clubes(db: Session = Depends(get_db)):
-    return db.query(ClubeInfo).all()
 
 
 
