@@ -149,17 +149,5 @@ class Disputa(BaseModel):
 from database import engine
 Base.metadata.create_all(bind=engine)
 
-from sqlalchemy import Column, Integer, String, Boolean
 
-class ClubeInfo(Base):
-    __tablename__ = "clubes_info"
-
-    id = Column(Integer, primary_key=True, index=True)
-    nome = Column(String)
-    estadio = Column(String)
-    capacidade = Column(String)
-    site = Column(String)
-    locais_venda = Column(String)
-    continente = Column(Boolean)
-    simbolo = Column(String)
 
