@@ -107,15 +107,22 @@ export default function InfoClubes() {
       >
         <option>Sim</option>
         <option>Não</option>
-      </select>
-    </div>
-    
-    <button
-      onClick={handleAddClube}
-      className="mb-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-    >
-      Adicionar Clube
-    </button>
+       </select>
+    <input
+      type="text"
+      placeholder="URL do símbolo"
+      value={novoClube.simbolo || ''}
+      onChange={e => setNovoClube({ ...novoClube, simbolo: e.target.value })}
+      className="border p-2 rounded"
+    />
+  </div>
+  
+  <button
+    onClick={handleAddClube}
+    className="mb-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+  >
+    Adicionar Clube
+  </button>
 
       <table className="min-w-full border border-gray-300">
         <thead className="bg-gray-100">
