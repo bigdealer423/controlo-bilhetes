@@ -370,58 +370,58 @@ const fetchClubes = async () => {
 
       {/* Expansão de notas e anexos */}
       {expanded === index && (
-        <tr className="bg-gray-50">
-            <td colSpan={7} className="p-4">
-                <div className="flex flex-col gap-4">
-                    <textarea
-                        className="border p-2 w-full rounded"
-                        rows={4}
-                        placeholder="Notas sobre este clube..."
-                        value={notas[index] || ""}
-                        onChange={(e) => handleNotaChange(index, e.target.value)}
-                    />
-    
-                    <label className="flex items-center gap-2 cursor-pointer">
-                        <FaPaperclip /> Anexar ficheiros (PDF, imagens)
-                        <input
-                            type="file"
-                            accept="application/pdf,image/*"
-                            multiple
-                            className="hidden"
-                            onChange={(e) => handleFileChange(e, index, clubes[index].id)}
-                        />
-                    </label>
-    
-                    {/* Ficheiros locais selecionados mas ainda não enviados */}
-                    {ficheiros[index] && (
-                        <ul className="list-disc ml-6">
-                            {Array.from(ficheiros[index]).map((file, idx) => (
-                                <li key={idx} className="text-sm text-gray-700">{file.name}</li>
-                            ))}
-                        </ul>
-                    )}
-    
-                    {/* Ficheiros guardados no servidor */}
-                    {ficheiros[index] && ficheiros[index].length > 0 && (
-                        <div className="flex flex-col gap-2">
-                            <p className="font-semibold">Ficheiros guardados:</p>
-                            <ul className="list-disc ml-6">
-                                {ficheiros[index].map((file, idx) => (
-                                    <li key={idx}>
-                                        <a
-                                            href={`https://controlo-bilhetes.onrender.com/uploads/clubes/${clubes[index].id}/${file}`}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="text-blue-600 underline"
-                                        >
-                                            {file}
-                                        </a>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    )}
-                </div>
-            </td>
-        </tr>
-    )}
+          <tr className="bg-gray-50">
+              <td colSpan={7} className="p-4">
+                  <div className="flex flex-col gap-4">
+                      <textarea
+                          className="border p-2 w-full rounded"
+                          rows={4}
+                          placeholder="Notas sobre este clube..."
+                          value={notas[index] || ""}
+                          onChange={(e) => handleNotaChange(index, e.target.value)}
+                      />
+      
+                      <label className="flex items-center gap-2 cursor-pointer">
+                          <FaPaperclip /> Anexar ficheiros (PDF, imagens)
+                          <input
+                              type="file"
+                              accept="application/pdf,image/*"
+                              multiple
+                              className="hidden"
+                              onChange={(e) => handleFileChange(e, index, clubes[index].id)}
+                          />
+                      </label>
+      
+                      {/* Ficheiros locais selecionados mas ainda não enviados */}
+                      {ficheiros[index] && (
+                          <ul className="list-disc ml-6">
+                              {Array.from(ficheiros[index]).map((file, idx) => (
+                                  <li key={idx} className="text-sm text-gray-700">{file.name}</li>
+                              ))}
+                          </ul>
+                      )}
+      
+                      {/* Ficheiros guardados no servidor */}
+                      {ficheiros[index] && ficheiros[index].length > 0 && (
+                          <div className="flex flex-col gap-2">
+                              <p className="font-semibold">Ficheiros guardados:</p>
+                              <ul className="list-disc ml-6">
+                                  {ficheiros[index].map((file, idx) => (
+                                      <li key={idx}>
+                                          <a
+                                              href={`https://controlo-bilhetes.onrender.com/uploads/clubes/${clubes[index].id}/${file}`}
+                                              target="_blank"
+                                              rel="noopener noreferrer"
+                                              className="text-blue-600 underline"
+                                          >
+                                              {file}
+                                          </a>
+                                      </li>
+                                  ))}
+                              </ul>
+                          </div>
+                      )}
+                  </div>
+              </td>
+          </tr>
+      )}
