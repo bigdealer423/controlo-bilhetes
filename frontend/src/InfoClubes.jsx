@@ -141,11 +141,33 @@ export default function InfoClubes() {
     <>
       <tr key={index} className="border-b hover:bg-gray-50">
         <td className="p-2 border text-center flex items-center justify-center gap-2">
-          {clube.simbolo && (
-            <img src={clube.simbolo} alt="Logo" className="w-6 h-6 object-contain" />
-          )}
-          {clube.nome}
-        </td>
+  {editIndex === index ? (
+    <>
+      <input
+        type="text"
+        placeholder="URL símbolo"
+        value={editClube.simbolo || ''}
+        onChange={e => setEditClube({ ...editClube, simbolo: e.target.value })}
+        className="border p-1 rounded w-24"
+      />
+      <input
+        type="text"
+        placeholder="Nome"
+        value={editClube.nome}
+        onChange={e => setEditClube({ ...editClube, nome: e.target.value })}
+        className="border p-1 rounded w-full"
+      />
+    </>
+  ) : (
+    <>
+      {clube.simbolo && (
+        <img src={clube.simbolo} alt="Logo" className="w-6 h-6 object-contain" />
+      )}
+      {clube.nome}
+    </>
+  )}
+</td>
+
         <td className="p-2 border text-center">{clube.estadio}</td>
         <td className="p-2 border text-center">{clube.capacidade}</td>
         <td className="p-2 border text-center">
