@@ -410,7 +410,7 @@ const fetchClubes = async () => {
                   <p className="font-semibold">Ficheiros guardados:</p>
                   <ul className="list-disc ml-6">
                     {ficheiros[index].map((file, idx) => (
-                      <li key={idx}>
+                      <li key={idx} className="flex items-center justify-between">
                         <a
                           href={`https://controlo-bilhetes.onrender.com/uploads/clubes/${clubes[index].id}/${file}`}
                           target="_blank"
@@ -419,6 +419,12 @@ const fetchClubes = async () => {
                         >
                           {file}
                         </a>
+                        <button
+                          className="text-red-600 text-xs ml-2"
+                          onClick={() => handleDeleteFile(clubes[index].id, file, index)}
+                        >
+                          Eliminar
+                        </button>
                       </li>
                     ))}
                   </ul>
