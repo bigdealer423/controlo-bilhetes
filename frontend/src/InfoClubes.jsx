@@ -169,6 +169,32 @@ const fetchClubes = async () => {
     return url.replace(/^(https?:\/\/)?(www\.)?/, '');
   };
 
+  const handleDeleteFile = async (clubeId, filename, index) => {
+  if (!confirm(`Tens a certeza que queres eliminar o ficheiro "${filename}"?`)) return;
+
+  try {
+    const res = await fetch(
+      `https://controlo-bilhetes.onrender.com/clubes/${clubeId}/ficheiros?filename=${encodeURIComponent(filename)}`,
+      { method: "DELETE" }
+    );
+    if (res.ok) {
+      // Atualizar lista local sem recarregar tudo:
+      setFicheiros(prev => {
+        const updated = { ...prev };
+        updated[index] = updated[index].filter(f => f !== filename);
+        return updated;
+      });
+    } else {
+      const error = await res.json();
+      alert("Erro ao eliminar: " + error.detail);
+    }
+  } catch (error) {
+    console.error("Erro ao eliminar ficheiro:", error);
+    alert("Erro ao eliminar ficheiro.");
+  }
+};
+
+
   return (
     <div className="p-4">
       <h1 className="text-xl font-bold mb-4">Info Clubes</h1>
