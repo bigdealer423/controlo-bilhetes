@@ -6,7 +6,7 @@ import { FaPaperclip } from 'react-icons/fa';
 export default function InfoClubes() {
   const [clubes, setClubes] = useState([]);
   const [expanded, setExpanded] = useState(null);
-  const [nota, setNota] = useState('');
+  const [notas, setNotas] = useState('');
   const [ficheiros, setFicheiros] = useState({});
   const [editIndex, setEditIndex] = useState(null);
   const [editClube, setEditClube] = useState({});
@@ -21,14 +21,23 @@ const fetchClubes = async () => {
         const res = await fetch("https://controlo-bilhetes.onrender.com/clubes");
         const data = await res.json();
         setClubes(data);
+
+        // Preencher as notas associadas ao índice
+        const notasInicial = {};
+        data.forEach((clube, index) => {
+            notasInicial[index] = clube.nota || "";
+        });
+        setNotas(notasInicial);
+
     } catch (error) {
         console.error("Erro ao carregar clubes:", error);
     }
 };
 
-  const handleExpand = (index) => {
-    setExpanded(expanded === index ? null : index);
-  };
+
+  const handleNotaChange = (index, value) => {
+    setNotas({ ...notas, [index]: value });
+};
 
   const handleFileChange = (e, index) => {
     const files = e.target.files;
@@ -64,10 +73,15 @@ const fetchClubes = async () => {
   const handleSaveEdit = async (index) => {
     try {
         const clubeId = clubes[index].id;
+        const updatedClube = {
+            ...editClube,
+            nota: notas[index] || "" // <-- inclui nota para guardar no backend
+        };
+
         const res = await fetch(`https://controlo-bilhetes.onrender.com/clubes/${clubeId}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(editClube),
+            body: JSON.stringify(updatedClube),
         });
         if (res.ok) {
             fetchClubes();
@@ -319,12 +333,13 @@ const fetchClubes = async () => {
           <td colSpan={7} className="p-4">
             <div className="flex flex-col gap-4">
               <textarea
-                className="border p-2 w-full rounded"
-                rows={4}
-                placeholder="Notas sobre este clube..."
-                value={nota}
-                onChange={(e) => setNota(e.target.value)}
+                  className="border p-2 w-full rounded"
+                  rows={4}
+                  placeholder="Notas sobre este clube..."
+                  value={notas[index] || ""}
+                  onChange={(e) => handleNotaChange(index, e.target.value)}
               />
+
               <label className="flex items-center gap-2 cursor-pointer">
                 <FaPaperclip /> Anexar ficheiros (PDF, imagens)
                 <input
