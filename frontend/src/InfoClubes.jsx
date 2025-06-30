@@ -9,15 +9,7 @@ import { FaPaperclip } from 'react-icons/fa';
   const [editIndex, setEditIndex] = useState(null);
   const [editClube, setEditClube] = useState({});
   const [novoClube, setNovoClube] = useState({ nome: '', estadio: '', capacidade: '', site: '', locaisVenda: '', continente: false, simbolo: '' });
-  const [novoClube, setNovoClube] = useState({
-    nome: '',
-    estadio: '',
-    capacidade: '',
-    site: '',
-    locaisVenda: '',
-    continente: false,
-    simbolo: ''
-  });
+  
 
   useEffect(() => {
     fetchClubes();
@@ -118,11 +110,11 @@ import { FaPaperclip } from 'react-icons/fa';
 
 
 
-  const cleanLinkText = (url) => {
+   const cleanLinkText = (url) => {
     if (!url) return '';
     return url.replace(/^(https?:\/\/)?(www\.)?/, '');
-    return url.replace(/^(https?:\\/\\/)?(www\\.)?/, '');
   };
+
 
   return (
 
