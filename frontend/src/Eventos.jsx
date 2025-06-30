@@ -381,9 +381,9 @@ return (
                       ? <input value={r.estadio} onChange={(e) => atualizarCampo(r.id, "estadio", e.target.value)} className="input" />
                       : r.estadio}
                   </td>
-                  <td className="p-2">{r.gasto} €</td>
-                  <td className="p-2">{r.ganho} €</td>
-                  <td className="p-2">{(r.ganho - r.gasto)} €</td>
+                  <td className="p-2 text-right whitespace-nowrap min-w-[80px]">{r.gasto} €</td>
+                  <td className="p-2 text-right whitespace-nowrap min-w-[80px]">{r.ganho} €</td>
+                  <td className="p-2 text-right whitespace-nowrap min-w-[80px]">{(r.ganho - r.gasto)} €</td>
                   <td className="p-2">
                     {modoEdicao === r.id
                       ? (
