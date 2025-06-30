@@ -156,6 +156,8 @@ class ClubesInfo(Base):
     locais_venda = Column(String, nullable=True)
     continente = Column(Boolean, default=False)
     simbolo = Column(String, nullable=True)
+    nota = Column(String, nullable=True)
+
 
 class ClubesInfoCreate(BaseModel):
     nome: str
@@ -165,6 +167,8 @@ class ClubesInfoCreate(BaseModel):
     locais_venda: str = ""
     continente: bool = False
     simbolo: str = ""
+    nota: str = ""
+
 
 class ClubesInfoOut(ClubesInfoCreate):
     id: int
