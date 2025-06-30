@@ -35,7 +35,6 @@ import { FaPaperclip } from 'react-icons/fa';
 
   const handleExpand = (index) => {
     setExpanded(expanded === index ? null : index);
-@@ -21,28 +43,70 @@
     setFicheiros({ ...ficheiros, [index]: files });
   };
 
