@@ -25,6 +25,9 @@ from models import (
     CompraCreate,
     CompraOut,
     ListagemVendasBase,
+    ClubesInfo,
+    ClubesInfoCreate,
+    ClubesInfoOut,
     Disputa
 )
 resumo_mais_recente = {}
