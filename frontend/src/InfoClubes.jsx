@@ -1,4 +1,5 @@
 // InfoClubes.jsx
+import React from 'react';
 import { useState, useEffect } from 'react';
 import { FiChevronDown, FiChevronUp, FiPlus, FiEdit, FiTrash } from 'react-icons/fi';
 import { FaPaperclip } from 'react-icons/fa';
