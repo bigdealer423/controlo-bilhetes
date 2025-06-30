@@ -139,7 +139,13 @@ export default function InfoClubes() {
         <tbody>
           {clubes.map((clube, index) => (
             <tr key={index} className="border-b hover:bg-gray-50">
-              <td className="p-2 border text-center">{clube.nome}</td>
+              <td className="p-2 border text-center flex items-center justify-center gap-2">
+  {clube.simbolo && (
+    <img src={clube.simbolo} alt="Logo" className="w-6 h-6 object-contain" />
+  )}
+  {clube.nome}
+</td>
+
               <td className="p-2 border text-center">{clube.estadio}</td>
               <td className="p-2 border text-center">{clube.capacidade}</td>
               <td className="p-2 border text-center">
