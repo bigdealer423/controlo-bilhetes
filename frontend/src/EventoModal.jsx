@@ -23,6 +23,8 @@ const ordenarEventosDropdown = (data) => {
 export default function EventoModal({ visivel, fechar, onAtualizar }) {
   const [eventos, setEventos] = useState([]);
   const [novoEvento, setNovoEvento] = useState("");
+  const [modoEdicao, setModoEdicao] = useState(null);
+  const [eventoEditado, setEventoEditado] = useState("");
 
   useEffect(() => {
     if (visivel) buscarEventos();
@@ -68,6 +70,24 @@ export default function EventoModal({ visivel, fechar, onAtualizar }) {
     }
   };
 
+  const guardarEdicao = async (evento) => {
+    if (!eventoEditado.trim()) return;
+    try {
+      const res = await fetch(`https://controlo-bilhetes.onrender.com/eventos_dropdown/${evento.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nome: eventoEditado })
+      });
+      if (res.ok) {
+        setModoEdicao(null);
+        setEventoEditado("");
+        buscarEventos();
+      }
+    } catch (err) {
+      console.error("Erro ao editar evento:", err);
+    }
+  };
+
   if (!visivel) return null;
 
   return (
@@ -98,13 +118,52 @@ export default function EventoModal({ visivel, fechar, onAtualizar }) {
         <ul className="max-h-40 overflow-y-auto">
           {eventos.map(e => (
             <li key={e.id} className="flex justify-between items-center border-b py-1">
-              <span>{e.nome}</span>
-              <button
-                onClick={() => eliminarEvento(e.id)}
-                className="text-red-600 hover:underline"
-              >
-                Eliminar
-              </button>
+              {modoEdicao === e.id ? (
+                <>
+                  <input
+                    type="text"
+                    className="border px-2 py-1 flex-grow mr-2"
+                    value={eventoEditado}
+                    onChange={(ev) => setEventoEditado(ev.target.value)}
+                  />
+                  <button
+                    onClick={() => guardarEdicao(e)}
+                    className="text-green-600 hover:underline mr-2"
+                  >
+                    Guardar
+                  </button>
+                  <button
+                    onClick={() => {
+                      setModoEdicao(null);
+                      setEventoEditado("");
+                    }}
+                    className="text-gray-600 hover:underline"
+                  >
+                    Cancelar
+                  </button>
+                </>
+              ) : (
+                <>
+                  <span>{e.nome}</span>
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => {
+                        setModoEdicao(e.id);
+                        setEventoEditado(e.nome);
+                      }}
+                      className="text-blue-600 hover:underline"
+                    >
+                      Editar
+                    </button>
+                    <button
+                      onClick={() => eliminarEvento(e.id)}
+                      className="text-red-600 hover:underline"
+                    >
+                      Eliminar
+                    </button>
+                  </div>
+                </>
+              )}
             </li>
           ))}
         </ul>
