@@ -10,7 +10,7 @@ export default function InfoClubes() {
   const [ficheiros, setFicheiros] = useState({});
   const [editIndex, setEditIndex] = useState(null);
   const [editClube, setEditClube] = useState({});
-  const [novoClube, setNovoClube] = useState({ nome: '', estadio: '', capacidade: '', site: '', locaisVenda: '', continente: false });
+  const [novoClube, setNovoClube] = useState({ nome: '', estadio: '', capacidade: '', site: '', locais_venda: '', continente: false });
 
   useEffect(() => {
     fetchClubes();
@@ -46,7 +46,7 @@ const fetchClubes = async () => {
         });
         if (res.ok) {
             fetchClubes();
-            setNovoClube({ nome: "", estadio: "", capacidade: "", site: "", locaisVenda: "", continente: false, simbolo: "" });
+            setNovoClube({ nome: "", estadio: "", capacidade: "", site: "", locais_venda: "", continente: false, simbolo: "" });
         } else {
             console.error(await res.json());
         }
@@ -150,8 +150,8 @@ const fetchClubes = async () => {
       <input
         type="text"
         placeholder="Locais Venda"
-        value={novoClube.locaisVenda}
-        onChange={e => setNovoClube({ ...novoClube, locaisVenda: e.target.value })}
+        value={novoClube.locais_venda}
+        onChange={e => setNovoClube({ ...novoClube, locais_venda: e.target.value })}
         className="border p-2 rounded"
       />
       <select
@@ -272,13 +272,13 @@ const fetchClubes = async () => {
           {editIndex === index ? (
             <input
               type="text"
-              value={editClube.locaisVenda}
-              onChange={e => setEditClube({ ...editClube, locaisVenda: e.target.value })}
+              value={editClube.locais_venda}
+              onChange={e => setEditClube({ ...editClube, locais_venda: e.target.value })}
               className="border p-1 rounded w-full"
             />
-          ) : clube.locaisVenda ? (
-            <a href={formatLink(clube.locaisVenda)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
-              {cleanLinkText(clube.locaisVenda)}
+          ) : clube.locais_venda ? (
+            <a href={formatLink(clube.locais_venda)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+              {cleanLinkText(clube.locais_venda)}
             </a>
           ) : null}
         </td>
