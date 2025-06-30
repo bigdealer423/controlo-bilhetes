@@ -1,5 +1,6 @@
 from sqlalchemy import extract
 from fastapi import File, UploadFile
+from fastapi.staticfiles import StaticFiles
 import os
 import requests
 from fastapi import FastAPI, Form, HTTPException, Depends, status
@@ -410,12 +411,6 @@ def delete_clube(clube_id: int, db: Session = Depends(get_db)):
     return {"detail": "Clube eliminado com sucesso"}
 
 #---------------------------------------------Guardar ficheiros do InfoClubes------------------
-import os
-from fastapi import UploadFile, File
-from fastapi.staticfiles import StaticFiles
-from fastapi import FastAPI
-
-app = FastAPI()
 
 UPLOAD_FOLDER = "uploads/clubes"
 
