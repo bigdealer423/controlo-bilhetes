@@ -328,9 +328,9 @@ return (
               <th className="p-2">Data</th>
               <th className="p-2">Evento</th>
               <th className="p-2">Estádio</th>
-              <th className="p-2">Gasto</th>
-              <th className="p-2">Ganho</th>
-              <th className="p-2">Lucro</th>
+              <th className="p-2 text-right">Gasto</th>
+              <th className="p-2 text-right">Ganho</th>
+              <th className="p-2 text-right">Lucro</th>
               <th className="p-2">Estado</th>
               <th className="p-2">Ações</th>
             </tr>
