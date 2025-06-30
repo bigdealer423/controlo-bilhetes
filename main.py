@@ -3,7 +3,7 @@ from fastapi import File, UploadFile
 from fastapi.staticfiles import StaticFiles
 import os
 import requests
-from fastapi import FastAPI, Form, HTTPException, Depends, status
+from fastapi import FastAPI, Form, HTTPException, Depends, status, Query
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from typing import List
@@ -441,4 +441,15 @@ def listar_ficheiros_clube(clube_id: int):
     if not os.path.exists(pasta_clube):
         return []
     return os.listdir(pasta_clube)
+
+@app.delete("/clubes/{clube_id}/ficheiros")
+def eliminar_ficheiro_clube(clube_id: int, filename: str = Query(...)):
+    pasta_clube = os.path.join("uploads/clubes", str(clube_id))
+    file_path = os.path.join(pasta_clube, filename)
+
+    if os.path.exists(file_path):
+        os.remove(file_path)
+        return {"detail": "Ficheiro eliminado com sucesso"}
+    else:
+        raise HTTPException(status_code=404, detail="Ficheiro não encontrado")
 
