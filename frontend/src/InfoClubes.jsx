@@ -21,9 +21,11 @@ const fetchClubes = async () => {
     try {
         const res = await fetch("https://controlo-bilhetes.onrender.com/clubes");
         const data = await res.json();
+        // Ordena alfabeticamente ignorando acentos
+        data.sort((a, b) => (a.nome || "").localeCompare(b.nome || "", 'pt', { sensitivity: 'base' }));
+
         setClubes(data);
 
-        // Preencher as notas associadas ao índice
         const notasInicial = {};
         data.forEach((clube, index) => {
             notasInicial[index] = clube.nota || "";
