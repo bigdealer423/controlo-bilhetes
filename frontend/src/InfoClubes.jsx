@@ -12,6 +12,20 @@ export default function InfoClubes() {
   const [editClube, setEditClube] = useState({});
   const [novoClube, setNovoClube] = useState({ nome: '', estadio: '', capacidade: '', site: '', locaisVenda: '', continente: false });
 
+  useEffect(() => {
+    fetchClubes();
+}, []);
+
+const fetchClubes = async () => {
+    try {
+        const res = await fetch("https://controlo-bilhetes.onrender.com/clubes");
+        const data = await res.json();
+        setClubes(data);
+    } catch (error) {
+        console.error("Erro ao carregar clubes:", error);
+    }
+};
+
   const handleExpand = (index) => {
     setExpanded(expanded === index ? null : index);
   };
@@ -21,30 +35,70 @@ export default function InfoClubes() {
     setFicheiros({ ...ficheiros, [index]: files });
   };
 
-  const handleAddClube = () => {
+  const handleAddClube = async () => {
     if (!novoClube.nome.trim()) return;
-    setClubes([...clubes, novoClube]);
-    setNovoClube({ nome: '', estadio: '', capacidade: '', site: '', locaisVenda: '', continente: false });
-  };
+
+    try {
+        const res = await fetch("https://controlo-bilhetes.onrender.com/clubes", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(novoClube),
+        });
+        if (res.ok) {
+            fetchClubes();
+            setNovoClube({ nome: "", estadio: "", capacidade: "", site: "", locaisVenda: "", continente: false, simbolo: "" });
+        } else {
+            console.error(await res.json());
+        }
+    } catch (error) {
+        console.error("Erro ao adicionar clube:", error);
+    }
+};
+
 
   const handleEdit = (index) => {
     setEditIndex(index);
     setEditClube(clubes[index]);
   };
 
-  const handleSaveEdit = (index) => {
-    const updatedClubes = [...clubes];
-    updatedClubes[index] = editClube;
-    setClubes(updatedClubes);
-    setEditIndex(null);
-  };
-
-  const handleDelete = (index) => {
-    if (confirm('Tens a certeza que queres eliminar este clube?')) {
-      const updatedClubes = clubes.filter((_, i) => i !== index);
-      setClubes(updatedClubes);
+  const handleSaveEdit = async (index) => {
+    try {
+        const clubeId = clubes[index].id;
+        const res = await fetch(`https://controlo-bilhetes.onrender.com/clubes/${clubeId}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(editClube),
+        });
+        if (res.ok) {
+            fetchClubes();
+            setEditIndex(null);
+        } else {
+            console.error(await res.json());
+        }
+    } catch (error) {
+        console.error("Erro ao guardar edição:", error);
     }
-  };
+};
+
+
+  const handleDelete = async (index) => {
+    if (confirm("Tens a certeza que queres eliminar este clube?")) {
+        try {
+            const clubeId = clubes[index].id;
+            const res = await fetch(`https://controlo-bilhetes.onrender.com/clubes/${clubeId}`, {
+                method: "DELETE",
+            });
+            if (res.ok) {
+                fetchClubes();
+            } else {
+                console.error(await res.json());
+            }
+        } catch (error) {
+            console.error("Erro ao eliminar clube:", error);
+        }
+    }
+};
+
 
   const formatLink = (url) => {
     if (!url) return '';
