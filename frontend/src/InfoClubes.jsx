@@ -44,39 +44,52 @@ export default function InfoClubes() {
   };
 
   const handleAddClube = async () => {
-    if (!novoClube.nome.trim()) return;
+  if (!novoClube.nome.trim()) return;
 
-    // Logo automático
-    const nomeLower = novoClube.nome.toLowerCase();
-    let simbolo = '';
+  const nomeLower = novoClube.nome.toLowerCase();
+  let simbolo = novoClube.simbolo; // MANTÉM manual caso exista
+
+  if (!simbolo) {
     if (nomeLower.includes('benfica')) simbolo = 'https://upload.wikimedia.org/wikipedia/en/8/89/SL_Benfica_logo.svg';
     if (nomeLower.includes('porto')) simbolo = 'https://upload.wikimedia.org/wikipedia/en/f/f1/FC_Porto.svg';
     if (nomeLower.includes('sporting')) simbolo = 'https://upload.wikimedia.org/wikipedia/en/5/5f/Sporting_CP.svg';
+    if (!simbolo) simbolo = ""; // Envia string vazia em vez de undefined
+  }
 
-    const clubeParaGuardar = { ...novoClube, simbolo };
-
-    try {
-      const res = await fetch('https://controlo-bilhetes.onrender.com/clubes', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(clubeParaGuardar)
-      });
-      if (res.ok) {
-        setNovoClube({
-          nome: '',
-          estadio: '',
-          capacidade: '',
-          site: '',
-          locaisVenda: '',
-          continente: false,
-          simbolo: ''
-        });
-        fetchClubes();
-      }
-    } catch (error) {
-      console.error('Erro ao adicionar clube:', error);
-    }
+  const clubeParaGuardar = {
+    ...novoClube,
+    simbolo,
+    continente: novoClube.continente === 'Sim' ? true : false // garantir booleano
   };
+
+  try {
+    const res = await fetch('https://controlo-bilhetes.onrender.com/clubes', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(clubeParaGuardar)
+    });
+    if (res.ok) {
+      setNovoClube({
+        nome: '',
+        estadio: '',
+        capacidade: '',
+        site: '',
+        locaisVenda: '',
+        continente: false,
+        simbolo: ''
+      });
+      fetchClubes();
+    } else {
+      const errorData = await res.json();
+      console.error('Erro ao adicionar clube:', errorData);
+      alert('Erro ao adicionar clube: ' + JSON.stringify(errorData));
+    }
+  } catch (error) {
+    console.error('Erro ao adicionar clube:', error);
+    alert('Erro ao adicionar clube. Ver console.');
+  }
+};
+
 
   const handleEdit = (index) => {
     setEditIndex(index);
