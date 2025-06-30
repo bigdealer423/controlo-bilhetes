@@ -367,6 +367,44 @@ def resumo_mensal_eventos(db: Session = Depends(get_db)):
         "pagamento": round(pagamento)
     }
     
+# 🔹 Criar as tabelas no arranque
+ClubesInfo.__table__.create(bind=engine, checkfirst=True)
+
+# 🔹 GET todos os clubes
+@app.get("/clubes", response_model=List[ClubesInfoOut])
+def get_clubes(db: Session = Depends(get_db)):
+    return db.query(ClubesInfo).all()
+
+# 🔹 POST novo clube
+@app.post("/clubes", response_model=ClubesInfoOut)
+def add_clube(clube: ClubesInfoCreate, db: Session = Depends(get_db)):
+    novo_clube = ClubesInfo(**clube.dict())
+    db.add(novo_clube)
+    db.commit()
+    db.refresh(novo_clube)
+    return novo_clube
+
+# 🔹 PUT editar clube
+@app.put("/clubes/{clube_id}", response_model=ClubesInfoOut)
+def edit_clube(clube_id: int, clube: ClubesInfoCreate, db: Session = Depends(get_db)):
+    clube_db = db.query(ClubesInfo).filter(ClubesInfo.id == clube_id).first()
+    if not clube_db:
+        raise HTTPException(status_code=404, detail="Clube não encontrado")
+    for key, value in clube.dict().items():
+        setattr(clube_db, key, value)
+    db.commit()
+    db.refresh(clube_db)
+    return clube_db
+
+# 🔹 DELETE clube
+@app.delete("/clubes/{clube_id}")
+def delete_clube(clube_id: int, db: Session = Depends(get_db)):
+    clube_db = db.query(ClubesInfo).filter(ClubesInfo.id == clube_id).first()
+    if not clube_db:
+        raise HTTPException(status_code=404, detail="Clube não encontrado")
+    db.delete(clube_db)
+    db.commit()
+    return {"detail": "Clube eliminado com sucesso"}
 
 
 
