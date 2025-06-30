@@ -396,10 +396,13 @@ const fetchClubes = async () => {
                       {ficheiros[index] && (
                           <ul className="list-disc ml-6">
                               {Array.from(ficheiros[index]).map((file, idx) => (
-                                  <li key={idx} className="text-sm text-gray-700">{file.name}</li>
+                                  <li key={idx} className="text-sm text-gray-700">
+                                      {typeof file === "string" ? file : file.name}
+                                  </li>
                               ))}
                           </ul>
                       )}
+
       
                       {/* Ficheiros guardados no servidor */}
                       {ficheiros[index] && ficheiros[index].length > 0 && (
