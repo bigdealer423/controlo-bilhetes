@@ -47,10 +47,16 @@ export default function InfoClubes() {
   };
 
   const formatLink = (url) => {
+    if (!url) return '';
     if (!url.startsWith('http')) {
       return `https://${url}`;
     }
     return url;
+  };
+
+  const cleanLinkText = (url) => {
+    if (!url) return '';
+    return url.replace(/^(https?:\/\/)?(www\.)?/, '');
   };
 
   return (
@@ -108,10 +114,18 @@ export default function InfoClubes() {
                     <td className="p-2 border text-center">{clube.estadio}</td>
                     <td className="p-2 border text-center">{clube.capacidade}</td>
                     <td className="p-2 border text-center">
-                      <a href={formatLink(clube.site)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">Abrir</a>
+                      {clube.site && (
+                        <a href={formatLink(clube.site)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                          {cleanLinkText(clube.site)}
+                        </a>
+                      )}
                     </td>
                     <td className="p-2 border text-center">
-                      <a href={formatLink(clube.locaisVenda)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">Abrir</a>
+                      {clube.locaisVenda && (
+                        <a href={formatLink(clube.locaisVenda)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                          {cleanLinkText(clube.locaisVenda)}
+                        </a>
+                      )}
                     </td>
                     <td className="p-2 border text-center">{clube.continente ? 'Sim' : 'Não'}</td>
                   </>
