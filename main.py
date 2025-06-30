@@ -410,7 +410,17 @@ def delete_clube(clube_id: int, db: Session = Depends(get_db)):
     return {"detail": "Clube eliminado com sucesso"}
 
 #---------------------------------------------Guardar ficheiros do InfoClubes------------------
+import os
+from fastapi import UploadFile, File
+from fastapi.staticfiles import StaticFiles
+from fastapi import FastAPI
+
+app = FastAPI()
+
 UPLOAD_FOLDER = "uploads/clubes"
+
+# ✅ Garante que a pasta 'uploads/clubes' existe ao iniciar
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 @app.post("/clubes/{clube_id}/upload")
 async def upload_ficheiros_clube(clube_id: int, files: list[UploadFile] = File(...)):
@@ -427,8 +437,7 @@ async def upload_ficheiros_clube(clube_id: int, files: list[UploadFile] = File(.
 
     return {"uploaded_files": saved_files}
 
-from fastapi.staticfiles import StaticFiles
-
+# ✅ Garante a montagem apenas após criar a pasta
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 @app.get("/clubes/{clube_id}/ficheiros")
@@ -437,5 +446,4 @@ def listar_ficheiros_clube(clube_id: int):
     if not os.path.exists(pasta_clube):
         return []
     return os.listdir(pasta_clube)
-
 
