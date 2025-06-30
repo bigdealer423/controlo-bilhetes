@@ -63,7 +63,59 @@ export default function InfoClubes() {
     <div className="p-4">
       <h1 className="text-xl font-bold mb-4">Info Clubes</h1>
 
-      <button onClick={handleAddClube} className="mb-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Adicionar Clube</button>
+          {/* Formulário para preencher campos antes de adicionar */}
+    <div className="mb-4 grid grid-cols-1 md:grid-cols-6 gap-2">
+      <input
+        type="text"
+        placeholder="Nome do Clube"
+        value={novoClube.nome}
+        onChange={e => setNovoClube({ ...novoClube, nome: e.target.value })}
+        className="border p-2 rounded"
+      />
+      <input
+        type="text"
+        placeholder="Estádio"
+        value={novoClube.estadio}
+        onChange={e => setNovoClube({ ...novoClube, estadio: e.target.value })}
+        className="border p-2 rounded"
+      />
+      <input
+        type="text"
+        placeholder="Capacidade"
+        value={novoClube.capacidade}
+        onChange={e => setNovoClube({ ...novoClube, capacidade: e.target.value })}
+        className="border p-2 rounded"
+      />
+      <input
+        type="text"
+        placeholder="Site"
+        value={novoClube.site}
+        onChange={e => setNovoClube({ ...novoClube, site: e.target.value })}
+        className="border p-2 rounded"
+      />
+      <input
+        type="text"
+        placeholder="Locais Venda"
+        value={novoClube.locaisVenda}
+        onChange={e => setNovoClube({ ...novoClube, locaisVenda: e.target.value })}
+        className="border p-2 rounded"
+      />
+      <select
+        value={novoClube.continente ? 'Sim' : 'Não'}
+        onChange={e => setNovoClube({ ...novoClube, continente: e.target.value === 'Sim' })}
+        className="border p-2 rounded"
+      >
+        <option>Sim</option>
+        <option>Não</option>
+      </select>
+    </div>
+    
+    <button
+      onClick={handleAddClube}
+      className="mb-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+    >
+      Adicionar Clube
+    </button>
 
       <table className="min-w-full border border-gray-300">
         <thead className="bg-gray-100">
