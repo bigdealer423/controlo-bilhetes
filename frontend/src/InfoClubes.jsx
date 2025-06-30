@@ -174,38 +174,39 @@ export default function InfoClubes() {
                   {expanded === index ? <FiChevronUp /> : <FiChevronDown />}
                 </button>
               </td>
-              {expanded === index && (
-                <tr className="bg-gray-50">
-                  <td colSpan={7} className="p-4">
-                    <div className="flex flex-col gap-4">
-                      <textarea
-                        className="border p-2 w-full rounded"
-                        rows={4}
-                        placeholder="Notas sobre este clube..."
-                        value={nota}
-                        onChange={(e) => setNota(e.target.value)}
-                      />
-                      <label className="flex items-center gap-2 cursor-pointer">
-                        <FaPaperclip /> Anexar ficheiros (PDF, imagens)
-                        <input
-                          type="file"
-                          accept="application/pdf,image/*"
-                          multiple
-                          className="hidden"
-                          onChange={(e) => handleFileChange(e, index)}
-                        />
-                      </label>
-                      {ficheiros[index] && (
-                        <ul className="list-disc ml-6">
-                          {Array.from(ficheiros[index]).map((file, idx) => (
-                            <li key={idx} className="text-sm text-gray-700">{file.name}</li>
-                          ))}
-                        </ul>
-                      )}
-                    </div>
-                  </td>
-                </tr>
+                  {expanded === index && (
+        <tr className="bg-gray-50">
+          <td colSpan={7} className="p-4">
+            <div className="flex flex-col gap-4">
+              <textarea
+                className="border p-2 w-full rounded"
+                rows={4}
+                placeholder="Notas sobre este clube..."
+                value={nota}
+                onChange={(e) => setNota(e.target.value)}
+              />
+              <label className="flex items-center gap-2 cursor-pointer">
+                <FaPaperclip /> Anexar ficheiros (PDF, imagens)
+                <input
+                  type="file"
+                  accept="application/pdf,image/*"
+                  multiple
+                  className="hidden"
+                  onChange={(e) => handleFileChange(e, index)}
+                />
+              </label>
+              {ficheiros[index] && (
+                <ul className="list-disc ml-6">
+                  {Array.from(ficheiros[index]).map((file, idx) => (
+                    <li key={idx} className="text-sm text-gray-700">{file.name}</li>
+                  ))}
+                </ul>
               )}
+            </div>
+          </td>
+        </tr>
+      )}
+
             </tr>
           ))}
         </tbody>
