@@ -1,4 +1,5 @@
-// InfoClubes.jsxMore actions
+
+// InfoClubes.jsx
 import { useState } from 'react';
 import { FiChevronDown, FiChevronUp, FiPlus, FiEdit, FiTrash } from 'react-icons/fi';
 import { FaPaperclip } from 'react-icons/fa';
@@ -10,64 +11,62 @@ export default function InfoClubes() {
   const [ficheiros, setFicheiros] = useState({});
   const [editIndex, setEditIndex] = useState(null);
   const [editClube, setEditClube] = useState({});
-  const [novoClube, setNovoClube] = useState({ nome: '', estadio: '', capacidade: '', site: '', locaisVenda: '', continente: false, simbolo: '' });
+  const [novoClube, setNovoClube] = useState({ nome: '', estadio: '', capacidade: '', site: '', locaisVenda: '', continente: false });
 
   const handleExpand = (index) => {
     setExpanded(expanded === index ? null : index);
+  };
+
+  const handleFileChange = (e, index) => {
+    const files = e.target.files;
+    setFicheiros({ ...ficheiros, [index]: files });
+  };
 
   const handleAddClube = () => {
     if (!novoClube.nome.trim()) return;
     setClubes([...clubes, novoClube]);
-    setNovoClube({ nome: '', estadio: '', capacidade: '', site: '', locaisVenda: '', continente: false, simbolo: '' });
+    setNovoClube({ nome: '', estadio: '', capacidade: '', site: '', locaisVenda: '', continente: false });
   };
 
   const handleEdit = (index) => {
+    setEditIndex(index);
+    setEditClube(clubes[index]);
+  };
 
+  const handleSaveEdit = (index) => {
+    const updatedClubes = [...clubes];
+    updatedClubes[index] = editClube;
+    setClubes(updatedClubes);
+    setEditIndex(null);
+  };
+
+  const handleDelete = (index) => {
+    if (confirm('Tens a certeza que queres eliminar este clube?')) {
+      const updatedClubes = clubes.filter((_, i) => i !== index);
+      setClubes(updatedClubes);
+    }
+  };
+
+  const formatLink = (url) => {
+    if (!url) return '';
+    if (!url.startsWith('http')) {
+      return `https://${url}`;
+    }
+    return url;
+  };
+
+  const cleanLinkText = (url) => {
+    if (!url) return '';
+    return url.replace(/^(https?:\/\/)?(www\.)?/, '');
+  };
+
+  return (
+    <div className="p-4">
       <h1 className="text-xl font-bold mb-4">Info Clubes</h1>
-      <div className="mb-4 border p-4 rounded bg-gray-50">
-        <h2 className="font-semibold mb-2 flex items-center gap-2"><FiPlus /> Adicionar Clube</h2>
-        <div className="grid grid-cols-2 md:grid-cols-6 gap-2">
-        <div className="grid grid-cols-2 md:grid-cols-7 gap-2">
-          <input type="text" placeholder="Clube" value={novoClube.nome} onChange={e => setNovoClube({ ...novoClube, nome: e.target.value })} className="border p-2 rounded" />
-          <input type="text" placeholder="Estádio" value={novoClube.estadio} onChange={e => setNovoClube({ ...novoClube, estadio: e.target.value })} className="border p-2 rounded" />
-          <input type="text" placeholder="Capacidade" value={novoClube.capacidade} onChange={e => setNovoClube({ ...novoClube, capacidade: e.target.value })} className="border p-2 rounded" />
-
-            <option>Sim</option>
-            <option>Não</option>
-          </select>
-          <input type="text" placeholder="URL do símbolo" value={novoClube.simbolo} onChange={e => setNovoClube({ ...novoClube, simbolo: e.target.value })} className="border p-2 rounded" />
-        </div>
-        <button onClick={handleAddClube} className="mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Adicionar</button>
-      </div>
-
-          {clubes.map((clube, index) => (
-            <>
-              <tr key={index} className="border-b hover:bg-gray-50">
-                {editIndex === index ? (
-                  <td className="p-2 border flex items-center gap-2">
-                    <input type="text" placeholder="URL símbolo" value={editClube.simbolo} onChange={e => setEditClube({ ...editClube, simbolo: e.target.value })} className="border p-1 rounded w-20" />
-                    <input type="text" value={editClube.nome} onChange={e => setEditClube({ ...editClube, nome: e.target.value })} className="border p-1 rounded w-full" />
-                  </td>
-                ) : (
-                  <td className="p-2 border text-center flex items-center gap-2 justify-center">
-                    {clube.simbolo && <img src={clube.simbolo} alt="simbolo" className="w-6 h-6 object-contain" />}
-                    {clube.nome}
-                  </td>
-                )}
-                {editIndex === index ? (
-                  <>
-                    <td className="p-2 border"><input type="text" value={editClube.nome} onChange={e => setEditClube({ ...editClube, nome: e.target.value })} className="border p-1 rounded w-full" /></td>
-                    <td className="p-2 border"><input type="text" value={editClube.estadio} onChange={e => setEditClube({ ...editClube, estadio: e.target.value })} className="border p-1 rounded w-full" /></td>
-                    <td className="p-2 border"><input type="text" value={editClube.capacidade} onChange={e => setEditClube({ ...editClube, capacidade: e.target.value })} className="border p-1 rounded w-full" /></td>
-                    <td className="p-2 border"><input type="text" value={editClube.site} onChange={e => setEditClube({ ...editClube, site: e.target.value })} className="border p-1 rounded w-full" /></td>
-
-                  </>
-                ) : (
-                  <>
-                    <td className="p-2 border text-center">{clube.nome}</td>
                     <td className="p-2 border text-center">{clube.estadio}</td>
                     <td className="p-2 border text-center">{clube.capacidade}</td>
                     <td className="p-2 border text-center">
+                      <a href={formatLink(clube.site)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">Abrir</a>
                       {clube.site && (
                         <a href={formatLink(clube.site)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
                           {cleanLinkText(clube.site)}
@@ -75,14 +74,13 @@ export default function InfoClubes() {
                       )}
                     </td>
                     <td className="p-2 border text-center">
+                      <a href={formatLink(clube.locaisVenda)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">Abrir</a>
                       {clube.locaisVenda && (
                         <a href={formatLink(clube.locaisVenda)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
                           {cleanLinkText(clube.locaisVenda)}
                         </a>
                       )}
                     </td>
-                    <td className="p-2 border text-center">{clube.site && (<a href={formatLink(clube.site)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">{cleanLinkText(clube.site)}</a>)}</td>
-                    <td className="p-2 border text-center">{clube.locaisVenda && (<a href={formatLink(clube.locaisVenda)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">{cleanLinkText(clube.locaisVenda)}</a>)}</td>
                     <td className="p-2 border text-center">{clube.continente ? 'Sim' : 'Não'}</td>
                   </>
                 )}
