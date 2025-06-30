@@ -10,7 +10,6 @@ export default function InfoClubes() {
   const [ficheiros, setFicheiros] = useState({});
   const [editIndex, setEditIndex] = useState(null);
   const [editClube, setEditClube] = useState({});
-  const [novoClube, setNovoClube] = useState({ nome: '', estadio: '', capacidade: '', site: '', locaisVenda: '', continente: false });
   const [novoClube, setNovoClube] = useState({ nome: '', estadio: '', capacidade: '', site: '', locaisVenda: '', continente: false, simbolo: '' });
 
   const handleExpand = (index) => {
@@ -19,7 +18,6 @@ export default function InfoClubes() {
   const handleAddClube = () => {
     if (!novoClube.nome.trim()) return;
     setClubes([...clubes, novoClube]);
-    setNovoClube({ nome: '', estadio: '', capacidade: '', site: '', locaisVenda: '', continente: false });
     setNovoClube({ nome: '', estadio: '', capacidade: '', site: '', locaisVenda: '', continente: false, simbolo: '' });
   };
 
