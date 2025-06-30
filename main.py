@@ -427,5 +427,15 @@ async def upload_ficheiros_clube(clube_id: int, files: list[UploadFile] = File(.
 
     return {"uploaded_files": saved_files}
 
+from fastapi.staticfiles import StaticFiles
+
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+
+@app.get("/clubes/{clube_id}/ficheiros")
+def listar_ficheiros_clube(clube_id: int):
+    pasta_clube = os.path.join(UPLOAD_FOLDER, str(clube_id))
+    if not os.path.exists(pasta_clube):
+        return []
+    return os.listdir(pasta_clube)
 
 
