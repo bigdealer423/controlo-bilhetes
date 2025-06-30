@@ -137,6 +137,27 @@ def eliminar_evento_dropdown(evento_id: int, db: Session = Depends(get_db)):
     db.commit()
     return {"detail": "Evento eliminado com sucesso"}
 
+@app.put("/eventos_dropdown/{evento_id}")
+def editar_evento_dropdown(evento_id: int, evento: EventoDropdownCreate, db: Session = Depends(get_db)):
+    evento_existente = db.query(EventoDropdown).filter(EventoDropdown.id == evento_id).first()
+    if not evento_existente:
+        raise HTTPException(status_code=404, detail="Evento não encontrado")
+    
+    nome_antigo = evento_existente.nome
+    nome_novo = evento.nome
+
+    evento_existente.nome = nome_novo
+    db.commit()
+
+    # Atualizar nas tabelas relacionadas
+    db.query(EventoCompletoModel).filter(EventoCompletoModel.evento == nome_antigo).update({"evento": nome_novo})
+    db.query(ListagemVendas).filter(ListagemVendas.evento == nome_antigo).update({"evento": nome_novo})
+    db.query(Compra).filter(Compra.evento == nome_antigo).update({"evento": nome_novo})
+    db.commit()
+
+    return {"detail": "Evento atualizado e propagado com sucesso"}
+
+
 # ---------------- EVENTOS COMPLETOS ----------------
 # ✅ Função auxiliar para recalcular e guardar valores corretos
 def atualizar_ganhos_gastos_eventos(db: Session):
