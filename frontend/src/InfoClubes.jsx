@@ -137,44 +137,46 @@ export default function InfoClubes() {
           </tr>
         </thead>
         <tbody>
-          {clubes.map((clube, index) => (
-            <tr key={index} className="border-b hover:bg-gray-50">
-              <td className="p-2 border text-center flex items-center justify-center gap-2">
-  {clube.simbolo && (
-    <img src={clube.simbolo} alt="Logo" className="w-6 h-6 object-contain" />
-  )}
-  {clube.nome}
-</td>
+  {clubes.map((clube, index) => (
+    <>
+      <tr key={index} className="border-b hover:bg-gray-50">
+        <td className="p-2 border text-center flex items-center justify-center gap-2">
+          {clube.simbolo && (
+            <img src={clube.simbolo} alt="Logo" className="w-6 h-6 object-contain" />
+          )}
+          {clube.nome}
+        </td>
+        <td className="p-2 border text-center">{clube.estadio}</td>
+        <td className="p-2 border text-center">{clube.capacidade}</td>
+        <td className="p-2 border text-center">
+          {clube.site && (
+            <a href={formatLink(clube.site)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+              {cleanLinkText(clube.site)}
+            </a>
+          )}
+        </td>
+        <td className="p-2 border text-center">
+          {clube.locaisVenda && (
+            <a href={formatLink(clube.locaisVenda)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+              {cleanLinkText(clube.locaisVenda)}
+            </a>
+          )}
+        </td>
+        <td className="p-2 border text-center">{clube.continente ? 'Sim' : 'Não'}</td>
+        <td className="p-2 border text-center flex gap-2 justify-center">
+          {editIndex === index ? (
+            <button onClick={() => handleSaveEdit(index)} className="text-green-600"><FiPlus /></button>
+          ) : (
+            <button onClick={() => handleEdit(index)} className="text-blue-600"><FiEdit /></button>
+          )}
+          <button onClick={() => handleDelete(index)} className="text-red-600"><FiTrash /></button>
+          <button onClick={() => handleExpand(index)} className="text-gray-600">
+            {expanded === index ? <FiChevronUp /> : <FiChevronDown />}
+          </button>
+        </td>
+      </tr>
 
-              <td className="p-2 border text-center">{clube.estadio}</td>
-              <td className="p-2 border text-center">{clube.capacidade}</td>
-              <td className="p-2 border text-center">
-                {clube.site && (
-                  <a href={formatLink(clube.site)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
-                    {cleanLinkText(clube.site)}
-                  </a>
-                )}
-              </td>
-              <td className="p-2 border text-center">
-                {clube.locaisVenda && (
-                  <a href={formatLink(clube.locaisVenda)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
-                    {cleanLinkText(clube.locaisVenda)}
-                  </a>
-                )}
-              </td>
-              <td className="p-2 border text-center">{clube.continente ? 'Sim' : 'Não'}</td>
-              <td className="p-2 border text-center flex gap-2 justify-center">
-                {editIndex === index ? (
-                  <button onClick={() => handleSaveEdit(index)} className="text-green-600"><FiPlus /></button>
-                ) : (
-                  <button onClick={() => handleEdit(index)} className="text-blue-600"><FiEdit /></button>
-                )}
-                <button onClick={() => handleDelete(index)} className="text-red-600"><FiTrash /></button>
-                <button onClick={() => handleExpand(index)} className="text-gray-600">
-                  {expanded === index ? <FiChevronUp /> : <FiChevronDown />}
-                </button>
-              </td>
-                  {expanded === index && (
+      {expanded === index && (
         <tr className="bg-gray-50">
           <td colSpan={7} className="p-4">
             <div className="flex flex-col gap-4">
@@ -206,10 +208,9 @@ export default function InfoClubes() {
           </td>
         </tr>
       )}
-
-            </tr>
-          ))}
-        </tbody>
+    </>
+  ))}
+</tbody>
       </table>
     </div>
   );
