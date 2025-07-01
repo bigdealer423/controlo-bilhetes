@@ -259,7 +259,7 @@ const fetchClubes = async () => {
   
   <button
     onClick={handleAddClube}
-    <tr className="border-b hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-300">
+    className="border-b hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-300">
   >
     Adicionar Clube
   </button>
