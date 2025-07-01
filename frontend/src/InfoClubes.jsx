@@ -200,7 +200,7 @@ const fetchClubes = async () => {
 
 
   return (
-    <div className="p-4">
+    <div className="p-4 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen transition-colors duration-300">
       <h1 className="text-xl font-bold mb-4">Info Clubes</h1>
 
           {/* Formulário para preencher campos antes de adicionar */}
@@ -210,40 +210,40 @@ const fetchClubes = async () => {
         placeholder="Nome do Clube"
         value={novoClube.nome}
         onChange={e => setNovoClube({ ...novoClube, nome: e.target.value })}
-        className="border p-2 rounded"
+        className="border p-2 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
       />
       <input
         type="text"
         placeholder="Estádio"
         value={novoClube.estadio}
         onChange={e => setNovoClube({ ...novoClube, estadio: e.target.value })}
-        className="border p-2 rounded"
+        className="border p-2 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
       />
       <input
         type="text"
         placeholder="Capacidade"
         value={novoClube.capacidade}
         onChange={e => setNovoClube({ ...novoClube, capacidade: e.target.value })}
-        className="border p-2 rounded"
+        className="border p-2 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
       />
       <input
         type="text"
         placeholder="Site"
         value={novoClube.site}
         onChange={e => setNovoClube({ ...novoClube, site: e.target.value })}
-        className="border p-2 rounded"
+        className="border p-2 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
       />
       <input
         type="text"
         placeholder="Locais Venda"
         value={novoClube.locais_venda}
         onChange={e => setNovoClube({ ...novoClube, locais_venda: e.target.value })}
-        className="border p-2 rounded"
+        className="border p-2 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
       />
       <select
         value={novoClube.continente ? 'Sim' : 'Não'}
         onChange={e => setNovoClube({ ...novoClube, continente: e.target.value === 'Sim' })}
-        className="border p-2 rounded"
+        className="border p-2 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
       >
         <option>Sim</option>
         <option>Não</option>
@@ -253,13 +253,13 @@ const fetchClubes = async () => {
       placeholder="URL do símbolo"
       value={novoClube.simbolo || ''}
       onChange={e => setNovoClube({ ...novoClube, simbolo: e.target.value })}
-      className="border p-2 rounded"
+      className="border p-2 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
     />
   </div>
   
   <button
     onClick={handleAddClube}
-    className="mb-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+    <tr className="border-b hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-300">
   >
     Adicionar Clube
   </button>
@@ -271,8 +271,8 @@ const fetchClubes = async () => {
       onChange={(e) => setFiltroPesquisa(e.target.value)}
       className="mb-4 p-2 border rounded w-full md:w-1/3"
     />
-      <table className="min-w-full border border-gray-300">
-        <thead className="bg-gray-100">
+      <table className="min-w-full border border-gray-300 dark:border-gray-600 transition-colors duration-300">
+        <thead className="bg-gray-100 dark:bg-gray-800 transition-colors duration-300">
           <tr>
             <th className="p-2 border">Nome</th>
             <th className="p-2 border">Estádio</th>
@@ -288,7 +288,7 @@ const fetchClubes = async () => {
   .filter(clube => (clube.nome || "").toLowerCase().includes(filtroPesquisa.toLowerCase()))
   .map((clube, index) => (
     <React.Fragment key={index}>
-      <tr className="border-b hover:bg-gray-50">
+      <tr className="border-b hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-300">
         {/* Nome e logo */}
         <td className="p-2 border text-center flex items-center justify-center gap-2">
           {editIndex === index ? (
@@ -410,7 +410,7 @@ const fetchClubes = async () => {
 
       {/* Expansão de notas e anexos */}
       {expanded === index && (
-        <tr className="bg-gray-50">
+        <tr className="bg-gray-50 dark:bg-gray-800 transition-colors duration-300">
           <td colSpan={7} className="p-4">
             <div className="flex flex-col gap-4">
               <textarea
