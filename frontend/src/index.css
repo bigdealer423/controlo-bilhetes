@@ -1,3 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Fundo geral em modo claro e escuro */
+html, body {
+  @apply bg-gray-100 dark:bg-gray-900 transition-colors duration-300;
+}
