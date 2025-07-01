@@ -307,14 +307,24 @@ const fetchClubes = async () => {
                 placeholder="URL símbolo"
                 value={editClube.simbolo || ''}
                 onChange={e => setEditClube({ ...editClube, simbolo: e.target.value })}
-                className="border p-1 rounded w-24"
+                className="border p-1 rounded w-full
+             bg-white dark:bg-gray-800
+             text-gray-900 dark:text-gray-100
+             border-gray-300 dark:border-gray-600
+             placeholder-gray-500 dark:placeholder-gray-400
+             transition-colors duration-300"
               />
               <input
                 type="text"
                 placeholder="Nome"
                 value={editClube.nome}
                 onChange={e => setEditClube({ ...editClube, nome: e.target.value })}
-                className="border p-1 rounded w-full"
+                className="border p-1 rounded w-full
+             bg-white dark:bg-gray-800
+             text-gray-900 dark:text-gray-100
+             border-gray-300 dark:border-gray-600
+             placeholder-gray-500 dark:placeholder-gray-400
+             transition-colors duration-300"
               />
             </>
           ) : (
@@ -334,7 +344,12 @@ const fetchClubes = async () => {
               type="text"
               value={editClube.estadio}
               onChange={e => setEditClube({ ...editClube, estadio: e.target.value })}
-              className="border p-1 rounded w-full"
+              className="border p-1 rounded w-full
+             bg-white dark:bg-gray-800
+             text-gray-900 dark:text-gray-100
+             border-gray-300 dark:border-gray-600
+             placeholder-gray-500 dark:placeholder-gray-400
+             transition-colors duration-300"
             />
           ) : (
             clube.estadio
@@ -348,7 +363,12 @@ const fetchClubes = async () => {
               type="text"
               value={editClube.capacidade}
               onChange={e => setEditClube({ ...editClube, capacidade: e.target.value })}
-              className="border p-1 rounded w-full"
+              className="border p-1 rounded w-full
+             bg-white dark:bg-gray-800
+             text-gray-900 dark:text-gray-100
+             border-gray-300 dark:border-gray-600
+             placeholder-gray-500 dark:placeholder-gray-400
+             transition-colors duration-300"
             />
           ) : (
             clube.capacidade
@@ -362,7 +382,12 @@ const fetchClubes = async () => {
               type="text"
               value={editClube.site}
               onChange={e => setEditClube({ ...editClube, site: e.target.value })}
-              className="border p-1 rounded w-full"
+              className="border p-1 rounded w-full
+             bg-white dark:bg-gray-800
+             text-gray-900 dark:text-gray-100
+             border-gray-300 dark:border-gray-600
+             placeholder-gray-500 dark:placeholder-gray-400
+             transition-colors duration-300"
             />
           ) : clube.site ? (
             <a href={formatLink(clube.site)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
@@ -378,7 +403,12 @@ const fetchClubes = async () => {
               type="text"
               value={editClube.locais_venda}
               onChange={e => setEditClube({ ...editClube, locais_venda: e.target.value })}
-              className="border p-1 rounded w-full"
+              className="border p-1 rounded w-full
+             bg-white dark:bg-gray-800
+             text-gray-900 dark:text-gray-100
+             border-gray-300 dark:border-gray-600
+             placeholder-gray-500 dark:placeholder-gray-400
+             transition-colors duration-300"
             />
           ) : clube.locais_venda ? (
             <a href={formatLink(clube.locais_venda)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
@@ -393,7 +423,12 @@ const fetchClubes = async () => {
             <select
               value={editClube.continente ? 'Sim' : 'Não'}
               onChange={e => setEditClube({ ...editClube, continente: e.target.value === 'Sim' })}
-              className="border p-1 rounded w-full"
+              className="border p-1 rounded w-full
+             bg-white dark:bg-gray-800
+             text-gray-900 dark:text-gray-100
+             border-gray-300 dark:border-gray-600
+             placeholder-gray-500 dark:placeholder-gray-400
+             transition-colors duration-300"
             >
               <option>Sim</option>
               <option>Não</option>
