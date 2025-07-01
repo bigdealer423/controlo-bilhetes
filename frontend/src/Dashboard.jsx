@@ -82,7 +82,7 @@ export default function Dashboard({ onAtualizarEventos }) {
   
           <button
             onClick={handleLogout}
-            className="text-red-600 hover:text-red-800 text-sm border border-red-600 px-2 py-1 rounded"
+            className="text-red-600 hover:text-red-800 text-sm border border-red-600 dark:border-red-400 px-2 py-1 rounded bg-white dark:bg-gray-700 dark:text-red-400 transition-colors duration-300"
           >
             Logout
           </button>
