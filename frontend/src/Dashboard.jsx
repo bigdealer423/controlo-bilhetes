@@ -52,6 +52,7 @@ export default function Dashboard({ onAtualizarEventos }) {
 
  
   return (
+    <>
       <div className="bg-gray-100 p-3 flex justify-between items-center border-b mb-4">
         <div className="flex gap-2 flex-wrap">
           {menus.map((menu) => (
