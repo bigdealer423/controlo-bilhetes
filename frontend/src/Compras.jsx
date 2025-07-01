@@ -136,11 +136,11 @@ export default function Compras() {
   };
 
   return (
-    <div className="p-6 max-w-6xl mx-auto">
+    <div className="p-6 max-w-6xl mx-auto bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
       <h1 className="text-2xl font-bold mb-4">Compras</h1>
 
       {/* Filtro */}
-      <div className="bg-gray-50 shadow-sm rounded p-4 mb-4">
+      <div className="bg-gray-50 dark:bg-gray-800 shadow-sm rounded p-4 mb-4 transition-colors duration-300">
         <div className="flex gap-4 items-end">
           <select name="evento" className="input" value={filtros.evento} onChange={handleFiltroChange}>
             <option value="">-- Filtrar por Evento --</option>
@@ -152,7 +152,7 @@ export default function Compras() {
       </div>
 
       {/* Form adicionar */}
-      <div className="bg-white shadow-md rounded p-4 mb-6">
+      <div className="bg-white dark:bg-gray-900 shadow-md rounded p-4 mb-6 transition-colors duration-300">
         <h2 className="text-lg font-semibold mb-2">{modoEdicao ? "Editar Compra" : "Nova Compra"}</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <select name="evento" className="input" value={novaCompra.evento} onChange={handleChange}>
@@ -190,10 +190,10 @@ export default function Compras() {
         </div>
 
       {/* Tabela */}
-      <div className="bg-white shadow-md rounded p-4 relative">
-        <table className="min-w-full border text-sm text-left text-gray-600">
+      <div className="bg-white dark:bg-gray-900 shadow-md rounded p-4 relative transition-colors duration-300">
+        <table className="min-w-full border dark:border-gray-700 text-sm text-left text-gray-600 dark:text-gray-300 transition-colors duration-300">
           <thead>
-            <tr className="bg-gray-100">
+            <tr className="bg-gray-100 dark:bg-gray-700 transition-colors duration-300">
               <th className="p-2">Evento</th>
               <th className="p-2">Local Compra</th>
               <th className="p-2">Bancada</th>
@@ -252,7 +252,7 @@ export default function Compras() {
         {/* Modal de confirmação */}
         {confirmarEliminarId !== null && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-            <div className="bg-white rounded p-6 shadow-lg">
+            <div className="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded p-6 shadow-lg transition-colors duration-300">
               <p>Tem a certeza que deseja eliminar esta compra?</p>
               <div className="mt-4 flex justify-end gap-4">
                 <button onClick={() => eliminarCompra(confirmarEliminarId)} className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Sim, eliminar</button>
