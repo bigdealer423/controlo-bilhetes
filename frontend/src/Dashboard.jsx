@@ -59,10 +59,10 @@ export default function Dashboard({ onAtualizarEventos }) {
             <button
               key={menu.rota}
               onClick={(e) => handleMenuClick(e, menu.rota)}  // Impede navegação imediata
-              className={`px-3 py-1 text-sm rounded ${
+              className={`px-3 py-1 text-sm rounded transition-colors duration-300 ${
                 rotaAtual === menu.rota
                   ? "bg-blue-600 text-white"
-                  : "bg-white text-gray-700 border hover:bg-blue-50"
+                  : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-100 border border-gray-300 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-gray-600"
               }`}
             >
               {menu.nome}
