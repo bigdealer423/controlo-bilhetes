@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import EventoModal from "./EventoModal";
 import { FiSettings } from "react-icons/fi";
 import { useAuth } from "./AuthContext";
-import ThemeToggle from "./components/ThemeToggle";
 
 
 export default function Dashboard({ onAtualizarEventos }) {
@@ -72,6 +71,7 @@ export default function Dashboard({ onAtualizarEventos }) {
         </div>
   
         <div className="flex items-center space-x-4 ml-4">
+          <ThemeToggle />  {/* Aqui, alinhado com os botões de topo */}
           <button
             onClick={(e) => handleRodaDentadaClick(e)}  // Garante que a roda dentada apenas abre o modal
             className="text-gray-700 hover:text-black"
