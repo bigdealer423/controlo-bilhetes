@@ -88,11 +88,12 @@ export default function Dashboard({ onAtualizarEventos }) {
           </button>
         </div>
   
-        <EventoModal
+                <EventoModal
           visivel={mostrarModal}
           fechar={() => setMostrarModal(false)}  // Garante que o modal pode ser fechado
           onAtualizar={onAtualizarEventos}
         />
       </div>
-    );
-  }
+    </>
+  );
+}
