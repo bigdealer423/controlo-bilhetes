@@ -142,7 +142,7 @@ export default function Compras() {
       {/* Filtro */}
       <div className="bg-gray-50 dark:bg-gray-800 shadow-sm rounded p-4 mb-4 transition-colors duration-300">
         <div className="flex gap-4 items-end">
-          <select name="evento" className="input" value={filtros.evento} onChange={handleFiltroChange}>
+          <select name="evento" className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" value={filtros.evento} onChange={handleFiltroChange}>
             <option value="">-- Filtrar por Evento --</option>
             {eventosDropdown.map(e => <option key={e.id} value={e.nome}>{e.nome}</option>)}
           </select>
@@ -155,21 +155,21 @@ export default function Compras() {
       <div className="bg-white dark:bg-gray-900 shadow-md rounded p-4 mb-6 transition-colors duration-300">
         <h2 className="text-lg font-semibold mb-2">{modoEdicao ? "Editar Compra" : "Nova Compra"}</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <select name="evento" className="input" value={novaCompra.evento} onChange={handleChange}>
+          <select name="evento" className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" value={novaCompra.evento} onChange={handleChange}>
             <option value="">-- Evento --</option>
             {eventosDropdown.map(e => <option key={e.id} value={e.nome}>{e.nome}</option>)}
           </select>
-          <select name="local_compras" className="input" value={novaCompra.local_compras} onChange={handleChange}>
+          <select name="local_compras" className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" value={novaCompra.local_compras} onChange={handleChange}>
             <option value="">-- Local da Compra --</option>
             {locaisCompra.map(local => <option key={local} value={local}>{local}</option>)}
           </select>
-          <input list="bancadas" name="bancada" className="input" placeholder="Bancada" value={novaCompra.bancada} onChange={handleChange} />
+          <input list="bancadas" name="bancada" className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" placeholder="Bancada" value={novaCompra.bancada} onChange={handleChange} />
           <datalist id="bancadas">{bancadas.map(b => <option key={b} value={b} />)}</datalist>
-          <input list="setores" name="setor" className="input" placeholder="Setor" value={novaCompra.setor} onChange={handleChange} />
+          <input list="setores" name="setor" className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" placeholder="Setor" value={novaCompra.setor} onChange={handleChange} />
           <datalist id="setores">{setores.map(s => <option key={s} value={s} />)}</datalist>
-          <input name="fila" className="input" placeholder="Fila" value={novaCompra.fila} onChange={handleChange} />
-          <input name="quantidade" type="number" className="input" placeholder="Qt." value={novaCompra.quantidade} onChange={handleChange} />
-          <input name="gasto" type="text" className="input" placeholder="Gasto (€)" value={novaCompra.gasto} onChange={handleChange} />
+          <input name="fila" className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" placeholder="Fila" value={novaCompra.fila} onChange={handleChange} />
+          <input name="quantidade" type="number" className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" placeholder="Qt." value={novaCompra.quantidade} onChange={handleChange} />
+          <input name="gasto" type="text" className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" placeholder="Gasto (€)" value={novaCompra.gasto} onChange={handleChange} />
         </div>
         <button onClick={modoEdicao ? atualizarCompra : guardarCompra}
           className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
@@ -210,20 +210,20 @@ export default function Compras() {
                 {modoEdicao === c.id ? (
                   <>
                     <td className="p-2">
-                      <select name="evento" className="input" value={novaCompra.evento} onChange={handleChange}>
+                      <select name="evento" className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" value={novaCompra.evento} onChange={handleChange}>
                         {eventosDropdown.map(e => <option key={e.id} value={e.nome}>{e.nome}</option>)}
                       </select>
                     </td>
                     <td className="p-2">
-                      <select className="input" value={novaCompra.local_compras} onChange={e => setNovaCompra({ ...novaCompra, local_compras: e.target.value })}>
+                      <select className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" value={novaCompra.local_compras} onChange={e => setNovaCompra({ ...novaCompra, local_compras: e.target.value })}>
                         {locaisCompra.map(local => <option key={local} value={local}>{local}</option>)}
                       </select>
                     </td>
-                    <td className="p-2"><input name="bancada" className="input" value={novaCompra.bancada} onChange={handleChange} /></td>
-                    <td className="p-2"><input name="setor" className="input" value={novaCompra.setor} onChange={handleChange} /></td>
-                    <td className="p-2"><input name="fila" className="input" value={novaCompra.fila} onChange={handleChange} /></td>
-                    <td className="p-2"><input name="quantidade" type="number" className="input" value={novaCompra.quantidade} onChange={handleChange} /></td>
-                    <td className="p-2"><input name="gasto" className="input" value={novaCompra.gasto} onChange={handleChange} /></td>
+                    <td className="p-2"><input name="bancada" className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" value={novaCompra.bancada} onChange={handleChange} /></td>
+                    <td className="p-2"><input name="setor" className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" value={novaCompra.setor} onChange={handleChange} /></td>
+                    <td className="p-2"><input name="fila" className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" value={novaCompra.fila} onChange={handleChange} /></td>
+                    <td className="p-2"><input name="quantidade" type="number" className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" value={novaCompra.quantidade} onChange={handleChange} /></td>
+                    <td className="p-2"><input name="gasto" className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" value={novaCompra.gasto} onChange={handleChange} /></td>
                     <td className="p-2 flex gap-2">
                       <button onClick={atualizarCompra} className="text-green-600 hover:underline">Guardar</button>
                       <button onClick={() => setModoEdicao(null)} className="text-gray-600 hover:underline">Cancelar</button>
