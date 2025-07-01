@@ -272,8 +272,14 @@ const fetchClubes = async () => {
       placeholder="🔍 Pesquisar clube..."
       value={filtroPesquisa}
       onChange={(e) => setFiltroPesquisa(e.target.value)}
-      className="mb-4 p-2 border rounded w-full md:w-1/3"
+      className="mb-4 p-2 border rounded w-full md:w-1/3 
+                 bg-white dark:bg-gray-800 
+                 text-gray-900 dark:text-gray-100 
+                 border-gray-300 dark:border-gray-600 
+                 placeholder-gray-500 dark:placeholder-gray-400 
+                 transition-colors duration-300"
     />
+
       <table className="min-w-full border border-gray-300 dark:border-gray-600 transition-colors duration-300">
         <thead className="bg-gray-100 dark:bg-gray-800 transition-colors duration-300">
           <tr>
