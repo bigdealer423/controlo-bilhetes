@@ -136,7 +136,7 @@ export default function Compras() {
   };
 
   return (
-    <div className="p-6 max-w-6xl mx-auto bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
+     <div className="p-6 max-w-6xl mx-auto bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen transition-colors duration-300">
       <h1 className="text-2xl font-bold mb-4">Compras</h1>
 
       {/* Filtro */}
