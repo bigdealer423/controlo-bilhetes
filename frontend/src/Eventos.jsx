@@ -320,10 +320,10 @@ return (
 </div>
 
 
-      <div className="bg-white shadow-md rounded p-4">
-        <table className="min-w-full border text-sm text-left text-gray-600">
-          <thead>
-            <tr className="bg-gray-100">
+      <div className="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-md rounded p-4 transition-colors duration-300">
+        <table className="min-w-full border border-gray-300 dark:border-gray-600 text-sm text-left text-gray-900 dark:text-gray-100 transition-colors duration-300">
+          <thead className="bg-gray-100 dark:bg-gray-800 transition-colors duration-300">
+             <tr>
               <th></th>
               <th className="p-2">Data</th>
               <th className="p-2">Evento</th>
@@ -338,7 +338,18 @@ return (
           <tbody>
             {registos.map(r => (
               <>
-                <tr key={r.id}className={`cursor-pointer ${linhaExpandida === r.id? "bg-blue-100 text-black font-semibold": r.estado === "Pago"? "bg-green-100": r.estado === "Entregue"? "bg-yellow-200": ""}`}>
+                <tr
+  key={r.id}
+  className={`cursor-pointer ${
+    linhaExpandida === r.id
+      ? "bg-blue-100 text-black font-semibold"
+      : r.estado === "Pago"
+      ? "bg-green-100"
+      : r.estado === "Entregue"
+      ? "bg-yellow-200"
+      : ""
+  } transition-colors duration-300`}
+>
                  <td className="p-2">
   {vendas.some(v => v.evento === r.evento) || compras.some(c => c.evento === r.evento) ? (
     <button onClick={() => setLinhaExpandida(linhaExpandida === r.id ? null : r.id)}>
@@ -422,7 +433,7 @@ return (
                   <>
                     
                     
-                   <tr className="bg-indigo-50 text-sm border-t border-l-4 border-blue-600">
+                   <tr className="bg-indigo-50 dark:bg-gray-800 text-sm border-t border-l-4 border-blue-600 transition-colors duration-300">
   <td colSpan="9" className="p-2 font-semibold">
     Vendas ({
       vendas
