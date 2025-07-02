@@ -313,7 +313,7 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
   </div>
 </div>
 
-      <div className="bg-white shadow-md rounded p-4 mb-6">
+      <div className="bg-white dark:bg-gray-800 shadow-md rounded p-4 mb-6 transition-colors duration-300">
         <h2 className="text-lg font-semibold mb-2">Adicionar Registo</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <input name="id_venda" type="number" className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" placeholder="ID Venda" value={novoRegisto.id_venda} onChange={handleChange} />
