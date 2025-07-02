@@ -206,8 +206,8 @@ const fetchClubes = async () => {
 };
 
 
-  return (
-    <div className={`p-4 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen transition-all duration-500 ${
+ return (
+    <div className={`p-6 max-w-7xl mx-auto bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen transition-all duration-500 ${
         visible ? "opacity-100 scale-100" : "opacity-0 scale-95"
       }`}
     >
