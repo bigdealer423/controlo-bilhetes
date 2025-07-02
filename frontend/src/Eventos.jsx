@@ -626,7 +626,7 @@ return (
       {/* Modal de confirmação */}
       {mostrarModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded shadow-lg">
+          <div className="bg-white dark:bg-gray-800 dark:text-gray-100 p-6 rounded shadow-lg transition-colors duration-300">
             <p className="mb-4">Tem a certeza que quer eliminar este registo?</p>
             <div className="flex justify-end space-x-4">
               <button onClick={() => setMostrarModal(false)} className="bg-gray-300 px-4 py-2 rounded">
