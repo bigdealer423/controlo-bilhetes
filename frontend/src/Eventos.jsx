@@ -343,7 +343,7 @@ return (
   key={r.id}
   className={`cursor-pointer ${
     linhaExpandida === r.id
-      ? "bg-blue-100 dark:bg-blue-800 text-black font-semibold"
+      ? "bg-blue-100 dark:bg-blue-800 text-gray-900 dark:text-gray-100 font-semibold"
       : r.estado === "Pago"
       ? "bg-green-100"
       : r.estado === "Entregue"
