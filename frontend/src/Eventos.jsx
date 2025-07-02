@@ -294,7 +294,7 @@ return (
     <div className="p-6 max-w-6xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">Resumo de Eventos</h1>
 
-      <div className="bg-yellow-100 border-l-4 border-yellow-600 text-yellow-800 p-4 mb-6 rounded">
+      <div className="bg-yellow-100 dark:bg-yellow-800 border-l-4 border-yellow-600 text-yellow-800 p-4 mb-6 rounded">
 
   <p className="font-semibold">Resumo Mensal</p>
   <p>📆 Lucro de {new Date().toLocaleString("pt-PT", { month: "long", year: "numeric" })}: <strong>{resumoMensal.lucro} €</strong></p>
@@ -342,7 +342,7 @@ return (
   key={r.id}
   className={`cursor-pointer ${
     linhaExpandida === r.id
-      ? "bg-blue-100 text-black font-semibold"
+      ? "bg-blue-100 dark:bg-blue-800 text-black font-semibold"
       : r.estado === "Pago"
       ? "bg-green-100"
       : r.estado === "Entregue"
@@ -451,7 +451,7 @@ return (
     })
   </td>
 </tr>
-<tr className="border-l-4 border-blue-600 bg-blue-100 text-xs font-semibold">
+<tr className="border-l-4 border-blue-600 bg-blue-100 dark:bg-blue-800 text-xs font-semibold">
   <td className="p-2">ID Venda</td>
   <td className="p-2" colSpan="3">Bilhetes</td>
   <td className="p-2">Ganho</td>
@@ -466,7 +466,7 @@ return (
 
 {vendas.filter(v => v.evento === r.evento).map(v =>
   modoEdicaoVenda === v.id ? (
-    <tr key={"v" + v.id} className="border-l-4 border-blue-600 bg-blue-50 text-xs border-t">
+    <tr key={"v" + v.id} className="border-l-4 border-blue-600 bg-blue-50 dark:bg-blue-900 text-xs border-t">
       <td className="p-2">
         <input
           type="number"
@@ -508,7 +508,7 @@ return (
       </td>
     </tr>
   ) : (
-    <tr key={"v" + v.id} className="border-l-4 border-blue-600 bg-blue-50 text-xs border-t">
+    <tr key={"v" + v.id} className="border-l-4 border-blue-600 bg-blue-50 dark:bg-blue-900 text-xs border-t">
       <td className="p-2">{v.id_venda}</td>
       {/* colSpan=3 para bater certo */}
       <td className="p-2" colSpan="3">{v.estadio}</td>
@@ -540,12 +540,12 @@ return (
 )}
 
 
-   <tr className="bg-yellow-50 text-sm border-t border-l-4 border-yellow-600">
+   <tr className="bg-yellow-50 dark:bg-yellow-900 text-sm border-t border-l-4 border-yellow-600">
   <td colSpan="9" className="p-2 font-semibold">
     Compras ({compras.filter(c => c.evento === r.evento).reduce((acc, c) => acc + Number(c.quantidade || 0), 0)})
   </td>
 </tr>
-<tr className="border-l-4 border-yellow-600 bg-yellow-100 text-xs font-semibold">
+<tr className="border-l-4 border-yellow-600 bg-yellow-100 dark:bg-yellow-800 text-xs font-semibold">
   <td className="p-2">Local</td>
   <td className="p-2">Bancada</td>
   <td className="p-2">Setor</td>
@@ -558,7 +558,7 @@ return (
 </tr>
 
 {compras.filter(c => c.evento === r.evento).map(c => (
-  <tr key={"c" + c.id} className="border-l-4 border-yellow-600 bg-yellow-50 text-xs border-t">
+  <tr key={"c" + c.id} className="border-l-4 border-yellow-600 bg-yellow-50 dark:bg-yellow-900 text-xs border-t">
     {modoEdicaoCompra === c.id ? (
       <>
         <td className="p-2">
