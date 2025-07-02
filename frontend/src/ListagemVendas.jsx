@@ -278,7 +278,7 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
   });
 };
   return (
-    <div className="p-6 max-w-6xl mx-auto min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
+    <div className="bg-white dark:bg-gray-800 dark:text-gray-100 rounded p-6 shadow-lg transition-colors duration-300">
       <h1 className="text-2xl font-bold mb-4">Listagem de Vendas</h1>
       <div className="bg-yellow-100 dark:bg-yellow-900 border-l-4 border-yellow-500 dark:border-yellow-400 text-yellow-700 dark:text-yellow-200 p-4 mb-6 rounded transition-colors duration-300">
   <p className="font-semibold">Resumo Diário</p>
@@ -307,7 +307,7 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
       type="text"
       value={filtroIdVenda}
       onChange={(e) => setFiltroIdVenda(e.target.value)}
-      className="border p-2 rounded"
+      className="border p-2 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
       placeholder="ex: 123456789"
     />
   </div>
