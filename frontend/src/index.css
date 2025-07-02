@@ -2,7 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Fundo geral em modo claro e escuro */
-html, body {
-  @apply bg-gray-100 dark:bg-gray-900 transition-colors duration-300;
+/* ✅ Adiciona aqui */
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
