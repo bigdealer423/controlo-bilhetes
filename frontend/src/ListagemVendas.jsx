@@ -302,37 +302,28 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
   </div>
 
   <div>
-    <label className="block text-sm font-medium">ID Venda</label>
-    <input
-      type="text"
-      value={filtroIdVenda}
-      onChange={(e) => setFiltroIdVenda(e.target.value)}
-      className="border p-2 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
-      placeholder="ex: 123456789"
-    />
-  </div>
-</div>
-
-      <div className="bg-white dark:bg-gray-800 shadow-md rounded p-4 mb-6 transition-colors duration-300">
-        <h2 className="text-lg font-semibold mb-2">Adicionar Registo</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="flex flex-col">
+          <label htmlFor="id_venda" className="text-sm font-medium text-gray-700 dark:text-gray-200 transition-colors duration-300">
+            ID Venda
+          </label>
           <input
-  name="id_venda"
-  type="number"
-  placeholder="ID Venda"
-  className="
-    h-10 w-full border rounded p-2 
-    bg-white dark:bg-gray-800 
-    text-sm text-gray-900 dark:text-gray-100
-    placeholder-gray-500 dark:placeholder-gray-400
-    appearance-none [appearance:textfield] 
-    [&::-webkit-inner-spin-button]:appearance-none
-    [&::-webkit-outer-spin-button]:appearance-none
-    transition-colors duration-300
-  "
-  value={novoRegisto.id_venda}
-  onChange={handleChange}
-/>
+            name="id_venda"
+            type="number"
+            placeholder="ID Venda"
+            className="
+              h-10 w-full border rounded p-2 
+              bg-white dark:bg-gray-800 
+              text-sm text-gray-900 dark:text-gray-100
+              placeholder-gray-500 dark:placeholder-gray-400
+              appearance-none [appearance:textfield] 
+              [&::-webkit-inner-spin-button]:appearance-none
+              [&::-webkit-outer-spin-button]:appearance-none
+              transition-colors duration-300
+            "
+            value={novoRegisto.id_venda}
+            onChange={handleChange}
+          />
+        </div>
 
 
 
