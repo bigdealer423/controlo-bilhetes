@@ -347,7 +347,7 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
         </button>
       </div>
 
-      <div className="bg-white shadow-md rounded p-4">
+      <div className="bg-white dark:bg-gray-800 shadow-md rounded p-4 transition-colors duration-300">
         <div className="flex justify-between items-center mb-2">
           <h2 className="text-lg font-semibold">Vendas</h2>
           <div className="flex gap-2">
