@@ -319,7 +319,8 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
           <input name="id_venda" type="number" className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" placeholder="ID Venda" value={novoRegisto.id_venda} onChange={handleChange} />
           <div className="flex flex-col">
   <label htmlFor="data_venda" className="text-sm font-medium text-gray-700 dark:text-gray-200 transition-colors duration-300">Data Venda</label>
-  <input name="data_venda" type="date" className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" value={novoRegisto.data_venda} onChange={handleChange} />
+  <input name="data_venda" type="date" className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300
+  dark:[color-scheme:dark]" value={novoRegisto.data_venda} onChange={handleChange} />
 </div>
 
 <div className="flex flex-col">
