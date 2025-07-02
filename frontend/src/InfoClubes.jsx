@@ -534,6 +534,7 @@ const fetchClubes = async () => {
   ))}
       </tbody>
     </table>
+    </div>
   </div>
 );
 }
