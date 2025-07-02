@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { FiChevronDown, FiChevronUp, FiPlus, FiEdit, FiTrash } from 'react-icons/fi';
 import { FaPaperclip } from 'react-icons/fa';
 
+
 export default function InfoClubes() {
   const [clubes, setClubes] = useState([]);
   const [expanded, setExpanded] = useState(null);
@@ -13,11 +14,17 @@ export default function InfoClubes() {
   const [editClube, setEditClube] = useState({});
   const [novoClube, setNovoClube] = useState({ nome: '', estadio: '', capacidade: '', site: '', locais_venda: '', continente: false });
   const [filtroPesquisa, setFiltroPesquisa] = useState("");
+  const [visible, setVisible] = useState(false);
+
 
 
   useEffect(() => {
     fetchClubes();
 }, []);
+  useEffect(() => {
+    setVisible(true); // ativa animação suave ao abrir a aba
+}, []);
+
 
 const fetchClubes = async () => {
     try {
@@ -200,7 +207,10 @@ const fetchClubes = async () => {
 
 
   return (
-    <div className="p-4 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen transition-colors duration-300">
+    <div className={`p-4 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen transition-all duration-500 ${
+        visible ? "opacity-100 scale-100" : "opacity-0 scale-95"
+      }`}
+    >
       <h1 className="text-xl font-bold mb-4">Info Clubes</h1>
 
           {/* Formulário para preencher campos antes de adicionar */}
