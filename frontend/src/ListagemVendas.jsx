@@ -325,7 +325,8 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
 
 <div className="flex flex-col">
   <label htmlFor="data_evento" className="text-sm font-medium text-gray-700 dark:text-gray-200 transition-colors duration-300">Data Evento</label>
-  <input name="data_evento" type="date" className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" value={novoRegisto.data_evento} onChange={handleChange} />
+  <input name="data_evento" type="date" className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300
+  dark:[color-scheme:dark]" value={novoRegisto.data_evento} onChange={handleChange} />
 </div>
           <select name="evento" className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" value={novoRegisto.evento} onChange={handleChange}>
             <option value="">-- Selecionar Evento --</option>
@@ -416,12 +417,14 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
                     <td className="p-2">
   <input
     type="date"
-    className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
+    className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300
+  dark:[color-scheme:dark]"
     value={registoEditado.data_venda || ""}
     onChange={e => setRegistoEditado({ ...registoEditado, data_venda: e.target.value })}
 />
 </td>
-                    <td className="p-2"><input type="date" className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" value={registoEditado.data_evento} onChange={e => setRegistoEditado({ ...registoEditado, data_evento: e.target.value })} /></td>
+                    <td className="p-2"><input type="date" className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300
+  dark:[color-scheme:dark]" value={registoEditado.data_evento} onChange={e => setRegistoEditado({ ...registoEditado, data_evento: e.target.value })} /></td>
                     <td className="p-2">
                       <select className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" value={registoEditado.evento} onChange={e => setRegistoEditado({ ...registoEditado, evento: e.target.value })}>
                         <option value="">-- Evento --</option>
