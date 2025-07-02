@@ -405,7 +405,10 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
               })
               .map(r => (
 
-              <tr key={r.id} className="border-t">
+              <tr key={r.id} className={`border-t ${
+    modoEdicao === r.id ? 'bg-blue-50 dark:bg-blue-900' : 'bg-white dark:bg-gray-900'
+  } text-gray-900 dark:text-gray-100 transition-colors duration-300`}
+>
                 {modoEdicao === r.id ? (
                   <>
                     <td className="p-2"><input type="number" className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" value={registoEditado.id_venda} onChange={e => setRegistoEditado({ ...registoEditado, id_venda: e.target.value })} /></td>
