@@ -211,7 +211,8 @@ const fetchClubes = async () => {
         visible ? "opacity-100 scale-100" : "opacity-0 scale-95"
       }`}
     >
-      <h1 className="text-xl font-bold mb-4">Info Clubes</h1>
+      <h1 className="text-2xl font-bold mb-4">Info Clubes</h1>
+
 
           {/* Formulário para preencher campos antes de adicionar */}
     <div className="mb-4 grid grid-cols-1 md:grid-cols-6 gap-2">
