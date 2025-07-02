@@ -77,7 +77,7 @@ export default function CirculoEstado({ tipo, id, texto_estado, nota_estado, set
 
       <input
         type="text"
-        className="border rounded text-xs px-1 py-0.5 w-40 leading-tight h-6"
+        className="border p-1 rounded text-xs w-40 h-6 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
         value={nota}
         placeholder="Nota..."
         onChange={(e) => setNota(e.target.value)}
