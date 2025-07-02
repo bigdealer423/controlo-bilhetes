@@ -319,12 +319,21 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
           <input
   name="id_venda"
   type="number"
-  className="h-10 border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100
-             placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300
-             appearance-none [appearance:textfield] 
-             [&::-webkit-outer-spin-button]:appearance-none 
-             [&::-webkit-inner-spin-button]:appearance-none"
+  placeholder="ID Venda"
+  className="
+    h-10 w-full border rounded p-2 
+    bg-white dark:bg-gray-800 
+    text-sm text-gray-900 dark:text-gray-100
+    placeholder-gray-500 dark:placeholder-gray-400
+    appearance-none [appearance:textfield] 
+    [&::-webkit-inner-spin-button]:appearance-none
+    [&::-webkit-outer-spin-button]:appearance-none
+    transition-colors duration-300
+  "
+  value={novoRegisto.id_venda}
+  onChange={handleChange}
 />
+
 
 
           <div className="flex flex-col">
