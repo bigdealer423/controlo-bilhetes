@@ -318,12 +318,12 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <input name="id_venda" type="number" className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" placeholder="ID Venda" value={novoRegisto.id_venda} onChange={handleChange} />
           <div className="flex flex-col">
-  <label htmlFor="data_venda" className="text-sm font-medium text-gray-700">Data Venda</label>
+  <label htmlFor="data_venda" className="text-sm font-medium text-gray-700 dark:text-gray-200 transition-colors duration-300">Data Venda</label>
   <input name="data_venda" type="date" className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" value={novoRegisto.data_venda} onChange={handleChange} />
 </div>
 
 <div className="flex flex-col">
-  <label htmlFor="data_evento" className="text-sm font-medium text-gray-700">Data Evento</label>
+  <label htmlFor="data_evento" className="text-sm font-medium text-gray-700 dark:text-gray-200 transition-colors duration-300">Data Evento</label>
   <input name="data_evento" type="date" className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" value={novoRegisto.data_evento} onChange={handleChange} />
 </div>
           <select name="evento" className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" value={novoRegisto.evento} onChange={handleChange}>
@@ -480,7 +480,7 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
               </button>
               <button
                 onClick={cancelarEliminar}
-                className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
+                className="bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-4 py-2 rounded hover:bg-gray-400 dark:hover:bg-gray-600 transition-colors duration-300"
               >
                 Cancelar
               </button>
@@ -490,7 +490,7 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
       )}
       {erroIDExistente && (
   <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div className="p-6 max-w-6xl mx-auto min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
+    <div className="bg-white dark:bg-gray-800 dark:text-gray-100 p-6 rounded shadow-lg max-w-md w-full transition-colors duration-300">
       <p className="mb-4">⚠️ Já existe um registo com este ID de venda.</p>
       <div className="flex justify-end">
         <button onClick={() => setErroIDExistente(false)} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
@@ -501,9 +501,10 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
   </div>
 )}
       {mostrarModal && (
-  <div className="fixed top-4 right-4 bg-white border border-blue-200 shadow-xl px-4 py-3 rounded-lg z-50">
-    <p className="text-sm text-gray-700">{mensagemModal}</p>
+  <div className="fixed top-4 right-4 bg-white dark:bg-gray-800 border border-blue-200 dark:border-blue-700 shadow-xl px-4 py-3 rounded-lg z-50 transition-colors duration-300">
+    <p className="text-sm text-gray-700 dark:text-gray-100">{mensagemModal}</p>
   </div>
+
 )}
 
     </div> // Fecha o container principal da página
