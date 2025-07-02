@@ -316,7 +316,20 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
       <div className="bg-white dark:bg-gray-800 shadow-md rounded p-4 mb-6 transition-colors duration-300">
         <h2 className="text-lg font-semibold mb-2">Adicionar Registo</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <input name="id_venda" type="number" className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" placeholder="ID Venda" value={novoRegisto.id_venda} onChange={handleChange} />
+          <input
+  name="id_venda"
+  type="number"
+  className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 
+             placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300
+
+             appearance-none [appearance:textfield] 
+             [&::-webkit-outer-spin-button]:appearance-none 
+             [&::-webkit-inner-spin-button]:appearance-none"
+  placeholder="ID Venda"
+  value={novoRegisto.id_venda}
+  onChange={handleChange}
+/>
+
           <div className="flex flex-col">
   <label htmlFor="data_venda" className="text-sm font-medium text-gray-700 dark:text-gray-200 transition-colors duration-300">Data Venda</label>
   <input name="data_venda" type="date" className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300
