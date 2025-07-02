@@ -289,7 +289,10 @@ const fetchClubes = async () => {
                  placeholder-gray-500 dark:placeholder-gray-400 
                  transition-colors duration-300"
     />
-
+    <div
+      className="transition-all duration-500 ease-out transform"
+      style={{ animation: "fadeInScale 0.5s ease-out forwards" }}
+    >
       <table className="min-w-full border border-gray-300 dark:border-gray-600 transition-colors duration-300">
         <thead className="bg-gray-100 dark:bg-gray-800 transition-colors duration-300">
           <tr>
