@@ -278,7 +278,7 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
   });
 };
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 dark:text-gray-100 rounded p-6 shadow-lg transition-colors duration-300">
+    <div className="p-6 max-w-7xl mx-auto min-h-screen bg-white dark:bg-gray-900 dark:text-gray-100 rounded shadow-lg transition-colors duration-300">
       <h1 className="text-2xl font-bold mb-4">Listagem de Vendas</h1>
       <div className="bg-yellow-100 dark:bg-yellow-900 border-l-4 border-yellow-500 dark:border-yellow-400 text-yellow-700 dark:text-yellow-200 p-4 mb-6 rounded transition-colors duration-300">
   <p className="font-semibold">Resumo Diário</p>
