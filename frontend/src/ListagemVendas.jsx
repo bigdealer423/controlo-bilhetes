@@ -278,9 +278,9 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
   });
 };
   return (
-    <div className="p-6 max-w-6xl mx-auto">
+    <div className="p-6 max-w-6xl mx-auto min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
       <h1 className="text-2xl font-bold mb-4">Listagem de Vendas</h1>
-      <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-6 rounded">
+      <div className="bg-yellow-100 dark:bg-yellow-900 border-l-4 border-yellow-500 dark:border-yellow-400 text-yellow-700 dark:text-yellow-200 p-4 mb-6 rounded transition-colors duration-300">
   <p className="font-semibold">Resumo Diário</p>
   <p>📅 Vendas de hoje: {resumoDiario.total}</p>
   <p>💰 Ganho de hoje: {resumoDiario.ganho} €</p>
@@ -292,7 +292,7 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
     <select
       value={filtroEvento}
       onChange={(e) => setFiltroEvento(e.target.value)}
-      className="border p-2 rounded"
+      className="border p-2 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
     >
       <option value="">Todos</option>
       {eventosDropdown.map(e => (
@@ -316,26 +316,26 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
       <div className="bg-white shadow-md rounded p-4 mb-6">
         <h2 className="text-lg font-semibold mb-2">Adicionar Registo</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <input name="id_venda" type="number" className="input" placeholder="ID Venda" value={novoRegisto.id_venda} onChange={handleChange} />
+          <input name="id_venda" type="number" className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" placeholder="ID Venda" value={novoRegisto.id_venda} onChange={handleChange} />
           <div className="flex flex-col">
   <label htmlFor="data_venda" className="text-sm font-medium text-gray-700">Data Venda</label>
-  <input name="data_venda" type="date" className="input" value={novoRegisto.data_venda} onChange={handleChange} />
+  <input name="data_venda" type="date" className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" value={novoRegisto.data_venda} onChange={handleChange} />
 </div>
 
 <div className="flex flex-col">
   <label htmlFor="data_evento" className="text-sm font-medium text-gray-700">Data Evento</label>
-  <input name="data_evento" type="date" className="input" value={novoRegisto.data_evento} onChange={handleChange} />
+  <input name="data_evento" type="date" className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" value={novoRegisto.data_evento} onChange={handleChange} />
 </div>
-          <select name="evento" className="input" value={novoRegisto.evento} onChange={handleChange}>
+          <select name="evento" className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" value={novoRegisto.evento} onChange={handleChange}>
             <option value="">-- Selecionar Evento --</option>
             {eventosDropdown.map(e => (
               <option key={e.id} value={e.nome}>{e.nome}</option>
             ))}
           </select>
 
-          <input name="estadio" className="input" placeholder="Bilhete" value={novoRegisto.estadio} onChange={handleChange} />
-          <input name="ganho" type="number" className="input" placeholder="Ganho (€)" value={novoRegisto.ganho} onChange={handleChange} />
-          <select name="estado" className="input" value={novoRegisto.estado} onChange={handleChange}>
+          <input name="estadio" className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" placeholder="Bilhete" value={novoRegisto.estadio} onChange={handleChange} />
+          <input name="ganho" type="number" className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" placeholder="Ganho (€)" value={novoRegisto.ganho} onChange={handleChange} />
+          <select name="estado" className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" value={novoRegisto.estado} onChange={handleChange}>
             <option value="Entregue">Entregue</option>
             <option value="Por entregar">Por entregar</option>
             <option value="Disputa">Disputa</option>
@@ -369,9 +369,10 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
 
           </div>
         </div>
-        <table className="min-w-full border text-sm text-left text-gray-600">
-         <thead>
-  <tr className="bg-gray-100">
+        <table className="min-w-full border border-gray-300 dark:border-gray-600 text-sm text-left text-gray-900 dark:text-gray-100 transition-colors duration-300">
+         <thead className="bg-gray-100 dark:bg-gray-800 transition-colors duration-300">
+          <tr>
+
     <th className="p-2 cursor-pointer" onClick={() => handleOrdenarPor("id_venda")}>
       ID Venda {colunaOrdenacao === "id_venda" && (ordemAscendente ? "▲" : "▼")}
     </th>
@@ -407,26 +408,26 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
               <tr key={r.id} className="border-t">
                 {modoEdicao === r.id ? (
                   <>
-                    <td className="p-2"><input type="number" className="input" value={registoEditado.id_venda} onChange={e => setRegistoEditado({ ...registoEditado, id_venda: e.target.value })} /></td>
+                    <td className="p-2"><input type="number" className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" value={registoEditado.id_venda} onChange={e => setRegistoEditado({ ...registoEditado, id_venda: e.target.value })} /></td>
                     <td className="p-2">
   <input
     type="date"
-    className="input"
+    className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
     value={registoEditado.data_venda || ""}
     onChange={e => setRegistoEditado({ ...registoEditado, data_venda: e.target.value })}
 />
 </td>
-                    <td className="p-2"><input type="date" className="input" value={registoEditado.data_evento} onChange={e => setRegistoEditado({ ...registoEditado, data_evento: e.target.value })} /></td>
+                    <td className="p-2"><input type="date" className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" value={registoEditado.data_evento} onChange={e => setRegistoEditado({ ...registoEditado, data_evento: e.target.value })} /></td>
                     <td className="p-2">
-                      <select className="input" value={registoEditado.evento} onChange={e => setRegistoEditado({ ...registoEditado, evento: e.target.value })}>
+                      <select className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" value={registoEditado.evento} onChange={e => setRegistoEditado({ ...registoEditado, evento: e.target.value })}>
                         <option value="">-- Evento --</option>
                         {eventosDropdown.map(e => <option key={e.id} value={e.nome}>{e.nome}</option>)}
                       </select>
                     </td>
-                    <td className="p-2"><input className="input" value={registoEditado.estadio} onChange={e => setRegistoEditado({ ...registoEditado, estadio: e.target.value })} /></td>
-                    <td className="p-2"><input type="number" className="input" value={registoEditado.ganho} onChange={e => setRegistoEditado({ ...registoEditado, ganho: e.target.value })} /></td>
+                    <td className="p-2"><input className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" value={registoEditado.estadio} onChange={e => setRegistoEditado({ ...registoEditado, estadio: e.target.value })} /></td>
+                    <td className="p-2"><input type="number" className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" value={registoEditado.ganho} onChange={e => setRegistoEditado({ ...registoEditado, ganho: e.target.value })} /></td>
                     <td className="p-2">
-                      <select className="input" value={registoEditado.estado} onChange={e => setRegistoEditado({ ...registoEditado, estado: e.target.value })}>
+                      <select className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" value={registoEditado.estado} onChange={e => setRegistoEditado({ ...registoEditado, estado: e.target.value })}>
                         <option value="Entregue">Entregue</option>
                         <option value="Por entregar">Por entregar</option>
                         <option value="Disputa">Disputa</option>
@@ -465,7 +466,7 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
       {/* Modal de confirmação */}
       {idsAEliminar.length > 0 && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white rounded p-6 shadow-lg">
+          <div className="bg-white dark:bg-gray-800 dark:text-gray-100 rounded p-6 shadow-lg transition-colors duration-300">
             <p>Tem a certeza que deseja eliminar esta venda?</p>
             <div className="mt-4 flex justify-end gap-4">
               <button
@@ -486,7 +487,7 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
       )}
       {erroIDExistente && (
   <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div className="bg-white rounded shadow-lg p-6">
+    <div className="p-6 max-w-6xl mx-auto min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
       <p className="mb-4">⚠️ Já existe um registo com este ID de venda.</p>
       <div className="flex justify-end">
         <button onClick={() => setErroIDExistente(false)} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
