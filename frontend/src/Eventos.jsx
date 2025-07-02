@@ -292,9 +292,10 @@ export default function Eventos() {
 
 return (
     <div className="p-6 max-w-6xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Resumo de Eventos</h1>
+      <h1 className="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100">Resumo de Eventos</h1>
 
-      <div className="bg-yellow-100 dark:bg-yellow-800 border-l-4 border-yellow-600 text-yellow-800 p-4 mb-6 rounded">
+
+      <div className="bg-yellow-100 dark:bg-yellow-900 border-l-4 border-yellow-600 dark:border-yellow-400 text-yellow-800 dark:text-yellow-200 p-4 mb-6 rounded transition-colors duration-300">
 
   <p className="font-semibold">Resumo Mensal</p>
   <p>📆 Lucro de {new Date().toLocaleString("pt-PT", { month: "long", year: "numeric" })}: <strong>{resumoMensal.lucro} €</strong></p>
@@ -365,7 +366,7 @@ return (
       type="date"
       value={r.data_evento}
       onChange={(e) => atualizarCampo(r.id, "data_evento", e.target.value)}
-      className="input"
+      className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
     />
   ) : (
     new Date(r.data_evento).toLocaleDateString("pt-PT")
@@ -376,7 +377,7 @@ return (
     <select
   value={r.evento}
   onChange={(e) => atualizarCampo(r.id, "evento", e.target.value)}
-  className="input"
+  className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
 >
   <option value="">-- Selecionar Evento --</option>
   {eventosDropdown.map(e => (
@@ -389,7 +390,7 @@ return (
 </td>
                   <td className="p-2">
                     {modoEdicao === r.id
-                      ? <input value={r.estadio} onChange={(e) => atualizarCampo(r.id, "estadio", e.target.value)} className="input" />
+                      ? <input value={r.estadio} onChange={(e) => atualizarCampo(r.id, "estadio", e.target.value)} className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" />
                       : r.estadio}
                   </td>
                   <td className="p-2">{r.gasto} €</td>
@@ -398,7 +399,7 @@ return (
                   <td className="p-2">
                     {modoEdicao === r.id
                       ? (
-                        <select value={r.estado} onChange={(e) => atualizarCampo(r.id, "estado", e.target.value)} className="input">
+                        <select value={r.estado} onChange={(e) => atualizarCampo(r.id, "estado", e.target.value)} className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300">
                           <option value="Entregue">Entregue</option>
                           <option value="Por entregar">Por entregar</option>
                           <option value="Disputa">Disputa</option>
@@ -470,14 +471,14 @@ return (
       <td className="p-2">
         <input
           type="number"
-          className="input"
+          className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
           value={vendaEditada.id_venda}
           onChange={e => setVendaEditada({ ...vendaEditada, id_venda: e.target.value })}
         />
       </td>
       <td className="p-2" colSpan="2">
         <input
-          className="input"
+          className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
           value={vendaEditada.estadio}
           onChange={e => setVendaEditada({ ...vendaEditada, estadio: e.target.value })}
         />
@@ -485,14 +486,14 @@ return (
       <td className="p-2">
         <input
           type="number"
-          className="input"
+          className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
           value={vendaEditada.ganho}
           onChange={e => setVendaEditada({ ...vendaEditada, ganho: e.target.value })}
         />
       </td>
       <td className="p-2">
         <select
-          className="input"
+          className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
           value={vendaEditada.estado}
           onChange={e => setVendaEditada({ ...vendaEditada, estado: e.target.value })}
         >
@@ -562,22 +563,22 @@ return (
     {modoEdicaoCompra === c.id ? (
       <>
         <td className="p-2">
-          <input className="input" value={compraEditada.local_compras} onChange={e => setCompraEditada({ ...compraEditada, local_compras: e.target.value })} />
+          <input className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" value={compraEditada.local_compras} onChange={e => setCompraEditada({ ...compraEditada, local_compras: e.target.value })} />
         </td>
         <td className="p-2">
-          <input className="input" value={compraEditada.bancada} onChange={e => setCompraEditada({ ...compraEditada, bancada: e.target.value })} />
+          <input className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" value={compraEditada.bancada} onChange={e => setCompraEditada({ ...compraEditada, bancada: e.target.value })} />
         </td>
         <td className="p-2">
-          <input className="input" value={compraEditada.setor} onChange={e => setCompraEditada({ ...compraEditada, setor: e.target.value })} />
+          <input className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" value={compraEditada.setor} onChange={e => setCompraEditada({ ...compraEditada, setor: e.target.value })} />
         </td>
         <td className="p-2">
-          <input className="input" value={compraEditada.fila} onChange={e => setCompraEditada({ ...compraEditada, fila: e.target.value })} />
+          <input className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" value={compraEditada.fila} onChange={e => setCompraEditada({ ...compraEditada, fila: e.target.value })} />
         </td>
         <td className="p-2">
-          <input type="number" className="input" value={compraEditada.quantidade} onChange={e => setCompraEditada({ ...compraEditada, quantidade: e.target.value })} />
+          <input type="number" className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" value={compraEditada.quantidade} onChange={e => setCompraEditada({ ...compraEditada, quantidade: e.target.value })} />
         </td>
         <td className="p-2">
-          <input type="number" className="input" value={compraEditada.gasto} onChange={e => setCompraEditada({ ...compraEditada, gasto: e.target.value })} />
+          <input type="number" className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" value={compraEditada.gasto} onChange={e => setCompraEditada({ ...compraEditada, gasto: e.target.value })} />
         </td>
         <td className="p-2" colSpan="3">
           <button className="text-green-600 mr-2" onClick={() => guardarCompra(compraEditada)}>Guardar</button>
