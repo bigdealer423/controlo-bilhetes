@@ -322,7 +322,7 @@ return (
 
 
       <div className="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-md rounded p-4 transition-colors duration-300">
-        <table className="min-w-full border border-gray-300 dark:border-gray-600 text-sm text-left text-gray-900 dark:text-gray-100 transition-colors duration-300">
+        <table className="min-w-full border border-gray-300 dark:border-gray-600 text-sm transition-colors duration-300">
           <thead className="bg-gray-100 dark:bg-gray-800 transition-colors duration-300">
              <tr>
               <th></th>
