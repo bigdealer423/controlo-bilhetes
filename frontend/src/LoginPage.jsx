@@ -7,10 +7,13 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const { login } = useAuth();
   const navigate = useNavigate();
+  const [visible, setVisible] = useState(false);
 
   // ⚫ Ativar dark mode por defeito ao entrar na página
   useEffect(() => {
     document.documentElement.classList.add("dark");
+    setVisible(true); // ativa animação ao montar
+
     return () => {
       document.documentElement.classList.remove("dark");
     };
@@ -29,7 +32,11 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-900 text-gray-100 transition-colors duration-300">
-      <div className="bg-gray-800 p-8 rounded shadow-md w-full max-w-sm">
+      <div
+        className={`bg-gray-800 p-8 rounded shadow-md w-full max-w-sm transform transition-all duration-500 ${
+          visible ? "opacity-100 scale-100" : "opacity-0 scale-95"
+        }`}
+      >
         <h1 className="text-2xl font-bold mb-6 text-center">Login</h1>
 
         <form onSubmit={handleLogin} className="flex flex-col gap-4">
