@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "./AuthContext";
 
@@ -7,6 +7,14 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const { login } = useAuth();
   const navigate = useNavigate();
+
+  // ⚫ Ativar dark mode por defeito ao entrar na página
+  useEffect(() => {
+    document.documentElement.classList.add("dark");
+    return () => {
+      document.documentElement.classList.remove("dark");
+    };
+  }, []);
 
   const handleLogin = (e) => {
     e.preventDefault(); // previne reload do form
@@ -20,33 +28,35 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="p-6 max-w-sm mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Login</h1>
+    <div className="min-h-screen flex items-center justify-center bg-gray-900 text-gray-100 transition-colors duration-300">
+      <div className="bg-gray-800 p-8 rounded shadow-md w-full max-w-sm">
+        <h1 className="text-2xl font-bold mb-6 text-center">Login</h1>
 
-      <form onSubmit={handleLogin}>
-        <input
-          type="text"
-          placeholder="Nome de utilizador"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          className="input mb-2 w-full"
-        />
+        <form onSubmit={handleLogin} className="flex flex-col gap-4">
+          <input
+            type="text"
+            placeholder="Nome de utilizador"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            className="p-2 rounded bg-gray-700 text-gray-100 placeholder-gray-400 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
 
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="input mb-4 w-full"
-        />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="p-2 rounded bg-gray-700 text-gray-100 placeholder-gray-400 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
 
-        <button
-          type="submit"
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full"
-        >
-          Login
-        </button>
-      </form>
+          <button
+            type="submit"
+            className="bg-blue-600 hover:bg-blue-700 text-white py-2 rounded transition-colors duration-300"
+          >
+            Login
+          </button>
+        </form>
+      </div>
     </div>
   );
 }
