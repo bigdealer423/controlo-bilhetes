@@ -65,29 +65,35 @@ useEffect(() => {
     }
   }}
   tileContent={({ date, view }) => {
-    if (view === "month") {
-      const eventosDoDia = ultimosEventos.filter(evento => {
-        const [dia, mes, ano] = evento.data_evento.split("/");
-        return (
-          parseInt(dia) === date.getDate() &&
-          parseInt(mes) === date.getMonth() + 1 &&
-          parseInt(ano) === date.getFullYear()
-        );
-      });
-      if (eventosDoDia.length > 0) {
-        return (
-          <div
-            title={eventosDoDia.map(e => e.nome_evento).join(", ")}
-            className="text-xs text-center text-blue-600 dark:text-blue-300"
-          >
-            🎟️
-          </div>
-        );
-      }
+  if (view === "month") {
+    const eventosDoDia = ultimosEventos.filter(evento => {
+      const [dia, mes, ano] = evento.data_evento.split("/");
+      return (
+        parseInt(dia) === date.getDate() &&
+        parseInt(mes) === date.getMonth() + 1 &&
+        parseInt(ano) === date.getFullYear()
+      );
+    });
+
+    if (eventosDoDia.length > 0) {
+      const simbolo = obterSimboloClube(eventosDoDia[0].nome_evento);
+      return (
+        <div
+          title={eventosDoDia.map(e => e.nome_evento).join(", ")}
+          className="flex justify-center items-center"
+        >
+          {simbolo ? (
+            <img src={simbolo} alt="Simbolo" className="w-4 h-4 rounded-full object-contain" />
+          ) : (
+            <span className="text-xs text-blue-600 dark:text-blue-300">🎟️</span>
+          )}
+        </div>
+      );
     }
-    return null;
-  }}
-/>
+  }
+  return null;
+}}
+
 
 
 
