@@ -39,3 +39,14 @@ html, body {
     background: #4b5563 !important; /* bg-gray-600 */
     color: #ffffff !important;
 }
+
+.dark .react-calendar__tile:hover {
+    background-color: #374151; /* bg-gray-700 */
+    color: #f9fafb; /* text-gray-50 */
+}
+
+.dark .react-calendar__tile:enabled:hover, 
+.dark .react-calendar__tile:enabled:focus {
+    background-color: #2563eb; /* bg-blue-600 */
+    color: #ffffff; /* text-white */
+}
