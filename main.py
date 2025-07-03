@@ -456,6 +456,19 @@ def eliminar_ficheiro_clube(clube_id: int, filename: str = Query(...)):
 
 # Dashboardprincipal
 
+@app.get("/eventos_calendario")
+def eventos_calendario(db: Session = Depends(get_db)):
+    eventos = db.query(EventoCompleto).all()
+    eventos_lista = [
+        {
+            "id": evento.id,
+            "nome_evento": evento.nome,
+            "data_evento": evento.data.strftime("%d/%m/%Y") if isinstance(evento.data, date) else str(evento.data)
+        }
+        for evento in eventos
+    ]
+    return eventos_lista
+
 
 @app.get("/resumo_dashboard")
 def resumo_dashboard(db: Session = Depends(get_db)):
