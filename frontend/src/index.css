@@ -50,3 +50,8 @@ html, body {
     background-color: #2563eb; /* bg-blue-600 */
     color: #ffffff; /* text-white */
 }
+
+.tooltip-trigger-full {
+  position: absolute;
+  inset: 0;
+}
