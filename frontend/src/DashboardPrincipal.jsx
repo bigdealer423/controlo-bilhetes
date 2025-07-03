@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Calendar from "react-calendar";
+import 'react-calendar/dist/Calendar.css';
 
 export default function DashboardPrincipal() {
   const [resumo, setResumo] = useState({ ganhos: 0, gastos: 0, lucro: 0, entregasPendentes: 0 });
   const [ultimosEventos, setUltimosEventos] = useState([]);
+  const [dataSelecionada, setDataSelecionada] = useState(new Date());
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -24,18 +27,24 @@ export default function DashboardPrincipal() {
     <div className="p-4 max-w-3xl mx-auto">
       <h1 className="text-xl font-semibold mb-4">Dashboard de Bilhetes</h1>
 
+      <Calendar
+        onChange={setDataSelecionada}
+        value={dataSelecionada}
+        className="mb-4 rounded shadow"
+      />
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
         <div className="bg-green-100 dark:bg-green-900 p-4 rounded shadow">
           <h2 className="text-lg font-medium">Ganhos</h2>
-          <p className="text-2xl font-bold">€ {resumo.ganhos.toFixed(2)}</p>
+          <p className="text-2xl font-bold">€ {resumo.ganhos ? resumo.ganhos.toFixed(2) : "0.00"}</p>
         </div>
         <div className="bg-red-100 dark:bg-red-900 p-4 rounded shadow">
           <h2 className="text-lg font-medium">Gastos</h2>
-          <p className="text-2xl font-bold">€ {resumo.gastos.toFixed(2)}</p>
+          <p className="text-2xl font-bold">€ {resumo.gastos ? resumo.gastos.toFixed(2) : "0.00"}</p>
         </div>
         <div className="bg-blue-100 dark:bg-blue-900 p-4 rounded shadow">
           <h2 className="text-lg font-medium">Lucro Líquido</h2>
-          <p className="text-2xl font-bold">€ {resumo.lucro.toFixed(2)}</p>
+          <p className="text-2xl font-bold">€ {resumo.lucro ? resumo.lucro.toFixed(2) : "0.00"}</p>
         </div>
       </div>
 
