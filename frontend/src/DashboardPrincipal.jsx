@@ -2,55 +2,27 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Calendar from "react-calendar";
 import 'react-calendar/dist/Calendar.css';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export default function DashboardPrincipal() {
   const [resumo, setResumo] = useState({ ganhos: 0, gastos: 0, lucro: 0, entregasPendentes: 0 });
   const [ultimosEventos, setUltimosEventos] = useState([]);
   const [dataSelecionada, setDataSelecionada] = useState(new Date());
-  const navigate = useNavigate();
   const [clubes, setClubes] = useState([]);
-  const gerarTooltipEvento = (nomeEvento) => {
-  const partes = nomeEvento.split(" vs ");
-  return partes.map(nomeClube => {
-    const clube = clubes.find(c => nomeClube.toLowerCase().includes(c.nome.toLowerCase()));
-    if (clube && clube.simbolo) {
-      return `${nomeClube} 🟩`; // placeholder inicial, já explico como usar imagens
-    }
-    return nomeClube;
-  }).join(" vs ");
-};
-  const getTooltip = (date) => {
-  const eventosDoDia = ultimosEventos.filter(evento => {
-    const [dia, mes, ano] = evento.data_evento.split("/");
-    return (
-      parseInt(dia) === date.getDate() &&
-      parseInt(mes) === date.getMonth() + 1 &&
-      parseInt(ano) === date.getFullYear()
-    );
-  });
+  const navigate = useNavigate();
 
-  if (eventosDoDia.length > 0) {
-    return eventosDoDia.map(e => gerarTooltipEvento(e.nome_evento)).join(" | ");
-  }
-  return null;
-};
-
-
-
-
-useEffect(() => {
-  const fetchClubes = async () => {
-    try {
-      const res = await fetch("https://controlo-bilhetes.onrender.com/clubes");
-      const data = await res.json();
-      setClubes(data);
-    } catch (error) {
-      console.error("Erro ao carregar clubes:", error);
-    }
-  };
-  fetchClubes();
-}, []);
-
+  useEffect(() => {
+    const fetchClubes = async () => {
+      try {
+        const res = await fetch("https://controlo-bilhetes.onrender.com/clubes");
+        const data = await res.json();
+        setClubes(data);
+      } catch (error) {
+        console.error("Erro ao carregar clubes:", error);
+      }
+    };
+    fetchClubes();
+  }, []);
 
   useEffect(() => {
     const fetchResumo = async () => {
@@ -70,38 +42,59 @@ useEffect(() => {
     <div className="p-4 max-w-3xl mx-auto">
       <h1 className="text-xl font-semibold mb-4">Dashboard de Bilhetes</h1>
 
-      <Calendar
-  onChange={setDataSelecionada}
-  value={dataSelecionada}
-  className="mb-4 rounded shadow"
-  tileClassName={({ date, view }) => {
-    if (view === "month") {
-      const existeEvento = ultimosEventos.some(evento => {
-        const [dia, mes, ano] = evento.data_evento.split("/");
-        return (
-          parseInt(dia) === date.getDate() &&
-          parseInt(mes) === date.getMonth() + 1 &&
-          parseInt(ano) === date.getFullYear()
-        );
-      });
-      return existeEvento ? "hover:bg-blue-200 dark:hover:bg-blue-700 rounded-full cursor-pointer" : null;
-    }
-  }}
-  tileContent={({ date, view }) => {
-  if (view === "month") {
-    const tooltip = getTooltip(date);
-    if (tooltip) {
-      return (
-        <span title={tooltip} className="w-full h-full block"></span>
-      );
-    }
-  }
-  return null;
-}}
-/>
+      <TooltipProvider>
+        <Calendar
+          onChange={setDataSelecionada}
+          value={dataSelecionada}
+          className="mb-4 rounded shadow"
+          tileContent={({ date, view }) => {
+            if (view === "month") {
+              const eventosDoDia = ultimosEventos.filter(evento => {
+                const [dia, mes, ano] = evento.data_evento.split("/");
+                return (
+                  parseInt(dia) === date.getDate() &&
+                  parseInt(mes) === date.getMonth() + 1 &&
+                  parseInt(ano) === date.getFullYear()
+                );
+              });
 
-
-
+              if (eventosDoDia.length > 0) {
+                return (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="w-full h-full"></div> {/* área hover invisível */}
+                    </TooltipTrigger>
+                    <TooltipContent className="bg-white dark:bg-gray-900 p-2 rounded shadow max-w-xs">
+                      <div className="flex flex-col gap-1">
+                        {eventosDoDia.map((evento, idx) => {
+                          const partes = evento.nome_evento.split(" vs ");
+                          return (
+                            <div key={idx} className="flex items-center gap-2 flex-wrap">
+                              {partes.map((nomeClube, idx2) => {
+                                const clube = clubes.find(c => nomeClube.toLowerCase().includes(c.nome.toLowerCase()));
+                                return (
+                                  <div key={idx2} className="flex items-center gap-1">
+                                    {clube?.simbolo && (
+                                      <img src={clube.simbolo} alt={nomeClube} className="w-5 h-5 rounded-full object-contain" />
+                                    )}
+                                    <span className="text-sm">{nomeClube}</span>
+                                    {idx2 === 0 && <span className="mx-1">vs</span>}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </TooltipContent>
+                  </Tooltip>
+                );
+              }
+            }
+            return null;
+          }}
+        />
+      </TooltipProvider>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
         <div className="bg-green-100 dark:bg-green-900 p-4 rounded shadow">
