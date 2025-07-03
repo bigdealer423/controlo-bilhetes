@@ -98,7 +98,7 @@ export default function DashboardPrincipal() {
                         className="w-5 h-5 rounded-full object-contain"
                       />
                     )}
-                    <span className="text-sm">{nomeClube}</span>
+                    <span className="text-sm text-gray-900 dark:text-gray-100">{nomeClube}</span>
                     {idx2 === 0 && <span className="mx-1">vs</span>}
                   </div>
                 );
