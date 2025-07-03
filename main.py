@@ -458,7 +458,7 @@ def eliminar_ficheiro_clube(clube_id: int, filename: str = Query(...)):
 
 @app.get("/eventos_calendario")
 def eventos_calendario(db: Session = Depends(get_db)):
-    eventos = db.query(EventoCompleto).all()
+    eventos = db.query(EventoCompletoModel).all()
     eventos_lista = [
         {
             "id": evento.id,
