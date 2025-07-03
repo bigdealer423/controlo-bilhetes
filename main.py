@@ -475,11 +475,17 @@ def resumo_dashboard(db: Session = Depends(get_db)):
 
     # Obter últimos 5 eventos/vendas
     ultimos_eventos_query = (
-        db.query(ListagemVendas.id, ListagemVendas.evento.label("nome_evento"), ListagemVendas.data_evento, ListagemVendas.estado)
-        .order_by(desc(ListagemVendas.data_evento))
-        .limit(5)
-        .all()
+    db.query(
+        ListagemVendas.evento.label("nome_evento"),
+        ListagemVendas.data_evento,
+        func.max(ListagemVendas.estado).label("estado")
     )
+    .group_by(ListagemVendas.evento, ListagemVendas.data_evento)
+    .order_by(desc(ListagemVendas.data_evento))
+    .limit(5)
+    .all()
+)
+
 
     ultimos_eventos = [
         {
