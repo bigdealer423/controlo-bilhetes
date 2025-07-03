@@ -48,51 +48,56 @@ export default function DashboardPrincipal() {
           value={dataSelecionada}
           className="mb-4 rounded shadow"
           tileContent={({ date, view }) => {
-            if (view === "month") {
-              const eventosDoDia = ultimosEventos.filter(evento => {
-                const [dia, mes, ano] = evento.data_evento.split("/");
-                return (
-                  parseInt(dia) === date.getDate() &&
-                  parseInt(mes) === date.getMonth() + 1 &&
-                  parseInt(ano) === date.getFullYear()
-                );
-              });
+  if (view === "month") {
+    const eventosDoDia = ultimosEventos.filter(evento => {
+      const [dia, mes, ano] = evento.data_evento.split("/");
+      return (
+        parseInt(dia) === date.getDate() &&
+        parseInt(mes) === date.getMonth() + 1 &&
+        parseInt(ano) === date.getFullYear()
+      );
+    });
 
-              if (eventosDoDia.length > 0) {
+    if (eventosDoDia.length > 0) {
+      return (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className="w-full h-full">&nbsp;</div> {/* Renderiza algo para garantir elemento */}
+          </TooltipTrigger>
+          <TooltipContent className="bg-white dark:bg-gray-900 p-2 rounded shadow max-w-xs">
+            <div className="flex flex-col gap-1">
+              {eventosDoDia.map((evento, idx) => {
+                const partes = evento.nome_evento.split(" vs ");
                 return (
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <div className="w-full h-full"></div> {/* área hover invisível */}
-                    </TooltipTrigger>
-                    <TooltipContent className="bg-white dark:bg-gray-900 p-2 rounded shadow max-w-xs">
-                      <div className="flex flex-col gap-1">
-                        {eventosDoDia.map((evento, idx) => {
-                          const partes = evento.nome_evento.split(" vs ");
-                          return (
-                            <div key={idx} className="flex items-center gap-2 flex-wrap">
-                              {partes.map((nomeClube, idx2) => {
-                                const clube = clubes.find(c => nomeClube.toLowerCase().includes(c.nome.toLowerCase()));
-                                return (
-                                  <div key={idx2} className="flex items-center gap-1">
-                                    {clube?.simbolo && (
-                                      <img src={clube.simbolo} alt={nomeClube} className="w-5 h-5 rounded-full object-contain" />
-                                    )}
-                                    <span className="text-sm">{nomeClube}</span>
-                                    {idx2 === 0 && <span className="mx-1">vs</span>}
-                                  </div>
-                                );
-                              })}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </TooltipContent>
-                  </Tooltip>
+                  <div key={idx} className="flex items-center gap-2 flex-wrap">
+                    {partes.map((nomeClube, idx2) => {
+                      const clube = clubes.find(c => nomeClube.toLowerCase().includes(c.nome.toLowerCase()));
+                      return (
+                        <div key={idx2} className="flex items-center gap-1">
+                          {clube?.simbolo && (
+                            <img
+                              src={clube.simbolo}
+                              alt={nomeClube}
+                              className="w-5 h-5 rounded-full object-contain"
+                            />
+                          )}
+                          <span className="text-sm">{nomeClube}</span>
+                          {idx2 === 0 && <span className="mx-1">vs</span>}
+                        </div>
+                      );
+                    })}
+                  </div>
                 );
-              }
-            }
-            return null;
-          }}
+              })}
+            </div>
+          </TooltipContent>
+        </Tooltip>
+      );
+    }
+  }
+  return null;
+}}
+
         />
       </TooltipProvider>
 
