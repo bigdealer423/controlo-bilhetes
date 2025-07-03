@@ -10,6 +10,7 @@ import Outro from "./Outro";
 import DashboardPrincipal from "./DashboardPrincipal";
 import { useAuth } from "./AuthContext";
 import { TooltipProvider } from "@radix-ui/react-tooltip";
+import ErrorBoundary from "./ErrorBoundary";
 
 export default function App() {
   const { isAuthenticated } = useAuth();
@@ -31,6 +32,7 @@ export default function App() {
   return (
     <TooltipProvider>
       <Router>
+        <ErrorBoundary>
         <Routes>
           <Route
             path="/"
@@ -133,6 +135,7 @@ export default function App() {
 
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
+        <ErrorBoundary>
       </Router>
     </TooltipProvider>
   );
