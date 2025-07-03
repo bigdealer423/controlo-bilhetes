@@ -15,21 +15,7 @@ export default function InfoClubes() {
   const [novoClube, setNovoClube] = useState({ nome: '', estadio: '', capacidade: '', site: '', locais_venda: '', continente: false });
   const [filtroPesquisa, setFiltroPesquisa] = useState("");
   const [visible, setVisible] = useState(false);
-  const [clubes, setClubes] = useState([]);
-
-useEffect(() => {
-  const fetchClubes = async () => {
-    try {
-      const res = await fetch("https://controlo-bilhetes.onrender.com/clubes");
-      const data = await res.json();
-      setClubes(data);
-    } catch (error) {
-      console.error("Erro ao carregar clubes:", error);
-    }
-  };
-  fetchClubes();
-}, []);
-
+  
 
 
 
