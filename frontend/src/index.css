@@ -55,3 +55,11 @@ html, body {
   position: absolute;
   inset: 0;
 }
+
+.react-calendar {
+  background-color: #1f2937; /* dark:bg-gray-800 */
+  color: white;             /* text color */
+  border: none;             /* remove border */
+  border-radius: 0.5rem;    /* rounded-lg */
+}
+
