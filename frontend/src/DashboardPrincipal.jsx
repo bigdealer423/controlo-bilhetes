@@ -9,6 +9,11 @@ export default function DashboardPrincipal() {
   const [dataSelecionada, setDataSelecionada] = useState(new Date());
   const navigate = useNavigate();
   const [clubes, setClubes] = useState([]);
+  const obterSimboloClube = (nomeEvento) => {
+  const clube = clubes.find(c => nomeEvento.toLowerCase().includes(c.nome.toLowerCase()));
+  return clube && clube.simbolo ? clube.simbolo : null;
+};
+
 
 useEffect(() => {
   const fetchClubes = async () => {
