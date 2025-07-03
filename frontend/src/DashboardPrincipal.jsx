@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Calendar from "react-calendar";
 import 'react-calendar/dist/Calendar.css';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover"
 
 export default function DashboardPrincipal() {
   const [resumo, setResumo] = useState({ ganhos: 0, gastos: 0, lucro: 0, entregasPendentes: 0 });
@@ -75,13 +76,11 @@ export default function DashboardPrincipal() {
 
     if (eventosDoDia.length > 0) {
       return (
-        <Tooltip>
-          <TooltipTrigger>
-            <div className="absolute inset-0 w-full h-full cursor-pointer">
-              {/* área trigger invisível */}
-            </div>
-          </TooltipTrigger>
-          <TooltipContent className="bg-white dark:bg-gray-900 p-2 rounded shadow max-w-xs">
+        <Popover>
+          <PopoverTrigger asChild>
+            <div className="w-full h-full cursor-pointer"></div>
+          </PopoverTrigger>
+          <PopoverContent className="max-w-xs">
             <div className="flex flex-col gap-1">
               {eventosDoDia.map((evento, idx) => {
                 const partes = evento.nome_evento.split(" vs ");
@@ -107,8 +106,8 @@ export default function DashboardPrincipal() {
                 );
               })}
             </div>
-          </TooltipContent>
-        </Tooltip>
+          </PopoverContent>
+        </Popover>
       );
     }
   }
