@@ -487,14 +487,14 @@ def resumo_dashboard(db: Session = Depends(get_db)):
 )
 
 
-   ultimos_eventos = [
-    {
-        "nome_evento": e.nome_evento,
-        "data_evento": e.data_evento.strftime("%d/%m/%Y") if isinstance(e.data_evento, date) else str(e.data_evento),
-        "estado": e.estado,
-    }
-    for e in ultimos_eventos_query
-]
+       ultimos_eventos = [
+        {
+            "nome_evento": e.nome_evento,
+            "data_evento": e.data_evento.strftime("%d/%m/%Y") if isinstance(e.data_evento, date) else str(e.data_evento),
+            "estado": e.estado,
+        }
+        for e in ultimos_eventos_query
+    ]
 
 
     # Antes de retornar
