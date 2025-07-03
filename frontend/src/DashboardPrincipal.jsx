@@ -9,10 +9,17 @@ export default function DashboardPrincipal() {
   const [dataSelecionada, setDataSelecionada] = useState(new Date());
   const navigate = useNavigate();
   const [clubes, setClubes] = useState([]);
-  const obterSimboloClube = (nomeEvento) => {
-  const clube = clubes.find(c => nomeEvento.toLowerCase().includes(c.nome.toLowerCase()));
-  return clube && clube.simbolo ? clube.simbolo : null;
+  const gerarTooltipEvento = (nomeEvento) => {
+  const partes = nomeEvento.split(" vs ");
+  return partes.map(nomeClube => {
+    const clube = clubes.find(c => nomeClube.toLowerCase().includes(c.nome.toLowerCase()));
+    if (clube && clube.simbolo) {
+      return `${nomeClube} 🟩`; // placeholder inicial, já explico como usar imagens
+    }
+    return nomeClube;
+  }).join(" vs ");
 };
+
 
 
 useEffect(() => {
@@ -61,39 +68,32 @@ useEffect(() => {
           parseInt(ano) === date.getFullYear()
         );
       });
-      return existeEvento ? "bg-blue-200 dark:bg-blue-700 rounded-full" : null;
+      return existeEvento ? "hover:bg-blue-200 dark:hover:bg-blue-700 rounded-full cursor-pointer" : null;
     }
   }}
   tileContent={({ date, view }) => {
-  if (view === "month") {
-    const eventosDoDia = ultimosEventos.filter(evento => {
-      const [dia, mes, ano] = evento.data_evento.split("/");
-      return (
-        parseInt(dia) === date.getDate() &&
-        parseInt(mes) === date.getMonth() + 1 &&
-        parseInt(ano) === date.getFullYear()
-      );
-    });
+    if (view === "month") {
+      const eventosDoDia = ultimosEventos.filter(evento => {
+        const [dia, mes, ano] = evento.data_evento.split("/");
+        return (
+          parseInt(dia) === date.getDate() &&
+          parseInt(mes) === date.getMonth() + 1 &&
+          parseInt(ano) === date.getFullYear()
+        );
+      });
 
-    if (eventosDoDia.length > 0) {
-      const simbolo = obterSimboloClube(eventosDoDia[0].nome_evento);
-      return (
-        <div
-          title={eventosDoDia.map(e => e.nome_evento).join(", ")}
-          className="flex justify-center items-center"
-        >
-          {simbolo ? (
-            <img src={simbolo} alt="Simbolo" className="w-4 h-4 rounded-full object-contain" />
-          ) : (
-            <span className="text-xs text-blue-600 dark:text-blue-300">🎟️</span>
-          )}
-        </div>
-      );
+      if (eventosDoDia.length > 0) {
+        return (
+          <div
+            title={eventosDoDia.map(e => gerarTooltipEvento(e.nome_evento)).join(" | ")}
+          />
+        );
+      }
     }
-  }
-  return null;
-}}
+    return null;
+  }}
 />
+
 
 
 
