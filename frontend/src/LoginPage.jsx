@@ -24,7 +24,7 @@ export default function LoginPage() {
 
     if (username === "bigdealer" && password === "1091") {
       login();
-      navigate("/listagem-vendas");
+      navigate("/");
     } else {
       alert("Credenciais inválidas");
     }
