@@ -36,15 +36,16 @@ export default function App() {
             path="/"
             element={
               isAuthenticated ? (
-                <>
+                <div>
                   <Dashboard onAtualizarEventos={forcarAtualizacaoEventos} />
                   <DashboardPrincipal />
-                </>
+                </div>
               ) : (
                 <LoginPage />
               )
             }
           />
+
 
 
             path="/listagem-vendas"
