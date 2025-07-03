@@ -77,9 +77,8 @@ export default function DashboardPrincipal() {
       return (
         <Tooltip>
           <TooltipTrigger>
-            <div className="w-full h-full cursor-pointer flex items-center justify-center">
-              {/* Conteúdo invisível para manter trigger */}
-              <span className="opacity-0">•</span>
+            <div className="absolute inset-0 w-full h-full cursor-pointer">
+              {/* área trigger invisível */}
             </div>
           </TooltipTrigger>
           <TooltipContent className="bg-white dark:bg-gray-900 p-2 rounded shadow max-w-xs">
@@ -115,6 +114,7 @@ export default function DashboardPrincipal() {
   }
   return null;
 }}
+
 
 
         />
