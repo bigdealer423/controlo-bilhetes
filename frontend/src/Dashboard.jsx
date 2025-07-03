@@ -42,13 +42,6 @@ export default function Dashboard({ onAtualizarEventos }) {
     setMostrarModal(true);  // Abre o modal
   };
 
-  // UseEffect para redirecionar para "Listagem de Vendas" caso esteja na rota /dashboard
-  useEffect(() => {
-    if (location.pathname === "/dashboard" && !mostrarModal) {
-      navigate("/listagem-vendas");
-    }
-  }, [location.pathname, navigate, mostrarModal]);
-
 
  
   return (
