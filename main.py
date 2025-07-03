@@ -471,7 +471,7 @@ def resumo_dashboard(db: Session = Depends(get_db)):
     lucro = ganhos - gastos
 
     # Contar entregas pendentes
-    entregas_pendentes = db.query(ListagemVendas).filter(ListagemVendas.estado != "Entregue").count()
+    entregas_pendentes = db.query(ListagemVendas).filter(ListagemVendas.estado == "Por entregar").count()
 
     # Obter últimos 5 eventos/vendas
     ultimos_eventos_query = (
