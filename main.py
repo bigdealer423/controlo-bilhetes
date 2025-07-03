@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from typing import List
 from datetime import datetime, date
-from sqlalchemy import func
+from sqlalchemy import func, desc
 from io import BytesIO
 from database import engine, get_db
 from models import (
@@ -452,4 +452,50 @@ def eliminar_ficheiro_clube(clube_id: int, filename: str = Query(...)):
         return {"detail": "Ficheiro eliminado com sucesso"}
     else:
         raise HTTPException(status_code=404, detail="Ficheiro não encontrado")
+
+
+# Dashboardprincipal
+
+
+@app.get("/resumo_dashboard")
+def resumo_dashboard(db: Session = Depends(get_db)):
+    # Calcular ganhos
+    ganhos = db.query(func.sum(ListagemVendas.ganho)).scalar() or 0
+
+    # Calcular gastos
+    gastos = db.query(func.sum(Compras.valor)).scalar() or 0
+
+    # Calcular lucro líquido
+    lucro = ganhos - gastos
+
+    # Contar entregas pendentes
+    entregas_pendentes = db.query(ListagemVendas).filter(ListagemVendas.estado != "Entregue").count()
+
+    # Obter últimos 5 eventos/vendas
+    ultimos_eventos_query = (
+        db.query(ListagemVendas.id, ListagemVendas.evento.label("nome_evento"), ListagemVendas.data_evento, ListagemVendas.estado)
+        .order_by(desc(ListagemVendas.data_evento))
+        .limit(5)
+        .all()
+    )
+
+    ultimos_eventos = [
+        {
+            "id": e.id,
+            "nome_evento": e.nome_evento,
+            "data_evento": e.data_evento.strftime("%d/%m/%Y") if isinstance(e.data_evento, date) else str(e.data_evento),
+            "estado": e.estado,
+        }
+        for e in ultimos_eventos_query
+    ]
+
+    return {
+        "ganhos": ganhos,
+        "gastos": gastos,
+        "lucro": lucro,
+        "entregasPendentes": entregas_pendentes,
+        "ultimos_eventos": ultimos_eventos
+    }
+
+
 
