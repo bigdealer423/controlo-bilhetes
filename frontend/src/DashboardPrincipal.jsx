@@ -8,6 +8,21 @@ export default function DashboardPrincipal() {
   const [ultimosEventos, setUltimosEventos] = useState([]);
   const [dataSelecionada, setDataSelecionada] = useState(new Date());
   const navigate = useNavigate();
+  const [clubes, setClubes] = useState([]);
+
+useEffect(() => {
+  const fetchClubes = async () => {
+    try {
+      const res = await fetch("https://controlo-bilhetes.onrender.com/clubes");
+      const data = await res.json();
+      setClubes(data);
+    } catch (error) {
+      console.error("Erro ao carregar clubes:", error);
+    }
+  };
+  fetchClubes();
+}, []);
+
 
   useEffect(() => {
     const fetchResumo = async () => {
