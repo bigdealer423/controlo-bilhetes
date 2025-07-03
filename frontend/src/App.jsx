@@ -33,108 +33,108 @@ export default function App() {
     <TooltipProvider>
       <Router>
         <ErrorBoundary>
-        <Routes>
-          <Route
-            path="/"
-            element={
-              isAuthenticated ? (
-                <div>
-                  <Dashboard onAtualizarEventos={forcarAtualizacaoEventos} />
-                  <DashboardPrincipal />
-                </div>
-              ) : (
-                <LoginPage />
-              )
-            }
-          />
-
-
-
-            path="/listagem-vendas"
-            element={
-              isAuthenticated ? (
-                <>
-                  <Dashboard onAtualizarEventos={forcarAtualizacaoEventos} />
-                  <ListagemVendas atualizarEventos={true} />
-                </>
-              ) : (
-                <Navigate to="/" replace />
-              )
-            }
-          />
-
-          <Route
-            path="/eventos"
-            element={
-              isAuthenticated ? (
-                <>
-                  <Dashboard onAtualizarEventos={forcarAtualizacaoEventos} />
-                  <Eventos />
-                </>
-              ) : (
-                <Navigate to="/" replace />
-              )
-            }
-          />
-
-          <Route
-            path="/info-clubes"
-            element={
-              isAuthenticated ? (
-                <>
-                  <Dashboard onAtualizarEventos={forcarAtualizacaoEventos} />
-                  <InfoClubes />
-                </>
-              ) : (
-                <Navigate to="/" replace />
-              )
-            }
-          />
-
-          <Route
-            path="/disputas"
-            element={
-              isAuthenticated ? (
-                <>
-                  <Dashboard onAtualizarEventos={forcarAtualizacaoEventos} />
-                  <Disputas />
-                </>
-              ) : (
-                <Navigate to="/" replace />
-              )
-            }
-          />
-
-          <Route
-            path="/compras"
-            element={
-              isAuthenticated ? (
-                <>
-                  <Dashboard onAtualizarEventos={forcarAtualizacaoEventos} />
-                  <Compras />
-                </>
-              ) : (
-                <Navigate to="/" replace />
-              )
-            }
-          />
-
-          <Route
-            path="/outro"
-            element={
-              isAuthenticated ? (
-                <>
-                  <Dashboard onAtualizarEventos={forcarAtualizacaoEventos} />
-                  <Outro />
-                </>
-              ) : (
-                <Navigate to="/" replace />
-              )
-            }
-          />
-
-          <Route path="*" element={<Navigate to="/" />} />
-        </Routes>
+          <Routes>
+            <Route
+              path="/"
+              element={
+                isAuthenticated ? (
+                  <div>
+                    <Dashboard onAtualizarEventos={forcarAtualizacaoEventos} />
+                    <DashboardPrincipal />
+                  </div>
+                ) : (
+                  <LoginPage />
+                )
+              }
+            />
+  
+  
+  
+              path="/listagem-vendas"
+              element={
+                isAuthenticated ? (
+                  <>
+                    <Dashboard onAtualizarEventos={forcarAtualizacaoEventos} />
+                    <ListagemVendas atualizarEventos={true} />
+                  </>
+                ) : (
+                  <Navigate to="/" replace />
+                )
+              }
+            />
+  
+            <Route
+              path="/eventos"
+              element={
+                isAuthenticated ? (
+                  <>
+                    <Dashboard onAtualizarEventos={forcarAtualizacaoEventos} />
+                    <Eventos />
+                  </>
+                ) : (
+                  <Navigate to="/" replace />
+                )
+              }
+            />
+  
+            <Route
+              path="/info-clubes"
+              element={
+                isAuthenticated ? (
+                  <>
+                    <Dashboard onAtualizarEventos={forcarAtualizacaoEventos} />
+                    <InfoClubes />
+                  </>
+                ) : (
+                  <Navigate to="/" replace />
+                )
+              }
+            />
+  
+            <Route
+              path="/disputas"
+              element={
+                isAuthenticated ? (
+                  <>
+                    <Dashboard onAtualizarEventos={forcarAtualizacaoEventos} />
+                    <Disputas />
+                  </>
+                ) : (
+                  <Navigate to="/" replace />
+                )
+              }
+            />
+  
+            <Route
+              path="/compras"
+              element={
+                isAuthenticated ? (
+                  <>
+                    <Dashboard onAtualizarEventos={forcarAtualizacaoEventos} />
+                    <Compras />
+                  </>
+                ) : (
+                  <Navigate to="/" replace />
+                )
+              }
+            />
+  
+            <Route
+              path="/outro"
+              element={
+                isAuthenticated ? (
+                  <>
+                    <Dashboard onAtualizarEventos={forcarAtualizacaoEventos} />
+                    <Outro />
+                  </>
+                ) : (
+                  <Navigate to="/" replace />
+                )
+              }
+            />
+  
+            <Route path="*" element={<Navigate to="/" />} />
+          </Routes>
         <ErrorBoundary>
       </Router>
     </TooltipProvider>
