@@ -190,7 +190,8 @@ export default function Compras() {
         </div>
 
       {/* Tabela */}
-      <div className="bg-white dark:bg-gray-900 shadow-md rounded p-4 relative transition-colors duration-300">
+    <div className="bg-white dark:bg-gray-900 shadow-md rounded p-4 relative transition-colors duration-300">
+      <div className="overflow-x-auto w-full"> 
         <table className="min-w-full border dark:border-gray-700 text-sm text-left text-gray-600 dark:text-gray-300 transition-colors duration-300">
           <thead>
             <tr className="bg-gray-100 dark:bg-gray-700 transition-colors duration-300">
@@ -248,7 +249,7 @@ export default function Compras() {
             ))}
           </tbody>
         </table>
-
+      </div>
         {/* Modal de confirmação */}
         {confirmarEliminarId !== null && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
