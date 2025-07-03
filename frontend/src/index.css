@@ -18,3 +18,24 @@ html, body {
     transform: scale(1);
   }
 }
+
+/* For dark mode */
+.dark .react-calendar {
+    background-color: #1f2937; /* bg-gray-800 */
+    color: #f9fafb;            /* text-gray-50 */
+}
+
+.dark .react-calendar__tile {
+    background: #374151;       /* bg-gray-700 */
+    color: #f9fafb;
+}
+
+.dark .react-calendar__tile--active {
+    background: #2563eb !important; /* bg-blue-600 */
+    color: #ffffff !important;
+}
+
+.dark .react-calendar__tile--now {
+    background: #4b5563 !important; /* bg-gray-600 */
+    color: #ffffff !important;
+}
