@@ -28,10 +28,25 @@ export default function DashboardPrincipal() {
       <h1 className="text-xl font-semibold mb-4">Dashboard de Bilhetes</h1>
 
       <Calendar
-        onChange={setDataSelecionada}
-        value={dataSelecionada}
-        className="mb-4 rounded shadow"
-      />
+  onChange={setDataSelecionada}
+  value={dataSelecionada}
+  className="mb-4 rounded shadow"
+  tileClassName={({ date, view }) => {
+    if (view === "month") {
+      const dataStr = date.toLocaleDateString("pt-PT");
+      const existeEvento = ultimosEventos.some(evento => {
+        const [dia, mes, ano] = evento.data_evento.split("/");
+        return (
+          parseInt(dia) === date.getDate() &&
+          parseInt(mes) === date.getMonth() + 1 &&
+          parseInt(ano) === date.getFullYear()
+        );
+      });
+      return existeEvento ? "bg-blue-200 dark:bg-blue-700 rounded-full" : null;
+    }
+  }}
+/>
+
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
         <div className="bg-green-100 dark:bg-green-900 p-4 rounded shadow">
