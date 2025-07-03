@@ -77,37 +77,40 @@ export default function DashboardPrincipal() {
     if (eventosDoDia.length > 0) {
       return (
         <Popover>
-          <PopoverTrigger asChild>
-            <div className="w-full h-full cursor-pointer"></div>
-          </PopoverTrigger>
-          <PopoverContent className="max-w-xs">
-            <div className="flex flex-col gap-1">
-              {eventosDoDia.map((evento, idx) => {
-                const partes = evento.nome_evento.split(" vs ");
+  <PopoverTrigger asChild>
+    <button className="w-full h-full cursor-pointer bg-transparent border-none p-0 m-0"></button>
+  </PopoverTrigger>
+  <PopoverContent className="max-w-xs">
+    {eventosDoDia.length > 0 && (
+      <div className="flex flex-col gap-1">
+        {eventosDoDia.map((evento, idx) => {
+          const partes = evento.nome_evento.split(" vs ");
+          return (
+            <div key={idx} className="flex items-center gap-2 flex-wrap">
+              {partes.map((nomeClube, idx2) => {
+                const clube = clubes.find(c => nomeClube.toLowerCase().includes(c.nome.toLowerCase()));
                 return (
-                  <div key={idx} className="flex items-center gap-2 flex-wrap">
-                    {partes.map((nomeClube, idx2) => {
-                      const clube = clubes.find(c => nomeClube.toLowerCase().includes(c.nome.toLowerCase()));
-                      return (
-                        <div key={idx2} className="flex items-center gap-1">
-                          {clube?.simbolo && (
-                            <img
-                              src={clube.simbolo}
-                              alt={nomeClube}
-                              className="w-5 h-5 rounded-full object-contain"
-                            />
-                          )}
-                          <span className="text-sm">{nomeClube}</span>
-                          {idx2 === 0 && <span className="mx-1">vs</span>}
-                        </div>
-                      );
-                    })}
+                  <div key={idx2} className="flex items-center gap-1">
+                    {clube?.simbolo && (
+                      <img
+                        src={clube.simbolo}
+                        alt={nomeClube}
+                        className="w-5 h-5 rounded-full object-contain"
+                      />
+                    )}
+                    <span className="text-sm">{nomeClube}</span>
+                    {idx2 === 0 && <span className="mx-1">vs</span>}
                   </div>
                 );
               })}
             </div>
-          </PopoverContent>
-        </Popover>
+          );
+        })}
+      </div>
+    )}
+  </PopoverContent>
+</Popover>
+
       );
     }
   }
