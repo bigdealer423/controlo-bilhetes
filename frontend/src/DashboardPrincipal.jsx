@@ -140,15 +140,15 @@ useEffect(() => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
         <div className="bg-green-100 dark:bg-green-900 p-4 rounded shadow">
           <h2 className="text-lg font-medium">Ganhos</h2>
-          <p className="text-2xl font-bold">€ {resumo.ganhos ? resumo.ganhos.toFixed(2) : "0.00"}</p>
+          <p className="text-2xl font-bold">€ {resumo.ganhos ? Math.round(resumo.ganhos) : "0"}</p>
         </div>
         <div className="bg-red-100 dark:bg-red-900 p-4 rounded shadow">
           <h2 className="text-lg font-medium">Gastos</h2>
-          <p className="text-2xl font-bold">€ {resumo.gastos ? resumo.gastos.toFixed(2) : "0.00"}</p>
+          <p className="text-2xl font-bold">€ {resumo.gastos ? Math.round(resumo.gastos) : "0"}</p>
         </div>
         <div className="bg-blue-100 dark:bg-blue-900 p-4 rounded shadow">
           <h2 className="text-lg font-medium">Lucro Líquido</h2>
-          <p className="text-2xl font-bold">€ {resumo.lucro ? resumo.lucro.toFixed(2) : "0.00"}</p>
+          <p className="text-2xl font-bold">€ {resumo.lucro ? Math.round(resumo.lucro) : "0"}</p>
         </div>
       </div>
 
