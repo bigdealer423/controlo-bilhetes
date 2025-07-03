@@ -47,9 +47,8 @@ export default function App() {
                 )
               }
             />
-  
-  
-  
+          
+            <Route
               path="/listagem-vendas"
               element={
                 isAuthenticated ? (
@@ -62,7 +61,7 @@ export default function App() {
                 )
               }
             />
-  
+          
             <Route
               path="/eventos"
               element={
@@ -76,7 +75,7 @@ export default function App() {
                 )
               }
             />
-  
+          
             <Route
               path="/info-clubes"
               element={
@@ -90,7 +89,7 @@ export default function App() {
                 )
               }
             />
-  
+          
             <Route
               path="/disputas"
               element={
@@ -104,7 +103,7 @@ export default function App() {
                 )
               }
             />
-  
+          
             <Route
               path="/compras"
               element={
@@ -118,7 +117,7 @@ export default function App() {
                 )
               }
             />
-  
+          
             <Route
               path="/outro"
               element={
@@ -132,7 +131,7 @@ export default function App() {
                 )
               }
             />
-  
+          
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </ErrorBoundary>
