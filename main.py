@@ -462,12 +462,13 @@ def eventos_calendario(db: Session = Depends(get_db)):
     eventos_lista = [
         {
             "id": evento.id,
-            "nome_evento": evento.nome,
-            "data_evento": evento.data.strftime("%d/%m/%Y") if isinstance(evento.data, date) else str(evento.data)
+            "nome_evento": evento.evento,   # <-- aqui corrigir de `evento.nome` para `evento.evento`
+            "data_evento": evento.data_evento.strftime("%d/%m/%Y") if isinstance(evento.data_evento, date) else str(evento.data_evento)
         }
         for evento in eventos
     ]
     return eventos_lista
+
 
 
 @app.get("/resumo_dashboard")
