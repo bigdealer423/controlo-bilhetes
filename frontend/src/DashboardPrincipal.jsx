@@ -67,7 +67,7 @@ useEffect(() => {
           // Marca os dias com evento visualmente
           tileClassName={({ date, view }) => {
             if (view === "month") {
-              const existeEvento = ultimosEventos.some(evento => {
+              const existeEvento = eventosCalendario.some(evento => {
                 const [dia, mes, ano] = evento.data_evento.split("/");
                 return (
                   parseInt(dia) === date.getDate() &&
@@ -80,7 +80,7 @@ useEffect(() => {
           }}
           tileContent={({ date, view }) => {
   if (view === "month") {
-    const eventosDoDia = ultimosEventos.filter(evento => {
+    const eventosDoDia = eventosCalendario.filter(evento => {
       const [dia, mes, ano] = evento.data_evento.split("/");
       return (
         parseInt(dia) === date.getDate() &&
