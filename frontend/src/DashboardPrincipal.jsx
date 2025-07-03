@@ -11,6 +11,21 @@ export default function DashboardPrincipal() {
   const [dataSelecionada, setDataSelecionada] = useState(new Date());
   const [clubes, setClubes] = useState([]);
   const navigate = useNavigate();
+  const [eventosCalendario, setEventosCalendario] = useState([]);
+
+useEffect(() => {
+    const fetchEventosCalendario = async () => {
+        try {
+            const res = await fetch("https://controlo-bilhetes.onrender.com/eventos_calendario");
+            const data = await res.json();
+            setEventosCalendario(data);
+        } catch (error) {
+            console.error("Erro ao carregar eventos do calendário:", error);
+        }
+    };
+    fetchEventosCalendario();
+}, []);
+
 
   useEffect(() => {
     const fetchClubes = async () => {
