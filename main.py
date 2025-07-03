@@ -491,6 +491,9 @@ def resumo_dashboard(db: Session = Depends(get_db)):
         for e in ultimos_eventos_query
     ]
 
+    # Antes de retornar
+    ultimos_eventos = list({evento.id: evento for evento in ultimos_eventos}.values())
+
     return {
         "ganhos": ganhos,
         "gastos": gastos,
