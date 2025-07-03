@@ -59,6 +59,7 @@ useEffect(() => {
       <h1 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Dashboard</h1>
 
       <TooltipProvider>
+      <div className="w-full md:w-[600px] mx-auto">
         <Calendar
           onChange={setDataSelecionada}
           value={dataSelecionada}
@@ -123,6 +124,7 @@ useEffect(() => {
         })}
       </div>
     )}
+    </div>
   </PopoverContent>
 </Popover>
 
