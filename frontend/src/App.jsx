@@ -46,6 +46,7 @@ export default function App() {
             }
           />
 
+
             path="/listagem-vendas"
             element={
               isAuthenticated ? (
