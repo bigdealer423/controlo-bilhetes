@@ -463,7 +463,8 @@ def resumo_dashboard(db: Session = Depends(get_db)):
     ganhos = db.query(func.sum(ListagemVendas.ganho)).scalar() or 0
 
     # Calcular gastos
-    gastos = db.query(func.sum(Compra.valor)).scalar() or 0
+    gastos = db.query(func.sum(Compra.gasto)).scalar() or 0
+
 
 
     # Calcular lucro líquido
