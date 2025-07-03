@@ -124,7 +124,6 @@ useEffect(() => {
         })}
       </div>
     )}
-    </div>
   </PopoverContent>
 </Popover>
 
