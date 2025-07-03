@@ -47,6 +47,21 @@ export default function DashboardPrincipal() {
           onChange={setDataSelecionada}
           value={dataSelecionada}
           className="mb-4 rounded shadow"
+
+          // Marca os dias com evento visualmente
+          tileClassName={({ date, view }) => {
+            if (view === "month") {
+              const existeEvento = ultimosEventos.some(evento => {
+                const [dia, mes, ano] = evento.data_evento.split("/");
+                return (
+                  parseInt(dia) === date.getDate() &&
+                  parseInt(mes) === date.getMonth() + 1 &&
+                  parseInt(ano) === date.getFullYear()
+                );
+              });
+              return existeEvento ? "bg-blue-200 dark:bg-blue-700 rounded-full" : null;
+            }
+          }}
           tileContent={({ date, view }) => {
   if (view === "month") {
     const eventosDoDia = ultimosEventos.filter(evento => {
