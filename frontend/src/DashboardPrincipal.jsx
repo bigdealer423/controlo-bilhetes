@@ -99,7 +99,7 @@ export default function DashboardPrincipal() {
                       />
                     )}
                     <span className="text-sm text-gray-900 dark:text-gray-100">{nomeClube}</span>
-                    {idx2 === 0 && <span className="mx-1">vs</span>}
+                    {idx2 === 0 && <span className="mx-1 text-gray-900 dark:text-gray-100">vs</span>}
                   </div>
                 );
               })}
