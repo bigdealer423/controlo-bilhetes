@@ -135,7 +135,7 @@ export default function App() {
   
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
-        <ErrorBoundary>
+        </ErrorBoundary>
       </Router>
     </TooltipProvider>
   );
