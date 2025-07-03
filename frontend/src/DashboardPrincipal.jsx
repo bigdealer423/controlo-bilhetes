@@ -61,8 +61,11 @@ export default function DashboardPrincipal() {
     if (eventosDoDia.length > 0) {
       return (
         <Tooltip>
-          <TooltipTrigger asChild>
-            <div className="w-full h-full">&nbsp;</div> {/* Renderiza algo para garantir elemento */}
+          <TooltipTrigger>
+            <div className="w-full h-full cursor-pointer flex items-center justify-center">
+              {/* Conteúdo invisível para manter trigger */}
+              <span className="opacity-0">•</span>
+            </div>
           </TooltipTrigger>
           <TooltipContent className="bg-white dark:bg-gray-900 p-2 rounded shadow max-w-xs">
             <div className="flex flex-col gap-1">
@@ -97,6 +100,7 @@ export default function DashboardPrincipal() {
   }
   return null;
 }}
+
 
         />
       </TooltipProvider>
