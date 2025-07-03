@@ -19,6 +19,22 @@ export default function DashboardPrincipal() {
     return nomeClube;
   }).join(" vs ");
 };
+  const getTooltip = (date) => {
+  const eventosDoDia = ultimosEventos.filter(evento => {
+    const [dia, mes, ano] = evento.data_evento.split("/");
+    return (
+      parseInt(dia) === date.getDate() &&
+      parseInt(mes) === date.getMonth() + 1 &&
+      parseInt(ano) === date.getFullYear()
+    );
+  });
+
+  if (eventosDoDia.length > 0) {
+    return eventosDoDia.map(e => gerarTooltipEvento(e.nome_evento)).join(" | ");
+  }
+  return null;
+};
+
 
 
 
@@ -72,26 +88,16 @@ useEffect(() => {
     }
   }}
   tileContent={({ date, view }) => {
-    if (view === "month") {
-      const eventosDoDia = ultimosEventos.filter(evento => {
-        const [dia, mes, ano] = evento.data_evento.split("/");
-        return (
-          parseInt(dia) === date.getDate() &&
-          parseInt(mes) === date.getMonth() + 1 &&
-          parseInt(ano) === date.getFullYear()
-        );
-      });
-
-      if (eventosDoDia.length > 0) {
-        return (
-          <div
-            title={eventosDoDia.map(e => gerarTooltipEvento(e.nome_evento)).join(" | ")}
-          />
-        );
-      }
+  if (view === "month") {
+    const tooltip = getTooltip(date);
+    if (tooltip) {
+      return (
+        <span title={tooltip} className="w-full h-full block"></span>
+      );
     }
-    return null;
-  }}
+  }
+  return null;
+}}
 />
 
 
