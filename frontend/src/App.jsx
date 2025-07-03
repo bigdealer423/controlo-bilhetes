@@ -7,6 +7,7 @@ import InfoClubes from "./InfoClubes";
 import Disputas from "./Disputas";
 import Compras from "./Compras";
 import Outro from "./Outro";
+import DashboardPrincipal from "./DashboardPrincipal";
 import { useAuth } from "./AuthContext";
 import { TooltipProvider } from "@radix-ui/react-tooltip";
 
@@ -35,14 +36,16 @@ export default function App() {
             path="/"
             element={
               isAuthenticated ? (
-                <Navigate to="/listagem-vendas" replace />
+                <>
+                  <Dashboard onAtualizarEventos={forcarAtualizacaoEventos} />
+                  <DashboardPrincipal />
+                </>
               ) : (
                 <LoginPage />
               )
             }
           />
 
-          <Route
             path="/listagem-vendas"
             element={
               isAuthenticated ? (
