@@ -465,29 +465,26 @@ def resumo_dashboard(db: Session = Depends(get_db)):
     # Calcular gastos
     gastos = db.query(func.sum(Compra.gasto)).scalar() or 0
 
-
-
     # Calcular lucro líquido
     lucro = ganhos - gastos
 
     # Contar entregas pendentes
     entregas_pendentes = db.query(ListagemVendas).filter(ListagemVendas.estado == "Por entregar").count()
 
-    # Obter últimos 5 eventos/vendas
+    # Obter últimos 5 eventos/vendas únicos por evento e data
     ultimos_eventos_query = (
-    db.query(
-        ListagemVendas.evento.label("nome_evento"),
-        ListagemVendas.data_evento,
-        func.max(ListagemVendas.estado).label("estado")
+        db.query(
+            ListagemVendas.evento.label("nome_evento"),
+            ListagemVendas.data_evento,
+            func.max(ListagemVendas.estado).label("estado")
+        )
+        .group_by(ListagemVendas.evento, ListagemVendas.data_evento)
+        .order_by(desc(ListagemVendas.data_evento))
+        .limit(5)
+        .all()
     )
-    .group_by(ListagemVendas.evento, ListagemVendas.data_evento)
-    .order_by(desc(ListagemVendas.data_evento))
-    .limit(5)
-    .all()
-)
 
-
-       ultimos_eventos = [
+    ultimos_eventos = [
         {
             "nome_evento": e.nome_evento,
             "data_evento": e.data_evento.strftime("%d/%m/%Y") if isinstance(e.data_evento, date) else str(e.data_evento),
@@ -495,11 +492,6 @@ def resumo_dashboard(db: Session = Depends(get_db)):
         }
         for e in ultimos_eventos_query
     ]
-
-
-    # Antes de retornar
-    ultimos_eventos = list({evento["id"]: evento for evento in ultimos_eventos}.values())
-
 
     return {
         "ganhos": ganhos,
