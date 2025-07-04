@@ -33,7 +33,8 @@ def guardar_historico(historico):
         json.dump(historico, f)
 
 PALAVRAS_CHAVE_FPF = ["Comprar", "Adquirir", "Bilhete", "Ingressos", "Buy"]
-PALAVRA_CHAVE_SLB = "Sporting"
+PALAVRAS_CHAVE_SLB = ["Rio Ave", "Estrela da Amadora", "Tondela", "Alverca"]
+
 
 def buscar_links_novos():
     links_encontrados = []
@@ -72,9 +73,10 @@ def buscar_links_novos():
 
                     soup = BeautifulSoup(resp.text, 'html.parser')
                     texto_site = soup.get_text(separator=' ', strip=True)
-                    if PALAVRA_CHAVE_SLB.lower() in texto_site.lower():
+                    if any(palavra.lower() in texto_site.lower() for palavra in PALAVRAS_CHAVE_SLB):
                         links_encontrados.append(url)
-                        print(f"✅ Encontrada referência a '{PALAVRA_CHAVE_SLB}' em Benfica Viagens.", flush=True)
+                        print(f"✅ Encontrada referência a uma das palavras {PALAVRAS_CHAVE_SLB} em Benfica Viagens.", flush=True)
+
                 except Exception as e:
                     print(f"⚠️ Benfica Viagens não respondeu ou bloqueou: {e}", flush=True)
                     continue
