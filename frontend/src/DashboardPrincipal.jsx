@@ -149,12 +149,9 @@ useEffect(() => {
           />
         </div>
       </TooltipProvider>
-    </div>
-  </div>
 
-
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+      {/* ✅ BLOCO QUE ESTAVA FORA, AGORA INSERIDO CORRETAMENTE */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 mt-4">
         <div className="bg-green-100 dark:bg-green-900 p-4 rounded shadow">
           <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100">Ganhos</h2>
           <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">€ {resumo.ganhos ? Math.round(resumo.ganhos) : "0"}</p>
@@ -168,11 +165,11 @@ useEffect(() => {
           <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">€ {resumo.lucro ? Math.round(resumo.lucro) : "0"}</p>
         </div>
       </div>
-      
+
       <div className="bg-yellow-100 dark:bg-yellow-900 p-4 rounded shadow mb-4">
         <p className="font-medium text-gray-900 dark:text-gray-100">⚠️ {resumo.entregasPendentes} entregas pendentes</p>
       </div>
-      
+
       <h2 className="text-lg font-semibold mb-2 text-gray-900 dark:text-gray-100">Últimos eventos / vendas</h2>
       <div className="space-y-2">
         {ultimosEventos.map((evento) => (
@@ -185,12 +182,19 @@ useEffect(() => {
               <p className="font-medium text-gray-900 dark:text-gray-100">{evento.nome_evento}</p>
               <p className="text-sm text-gray-600 dark:text-gray-300">{evento.data_evento}</p>
             </div>
-            <span className={`text-xs px-2 py-1 rounded ${evento.estado === "Pago" ? "bg-green-200 dark:bg-green-700" : evento.estado === "Disputa" ? "bg-red-200 dark:bg-red-700" : "bg-gray-200 dark:bg-gray-700"}`}>
+            <span className={`text-xs px-2 py-1 rounded ${
+              evento.estado === "Pago"
+                ? "bg-green-200 dark:bg-green-700"
+                : evento.estado === "Disputa"
+                  ? "bg-red-200 dark:bg-red-700"
+                  : "bg-gray-200 dark:bg-gray-700"
+            }`}>
               {evento.estado}
             </span>
           </div>
         ))}
       </div>
-     </div>  
-  );
-}
+      {/* ✅ FIM DO BLOCO INSERIDO */}
+    </div>
+  </div>
+);
