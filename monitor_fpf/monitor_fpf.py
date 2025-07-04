@@ -47,7 +47,7 @@ def buscar_links_novos():
         try:
             print(f"🔍 A verificar {url}...", flush=True)
 
-            # Se for FPF, ignorar HEAD, fazer GET diretamente
+            # FPF: GET direto com retry
             if 'bilheteira.fpf.pt' in url:
                 resp = session.get(url, timeout=15)
                 soup = BeautifulSoup(resp.text, 'html.parser')
@@ -60,19 +60,23 @@ def buscar_links_novos():
                     links_encontrados.extend(links)
                     print(f"✅ Encontrados {len(links)} novos links na FPF.", flush=True)
 
-            # Se for Benfica Viagens, fazer HEAD antes de GET
+            # Benfica Viagens: sem retry, timeout curtos
             elif 'viagens.slbenfica.pt' in url:
-                head_resp = session.head(url, timeout=10)
-                if head_resp.status_code != 200:
-                    print(f"⚠️ HEAD falhou em {url} (status {head_resp.status_code}), a ignorar.", flush=True)
-                    continue
+                try:
+                    head_resp = requests.head(url, timeout=5)
+                    if head_resp.status_code != 200:
+                        print(f"⚠️ HEAD falhou em {url} (status {head_resp.status_code}), a ignorar.", flush=True)
+                        continue
 
-                resp = session.get(url, timeout=15)
-                soup = BeautifulSoup(resp.text, 'html.parser')
-                texto_site = soup.get_text(separator=' ', strip=True)
-                if PALAVRA_CHAVE_SLB.lower() in texto_site.lower():
-                    links_encontrados.append(url)
-                    print(f"✅ Encontrada referência a '{PALAVRA_CHAVE_SLB}' em Benfica Viagens.", flush=True)
+                    resp = requests.get(url, timeout=10)
+                    soup = BeautifulSoup(resp.text, 'html.parser')
+                    texto_site = soup.get_text(separator=' ', strip=True)
+                    if PALAVRA_CHAVE_SLB.lower() in texto_site.lower():
+                        links_encontrados.append(url)
+                        print(f"✅ Encontrada referência a '{PALAVRA_CHAVE_SLB}' em Benfica Viagens.", flush=True)
+                except Exception as e:
+                    print(f"⚠️ Benfica Viagens não respondeu a tempo: {e}", flush=True)
+                    continue
 
         except Exception as e:
             print(f"❌ Erro ao processar {url}: {e}", flush=True)
