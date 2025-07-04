@@ -38,14 +38,20 @@ def buscar_links_novos():
     links_encontrados = []
 
     session = requests.Session()
-    retry = Retry(connect=3, backoff_factor=5)
+    retry = Retry(connect=3, backoff_factor=3)
     adapter = HTTPAdapter(max_retries=retry)
     session.mount('https://', adapter)
     session.mount('http://', adapter)
 
     for url in URLS:
         try:
-            resp = session.get(url, timeout=45)
+            # Testa HEAD antes de GET para evitar bloqueios
+            head_resp = session.head(url, timeout=10)
+            if head_resp.status_code != 200:
+                print(f"HEAD check falhou em {url} (status {head_resp.status_code}), ignorado.")
+                continue
+
+            resp = session.get(url, timeout=20)
             soup = BeautifulSoup(resp.text, 'html.parser')
 
             # Site FPF
