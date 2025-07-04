@@ -10,7 +10,11 @@ export default function BarraClubes() {
         const data = await res.json();
         // Ordena alfabeticamente
         data.sort((a, b) => (a.nome || "").localeCompare(b.nome || "", 'pt', { sensitivity: 'base' }));
-        setClubes(data);
+        const clubesFiltrados = data.filter(clube => 
+  clube.capacidade && clube.capacidade.endsWith(" ")
+);
+setClubes(clubesFiltrados);
+
       } catch (error) {
         console.error("Erro ao carregar clubes:", error);
       }
