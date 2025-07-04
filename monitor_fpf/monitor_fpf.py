@@ -4,6 +4,8 @@ import smtplib
 from email.message import EmailMessage
 import json
 import os
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 # ----------------- CONFIGURAÇÕES -----------------
 URLS = [
@@ -13,7 +15,7 @@ URLS = [
 HIST_FILE = 'fpf_hist.json'
 EMAIL_FROM = os.getenv("EMAIL_USERNAME")
 EMAIL_TO = os.getenv("EMAIL_USERNAME")
-EMAIL_PASS = os.getenv("EMAIL_PASSWORD")  # guardado em Environment no Render
+EMAIL_PASS = os.getenv("EMAIL_PASSWORD")
 SMTP_SERVER = 'smtp.gmail.com'
 SMTP_PORT = 587
 
@@ -34,31 +36,29 @@ PALAVRA_CHAVE_SLB = "Sporting"
 
 def buscar_links_novos():
     links_encontrados = []
+
+    session = requests.Session()
+    retry = Retry(connect=3, backoff_factor=5)
+    adapter = HTTPAdapter(max_retries=retry)
+    session.mount('https://', adapter)
+    session.mount('http://', adapter)
+
     for url in URLS:
         try:
-            for tentativa in range(3):
-    try:
-        resp = requests.get(url, timeout=30)
-        break
-    except requests.exceptions.RequestException as e:
-        if tentativa < 2:
-            print(f"Tentativa {tentativa+1} falhou, tentando novamente...")
-        else:
-            print(f"Falha após 3 tentativas em {url}: {e}")
-            return []
-
+            resp = session.get(url, timeout=45)
             soup = BeautifulSoup(resp.text, 'html.parser')
 
-            # Caso seja o site FPF
+            # Site FPF
             if 'bilheteira.fpf.pt' in url:
                 links = [
                     a['href'] if a['href'].startswith('http') else url.rstrip('/') + '/' + a['href'].lstrip('/')
                     for a in soup.find_all('a', href=True)
                     if any(palavra.lower() in a.get_text().lower() for palavra in PALAVRAS_CHAVE_FPF)
                 ]
-                links_encontrados.extend(links)
+                if links:
+                    links_encontrados.extend(links)
 
-            # Caso seja o site Benfica Viagens
+            # Site Benfica Viagens
             elif 'viagens.slbenfica.pt' in url:
                 texto_site = soup.get_text(separator=' ', strip=True)
                 if PALAVRA_CHAVE_SLB.lower() in texto_site.lower():
@@ -66,6 +66,8 @@ def buscar_links_novos():
 
         except Exception as e:
             print(f"Erro ao processar {url}: {e}")
+            continue
+
     return links_encontrados
 
 def enviar_email(novos_links):
