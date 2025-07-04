@@ -47,17 +47,10 @@ def buscar_links_novos():
         try:
             print(f"🔍 A verificar {url}...", flush=True)
 
-            # HEAD para testar disponibilidade antes do GET
-            head_resp = session.head(url, timeout=10)
-            if head_resp.status_code != 200:
-                print(f"⚠️ HEAD falhou em {url} (status {head_resp.status_code}), a ignorar.", flush=True)
-                continue
-
-            resp = session.get(url, timeout=15)
-            soup = BeautifulSoup(resp.text, 'html.parser')
-
-            # Monitorizar FPF
+            # Se for FPF, ignorar HEAD, fazer GET diretamente
             if 'bilheteira.fpf.pt' in url:
+                resp = session.get(url, timeout=15)
+                soup = BeautifulSoup(resp.text, 'html.parser')
                 links = [
                     a['href'] if a['href'].startswith('http') else url.rstrip('/') + '/' + a['href'].lstrip('/')
                     for a in soup.find_all('a', href=True)
@@ -67,8 +60,15 @@ def buscar_links_novos():
                     links_encontrados.extend(links)
                     print(f"✅ Encontrados {len(links)} novos links na FPF.", flush=True)
 
-            # Monitorizar Benfica Viagens
+            # Se for Benfica Viagens, fazer HEAD antes de GET
             elif 'viagens.slbenfica.pt' in url:
+                head_resp = session.head(url, timeout=10)
+                if head_resp.status_code != 200:
+                    print(f"⚠️ HEAD falhou em {url} (status {head_resp.status_code}), a ignorar.", flush=True)
+                    continue
+
+                resp = session.get(url, timeout=15)
+                soup = BeautifulSoup(resp.text, 'html.parser')
                 texto_site = soup.get_text(separator=' ', strip=True)
                 if PALAVRA_CHAVE_SLB.lower() in texto_site.lower():
                     links_encontrados.append(url)
