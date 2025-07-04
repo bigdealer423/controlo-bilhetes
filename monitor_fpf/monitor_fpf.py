@@ -38,23 +38,25 @@ def buscar_links_novos():
     links_encontrados = []
 
     session = requests.Session()
-    retry = Retry(connect=3, backoff_factor=3)
+    retry = Retry(connect=2, backoff_factor=1)
     adapter = HTTPAdapter(max_retries=retry)
     session.mount('https://', adapter)
     session.mount('http://', adapter)
 
     for url in URLS:
         try:
-            # Testa HEAD antes de GET para evitar bloqueios
+            print(f"🔍 A verificar {url}...", flush=True)
+
+            # HEAD para testar disponibilidade antes do GET
             head_resp = session.head(url, timeout=10)
             if head_resp.status_code != 200:
-                print(f"HEAD check falhou em {url} (status {head_resp.status_code}), ignorado.")
+                print(f"⚠️ HEAD falhou em {url} (status {head_resp.status_code}), a ignorar.", flush=True)
                 continue
 
-            resp = session.get(url, timeout=20)
+            resp = session.get(url, timeout=15)
             soup = BeautifulSoup(resp.text, 'html.parser')
 
-            # Site FPF
+            # Monitorizar FPF
             if 'bilheteira.fpf.pt' in url:
                 links = [
                     a['href'] if a['href'].startswith('http') else url.rstrip('/') + '/' + a['href'].lstrip('/')
@@ -63,15 +65,17 @@ def buscar_links_novos():
                 ]
                 if links:
                     links_encontrados.extend(links)
+                    print(f"✅ Encontrados {len(links)} novos links na FPF.", flush=True)
 
-            # Site Benfica Viagens
+            # Monitorizar Benfica Viagens
             elif 'viagens.slbenfica.pt' in url:
                 texto_site = soup.get_text(separator=' ', strip=True)
                 if PALAVRA_CHAVE_SLB.lower() in texto_site.lower():
                     links_encontrados.append(url)
+                    print(f"✅ Encontrada referência a '{PALAVRA_CHAVE_SLB}' em Benfica Viagens.", flush=True)
 
         except Exception as e:
-            print(f"Erro ao processar {url}: {e}")
+            print(f"❌ Erro ao processar {url}: {e}", flush=True)
             continue
 
     return links_encontrados
@@ -89,9 +93,10 @@ def enviar_email(novos_links):
         smtp.starttls()
         smtp.login(EMAIL_FROM, EMAIL_PASS)
         smtp.send_message(msg)
-        print("✅ Email enviado com sucesso.")
+        print("✅ Email enviado com sucesso.", flush=True)
 
 def main():
+    print("🚀 Início do monitoramento de bilhetes/viagens...", flush=True)
     historico = carregar_historico()
     links_atuais = buscar_links_novos()
     novos = [link for link in links_atuais if link not in historico]
@@ -101,7 +106,7 @@ def main():
         historico.extend(novos)
         guardar_historico(historico)
     else:
-        print("Sem novos alertas no momento.")
+        print("✅ Sem novos alertas no momento.", flush=True)
 
 if __name__ == '__main__':
     main()
