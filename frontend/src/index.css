@@ -77,4 +77,13 @@ html, body {
     color: white;
 }
 
+.react-calendar__tile {
+  color: #111; /* para light */
+}
+
+.dark .react-calendar__tile {
+  color: #f5f5f5; /* para dark */
+}
+
+
 
