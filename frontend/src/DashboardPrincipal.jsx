@@ -79,7 +79,7 @@ useEffect(() => {
             }`}
           />
   
-            // Marca os dias com evento visualmente
+            {/* Marca os dias com evento visualmente tileClassName=tileContent */}
             tileClassName={({ date, view }) => {
               if (view === "month") {
                 const existeEvento = eventosCalendario.some(evento => {
