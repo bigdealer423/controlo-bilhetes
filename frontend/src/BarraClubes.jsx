@@ -42,7 +42,7 @@ export default function BarraClubes() {
             <img
               src={clube.simbolo}
               alt={clube.nome}
-              className="w-10 h-10 object-contain rounded-full shadow-sm bg-white"
+              className="w-5 h-5 object-contain rounded-full shadow-sm bg-white"
             />
           ) : (
             <div className="w-10 h-10 flex items-center justify-center bg-white rounded-full shadow-sm text-xs text-center p-1">
