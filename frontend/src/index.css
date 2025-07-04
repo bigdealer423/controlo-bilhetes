@@ -36,12 +36,15 @@ html, body {
 
 /* Tiles (dias) */
 .react-calendar__tile {
-  color: #111; /* texto para light */
+    /* REMOVE a cor forçada */
+    /* color: #111; */
 }
 
+
 .dark .react-calendar__tile {
-  color: #f9fafb; /* texto para dark */
+  /* color: #f9fafb; */ /* REMOVE esta linha */
 }
+
 
 /* Tile ativo */
 .react-calendar__tile--active {
