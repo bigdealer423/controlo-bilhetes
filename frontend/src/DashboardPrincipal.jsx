@@ -6,14 +6,6 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover"
 import BarraClubes from "./BarraClubes";
 
-function DashboardPrincipal() {
-  return (
-    <>
-      <BarraClubes />
-      {/* resto do conteúdo */}
-    </>
-  );
-}
 
 export default function DashboardPrincipal() {
   const [resumo, setResumo] = useState({ ganhos: 0, gastos: 0, lucro: 0, entregasPendentes: 0 });
@@ -76,6 +68,10 @@ useEffect(() => {
   }, []);
 
   return (
+    <div>
+      <BarraClubes />
+      {/* Coloca aqui o restante conteúdo do teu dashboard */}
+    </div>
     <div className="p-4 max-w-3xl mx-auto">
       <h1 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Dashboard</h1>
 
