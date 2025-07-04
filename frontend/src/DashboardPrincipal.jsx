@@ -75,7 +75,10 @@ useEffect(() => {
                   parseInt(ano) === date.getFullYear()
                 );
               });
-              return existeEvento ? "bg-blue-200 dark:bg-blue-700 rounded-full" : null;
+              return existeEvento 
+  ? "bg-blue-200 dark:bg-blue-700 text-blue-900 dark:text-blue-100 font-semibold rounded-full hover:bg-blue-300 dark:hover:bg-blue-600 transition-colors duration-200"
+  : null;
+
             }
           }}
           tileContent={({ date, view }) => {
