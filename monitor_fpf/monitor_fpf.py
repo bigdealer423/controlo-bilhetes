@@ -6,7 +6,10 @@ import json
 import os
 
 # ----------------- CONFIGURAÇÕES -----------------
-URL = 'https://bilheteira.fpf.pt/'
+URLS = [
+    'https://bilheteira.fpf.pt/',
+    'https://viagens.slbenfica.pt/follow-my-team/futebol'
+]
 HIST_FILE = 'fpf_hist.json'
 EMAIL_FROM = os.getenv("EMAIL_USERNAME")
 EMAIL_TO = os.getenv("EMAIL_USERNAME")
@@ -26,26 +29,42 @@ def guardar_historico(historico):
     with open(HIST_FILE, 'w') as f:
         json.dump(historico, f)
 
-PALAVRAS_CHAVE = ["Comprar", "Adquirir", "Bilhete", "Ingressos", "Buy"]
+PALAVRAS_CHAVE_FPF = ["Comprar", "Adquirir", "Bilhete", "Ingressos", "Buy"]
+PALAVRA_CHAVE_SLB = "Sporting"
 
 def buscar_links_novos():
-    resp = requests.get(URL, timeout=15)
-    soup = BeautifulSoup(resp.text, 'html.parser')
-    links = [
-        a['href']
-        for a in soup.find_all('a', href=True)
-        if any(palavra.lower() in a.get_text().lower() for palavra in PALAVRAS_CHAVE)
-    ]
-    return links
+    links_encontrados = []
+    for url in URLS:
+        try:
+            resp = requests.get(url, timeout=15)
+            soup = BeautifulSoup(resp.text, 'html.parser')
 
+            # Caso seja o site FPF
+            if 'bilheteira.fpf.pt' in url:
+                links = [
+                    a['href'] if a['href'].startswith('http') else url.rstrip('/') + '/' + a['href'].lstrip('/')
+                    for a in soup.find_all('a', href=True)
+                    if any(palavra.lower() in a.get_text().lower() for palavra in PALAVRAS_CHAVE_FPF)
+                ]
+                links_encontrados.extend(links)
 
+            # Caso seja o site Benfica Viagens
+            elif 'viagens.slbenfica.pt' in url:
+                texto_site = soup.get_text(separator=' ', strip=True)
+                if PALAVRA_CHAVE_SLB.lower() in texto_site.lower():
+                    links_encontrados.append(url)
+
+        except Exception as e:
+            print(f"Erro ao processar {url}: {e}")
+    return links_encontrados
 
 def enviar_email(novos_links):
     msg = EmailMessage()
-    msg['Subject'] = '⚽ FPF - Nova venda de bilhetes disponível'
+    msg['Subject'] = '⚽ Novos alertas de bilhetes/viagens disponíveis'
     msg['From'] = EMAIL_FROM
     msg['To'] = EMAIL_TO
-    corpo = "Novas vendas de bilhetes disponíveis:\n\n" + "\n".join(novos_links) + "\n\nLink direto: " + URL
+
+    corpo = "Foram encontrados os seguintes novos alertas:\n\n" + "\n".join(novos_links)
     msg.set_content(corpo)
 
     with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as smtp:
@@ -64,7 +83,7 @@ def main():
         historico.extend(novos)
         guardar_historico(historico)
     else:
-        print("Sem novos bilhetes no momento.")
+        print("Sem novos alertas no momento.")
 
 if __name__ == '__main__':
     main()
