@@ -63,3 +63,18 @@ html, body {
   border-radius: 0.5rem;    /* rounded-lg */
 }
 
+/* Fundo branco e texto escuro em modo claro */
+.react-calendar {
+    background-color: white;
+    color: black;
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+}
+
+/* Fundo escuro e texto claro em modo dark */
+.dark .react-calendar {
+    background-color: #1f2937; /* gray-800 */
+    color: white;
+}
+
+
