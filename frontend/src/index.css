@@ -19,71 +19,47 @@ html, body {
   }
 }
 
-/* For dark mode */
-.dark .react-calendar {
-    background-color: #1f2937; /* bg-gray-800 */
-    color: #f9fafb;            /* text-gray-50 */
-}
-
-.dark .react-calendar__tile {
-    background: #374151;       /* bg-gray-700 */
-    color: #f9fafb;
-}
-
-.dark .react-calendar__tile--active {
-    background: #2563eb !important; /* bg-blue-600 */
-    color: #ffffff !important;
-}
-
-.dark .react-calendar__tile--now {
-    background: #4b5563 !important; /* bg-gray-600 */
-    color: #ffffff !important;
-}
-
-.dark .react-calendar__tile:hover {
-    background-color: #374151; /* bg-gray-700 */
-    color: #f9fafb; /* text-gray-50 */
-}
-
-.dark .react-calendar__tile:enabled:hover, 
-.dark .react-calendar__tile:enabled:focus {
-    background-color: #2563eb; /* bg-blue-600 */
-    color: #ffffff; /* text-white */
-}
-
-.tooltip-trigger-full {
-  position: absolute;
-  inset: 0;
-}
-
-.react-calendar {
-  background-color: #1f2937; /* dark:bg-gray-800 */
-  color: white;             /* text color */
-  border: none;             /* remove border */
-  border-radius: 0.5rem;    /* rounded-lg */
-}
-
-/* Fundo branco e texto escuro em modo claro */
+/* Modo claro */
 .react-calendar {
     background-color: white;
     color: black;
+    border: none;
     border-radius: 0.5rem;
     padding: 0.5rem;
 }
 
-/* Fundo escuro e texto claro em modo dark */
+/* Modo escuro */
 .dark .react-calendar {
     background-color: #1f2937; /* gray-800 */
-    color: white;
+    color: #f9fafb;            /* gray-50 */
 }
 
+/* Tiles (dias) */
 .react-calendar__tile {
-  color: #111; /* para light */
+  color: #111; /* texto para light */
 }
 
 .dark .react-calendar__tile {
-  color: #f5f5f5; /* para dark */
+  color: #f9fafb; /* texto para dark */
 }
 
+/* Tile ativo */
+.react-calendar__tile--active {
+    background: #2563eb !important; /* blue-600 */
+    color: #ffffff !important;
+}
+
+/* Tile hoje */
+.react-calendar__tile--now {
+    background: #4b5563 !important; /* gray-600 */
+    color: #ffffff !important;
+}
+
+/* Hover */
+.react-calendar__tile:enabled:hover, 
+.react-calendar__tile:enabled:focus {
+    background-color: #2563eb; /* blue-600 */
+    color: #ffffff;
+}
 
 
