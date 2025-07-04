@@ -12,6 +12,17 @@ export default function DashboardPrincipal() {
   const [clubes, setClubes] = useState([]);
   const navigate = useNavigate();
   const [eventosCalendario, setEventosCalendario] = useState([]);
+  const [isDarkMode, setIsDarkMode] = useState(
+  window.matchMedia &&
+  window.matchMedia('(prefers-color-scheme: dark)').matches
+);
+
+useEffect(() => {
+  const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+  const handleChange = (e) => setIsDarkMode(e.matches);
+  mediaQuery.addEventListener('change', handleChange);
+  return () => mediaQuery.removeEventListener('change', handleChange);
+}, []);
 
 useEffect(() => {
     const fetchEventosCalendario = async () => {
@@ -63,7 +74,10 @@ useEffect(() => {
           <Calendar
             onChange={setDataSelecionada}
             value={dataSelecionada}
-            className="mb-4 rounded shadow"
+            className={`mb-4 rounded shadow ${
+              isDarkMode ? 'bg-gray-900 text-gray-100' : 'bg-white text-gray-900'
+            }`}
+          />
   
             // Marca os dias com evento visualmente
             tileClassName={({ date, view }) => {
