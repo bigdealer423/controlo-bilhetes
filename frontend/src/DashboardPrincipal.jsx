@@ -4,6 +4,16 @@ import Calendar from "react-calendar";
 import 'react-calendar/dist/Calendar.css';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover"
+import BarraClubes from "./BarraClubes";
+
+function DashboardPrincipal() {
+  return (
+    <>
+      <BarraClubes />
+      {/* resto do conteúdo */}
+    </>
+  );
+}
 
 export default function DashboardPrincipal() {
   const [resumo, setResumo] = useState({ ganhos: 0, gastos: 0, lucro: 0, entregasPendentes: 0 });
