@@ -74,11 +74,7 @@ useEffect(() => {
           <Calendar
             onChange={setDataSelecionada}
             value={dataSelecionada}
-            className={`mb-4 rounded shadow ${
-              isDarkMode ? 'bg-gray-900 text-gray-100' : 'bg-white text-gray-900'
-            }`}
-          />
-  
+            className="mb-4 rounded shadow"
           
             tileClassName={({ date, view }) => {
               if (view === "month") {
@@ -91,64 +87,63 @@ useEffect(() => {
                   );
                 });
                 return existeEvento 
-    ? "bg-blue-200 dark:bg-blue-700 text-blue-900 dark:text-blue-100 font-semibold rounded-full hover:bg-blue-300 dark:hover:bg-blue-600 transition-colors duration-200"
-    : null;
-  
+                  ? "bg-blue-200 dark:bg-blue-700 text-blue-900 dark:text-blue-100 font-semibold rounded-full hover:bg-blue-300 dark:hover:bg-blue-600 transition-colors duration-200"
+                  : null;
               }
             }}
             tileContent={({ date, view }) => {
-    if (view === "month") {
-      const eventosDoDia = eventosCalendario.filter(evento => {
-        const [dia, mes, ano] = evento.data_evento.split("/");
-        return (
-          parseInt(dia) === date.getDate() &&
-          parseInt(mes) === date.getMonth() + 1 &&
-          parseInt(ano) === date.getFullYear()
-        );
-      });
-  
-      if (eventosDoDia.length > 0) {
-        return (
-          <Popover>
-    <PopoverTrigger asChild>
-      <button className="w-full h-full cursor-pointer bg-transparent border-none p-0 m-0"></button>
-    </PopoverTrigger>
-    <PopoverContent className="max-w-xs">
-      {eventosDoDia.length > 0 && (
-        <div className="flex flex-col gap-1">
-          {eventosDoDia.map((evento, idx) => {
-            const partes = evento.nome_evento.split(" vs ");
-            return (
-              <div key={idx} className="flex items-center gap-2 flex-wrap">
-                {partes.map((nomeClube, idx2) => {
-                  const clube = clubes.find(c => nomeClube.toLowerCase().includes(c.nome.toLowerCase()));
+              if (view === "month") {
+                const eventosDoDia = eventosCalendario.filter(evento => {
+                  const [dia, mes, ano] = evento.data_evento.split("/");
                   return (
-                    <div key={idx2} className="flex items-center gap-1">
-                      {clube?.simbolo && (
-                        <img
-                          src={clube.simbolo}
-                          alt={nomeClube}
-                          className="w-5 h-5 rounded-full object-contain"
-                        />
-                      )}
-                      <span className="text-sm text-gray-900 dark:text-gray-100">{nomeClube}</span>
-                      {idx2 === 0 && partes.length > 1 && (   <span className="mx-1 text-gray-900 dark:text-gray-100">vs</span> )}
-                    </div>
+                    parseInt(dia) === date.getDate() &&
+                    parseInt(mes) === date.getMonth() + 1 &&
+                    parseInt(ano) === date.getFullYear()
                   );
-                })}
-              </div>
-            );
-          })}
-        </div>
-      )}
-    </PopoverContent>
-  </Popover>
-  
-        );
-      }
-    }
-    return null;
-  }}
+                });
+          
+                if (eventosDoDia.length > 0) {
+                  return (
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <button className="w-full h-full cursor-pointer bg-transparent border-none p-0 m-0"></button>
+                      </PopoverTrigger>
+                      <PopoverContent className="max-w-xs">
+                        <div className="flex flex-col gap-1">
+                          {eventosDoDia.map((evento, idx) => {
+                            const partes = evento.nome_evento.split(" vs ");
+                            return (
+                              <div key={idx} className="flex items-center gap-2 flex-wrap">
+                                {partes.map((nomeClube, idx2) => {
+                                  const clube = clubes.find(c => nomeClube.toLowerCase().includes(c.nome.toLowerCase()));
+                                  return (
+                                    <div key={idx2} className="flex items-center gap-1">
+                                      {clube?.simbolo && (
+                                        <img
+                                          src={clube.simbolo}
+                                          alt={nomeClube}
+                                          className="w-5 h-5 rounded-full object-contain"
+                                        />
+                                      )}
+                                      <span className="text-sm text-gray-900 dark:text-gray-100">{nomeClube}</span>
+                                      {idx2 === 0 && partes.length > 1 && (
+                                        <span className="mx-1 text-gray-900 dark:text-gray-100">vs</span>
+                                      )}
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </PopoverContent>
+                    </Popover>
+                  );
+                }
+              }
+              return null;
+            }}
+          />
 
 
 
