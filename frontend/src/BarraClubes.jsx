@@ -39,3 +39,18 @@ export default function BarraClubes() {
           className="flex-shrink-0 hover:scale-110 transition-transform duration-200"
         >
           {clube.simbolo ? (
+            <img
+              src={clube.simbolo}
+              alt={clube.nome}
+              className="w-10 h-10 object-contain rounded-full shadow-sm bg-white"
+            />
+          ) : (
+            <div className="w-10 h-10 flex items-center justify-center bg-white rounded-full shadow-sm text-xs text-center p-1">
+              {clube.nome.split(" ").slice(0, 2).join("\n")}
+            </div>
+          )}
+        </a>
+      ))}
+    </div>
+  );
+}
