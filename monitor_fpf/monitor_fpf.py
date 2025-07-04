@@ -36,7 +36,17 @@ def buscar_links_novos():
     links_encontrados = []
     for url in URLS:
         try:
-            resp = requests.get(url, timeout=15)
+            for tentativa in range(3):
+    try:
+        resp = requests.get(url, timeout=30)
+        break
+    except requests.exceptions.RequestException as e:
+        if tentativa < 2:
+            print(f"Tentativa {tentativa+1} falhou, tentando novamente...")
+        else:
+            print(f"Falha após 3 tentativas em {url}: {e}")
+            return []
+
             soup = BeautifulSoup(resp.text, 'html.parser')
 
             # Caso seja o site FPF
