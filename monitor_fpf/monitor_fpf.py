@@ -6,6 +6,7 @@ import json
 import os
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
+import cloudscraper
 
 # ----------------- CONFIGURAÇÕES -----------------
 URLS = [
@@ -60,22 +61,22 @@ def buscar_links_novos():
                     links_encontrados.extend(links)
                     print(f"✅ Encontrados {len(links)} novos links na FPF.", flush=True)
 
-            # Benfica Viagens: sem retry, timeout curtos
+            # Benfica Viagens: usar cloudscraper para ultrapassar bloqueios
             elif 'viagens.slbenfica.pt' in url:
+                scraper = cloudscraper.create_scraper()
                 try:
-                    head_resp = requests.head(url, timeout=5)
-                    if head_resp.status_code != 200:
-                        print(f"⚠️ HEAD falhou em {url} (status {head_resp.status_code}), a ignorar.", flush=True)
+                    resp = scraper.get(url, timeout=15)
+                    if resp.status_code != 200:
+                        print(f"⚠️ Benfica Viagens respondeu com status {resp.status_code}, ignorado.", flush=True)
                         continue
 
-                    resp = requests.get(url, timeout=10)
                     soup = BeautifulSoup(resp.text, 'html.parser')
                     texto_site = soup.get_text(separator=' ', strip=True)
                     if PALAVRA_CHAVE_SLB.lower() in texto_site.lower():
                         links_encontrados.append(url)
                         print(f"✅ Encontrada referência a '{PALAVRA_CHAVE_SLB}' em Benfica Viagens.", flush=True)
                 except Exception as e:
-                    print(f"⚠️ Benfica Viagens não respondeu a tempo: {e}", flush=True)
+                    print(f"⚠️ Benfica Viagens não respondeu ou bloqueou: {e}", flush=True)
                     continue
 
         except Exception as e:
