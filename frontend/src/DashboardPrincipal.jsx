@@ -104,7 +104,7 @@ useEffect(() => {
                     parseInt(ano) === date.getFullYear()
                   );
                 });
-
+            
                 if (eventosDoDia.length > 0) {
                   return (
                     <Popover>
@@ -116,7 +116,7 @@ useEffect(() => {
                           {eventosDoDia.map((evento, idx) => {
                             const partes = evento.nome_evento.split(/\s+vs\s+/i).map(p => p.trim());
                             return (
-                              <div key={idx} className="flex items-center gap-2 flex-wrap">
+                              <div key={`${evento.id}-${idx}`} className="flex items-center gap-2 flex-wrap">
                                 {partes.map((nomeClube, idx2) => {
                                   const clube = clubes.find(c => {
                                     const nomeClubeLower = nomeClube.toLowerCase();
@@ -124,11 +124,11 @@ useEffect(() => {
                                     return nomeClubeLower.includes(nomeDbLower) || nomeDbLower.includes(nomeClubeLower);
                                   });
                                   return (
-                                    <div key={idx2} className="flex items-center gap-1">
+                                    <div key={`${evento.id}-${idx}-${idx2}`} className="flex items-center gap-1">
                                       {clube?.simbolo && (
                                         <img
                                           src={clube.simbolo}
-                                          alt={nomeClube}
+                                          alt={clube.nome}
                                           className="w-5 h-5 rounded-full object-contain"
                                         />
                                       )}
