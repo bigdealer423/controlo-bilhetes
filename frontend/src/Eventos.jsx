@@ -359,7 +359,9 @@ return (
               </tr>
             </thead>
             <tbody>
-            {registos.map(r => (
+            {registos
+                .filter(r => r.evento.toLowerCase().includes(filtroPesquisa.toLowerCase()))
+                .map(r => (
               <>
                 <tr
   key={r.id}
