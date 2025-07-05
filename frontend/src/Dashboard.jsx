@@ -67,7 +67,7 @@ export default function Dashboard({ onAtualizarEventos }) {
           <ThemeToggle />  {/* Aqui, alinhado com os botões de topo */}
           <button
             onClick={(e) => handleRodaDentadaClick(e)}  // Garante que a roda dentada apenas abre o modal
-            className="text-gray-700 hover:text-black"
+            className="text-gray-700 hover:text-black dark:text-white dark:hover:text-gray-300 transition-colors"
             title="Definições"
           >
             <FiSettings size={20} />
