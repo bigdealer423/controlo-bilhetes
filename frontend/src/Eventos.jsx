@@ -312,25 +312,16 @@ return (
 </div>
 
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-2">
-  
-  <div className="flex items-center gap-2">
-    <button
-      onClick={adicionarLinha}
-      className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
-    >
-      Adicionar Evento
-    </button>
 
-    <button
-      onClick={() => exportarEventosParaExcel(registos)}
-      className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-xl shadow-md transition"
-    >
-      <FaFileExcel size={18} />
-      Exportar Excel
-    </button>
-  </div>
+  {/* Botão Adicionar Evento */}
+  <button
+    onClick={adicionarLinha}
+    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
+  >
+    Adicionar Evento
+  </button>
 
-  {/* Filtro de pesquisa ao lado */}
+  {/* Filtro de pesquisa ao meio */}
   <input
     type="text"
     placeholder="🔍 Pesquisar equipa..."
@@ -338,7 +329,18 @@ return (
     onChange={(e) => setFiltroPesquisa(e.target.value)}
     className="p-2 border rounded w-full md:w-72 bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
   />
+
+  {/* Botão Exportar Excel à direita */}
+  <button
+    onClick={() => exportarEventosParaExcel(registos)}
+    className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-xl shadow-md transition"
+  >
+    <FaFileExcel size={18} />
+    Exportar Excel
+  </button>
+
 </div>
+
 
 
 
