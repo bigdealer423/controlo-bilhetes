@@ -122,7 +122,7 @@ export default function EventoModal({ visivel, fechar, onAtualizar }) {
                 <>
                   <input
                     type="text"
-                    className="border px-2 py-1 flex-grow mr-2"
+                    className="border px-2 py-1 flex-grow mr-2 bg-white text-gray-900 dark:bg-gray-800 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
                     value={eventoEditado}
                     onChange={(ev) => setEventoEditado(ev.target.value)}
                   />
