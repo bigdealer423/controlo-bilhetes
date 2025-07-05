@@ -267,11 +267,14 @@ export default function Eventos() {
   };
 
   const renderEventoComSimbolos = (eventoNome) => {
-    const partes = eventoNome.split(/vs|x|-|,|\//i).map(p => p.trim());
+    // Limpa "vs vs" duplicados antes de partir
+    const nomeLimpo = eventoNome.replace(/\bvs\b\s*\bvs\b/gi, "vs");
+
+    const partes = nomeLimpo.split(/vs|x|-|,|\//i).map(p => p.trim());
 
     return partes.map((parte, idx) => {
         const clubeMatch = clubesInfo.find(clube =>
-            parte.toLowerCase().includes(clube.nome.toLowerCase().slice(0, 5)) // aproximação
+            parte.toLowerCase().includes(clube.nome.toLowerCase().slice(0, 5))
         );
 
         return (
@@ -289,6 +292,7 @@ export default function Eventos() {
         );
     });
 };
+
 
 return (
    <div className="p-6 max-w-7xl mx-auto min-h-screen">
