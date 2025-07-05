@@ -114,11 +114,15 @@ useEffect(() => {
                       <PopoverContent className="max-w-xs">
                         <div className="flex flex-col gap-1">
                           {eventosDoDia.map((evento, idx) => {
-                            const partes = evento.nome_evento.split(" vs ");
+                            const partes = evento.nome_evento.split(/\s+vs\s+/i).map(p => p.trim());
                             return (
                               <div key={idx} className="flex items-center gap-2 flex-wrap">
                                 {partes.map((nomeClube, idx2) => {
-                                  const clube = clubes.find(c => nomeClube.toLowerCase().includes(c.nome.toLowerCase()));
+                                  const clube = clubes.find(c => {
+                                    const nomeClubeLower = nomeClube.toLowerCase();
+                                    const nomeDbLower = c.nome.toLowerCase();
+                                    return nomeClubeLower.includes(nomeDbLower) || nomeDbLower.includes(nomeClubeLower);
+                                  });
                                   return (
                                     <div key={idx2} className="flex items-center gap-1">
                                       {clube?.simbolo && (
