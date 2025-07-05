@@ -115,7 +115,7 @@ export default function EventoModal({ visivel, fechar, onAtualizar }) {
             Adicionar
           </button>
         </div>
-        <ul className="max-h-40 overflow-y-auto">
+        <ul className="max-h-[60vh] overflow-y-auto">
           {eventos.map(e => (
             <li key={e.id} className="flex justify-between items-center border-b py-1">
               {modoEdicao === e.id ? (
