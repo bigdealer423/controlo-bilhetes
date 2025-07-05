@@ -270,7 +270,8 @@ export default function Eventos() {
     // Limpa "vs vs" duplicados antes de partir
     const nomeLimpo = eventoNome.replace(/\bvs\b\s*\bvs\b/gi, "vs");
 
-    const partes = nomeLimpo.split(/vs|x|-|,|\//i).map(p => p.trim());
+    // Usar expressão que só separa em "vs" como palavra isolada
+    const partes = nomeLimpo.split(/\bvs\b|x|-|,|\//i).map(p => p.trim()).filter(p => p.length > 0);
 
     return partes.map((parte, idx) => {
         const clubeMatch = clubesInfo.find(clube =>
@@ -292,6 +293,7 @@ export default function Eventos() {
         );
     });
 };
+
 
 
 return (
