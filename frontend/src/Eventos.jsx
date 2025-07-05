@@ -348,7 +348,7 @@ return (
       : r.estado === "Pago"
       ? "bg-green-100"
       : r.estado === "Entregue"
-      ? "bg-yellow-200"
+      ? "bg-yellow-100 dark:bg-yellow-700" 
       : ""
   } transition-colors duration-300`}
 >
