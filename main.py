@@ -124,7 +124,7 @@ def entregas_pendentes_proximos_15_dias(db: Session = Depends(get_db)):
         db.query(
             ListagemVendas.evento,
             ListagemVendas.data_evento,
-            func.sum(ListagemVendas.bilhetes).label("total_bilhetes")
+            func.count(ListagemVendas.id).label("total_bilhetes")
         )
         .filter(ListagemVendas.estado == "Por entregar")
         .filter(ListagemVendas.data_evento >= hoje)
@@ -137,11 +137,12 @@ def entregas_pendentes_proximos_15_dias(db: Session = Depends(get_db)):
     return [
         {
             "evento": p.evento,
-            "data_evento": p.data_evento.isoformat(),
+            "data_evento": p.data_evento.isoformat() if p.data_evento else None,
             "bilhetes": int(p.total_bilhetes or 0)
         }
         for p in pendentes
     ]
+
 
 # ---------------- EVENTOS DROPDOWN ----------------
 @app.get("/eventos_dropdown")
