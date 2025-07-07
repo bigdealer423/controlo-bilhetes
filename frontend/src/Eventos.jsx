@@ -426,7 +426,7 @@ return (
   } transition-colors duration-300`}
 >
                  <td className="p-2">
-  {vendas.some(v => v.evento === r.evento) || compras.some(c => c.evento === r.evento) ? (
+  {vendas.some(v => v.evento === r.evento && v.data_evento === r.data_evento) || compras.some(c => c.evento === r.evento && c.data_evento === r.data_evento) ? (
     <button onClick={() => setLinhaExpandida(linhaExpandida === r.id ? null : r.id)}>
       {linhaExpandida === r.id ? "🔼" : "🔽"}
     </button>
@@ -539,7 +539,7 @@ return (
 
 
 
-{vendas.filter(v => v.evento === r.evento).map(v =>
+{vendas.filter(v => v.evento === r.evento && v.data_evento === r.data_evento).map(v =>
   modoEdicaoVenda === v.id ? (
     <tr key={"v" + v.id} className="border-l-4 border-blue-600 bg-blue-50 dark:bg-blue-900 text-xs border-t">
       <td className="p-2">
@@ -617,7 +617,7 @@ return (
 
    <tr className="bg-yellow-50 dark:bg-yellow-900 text-sm border-t border-l-4 border-yellow-600">
   <td colSpan="9" className="p-2 font-semibold">
-    Compras ({compras.filter(c => c.evento === r.evento).reduce((acc, c) => acc + Number(c.quantidade || 0), 0)})
+    Compras ({compras.filter(c => c.evento === r.evento && c.data_evento === r.data_evento).reduce((acc, c) => acc + Number(c.quantidade || 0), 0)})
   </td>
 </tr>
 <tr className="border-l-4 border-yellow-600 bg-yellow-100 dark:bg-yellow-800 text-xs font-semibold">
@@ -632,7 +632,7 @@ return (
   <td></td>
 </tr>
 
-{compras.filter(c => c.evento === r.evento).map(c => (
+{compras.filter(c => c.evento === r.evento && c.data_evento === r.data_evento).map(c => (
   <tr key={"c" + c.id} className="border-l-4 border-yellow-600 bg-yellow-50 dark:bg-yellow-900 text-xs border-t">
     {modoEdicaoCompra === c.id ? (
       <>
