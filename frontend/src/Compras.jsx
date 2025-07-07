@@ -155,30 +155,115 @@ export default function Compras() {
       <div className="bg-white dark:bg-gray-900 shadow-md rounded p-4 mb-6 transition-colors duration-300">
         <h2 className="text-lg font-semibold mb-2">{modoEdicao ? "Editar Compra" : "Nova Compra"}</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <select name="evento" className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" value={novaCompra.evento} onChange={handleChange}>
-            <option value="">-- Evento --</option>
-            {eventosDropdown.map(e => <option key={e.id} value={e.nome}>{e.nome}</option>)}
-          </select>
-          <input
-            type="date"
-            name="data_evento"
-            value={novaCompra.data_evento || ""}
-            onChange={handleChange}
-            className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
-          />
 
-          <select name="local_compras" className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" value={novaCompra.local_compras} onChange={handleChange}>
-            <option value="">-- Local da Compra --</option>
-            {locaisCompra.map(local => <option key={local} value={local}>{local}</option>)}
-          </select>
-          <input list="bancadas" name="bancada" className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" placeholder="Bancada" value={novaCompra.bancada} onChange={handleChange} />
-          <datalist id="bancadas">{bancadas.map(b => <option key={b} value={b} />)}</datalist>
-          <input list="setores" name="setor" className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" placeholder="Setor" value={novaCompra.setor} onChange={handleChange} />
-          <datalist id="setores">{setores.map(s => <option key={s} value={s} />)}</datalist>
-          <input name="fila" className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" placeholder="Fila" value={novaCompra.fila} onChange={handleChange} />
-          <input name="quantidade" type="number" className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" placeholder="Qt." value={novaCompra.quantidade} onChange={handleChange} />
-          <input name="gasto" type="text" className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" placeholder="Gasto (€)" value={novaCompra.gasto} onChange={handleChange} />
+          {/* Evento */}
+          <div className="flex flex-col">
+            <label className="text-sm font-medium mb-1">Evento</label>
+            <select
+              name="evento"
+              className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 transition-colors duration-300"
+              value={novaCompra.evento}
+              onChange={handleChange}
+            >
+              <option value="">-- Evento --</option>
+              {eventosDropdown.map(e => <option key={e.id} value={e.nome}>{e.nome}</option>)}
+            </select>
+          </div>
+        
+          {/* Data Evento */}
+          <div className="flex flex-col">
+            <label className="text-sm font-medium mb-1">Data do Evento</label>
+            <input
+              type="date"
+              name="data_evento"
+              value={novaCompra.data_evento || ""}
+              onChange={handleChange}
+              className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 transition-colors duration-300"
+            />
+          </div>
+        
+          {/* Local da Compra */}
+          <div className="flex flex-col">
+            <label className="text-sm font-medium mb-1">Local da Compra</label>
+            <select
+              name="local_compras"
+              className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 transition-colors duration-300"
+              value={novaCompra.local_compras}
+              onChange={handleChange}
+            >
+              <option value="">-- Local da Compra --</option>
+              {locaisCompra.map(local => <option key={local} value={local}>{local}</option>)}
+            </select>
+          </div>
+        
+          {/* Bancada */}
+          <div className="flex flex-col">
+            <label className="text-sm font-medium mb-1">Bancada</label>
+            <input
+              list="bancadas"
+              name="bancada"
+              placeholder="Bancada"
+              className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 transition-colors duration-300"
+              value={novaCompra.bancada}
+              onChange={handleChange}
+            />
+            <datalist id="bancadas">{bancadas.map(b => <option key={b} value={b} />)}</datalist>
+          </div>
+        
+          {/* Setor */}
+          <div className="flex flex-col">
+            <label className="text-sm font-medium mb-1">Setor</label>
+            <input
+              list="setores"
+              name="setor"
+              placeholder="Setor"
+              className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 transition-colors duration-300"
+              value={novaCompra.setor}
+              onChange={handleChange}
+            />
+            <datalist id="setores">{setores.map(s => <option key={s} value={s} />)}</datalist>
+          </div>
+        
+          {/* Fila */}
+          <div className="flex flex-col">
+            <label className="text-sm font-medium mb-1">Fila</label>
+            <input
+              name="fila"
+              placeholder="Fila"
+              className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 transition-colors duration-300"
+              value={novaCompra.fila}
+              onChange={handleChange}
+            />
+          </div>
+        
+          {/* Quantidade */}
+          <div className="flex flex-col">
+            <label className="text-sm font-medium mb-1">Quantidade</label>
+            <input
+              name="quantidade"
+              type="number"
+              placeholder="Qt."
+              className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 transition-colors duration-300"
+              value={novaCompra.quantidade}
+              onChange={handleChange}
+            />
+          </div>
+        
+          {/* Gasto */}
+          <div className="flex flex-col">
+            <label className="text-sm font-medium mb-1">Gasto (€)</label>
+            <input
+              name="gasto"
+              type="text"
+              placeholder="Gasto (€)"
+              className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 transition-colors duration-300"
+              value={novaCompra.gasto}
+              onChange={handleChange}
+            />
+          </div>
+        
         </div>
+
         <button onClick={modoEdicao ? atualizarCompra : guardarCompra}
           className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
           {modoEdicao ? "Atualizar" : "Guardar"}
