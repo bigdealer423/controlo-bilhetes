@@ -637,58 +637,55 @@ return (
     {modoEdicaoCompra === c.id ? (
       <>
         <td className="p-2">
-          <input className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" value={compraEditada.local_compras} onChange={e => setCompraEditada({ ...compraEditada, local_compras: e.target.value })} />
+          <input
+            type="date"
+            className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+            value={compraEditada.data_evento || ""}
+            onChange={e => setCompraEditada({ ...compraEditada, data_evento: e.target.value })}
+          />
         </td>
         <td className="p-2">
-          <input className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" value={compraEditada.bancada} onChange={e => setCompraEditada({ ...compraEditada, bancada: e.target.value })} />
+          <input ... value={compraEditada.local_compras} onChange={...} />
         </td>
         <td className="p-2">
-          <input className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" value={compraEditada.setor} onChange={e => setCompraEditada({ ...compraEditada, setor: e.target.value })} />
+          <input ... value={compraEditada.bancada} onChange={...} />
         </td>
         <td className="p-2">
-          <input className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" value={compraEditada.fila} onChange={e => setCompraEditada({ ...compraEditada, fila: e.target.value })} />
+          <input ... value={compraEditada.setor} onChange={...} />
         </td>
         <td className="p-2">
-          <input type="number" className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" value={compraEditada.quantidade} onChange={e => setCompraEditada({ ...compraEditada, quantidade: e.target.value })} />
+          <input ... value={compraEditada.fila} onChange={...} />
         </td>
         <td className="p-2">
-          <input type="number" className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" value={compraEditada.gasto} onChange={e => setCompraEditada({ ...compraEditada, gasto: e.target.value })} />
+          <input ... value={compraEditada.quantidade} onChange={...} />
         </td>
-        <td className="p-2" colSpan="3">
-          <button className="text-green-600 mr-2" onClick={() => guardarCompra(compraEditada)}>Guardar</button>
-          <button className="text-gray-500" onClick={() => setModoEdicaoCompra(null)}>Cancelar</button>
+        <td className="p-2">
+          <input ... value={compraEditada.gasto} onChange={...} />
+        </td>
+        <td className="p-2" colSpan="2">
+          <button onClick={() => guardarCompra(compraEditada)} ...>Guardar</button>
+          <button onClick={() => setModoEdicaoCompra(null)} ...>Cancelar</button>
         </td>
       </>
     ) : (
       <>
+        <td className="p-2">{c.data_evento ? new Date(c.data_evento).toLocaleDateString("pt-PT") : "-"}</td>
         <td className="p-2">{c.local_compras}</td>
         <td className="p-2">{c.bancada}</td>
         <td className="p-2">{c.setor}</td>
-        <td className="p-2 whitespace-nowrap overflow-hidden text-ellipsis max-w-[150px]" title={c.fila}>
-  {c.fila}
-</td>
+        <td className="p-2">{c.fila}</td>
         <td className="p-2">{c.quantidade}</td>
         <td className="p-2">{c.gasto} €</td>
-       <td className="p-2">
-  <CirculoEstado
-    tipo="compras"
-    id={c.id}
-    texto_estado={c.circulo_estado_compra}
-    nota_estado={c.nota_estado_compra}
-    setCompras={setCompras}
-  />
-</td>
-<td className="p-2">
-  <button onClick={() => { setModoEdicaoCompra(c.id); setCompraEditada(c); }} className="text-blue-600 hover:underline">
-    Editar
-  </button>
-</td>
-<td></td>
-
+        <td className="p-2">
+          <CirculoEstado ... />
+        </td>
+        <td className="p-2">
+          <button onClick={() => { setModoEdicaoCompra(c.id); setCompraEditada(c); }} ...>Editar</button>
+        </td>
       </>
     )}
   </tr>
-))}
+  ))}
 
                   </>
                 )}
