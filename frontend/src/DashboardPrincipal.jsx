@@ -13,7 +13,12 @@ export default function DashboardPrincipal() {
   const [dataSelecionada, setDataSelecionada] = useState(new Date());
   const [clubes, setClubes] = useState([]);
   const navigate = useNavigate();
+  const irParaEventoExpandido = (nomeEvento) => {
+  navigate(`/eventos?expandir=${encodeURIComponent(nomeEvento)}`);
+};
+
   const [eventosCalendario, setEventosCalendario] = useState([]);
+  const [entregasPendentesDetalhadas, setEntregasPendentesDetalhadas] = useState([]);
   const [isDarkMode, setIsDarkMode] = useState(
   window.matchMedia &&
   window.matchMedia('(prefers-color-scheme: dark)').matches
@@ -66,6 +71,20 @@ useEffect(() => {
     };
     fetchResumo();
   }, []);
+
+  useEffect(() => {
+  const fetchEntregasPendentes = async () => {
+    try {
+      const res = await fetch("https://controlo-bilhetes.onrender.com/entregas_pendentes_proximos_15_dias");
+      const data = await res.json();
+      setEntregasPendentesDetalhadas(data);
+    } catch (error) {
+      console.error("Erro ao carregar entregas pendentes:", error);
+    }
+  };
+  fetchEntregasPendentes();
+}, []);
+
 
   return (
   <div>
@@ -171,8 +190,23 @@ useEffect(() => {
       </div>
 
       <div className="bg-yellow-100 dark:bg-yellow-900 p-4 rounded shadow mb-4">
-        <p className="font-medium text-gray-900 dark:text-gray-100">⚠️ {resumo.entregasPendentes} entregas pendentes</p>
+        {entregasPendentesDetalhadas.length === 0 ? (
+          <p className="font-medium text-gray-900 dark:text-gray-100">✅ Sem entregas pendentes nos próximos 15 dias.</p>
+        ) : (
+          <div className="flex flex-col gap-1">
+            {entregasPendentesDetalhadas.map((e, idx) => (
+              <div
+                key={idx}
+                onClick={() => irParaEventoExpandido(e.evento)}
+                className="cursor-pointer hover:underline text-gray-900 dark:text-gray-100"
+              >
+                {e.bilhetes} {e.bilhetes > 1 ? "Entregas pendentes" : "Entrega pendente"} – {e.evento} ({new Date(e.data_evento).toLocaleDateString("pt-PT")})
+              </div>
+            ))}
+          </div>
+        )}
       </div>
+
 
       <h2 className="text-lg font-semibold mb-2 text-gray-900 dark:text-gray-100">Últimos eventos / vendas</h2>
       <div className="space-y-2">
