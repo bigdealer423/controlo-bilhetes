@@ -115,6 +115,33 @@ def atualizar_venda(venda_id: int, venda: ListagemVendasUpdate, db: Session = De
     db.refresh(existente)
     atualizar_ganhos_gastos_eventos(db)
     return existente
+    
+@app.get("/entregas_pendentes_proximos_15_dias")
+def entregas_pendentes_proximos_15_dias(db: Session = Depends(get_db)):
+    hoje = date.today()
+    daqui_15 = hoje + timedelta(days=15)
+    pendentes = (
+        db.query(
+            ListagemVendas.evento,
+            ListagemVendas.data_evento,
+            func.sum(ListagemVendas.bilhetes).label("total_bilhetes")
+        )
+        .filter(ListagemVendas.estado == "Por entregar")
+        .filter(ListagemVendas.data_evento >= hoje)
+        .filter(ListagemVendas.data_evento <= daqui_15)
+        .group_by(ListagemVendas.evento, ListagemVendas.data_evento)
+        .order_by(ListagemVendas.data_evento.asc())
+        .all()
+    )
+
+    return [
+        {
+            "evento": p.evento,
+            "data_evento": p.data_evento.isoformat(),
+            "bilhetes": int(p.total_bilhetes or 0)
+        }
+        for p in pendentes
+    ]
 
 # ---------------- EVENTOS DROPDOWN ----------------
 @app.get("/eventos_dropdown")
