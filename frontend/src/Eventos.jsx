@@ -99,6 +99,12 @@ useEffect(() => {
       { threshold: 1 }
     );
 
+  useEffect(() => {
+    if (skip === 0 && registos.length > 0) return; // Evita recarregar no load inicial
+    buscarEventos();
+  }, [skip]);
+
+
 
   function exportarEventosParaExcel(eventos) {
     const worksheet = XLSX.utils.json_to_sheet(eventos);
