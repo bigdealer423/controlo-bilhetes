@@ -90,7 +90,7 @@ useEffect(() => {
   }, [compras, vendas]);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
+  const observer = new IntersectionObserver(
       entries => {
         if (entries[0].isIntersecting && hasMore && !isLoading) {
           setSkip(prev => prev + limit); // Avança skip primeiro
@@ -98,6 +98,14 @@ useEffect(() => {
       },
       { threshold: 1 }
     );
+  
+    if (observerRef.current) observer.observe(observerRef.current);
+  
+    return () => {
+      if (observerRef.current) observer.unobserve(observerRef.current);
+    };
+  }, [hasMore, isLoading]); // <-- tens de fechar assim
+
 
   useEffect(() => {
     if (skip === 0 && registos.length > 0) return; // Evita recarregar no load inicial
