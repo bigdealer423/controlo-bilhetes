@@ -17,17 +17,19 @@ export default function Eventos() {
   const [mostrarModal, setMostrarModal] = useState(false);
   const [idAEliminar, setIdAEliminar] = useState(null);
   const location = useLocation();
-useEffect(() => {
-  const params = new URLSearchParams(location.search);
-  const eventoAExpandir = params.get("expandir");
 
-  if (eventoAExpandir && registos.length > 0) {
-    const eventoEncontrado = registos.find(r => r.nome === eventoAExpandir);
-    if (eventoEncontrado) {
-      setLinhaExpandida(eventoEncontrado.id);
+useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const eventoAExpandir = params.get("expandir");
+
+    if (eventoAExpandir && registos.length > 0) {
+        const registoEncontrado = registos.find(r => r.evento === eventoAExpandir);
+        if (registoEncontrado) {
+            setLinhaExpandida(registoEncontrado.id);
+        }
     }
-  }
 }, [location.search, registos]);
+
 
   const [resumoMensal, setResumoMensal] = useState({ lucro: 0, pagamento: 0 });
   const [modoEdicaoCompra, setModoEdicaoCompra] = useState(null);
