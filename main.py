@@ -208,9 +208,20 @@ def atualizar_ganhos_gastos_eventos(db: Session):
 
 # ✅ Endpoint para listar eventos já atualizados
 @app.get("/eventos_completos2", response_model=List[EventoCompletoOut])
-def listar_eventos_completos2(db: Session = Depends(get_db)):
+def listar_eventos_completos2(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(10, ge=1),
+    db: Session = Depends(get_db)
+):
     atualizar_ganhos_gastos_eventos(db)
-    return db.query(EventoCompletoModel).order_by(EventoCompletoModel.data_evento).all()
+    eventos = (
+        db.query(EventoCompletoModel)
+        .order_by(EventoCompletoModel.data_evento)
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
+    return eventos
 
 # ✅ Criação de novo evento
 @app.post("/eventos_completos2", response_model=EventoCompletoOut)
