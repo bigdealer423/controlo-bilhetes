@@ -200,7 +200,7 @@ useEffect(() => {
           setHasMore(false);
         } else {
           setRegistos(prev => [...prev, ...eventos]);
-          setSkip(prev => prev + 5);
+          setSkip(prev => prev + limit);
         }
       }
     } catch (error) {
