@@ -55,6 +55,7 @@ class Compra(Base):
     id = Column(Integer, primary_key=True, index=True)
     local_compras = Column(String, nullable=False)
     evento = Column(String, nullable=False)
+    data_evento = Column(Date, nullable=True)  # ✅ nova coluna
     bancada = Column(String, nullable=False)
     setor = Column(String, nullable=False)
     fila = Column(String, nullable=True)
@@ -119,6 +120,7 @@ class EventoCompletoOut(EventoCompletoBase):
 class CompraCreate(BaseModel):
     local_compras: str
     evento: str
+    data_evento: Optional[date] = None
     bancada: str
     setor: str
     fila: str
