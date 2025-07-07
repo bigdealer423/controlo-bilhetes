@@ -216,11 +216,12 @@ def listar_eventos_completos2(
     atualizar_ganhos_gastos_eventos(db)
     eventos = (
         db.query(EventoCompletoModel)
-        .order_by(EventoCompletoModel.data_evento)
+        .order_by(EventoCompletoModel.data_evento, EventoCompletoModel.id)  # <- adiciona o .id
         .offset(skip)
         .limit(limit)
         .all()
     )
+
     return eventos
 
 # ✅ Criação de novo evento
