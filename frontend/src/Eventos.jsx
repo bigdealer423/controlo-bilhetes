@@ -344,13 +344,7 @@ useEffect(() => {
     });
 };
 
-  const totalGasto = compras
-  .filter(c => c.evento === r.evento && c.data_evento === r.data_evento)
-  .reduce((acc, c) => acc + parseFloat(c.gasto || 0), 0);
-
-const totalGanho = vendas
-  .filter(v => v.evento === r.evento && v.data_evento === r.data_evento)
-  .reduce((acc, v) => acc + parseFloat(v.ganho || 0), 0);
+  
 
 
 return (
@@ -417,99 +411,119 @@ return (
             </thead>
             <tbody>
             {registos
-                .filter(r => r.evento.toLowerCase().includes(filtroPesquisa.toLowerCase()))
-                .map(r => (
-              <>
-                <tr
-  key={r.id}
-  className={`cursor-pointer ${
-    linhaExpandida === r.id
-      ? "bg-blue-100 dark:bg-blue-800 text-gray-900 dark:text-gray-100 font-semibold"
-      : r.estado === "Pago"
-      ? "bg-green-100"
-      : r.estado === "Entregue"
-      ? "bg-yellow-100 dark:bg-yellow-700" 
-      : ""
-  } transition-colors duration-300`}
->
-                 <td className="p-2">
-  {vendas.some(v => v.evento === r.evento && v.data_evento === r.data_evento) || compras.some(c => c.evento === r.evento && c.data_evento === r.data_evento) ? (
-    <button onClick={() => setLinhaExpandida(linhaExpandida === r.id ? null : r.id)}>
-      {linhaExpandida === r.id ? "🔼" : "🔽"}
-    </button>
-  ) : (
-    <span className="text-red-600">🔻</span>
-  )}
-</td>
-                  <td className="p-2">
-  {modoEdicao === r.id ? (
-    <input
-      type="date"
-      value={r.data_evento}
-      onChange={(e) => atualizarCampo(r.id, "data_evento", e.target.value)}
-      className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
-    />
-  ) : (
-    new Date(r.data_evento).toLocaleDateString("pt-PT")
-  )}
-</td>
-                  <td className="p-2">
-  {modoEdicao === r.id ? (
-    <select
-  value={r.evento}
-  onChange={(e) => atualizarCampo(r.id, "evento", e.target.value)}
-  className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
->
-  <option value="">-- Selecionar Evento --</option>
-  {eventosDropdown.map(e => (
-    <option key={e.id} value={e.nome}>{e.nome}</option>
-  ))}
-</select>
-  ) : (
-    renderEventoComSimbolos(r.evento)
-  )}
-</td>
-                  <td className="p-2">
-                    {modoEdicao === r.id
-                      ? <input value={r.estadio} onChange={(e) => atualizarCampo(r.id, "estadio", e.target.value)} className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" />
-                      : r.estadio}
-                  </td>
-                  <td className="p-2">{totalGasto} €</td>
-                  <td className="p-2">{totalGanho} €</td>
-                  <td className="p-2">{totalGanho - totalGasto} €</td>
-                  <td className="p-2">
-                    {modoEdicao === r.id
-                      ? (
-                        <select value={r.estado} onChange={(e) => atualizarCampo(r.id, "estado", e.target.value)} className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300">
-                          <option value="Entregue">Entregue</option>
-                          <option value="Por entregar">Por entregar</option>
-                          <option value="Disputa">Disputa</option>
-                          <option value="Pago">Pago</option>
-                        </select>
-                      ) : r.estado}
-                  </td>
-                  <td className="p-2 space-x-2">
-                    <button
-                      onClick={() => {
-                        if (modoEdicao === r.id) {
-                          guardarEvento(r);
-                        } else {
-                          setModoEdicao(r.id);
-                        }
-                      }}
-                      className="text-blue-600 hover:underline"
+              .filter(r => r.evento.toLowerCase().includes(filtroPesquisa.toLowerCase()))
+              .map(r => {
+                const totalGasto = compras
+                  .filter(c => c.evento === r.evento && c.data_evento === r.data_evento)
+                  .reduce((acc, c) => acc + parseFloat(c.gasto || 0), 0);
+            
+                const totalGanho = vendas
+                  .filter(v => v.evento === r.evento && v.data_evento === r.data_evento)
+                  .reduce((acc, v) => acc + parseFloat(v.ganho || 0), 0);
+            
+                return (
+                  <>
+                    <tr
+                      key={r.id}
+                      className={`cursor-pointer ${
+                        linhaExpandida === r.id
+                          ? "bg-blue-100 dark:bg-blue-800 text-gray-900 dark:text-gray-100 font-semibold"
+                          : r.estado === "Pago"
+                          ? "bg-green-100"
+                          : r.estado === "Entregue"
+                          ? "bg-yellow-100 dark:bg-yellow-700"
+                          : ""
+                      } transition-colors duration-300`}
                     >
-                      {modoEdicao === r.id ? "Guardar" : "Editar"}
-                    </button>
-
-                    <button
-                      onClick={() => confirmarEliminar(r.id)}
-                      className="text-red-600 hover:underline"
-                    >
-                      Eliminar
-                    </button>
-                  </td>
-                </tr>
+                      <td className="p-2">
+                        {vendas.some(v => v.evento === r.evento && v.data_evento === r.data_evento) ||
+                        compras.some(c => c.evento === r.evento && c.data_evento === r.data_evento) ? (
+                          <button onClick={() => setLinhaExpandida(linhaExpandida === r.id ? null : r.id)}>
+                            {linhaExpandida === r.id ? "🔼" : "🔽"}
+                          </button>
+                        ) : (
+                          <span className="text-red-600">🔻</span>
+                        )}
+                      </td>
+                      <td className="p-2">
+                        {modoEdicao === r.id ? (
+                          <input
+                            type="date"
+                            value={r.data_evento}
+                            onChange={(e) => atualizarCampo(r.id, "data_evento", e.target.value)}
+                            className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                          />
+                        ) : (
+                          new Date(r.data_evento).toLocaleDateString("pt-PT")
+                        )}
+                      </td>
+                      <td className="p-2">
+                        {modoEdicao === r.id ? (
+                          <select
+                            value={r.evento}
+                            onChange={(e) => atualizarCampo(r.id, "evento", e.target.value)}
+                            className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                          >
+                            <option value="">-- Selecionar Evento --</option>
+                            {eventosDropdown.map(e => (
+                              <option key={e.id} value={e.nome}>{e.nome}</option>
+                            ))}
+                          </select>
+                        ) : (
+                          renderEventoComSimbolos(r.evento)
+                        )}
+                      </td>
+                      <td className="p-2">
+                        {modoEdicao === r.id ? (
+                          <input
+                            value={r.estadio}
+                            onChange={(e) => atualizarCampo(r.id, "estadio", e.target.value)}
+                            className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                          />
+                        ) : (
+                          r.estadio
+                        )}
+                      </td>
+                      <td className="p-2">{totalGasto} €</td>
+                      <td className="p-2">{totalGanho} €</td>
+                      <td className="p-2">{totalGanho - totalGasto} €</td>
+                      <td className="p-2">
+                        {modoEdicao === r.id ? (
+                          <select
+                            value={r.estado}
+                            onChange={(e) => atualizarCampo(r.id, "estado", e.target.value)}
+                            className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                          >
+                            <option value="Entregue">Entregue</option>
+                            <option value="Por entregar">Por entregar</option>
+                            <option value="Disputa">Disputa</option>
+                            <option value="Pago">Pago</option>
+                          </select>
+                        ) : (
+                          r.estado
+                        )}
+                      </td>
+                      <td className="p-2 space-x-2">
+                        <button
+                          onClick={() => {
+                            if (modoEdicao === r.id) {
+                              guardarEvento(r);
+                            } else {
+                              setModoEdicao(r.id);
+                            }
+                          }}
+                          className="text-blue-600 hover:underline"
+                        >
+                          {modoEdicao === r.id ? "Guardar" : "Editar"}
+                        </button>
+                        <button
+                          onClick={() => confirmarEliminar(r.id)}
+                          className="text-red-600 hover:underline"
+                        >
+                          Eliminar
+                        </button>
+                      </td>
+                    </tr>
 
                 {linhaExpandida === r.id && (
                   <>
