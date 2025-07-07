@@ -16,6 +16,9 @@ export default function Eventos() {
   const [compras, setCompras] = useState([]);
   const [mostrarModal, setMostrarModal] = useState(false);
   const [idAEliminar, setIdAEliminar] = useState(null);
+  const [skip, setSkip] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const observerRef = useRef();
   const location = useLocation();
 
 useEffect(() => {
@@ -83,6 +86,21 @@ useEffect(() => {
       buscarResumoMensal();
     }
   }, [compras, vendas]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      entries => {
+        if (entries[0].isIntersecting && hasMore) {
+          buscarEventos();
+        }
+      },
+      { threshold: 1 }
+    );
+    if (observerRef.current) observer.observe(observerRef.current);
+    return () => {
+      if (observerRef.current) observer.unobserve(observerRef.current);
+    };
+  }, [hasMore]);
 
   function exportarEventosParaExcel(eventos) {
     const worksheet = XLSX.utils.json_to_sheet(eventos);
@@ -158,28 +176,36 @@ useEffect(() => {
   };
 
   const buscarEventos = async () => {
-    const res = await fetch("https://controlo-bilhetes.onrender.com/eventos_completos2");
-    if (res.ok) {
-      let eventos = await res.json();
-
-      eventos = await Promise.all(eventos.map(async evento => {
-        const totalGasto = compras.filter(c => c.evento === evento.evento).reduce((acc, curr) => acc + parseFloat(curr.gasto || 0), 0);
-        const totalGanho = vendas.filter(v => v.evento === evento.evento).reduce((acc, curr) => acc + parseFloat(curr.ganho || 0), 0);
-
-        await fetch(`https://controlo-bilhetes.onrender.com/eventos_completos2/${evento.id}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...evento, gasto: totalGasto, ganho: totalGanho })
-        });
-
-        return { ...evento, gasto: totalGasto, ganho: totalGanho };
-      }));
-
-      eventos.sort((a, b) => new Date(a.data_evento) - new Date(b.data_evento));
-
-      setRegistos(eventos);
+    try {
+      const res = await fetch(`https://controlo-bilhetes.onrender.com/eventos_completos2?skip=${skip}&limit=5`);
+      if (res.ok) {
+        let eventos = await res.json();
+  
+        eventos = await Promise.all(eventos.map(async evento => {
+          const totalGasto = compras.filter(c => c.evento === evento.evento).reduce((acc, curr) => acc + parseFloat(curr.gasto || 0), 0);
+          const totalGanho = vendas.filter(v => v.evento === evento.evento).reduce((acc, curr) => acc + parseFloat(curr.ganho || 0), 0);
+  
+          await fetch(`https://controlo-bilhetes.onrender.com/eventos_completos2/${evento.id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ ...evento, gasto: totalGasto, ganho: totalGanho })
+          });
+  
+          return { ...evento, gasto: totalGasto, ganho: totalGanho };
+        }));
+  
+        if (eventos.length === 0) {
+          setHasMore(false);
+        } else {
+          setRegistos(prev => [...prev, ...eventos]);
+          setSkip(prev => prev + 5);
+        }
+      }
+    } catch (error) {
+      console.error("Erro ao carregar eventos:", error);
     }
   };
+
 
   const buscarVendas = async () => {
     const res = await fetch("https://controlo-bilhetes.onrender.com/listagem_vendas");
@@ -661,7 +687,12 @@ return (
               </>
             ))}
           </tbody>
-        </table> 
+        </table>
+          {hasMore && (
+            <div ref={observerRef} className="text-center py-4 text-gray-700 dark:text-gray-300">
+              🔄 A carregar mais eventos...
+            </div>
+          )}
        </div>   
       </div>
 
