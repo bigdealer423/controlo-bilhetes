@@ -159,6 +159,14 @@ export default function Compras() {
             <option value="">-- Evento --</option>
             {eventosDropdown.map(e => <option key={e.id} value={e.nome}>{e.nome}</option>)}
           </select>
+          <input
+            type="date"
+            name="data_evento"
+            value={novaCompra.data_evento || ""}
+            onChange={handleChange}
+            className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
+          />
+
           <select name="local_compras" className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" value={novaCompra.local_compras} onChange={handleChange}>
             <option value="">-- Local da Compra --</option>
             {locaisCompra.map(local => <option key={local} value={local}>{local}</option>)}
