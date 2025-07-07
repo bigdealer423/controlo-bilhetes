@@ -188,38 +188,27 @@ useEffect(() => {
   };
 
   const buscarEventos = async () => {
-  if (isLoading) return; // evita duplicação
-  setIsLoading(true);
-  try {
-    const res = await fetch(`https://controlo-bilhetes.onrender.com/eventos_completos2?skip=${skip}&limit=${limit}`);
-    if (res.ok) {
-      let eventos = await res.json();
-      eventos = await Promise.all(eventos.map(async evento => {
-        const totalGasto = compras.filter(c => c.evento === evento.evento).reduce((acc, curr) => acc + parseFloat(curr.gasto || 0), 0);
-        const totalGanho = vendas.filter(v => v.evento === evento.evento).reduce((acc, curr) => acc + parseFloat(curr.ganho || 0), 0);
-
-        await fetch(`https://controlo-bilhetes.onrender.com/eventos_completos2/${evento.id}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...evento, gasto: totalGasto, ganho: totalGanho })
-        });
-
-        return { ...evento, gasto: totalGasto, ganho: totalGanho };
-      }));
-
-      if (eventos.length === 0) {
-        setHasMore(false);
-      } else {
-        setRegistos(prev => [...prev, ...eventos]);
-        setSkip(prev => prev + limit);
+    if (isLoading) return; // evita duplicação
+    setIsLoading(true);
+    try {
+      const res = await fetch(`https://controlo-bilhetes.onrender.com/eventos_completos2?skip=${skip}&limit=${limit}`);
+      if (res.ok) {
+        const eventos = await res.json();
+  
+        if (eventos.length === 0) {
+          setHasMore(false);
+        } else {
+          setRegistos(prev => [...prev, ...eventos]);
+          setSkip(prev => prev + limit);
+        }
       }
+    } catch (error) {
+      console.error("Erro ao carregar eventos:", error);
+    } finally {
+      setIsLoading(false);
     }
-  } catch (error) {
-    console.error("Erro ao carregar eventos:", error);
-  } finally {
-    setIsLoading(false);
-  }
-};
+  };
+
 
 
   const buscarVendas = async () => {
