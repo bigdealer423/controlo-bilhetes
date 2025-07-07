@@ -513,7 +513,7 @@ return (
   <td colSpan="9" className="p-2 font-semibold">
     Vendas ({
       vendas
-        .filter(v => v.evento === r.evento)
+        .filter(v => v.evento === r.evento && v.data_evento === r.data_evento)
         .reduce((acc, v) => {
           const texto = v.estadio.trim();
           if (/^\d+$/.test(texto)) {
