@@ -242,6 +242,10 @@ export default function Compras() {
                 ) : (
                   <>
                     <td className="p-2">{c.evento}</td>
+                    <td className="p-2">
+                      {c.data_evento ? new Date(c.data_evento).toLocaleDateString("pt-PT") : "-"}
+                    </td>
+
                     <td className="p-2">{c.local_compras}</td>
                     <td className="p-2">{c.bancada}</td>
                     <td className="p-2">{c.setor}</td>
