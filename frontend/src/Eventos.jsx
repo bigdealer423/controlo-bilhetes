@@ -422,7 +422,7 @@ return (
                   .reduce((acc, v) => acc + parseFloat(v.ganho || 0), 0);
             
                 return (
-                  <>
+                  <React.Fragment key={r.id}>
                     <tr
                       key={r.id}
                       className={`cursor-pointer ${
@@ -524,6 +524,9 @@ return (
                         </button>
                       </td>
                     </tr>
+                    </React.Fragment>
+                  );
+  })}
 
                 {linhaExpandida === r.id && (
                   <>
