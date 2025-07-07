@@ -190,8 +190,14 @@ useEffect(() => {
       </div>
 
       <div className="bg-yellow-100 dark:bg-yellow-900 p-4 rounded shadow mb-4">
+        <p className="font-medium text-gray-900 dark:text-gray-100 mb-1">
+          ⚠️ Entregas pendentes nos próximos 15 dias:
+        </p>
+      
         {entregasPendentesDetalhadas.length === 0 ? (
-          <p className="font-medium text-gray-900 dark:text-gray-100">✅ Sem entregas pendentes nos próximos 15 dias.</p>
+          <p className="text-gray-900 dark:text-gray-100">
+            ✅ Sem entregas pendentes neste período.
+          </p>
         ) : (
           <div className="flex flex-col gap-1">
             {entregasPendentesDetalhadas.map((e, idx) => (
@@ -200,12 +206,13 @@ useEffect(() => {
                 onClick={() => irParaEventoExpandido(e.evento)}
                 className="cursor-pointer hover:underline text-gray-900 dark:text-gray-100"
               >
-                {e.bilhetes} {e.bilhetes > 1 ? "Entregas pendentes" : "Entrega pendente"} – {e.evento} ({new Date(e.data_evento).toLocaleDateString("pt-PT")})
+                {e.bilhetes} {e.bilhetes === 1 ? "Entrega pendente" : "Entregas pendentes"} – {e.evento} ({new Date(e.data_evento).toLocaleDateString("pt-PT")})
               </div>
             ))}
           </div>
         )}
       </div>
+
 
 
       <h2 className="text-lg font-semibold mb-2 text-gray-900 dark:text-gray-100">Últimos eventos / vendas</h2>
