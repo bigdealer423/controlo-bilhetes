@@ -204,6 +204,7 @@ export default function Compras() {
           <thead>
             <tr className="bg-gray-100 dark:bg-gray-700 transition-colors duration-300">
               <th className="p-2">Evento</th>
+              <th className="p-2">Data Evento</th>
               <th className="p-2">Local Compra</th>
               <th className="p-2">Bancada</th>
               <th className="p-2">Setor</th>
