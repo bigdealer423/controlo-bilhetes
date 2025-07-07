@@ -19,6 +19,7 @@ export default function Eventos() {
   const [skip, setSkip] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const observerRef = useRef();
+  const limit = 15;
   const location = useLocation();
 
 useEffect(() => {
@@ -100,7 +101,7 @@ useEffect(() => {
     return () => {
       if (observerRef.current) observer.unobserve(observerRef.current);
     };
-  }, [hasMore]);
+  }, [hasMore, skip]);
 
   function exportarEventosParaExcel(eventos) {
     const worksheet = XLSX.utils.json_to_sheet(eventos);
@@ -177,7 +178,8 @@ useEffect(() => {
 
   const buscarEventos = async () => {
     try {
-      const res = await fetch(`https://controlo-bilhetes.onrender.com/eventos_completos2?skip=${skip}&limit=5`);
+      const limit = 15; // <-- adiciona no topo ou dentro do componente
+      const res = await fetch(`https://controlo-bilhetes.onrender.com/eventos_completos2?skip=${skip}&limit=${limit}`);
       if (res.ok) {
         let eventos = await res.json();
   
@@ -240,23 +242,26 @@ useEffect(() => {
 
   const adicionarLinha = async () => {
     const novo = {
-      data_evento: new Date().toISOString().split("T")[0],
-      evento: "",
-      estadio: "",
-      gasto: 0,
-      ganho: 0,
-      estado: "Por entregar"
+        data_evento: new Date().toISOString().split("T")[0],
+        evento: "",
+        estadio: "",
+        gasto: 0,
+        ganho: 0,
+        estado: "Por entregar"
     };
     const res = await fetch("https://controlo-bilhetes.onrender.com/eventos_completos2", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(novo)
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(novo)
     });
     if (res.ok) {
-      await buscarEventos();
-      await buscarResumoMensal();
+        // Recarregar tudo corretamente após adicionar
+        setRegistos([]);
+        setSkip(0);
+        setHasMore(true);
     }
-  };
+};
+
 
   const confirmarEliminar = (id) => {
     setIdAEliminar(id);
@@ -268,10 +273,11 @@ useEffect(() => {
       method: "DELETE"
     });
     if (res.ok) {
-      await buscarEventos();
-      await buscarResumoMensal();
-      setMostrarModal(false);
-      setIdAEliminar(null);
+    setMostrarModal(false);
+    setIdAEliminar(null);
+    setRegistos([]);
+    setSkip(0);
+    setHasMore(true);
     }
   };
 
