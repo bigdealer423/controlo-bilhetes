@@ -344,6 +344,13 @@ useEffect(() => {
     });
 };
 
+  const totalGasto = compras
+  .filter(c => c.evento === r.evento && c.data_evento === r.data_evento)
+  .reduce((acc, c) => acc + parseFloat(c.gasto || 0), 0);
+
+const totalGanho = vendas
+  .filter(v => v.evento === r.evento && v.data_evento === r.data_evento)
+  .reduce((acc, v) => acc + parseFloat(v.ganho || 0), 0);
 
 
 return (
@@ -467,9 +474,9 @@ return (
                       ? <input value={r.estadio} onChange={(e) => atualizarCampo(r.id, "estadio", e.target.value)} className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" />
                       : r.estadio}
                   </td>
-                  <td className="p-2">{r.gasto} €</td>
-                  <td className="p-2">{r.ganho} €</td>
-                  <td className="p-2">{(r.ganho - r.gasto)} €</td>
+                  <td className="p-2">{totalGasto} €</td>
+                  <td className="p-2">{totalGanho} €</td>
+                  <td className="p-2">{totalGanho - totalGasto} €</td>
                   <td className="p-2">
                     {modoEdicao === r.id
                       ? (
