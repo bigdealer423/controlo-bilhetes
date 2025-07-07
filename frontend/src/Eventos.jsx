@@ -92,17 +92,13 @@ useEffect(() => {
   useEffect(() => {
     const observer = new IntersectionObserver(
       entries => {
-        if (entries[0].isIntersecting && hasMore) {
-          buscarEventos();
+        if (entries[0].isIntersecting && hasMore && !isLoading) {
+          setSkip(prev => prev + limit); // Avança skip primeiro
         }
       },
       { threshold: 1 }
     );
-    if (observerRef.current) observer.observe(observerRef.current);
-    return () => {
-      if (observerRef.current) observer.unobserve(observerRef.current);
-    };
-  }, [hasMore]);
+
 
   function exportarEventosParaExcel(eventos) {
     const worksheet = XLSX.utils.json_to_sheet(eventos);
