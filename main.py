@@ -197,18 +197,17 @@ def atualizar_ganhos_gastos_eventos(db: Session):
     compras = db.query(Compra).all()
     vendas = db.query(ListagemVendas).all()
 
-    def normalizar(texto):
-        return texto.strip().lower() if texto else ""
-
     for evento in eventos:
-        evento_nome = normalizar(evento.evento)
-        total_gasto = sum(c.gasto for c in compras if normalizar(c.evento) == evento_nome)
-        total_ganho = sum(v.ganho for v in vendas if normalizar(v.evento) == evento_nome)
+        total_gasto = sum(c.gasto for c in compras if c.evento == evento.evento)
+        total_ganho = sum(v.ganho for v in vendas if v.evento == evento.evento)
 
         evento.gasto = total_gasto
         evento.ganho = total_ganho
 
     db.commit()
+    for evento in eventos:
+        db.refresh(evento)  # <-- adiciona isto
+
 
 
 # ✅ Endpoint para listar eventos já atualizados
