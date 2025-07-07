@@ -33,7 +33,7 @@ def guardar_historico(historico):
         json.dump(historico, f)
 
 PALAVRAS_CHAVE_FPF = ["Comprar", "Adquirir", "Bilhete", "Ingressos", "Buy"]
-PALAVRAS_CHAVE_SLB = ["Rio Ave", "Estrela da Amadora", "Tondela", "Alverca"]
+PALAVRAS_CHAVE_SLB = ["Rio Ave", "Tondela"]
 
 
 def buscar_links_novos():
