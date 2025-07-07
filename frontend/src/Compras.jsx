@@ -301,24 +301,98 @@ export default function Compras() {
           </thead>
           <tbody>
             {[...comprasFiltradas].sort((a, b) => a.evento.localeCompare(b.evento)).map(c => (
-              <tr key={c.id} className="border-t">
+              <tr key={"c" + c.id} className="border-t">
                 {modoEdicao === c.id ? (
                   <>
+                    {/* Evento */}
                     <td className="p-2">
-                      <select name="evento" className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" value={novaCompra.evento} onChange={handleChange}>
-                        {eventosDropdown.map(e => <option key={e.id} value={e.nome}>{e.nome}</option>)}
+                      <select
+                        name="evento"
+                        className="border p-1 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                        value={novaCompra.evento}
+                        onChange={handleChange}
+                      >
+                        <option value="">-- Evento --</option>
+                        {eventosDropdown.map(e => (
+                          <option key={e.id} value={e.nome}>{e.nome}</option>
+                        ))}
                       </select>
                     </td>
+              
+                    {/* Data Evento */}
                     <td className="p-2">
-                      <select className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" value={novaCompra.local_compras} onChange={e => setNovaCompra({ ...novaCompra, local_compras: e.target.value })}>
-                        {locaisCompra.map(local => <option key={local} value={local}>{local}</option>)}
-                      </select>
+                      <input
+                        type="date"
+                        name="data_evento"
+                        className="border p-1 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                        value={novaCompra.data_evento || ""}
+                        onChange={handleChange}
+                      />
                     </td>
-                    <td className="p-2"><input name="bancada" className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" value={novaCompra.bancada} onChange={handleChange} /></td>
-                    <td className="p-2"><input name="setor" className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" value={novaCompra.setor} onChange={handleChange} /></td>
-                    <td className="p-2"><input name="fila" className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" value={novaCompra.fila} onChange={handleChange} /></td>
-                    <td className="p-2"><input name="quantidade" type="number" className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" value={novaCompra.quantidade} onChange={handleChange} /></td>
-                    <td className="p-2"><input name="gasto" className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" value={novaCompra.gasto} onChange={handleChange} /></td>
+              
+                    {/* Local Compra */}
+                    <td className="p-2">
+                      <input
+                        name="local_compras"
+                        className="border p-1 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                        value={novaCompra.local_compras}
+                        onChange={handleChange}
+                      />
+                    </td>
+              
+                    {/* Bancada */}
+                    <td className="p-2">
+                      <input
+                        name="bancada"
+                        className="border p-1 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                        value={novaCompra.bancada}
+                        onChange={handleChange}
+                      />
+                    </td>
+              
+                    {/* Setor */}
+                    <td className="p-2">
+                      <input
+                        name="setor"
+                        className="border p-1 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                        value={novaCompra.setor}
+                        onChange={handleChange}
+                      />
+                    </td>
+              
+                    {/* Fila */}
+                    <td className="p-2">
+                      <input
+                        name="fila"
+                        className="border p-1 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                        value={novaCompra.fila}
+                        onChange={handleChange}
+                      />
+                    </td>
+              
+                    {/* Quantidade */}
+                    <td className="p-2">
+                      <input
+                        type="number"
+                        name="quantidade"
+                        className="border p-1 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                        value={novaCompra.quantidade}
+                        onChange={handleChange}
+                      />
+                    </td>
+              
+                    {/* Gasto */}
+                    <td className="p-2">
+                      <input
+                        type="number"
+                        name="gasto"
+                        className="border p-1 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                        value={novaCompra.gasto}
+                        onChange={handleChange}
+                      />
+                    </td>
+              
+                    {/* Ações */}
                     <td className="p-2 flex gap-2">
                       <button onClick={atualizarCompra} className="text-green-600 hover:underline">Guardar</button>
                       <button onClick={() => setModoEdicao(null)} className="text-gray-600 hover:underline">Cancelar</button>
@@ -327,16 +401,13 @@ export default function Compras() {
                 ) : (
                   <>
                     <td className="p-2">{c.evento}</td>
-                    <td className="p-2">
-                      {c.data_evento ? new Date(c.data_evento).toLocaleDateString("pt-PT") : "-"}
-                    </td>
-
+                    <td className="p-2">{c.data_evento ? new Date(c.data_evento).toLocaleDateString("pt-PT") : "-"}</td>
                     <td className="p-2">{c.local_compras}</td>
                     <td className="p-2">{c.bancada}</td>
                     <td className="p-2">{c.setor}</td>
                     <td className="p-2">{c.fila}</td>
                     <td className="p-2">{c.quantidade}</td>
-                    <td className="p-2">{parseInt(c.gasto)} €</td>
+                    <td className="p-2">{c.gasto} €</td>
                     <td className="p-2 flex gap-2">
                       <button onClick={() => editarCompra(c)} className="text-blue-600 hover:underline">Editar</button>
                       <button onClick={() => pedirConfirmEliminar(c.id)} className="text-red-600 hover:underline">Eliminar</button>
