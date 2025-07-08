@@ -263,13 +263,40 @@ def atualizar_evento_completo(evento_id: int, evento: EventoCompletoCreate, db: 
     if not evento_existente:
         raise HTTPException(status_code=404, detail="Evento não encontrado")
     
+    data_antiga = evento_existente.data_evento
+    evento_nome = evento_existente.evento
+
     for key, value in evento.dict().items():
         setattr(evento_existente, key, value)
 
     db.commit()
     db.refresh(evento_existente)
+
+    # Se a data_evento mudou, atualizar também nas compras e vendas associadas
+    if evento.data_evento != data_antiga:
+        # Atualiza compras
+        db.query(Compra).filter(
+            Compra.evento == evento_nome,
+            Compra.data_evento == data_antiga
+        ).update(
+            {"data_evento": evento.data_evento},
+            synchronize_session=False
+        )
+
+        # Atualiza vendas
+        db.query(ListagemVendas).filter(
+            ListagemVendas.evento == evento_nome,
+            ListagemVendas.data_evento == data_antiga
+        ).update(
+            {"data_evento": evento.data_evento},
+            synchronize_session=False
+        )
+
+        db.commit()
+
     atualizar_ganhos_gastos_eventos(db)
     return evento_existente
+
 
 
 
