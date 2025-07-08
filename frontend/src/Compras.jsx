@@ -46,6 +46,8 @@ export default function Compras() {
   const [modoEdicao, setModoEdicao] = useState(null);
   const [confirmarEliminarId, setConfirmarEliminarId] = useState(null);
   const [filtros, setFiltros] = useState({ evento: "" });
+  const [datasEvento, setDatasEvento] = useState([]);
+
 
   const locaisCompra = ["Benfica Viagens", "Site Benfica", "Odisseias", "Continente", "Site clube adversário", "Smartfans", "Outro"];
   const bancadas = ["Emirates", "BTV", "Sagres", "Mais vantagens"];
@@ -71,10 +73,33 @@ export default function Compras() {
   setEventosDropdown(ordenarEventosDropdown(data)); // aplica a ordenação
 };
 
+  const buscarDatasEvento = async (nomeEvento) => {
+  if (!nomeEvento) {
+    setDatasEvento([]);
+    return;
+  }
+  try {
+    const res = await fetch(`https://controlo-bilhetes.onrender.com/datas_evento/${encodeURIComponent(nomeEvento)}`);
+    const data = await res.json();
+    setDatasEvento(data);
+  } catch (error) {
+    console.error("Erro ao carregar datas do evento:", error);
+    setDatasEvento([]);
+  }
+};
+
+
   const handleChange = e => {
     const { name, value } = e.target;
+
+    
+    if (name === "evento") {
+        buscarDatasEvento(value);
+    }
+
     setNovaCompra(prev => ({ ...prev, [name]: value }));
-  };
+};
+
 
   const handleFiltroChange = e => {
     const { name, value } = e.target;
@@ -171,6 +196,7 @@ export default function Compras() {
           </div>
         
           {/* Data Evento */}
+          
           <div className="flex flex-col">
             <label className="text-sm font-medium mb-1">Data do Evento</label>
             <input
@@ -180,7 +206,18 @@ export default function Compras() {
               onChange={handleChange}
               className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 transition-colors duration-300"
             />
+            {datasEvento.length > 0 && (
+              <div className="mt-1 text-xs text-gray-600 dark:text-gray-300">
+                Datas existentes:
+                <ul className="list-disc list-inside">
+                  {datasEvento.map((d, idx) => (
+                    <li key={idx}>{new Date(d).toLocaleDateString("pt-PT")}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
+
         
           {/* Local da Compra */}
           <div className="flex flex-col">
