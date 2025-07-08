@@ -298,6 +298,13 @@ def atualizar_evento_completo(evento_id: int, evento: EventoCompletoCreate, db: 
     return evento_existente
 
 
+@app.get("/datas_evento/{nome_evento}")
+def datas_evento_existentes(nome_evento: str, db: Session = Depends(get_db)):
+    datas = db.query(EventoCompletoModel.data_evento)\
+        .filter(EventoCompletoModel.evento == nome_evento)\
+        .distinct()\
+        .all()
+    return [d[0] for d in datas if d[0] is not None]
 
 
 # ---------------- COMPRAS ----------------
