@@ -45,6 +45,34 @@ def buscar_links_novos():
     session.mount('https://', adapter)
     session.mount('http://', adapter)
 
+   
+
+    
+    
+        # 👇 LOGIN ODISSEIAS
+    login_url = "https://www.odisseias.com/Account/Login"
+    payload = {
+        "Email": "miguelitocosta423@gmail.com",      # 👈 coloca aqui diretamente
+        "Password": "Pedrosara18#"         # 👈 coloca aqui diretamente
+    }
+    headers = {"User-Agent": "Mozilla/5.0"}
+    
+    try:
+        r1 = session.get(login_url, headers=headers)
+        print("Status página de login Odisseias:", r1.status_code)
+    
+        r2 = session.post(login_url, data=payload, headers=headers)
+        print("Status login POST Odisseias:", r2.status_code)
+    
+        if "logout" in r2.text.lower():
+            print("✅ Login Odisseias bem-sucedido.")
+        else:
+            print("❌ Login Odisseias pode ter falhado, verifica as credenciais ou site.")
+    except Exception as e:
+        print(f"❌ Erro no login Odisseias: {e}", flush=True)
+
+
+
     for url in URLS:
         try:
             print(f"🔍 A verificar {url}...", flush=True)
