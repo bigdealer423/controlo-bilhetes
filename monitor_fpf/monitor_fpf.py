@@ -88,7 +88,8 @@ def buscar_links_novos():
 
             # 👇 SPORTING
             elif 'sporting.pt' in url:
-                resp = session.get(url, timeout=15)
+                headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36"}
+                resp = session.get(url, headers=headers, timeout=15)
                 if resp.status_code != 200:
                     print(f"⚠️ Sporting respondeu com status {resp.status_code}, ignorado.", flush=True)
                     continue
