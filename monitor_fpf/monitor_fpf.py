@@ -11,7 +11,8 @@ import cloudscraper
 # ----------------- CONFIGURAÇÕES -----------------
 URLS = [
     'https://bilheteira.fpf.pt/',
-    'https://viagens.slbenfica.pt/follow-my-team/futebol'
+    'https://viagens.slbenfica.pt/follow-my-team/futebol',
+    'https://www.sporting.pt/pt/bilhetes-e-gamebox/bilhetes'
 ]
 HIST_FILE = 'fpf_hist.json'
 EMAIL_FROM = os.getenv("EMAIL_USERNAME")
@@ -34,6 +35,7 @@ def guardar_historico(historico):
 
 PALAVRAS_CHAVE_FPF = ["Comprar", "Adquirir", "Bilhete", "Ingressos", "Buy"]
 PALAVRAS_CHAVE_SLB = ["Carcavelos", "Fatima"]
+PALAVRAS_CHAVE_SPORTING = ["comprar bilhetes"]
 
 
 
@@ -84,6 +86,23 @@ def buscar_links_novos():
                     print(f"⚠️ Benfica Viagens não respondeu ou bloqueou: {e}", flush=True)
                     continue
 
+            # 👇 SPORTING
+            elif 'sporting.pt' in url:
+                resp = session.get(url, timeout=15)
+                if resp.status_code != 200:
+                    print(f"⚠️ Sporting respondeu com status {resp.status_code}, ignorado.", flush=True)
+                    continue
+    
+                soup = BeautifulSoup(resp.text, 'html.parser')
+                texto_site = soup.get_text(separator=' ', strip=True).lower()
+    
+                if any(palavra in texto_site for palavra in PALAVRAS_CHAVE_SPORTING):
+                    links_encontrados.append(url)
+                    print(f"✅ Encontrada referência a {PALAVRAS_CHAVE_SPORTING} no Sporting.", flush=True)
+                else:
+                    print("✅ Sporting verificado, 'comprar bilhetes' não encontrado no momento.", flush=True)
+
+        
         except Exception as e:
             print(f"❌ Erro ao processar {url}: {e}", flush=True)
             continue
