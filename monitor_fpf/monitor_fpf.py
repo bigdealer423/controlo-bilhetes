@@ -11,7 +11,8 @@ import cloudscraper
 # ----------------- CONFIGURAÇÕES -----------------
 URLS = [
     'https://bilheteira.fpf.pt/',
-    'https://viagens.slbenfica.pt/follow-my-team/futebol'
+    'https://viagens.slbenfica.pt/follow-my-team/futebol',
+    'https://www.odisseias.com/Book/ProductList'
 ]
 HIST_FILE = 'fpf_hist.json'
 EMAIL_FROM = os.getenv("EMAIL_USERNAME")
@@ -34,6 +35,7 @@ def guardar_historico(historico):
 
 PALAVRAS_CHAVE_FPF = ["Comprar", "Adquirir", "Bilhete", "Ingressos", "Buy"]
 PALAVRAS_CHAVE_SLB = ["Carcavelos", "Fatima"]
+PALAVRAS_CHAVE_ODISSEIAS = ["Sporting"]
 
 
 def buscar_links_novos():
