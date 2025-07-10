@@ -11,8 +11,7 @@ import cloudscraper
 # ----------------- CONFIGURAÇÕES -----------------
 URLS = [
     'https://bilheteira.fpf.pt/',
-    'https://viagens.slbenfica.pt/follow-my-team/futebol',
-    'https://www.odisseias.com/Book/ProductList'
+    'https://viagens.slbenfica.pt/follow-my-team/futebol'
 ]
 HIST_FILE = 'fpf_hist.json'
 EMAIL_FROM = os.getenv("EMAIL_USERNAME")
@@ -35,7 +34,7 @@ def guardar_historico(historico):
 
 PALAVRAS_CHAVE_FPF = ["Comprar", "Adquirir", "Bilhete", "Ingressos", "Buy"]
 PALAVRAS_CHAVE_SLB = ["Carcavelos", "Fatima"]
-PALAVRAS_CHAVE_ODISSEIAS = ["Sporting"]
+
 
 
 def buscar_links_novos():
@@ -46,32 +45,6 @@ def buscar_links_novos():
     adapter = HTTPAdapter(max_retries=retry)
     session.mount('https://', adapter)
     session.mount('http://', adapter)
-
-   
-
-    
-    
-        # 👇 LOGIN ODISSEIAS
-    login_url = "https://www.odisseias.com/Account/Login"
-    payload = {
-        "Email": "miguelitocosta423@gmail.com",      # 👈 coloca aqui diretamente
-        "Password": "Pedrosara18#"         # 👈 coloca aqui diretamente
-    }
-    headers = {"User-Agent": "Mozilla/5.0"}
-    
-    try:
-        r1 = session.get(login_url, headers=headers)
-        print("Status página de login Odisseias:", r1.status_code)
-    
-        r2 = session.post(login_url, data=payload, headers=headers)
-        print("Status login POST Odisseias:", r2.status_code)
-    
-        if "logout" in r2.text.lower():
-            print("✅ Login Odisseias bem-sucedido.")
-        else:
-            print("❌ Login Odisseias pode ter falhado, verifica as credenciais ou site.")
-    except Exception as e:
-        print(f"❌ Erro no login Odisseias: {e}", flush=True)
 
 
 
