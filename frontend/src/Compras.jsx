@@ -258,8 +258,8 @@ export default function Compras() {
                   })}
                 </ul>
               </div>
-          
-
+           )}
+          </div>
 
         
           {/* Local da Compra */}
