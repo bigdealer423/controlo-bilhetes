@@ -11,6 +11,9 @@ import DashboardPrincipal from "./DashboardPrincipal";
 import { useAuth } from "./AuthContext";
 import { TooltipProvider } from "@radix-ui/react-tooltip";
 import ErrorBoundary from "./ErrorBoundary";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 export default function App() {
   const { isAuthenticated } = useAuth();
@@ -31,6 +34,7 @@ export default function App() {
 
   return (
     <TooltipProvider>
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
       <Router>
         <ErrorBoundary>
           <Routes>
