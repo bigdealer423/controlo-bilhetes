@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { FaFileExcel } from "react-icons/fa";
 import * as XLSX from "xlsx";
 import saveAs from "file-saver";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function exportarComprasParaExcel(registosCompras) {
   const worksheet = XLSX.utils.json_to_sheet(registosCompras);
@@ -118,7 +120,22 @@ export default function Compras() {
   };
 
   const guardarCompra = async () => {
-    await fetch("https://controlo-bilhetes.onrender.com/compras", {
+  const camposObrigatorios = {
+    evento: "Evento",
+    data_evento: "Data do Evento",
+    gasto: "Gasto (€)",
+    quantidade: "Quantidade"
+  };
+
+  for (const campo in camposObrigatorios) {
+    if (!novaCompra[campo] || novaCompra[campo].toString().trim() === "") {
+      toast.error(`Preencher campo ${camposObrigatorios[campo]}`);
+      return;
+    }
+  }
+
+  try {
+    const response = await fetch("https://controlo-bilhetes.onrender.com/compras", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -127,9 +144,26 @@ export default function Compras() {
         gasto: parseFloat(novaCompra.gasto)
       })
     });
-    setNovaCompra({ evento:"", local_compras:"", bancada:"", setor:"", fila:"", quantidade:"", gasto:"" });
+
+    if (!response.ok) {
+      throw new Error("Erro ao guardar compra");
+    }
+
+    toast.success("Compra guardada com sucesso!");
+
+    // Limpa os campos APÓS guardar com sucesso
+    setNovaCompra({
+      evento: "", local_compras: "", bancada: "", setor: "",
+      fila: "", quantidade: "", gasto: "", data_evento: ""
+    });
+
     buscarCompras();
-  };
+  } catch (error) {
+    console.error(error);
+    toast.error("Erro ao guardar a compra");
+  }
+};
+
 
   const editarCompra = compra => {
     setModoEdicao(compra.id);
@@ -161,6 +195,8 @@ export default function Compras() {
   };
 
   return (
+    
+    <ToastContainer position="top-center" autoClose={2500} hideProgressBar />
      <div className="p-6 max-w-7xl mx-auto bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen transition-colors duration-300">
       <h1 className="text-2xl font-bold mb-4">Compras</h1>
 
