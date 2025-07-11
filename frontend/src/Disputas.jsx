@@ -130,13 +130,16 @@ export default function Disputas() {
                                         <td colSpan={8} className="p-4">
                                             <div className="flex flex-col gap-2">
                                                 <textarea
+                                                    rows={5} // 🚀 Aumenta altura
                                                     value={notaEdit[d.id] || d.nota_disputa || ""}
                                                     onChange={(e) => setNotaEdit(prev => ({ ...prev, [d.id]: e.target.value }))}
-                                                    placeholder="Adicionar nota sobre a disputa..."
-                                                    className="w-full p-2 border rounded dark:border-gray-600 dark:bg-gray-900 dark:text-white"
+                                                    placeholder="Adicionar detalhes..."
+                                                    className="w-full p-3 border dark:border-gray-700 dark:bg-gray-800 dark:text-white rounded mb-3 text-sm md:text-base"
                                                 />
+
                                                 <select
                                                     multiple
+                                                    size={4} // 🚀 Mostra mais linhas visíveis
                                                     className="w-full p-2 border rounded dark:border-gray-600 dark:bg-gray-900 dark:text-white"
                                                     value={selectedEtiquetas[d.id] || []}
                                                     onChange={(e) => {
