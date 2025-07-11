@@ -158,9 +158,11 @@ export default function Disputas() {
                                                         setSelectedEtiquetas(prev => ({ ...prev, [d.id]: options }));
                                                     }}
                                                 >
-                                                    <option value="Cobrança em disputa">Cobrança em disputa</option>
-                                                    <option value="Cliente contactado">Cliente contactado</option>
-                                                    <option value="A aguardar viagogo">A aguardar viagogo</option>
+                                                    <option value="1.Cobrança em disputa">1.Cobrança em disputa</option>
+                                                    <option value="2.Upload de Documentos feito">2.Upload de Documentos feito</option>
+                                                    <option value="3.Ligar viagogo para escalar disputa">3.Ligar viagogo para escalar disputa</option>
+                                                    <option value="4.À espera de resposta">4.À espera de resposta</option>
+                                                    <option value="5.Nota crédito emitida">5.Nota crédito emitida</option>
                                                 </select>
                                                 <div className="flex gap-2">
                                                     <button
