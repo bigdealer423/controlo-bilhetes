@@ -120,6 +120,7 @@ export default function Compras() {
   };
 
   const guardarCompra = async () => {
+    console.log("GuardarCompra chamado");
   const camposObrigatorios = {
     evento: "Evento",
     data_evento: "Data do Evento",
