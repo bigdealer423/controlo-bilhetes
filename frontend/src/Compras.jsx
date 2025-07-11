@@ -242,15 +242,24 @@ export default function Compras() {
             />
             {datasEvento.length > 0 && (
               <div className="mt-1 text-xs text-gray-600 dark:text-gray-300">
-                Datas existentes:
+                Datas existentes (clique para preencher):
                 <ul className="list-disc list-inside">
-                  {datasEvento.map((d, idx) => (
-                    <li key={idx}>{new Date(d).toLocaleDateString("pt-PT")}</li>
-                  ))}
+                  {datasEvento.map((d, idx) => {
+                    const dataFormatada = new Date(d).toISOString().split("T")[0]; // formato yyyy-mm-dd
+                    return (
+                      <li
+                        key={idx}
+                        onClick={() => setNovaCompra(prev => ({ ...prev, data_evento: dataFormatada }))}
+                        className="cursor-pointer text-blue-600 hover:underline"
+                      >
+                        {new Date(d).toLocaleDateString("pt-PT")}
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
             )}
-          </div>
+
 
         
           {/* Local da Compra */}
