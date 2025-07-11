@@ -101,22 +101,33 @@ export default function Disputas() {
                                 </select>
                             </td>
                             <td className="p-2 border dark:border-gray-700">
+                                // Substituir o MultiSelect anterior por este bloco
+
                                 <Popover>
                                     <PopoverTrigger className="p-1 text-blue-600 dark:text-blue-400 hover:underline">📝 Editar</PopoverTrigger>
-                                    <PopoverContent className="p-2 bg-white dark:bg-gray-900 border dark:border-gray-700">
+                                    <PopoverContent className="p-2 bg-white dark:bg-gray-900 border dark:border-gray-700 w-72">
                                         <textarea
                                             value={notaEdit[d.id] || d.nota_disputa || ""}
                                             onChange={(e) => setNotaEdit(prev => ({ ...prev, [d.id]: e.target.value }))}
                                             placeholder="Adicionar detalhes..."
                                             className="w-full p-1 border dark:border-gray-700 dark:bg-gray-800 dark:text-white rounded mb-2"
                                         />
-                                        <MultiSelect
-                                            options={etiquetasOpcoes}
-                                            value={selectedEtiquetas[d.id] || []}
-                                            onChange={(selected) => setSelectedEtiquetas(prev => ({ ...prev, [d.id]: selected }))}
-                                            labelledBy="Selecionar etiquetas"
-                                            className="mb-2"
-                                        />
+                                        <div className="mb-2">
+                                            <label className="block text-sm mb-1 dark:text-white">Etiquetas:</label>
+                                            <select
+                                                multiple
+                                                className="w-full p-1 border dark:border-gray-700 dark:bg-gray-800 dark:text-white rounded"
+                                                value={selectedEtiquetas[d.id] || []}
+                                                onChange={(e) => {
+                                                    const options = Array.from(e.target.selectedOptions, option => option.value);
+                                                    setSelectedEtiquetas(prev => ({ ...prev, [d.id]: options }));
+                                                }}
+                                            >
+                                                <option value="Cobrança em disputa">Cobrança em disputa</option>
+                                                <option value="Cliente contactado">Cliente contactado</option>
+                                                <option value="A aguardar viagogo">A aguardar viagogo</option>
+                                            </select>
+                                        </div>
                                         <button
                                             onClick={() => guardarNota(d.id)}
                                             className="bg-blue-500 hover:bg-blue-600 text-white p-1 rounded w-full"
@@ -125,6 +136,7 @@ export default function Disputas() {
                                         </button>
                                     </PopoverContent>
                                 </Popover>
+
                             </td>
                             <td className="p-2 border dark:border-gray-700">
                                 <label className="cursor-pointer">
