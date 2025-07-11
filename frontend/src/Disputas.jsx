@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { FaUpload, FaChevronDown, FaChevronUp, FaFileAlt } from "react-icons/fa";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function Disputas() {
     const [disputas, setDisputas] = useState([]);
