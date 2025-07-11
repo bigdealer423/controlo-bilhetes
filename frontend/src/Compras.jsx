@@ -195,8 +195,8 @@ export default function Compras() {
   };
 
   return (
-    
-    <ToastContainer position="top-center" autoClose={2500} hideProgressBar />
+    <>
+      <ToastContainer position="top-center" autoClose={2500} hideProgressBar />
      <div className="p-6 max-w-7xl mx-auto bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen transition-colors duration-300">
       <h1 className="text-2xl font-bold mb-4">Compras</h1>
 
