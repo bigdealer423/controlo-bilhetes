@@ -258,7 +258,7 @@ export default function Compras() {
                   })}
                 </ul>
               </div>
-            )}
+          )}
 
 
         
