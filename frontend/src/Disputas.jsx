@@ -139,8 +139,9 @@ export default function Disputas() {
 
                                                 <select
                                                     multiple
-                                                    size={5} // 🚀 Mostra mais linhas visíveis
-                                                    className="w-full p-2 border rounded dark:border-gray-600 dark:bg-gray-900 dark:text-white"
+                                                    size={6} // 🚩 define 6 linhas visíveis
+                                                    className="w-full p-2 border dark:border-gray-700 dark:bg-gray-800 dark:text-white rounded mb-3 text-sm md:text-base"
+                                                    style={{ height: '140px' }} // 🚀 força altura real
                                                     value={selectedEtiquetas[d.id] || []}
                                                     onChange={(e) => {
                                                         const options = Array.from(e.target.selectedOptions, option => option.value);
