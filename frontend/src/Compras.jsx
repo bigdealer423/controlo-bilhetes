@@ -506,5 +506,6 @@ export default function Compras() {
         )}
       </div>
     </div>
+   </>
   );
 }
