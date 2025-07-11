@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { FaUpload, FaFileAlt } from "react-icons/fa";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
-import { MultiSelect } from "react-multi-select-component";
+
 
 export default function Disputas() {
     const [disputas, setDisputas] = useState([]);
