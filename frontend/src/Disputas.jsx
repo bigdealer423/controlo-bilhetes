@@ -17,15 +17,6 @@ export default function Disputas() {
             const data = await res.json();
             setDisputas(data);
     
-            // ✅ Pré-carregar etiquetas de cada disputa:
-            const etiquetasMap = {};
-            data.forEach(d => {
-                etiquetasMap[d.id] = d.etiquetas_disputa
-                    ? d.etiquetas_disputa.split(",").map(e => e.trim())
-                    : [];
-            });
-            setSelectedEtiquetas(etiquetasMap);
-    
         } catch (error) {
             console.error("Erro ao carregar disputas:", error);
         }
