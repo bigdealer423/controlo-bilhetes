@@ -139,7 +139,7 @@ export default function Disputas() {
 
                                                 <select
                                                     multiple
-                                                    size={4} // 🚀 Mostra mais linhas visíveis
+                                                    size={5} // 🚀 Mostra mais linhas visíveis
                                                     className="w-full p-2 border rounded dark:border-gray-600 dark:bg-gray-900 dark:text-white"
                                                     value={selectedEtiquetas[d.id] || []}
                                                     onChange={(e) => {
