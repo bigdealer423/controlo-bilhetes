@@ -1,11 +1,13 @@
-import { useEffect, useState } from "react";
-import { FaUpload } from "react-icons/fa";
+import { useState, useEffect } from "react";
+import { FaUpload, FaChevronDown, FaChevronUp, FaFileAlt } from "react-icons/fa";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 
 export default function Disputas() {
     const [disputas, setDisputas] = useState([]);
     const [notaEdit, setNotaEdit] = useState({});
     const [selectedEtiquetas, setSelectedEtiquetas] = useState({});
+    const [expandedRow, setExpandedRow] = useState(null);
+    const [ficheiros, setFicheiros] = useState({});
 
     const fetchDisputas = async () => {
         try {
@@ -24,51 +26,54 @@ export default function Disputas() {
     }, []);
 
     const atualizarEstado = async (id, novoEstado) => {
-        try {
-            await fetch(`/listagem_vendas/${id}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ estado: novoEstado }),
-            });
-            fetchDisputas();
-        } catch (error) {
-            console.error("Erro ao atualizar estado:", error);
-        }
+        await fetch(`/listagem_vendas/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ estado: novoEstado }),
+        });
+        fetchDisputas();
     };
 
     const guardarNota = async (id) => {
-        try {
-            await fetch(`/listagem_vendas/${id}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    nota_disputa: notaEdit[id],
-                    etiquetas_disputa: selectedEtiquetas[id]?.join(", ") || ""
-                }),
-            });
-        } catch (error) {
-            console.error("Erro ao guardar nota:", error);
-        }
+        await fetch(`/listagem_vendas/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                nota_disputa: notaEdit[id],
+                etiquetas_disputa: selectedEtiquetas[id]?.join(", ") || ""
+            }),
+        });
     };
 
     const uploadFicheiros = async (id, files) => {
         const formData = new FormData();
         Array.from(files).forEach(file => formData.append("files", file));
-        try {
-            await fetch(`/upload_disputa/${id}`, { method: "POST", body: formData });
-            alert("Ficheiros enviados com sucesso.");
-        } catch (error) {
-            console.error("Erro ao enviar ficheiros:", error);
+        await fetch(`/upload_disputa/${id}`, { method: "POST", body: formData });
+        alert("Ficheiros enviados com sucesso.");
+    };
+
+    const toggleExpandRow = async (id) => {
+        if (expandedRow === id) {
+            setExpandedRow(null);
+        } else {
+            setExpandedRow(id);
+            // Opcional: Carregar ficheiros anexados
+            try {
+                const res = await fetch(`/listar_ficheiros_disputa/${id}`);
+                const data = await res.json();
+                setFicheiros(prev => ({ ...prev, [id]: data }));
+            } catch {
+                setFicheiros(prev => ({ ...prev, [id]: [] }));
+            }
         }
     };
 
     return (
         <div className="p-6 max-w-7xl mx-auto min-h-screen bg-white dark:bg-gray-900 dark:text-gray-100 rounded shadow-lg transition-colors duration-300">
             <h1 className="text-2xl font-bold mb-4">🛡️ Disputas</h1>
-
             <div className="overflow-x-auto w-full">
-                <table className="min-w-full border border-gray-300 dark:border-gray-600 text-sm text-left text-gray-900 dark:text-gray-100 transition-colors duration-300">
-                    <thead className="bg-gray-100 dark:bg-gray-800 transition-colors duration-300">
+                <table className="min-w-full border border-gray-300 dark:border-gray-600 text-sm text-left text-gray-900 dark:text-gray-100">
+                    <thead className="bg-gray-100 dark:bg-gray-800">
                         <tr>
                             <th className="p-2">ID Venda</th>
                             <th className="p-2">Data Venda</th>
@@ -82,73 +87,95 @@ export default function Disputas() {
                     </thead>
                     <tbody>
                         {disputas.map((d) => (
-                            <tr key={d.id} className="border-t bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800">
-                                <td className="p-2">{d.id_venda}</td>
-                                <td className="p-2">
-                                    {d.data_venda ? new Date(d.data_venda).toLocaleDateString("pt-PT") : ""}
-                                </td>
-                                <td className="p-2">
-                                    {d.data_evento ? new Date(d.data_evento).toLocaleDateString("pt-PT") : ""}
-                                </td>
-                                <td className="p-2">{d.evento}</td>
-                                <td className="p-2">{d.estadio}</td>
-                                <td className="p-2">{d.ganho} €</td>
-                                <td className="p-2">
-                                    <select
-                                        value={d.estado}
-                                        onChange={(e) => atualizarEstado(d.id, e.target.value)}
-                                        className="border p-1 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-                                    >
-                                        <option value="Disputa">Disputa</option>
-                                        <option value="Pago">Pago</option>
-                                        <option value="Entregue">Entregue</option>
-                                        <option value="Cancelado">Cancelado</option>
-                                    </select>
-                                </td>
-                                <td className="p-2 flex flex-wrap gap-2">
-                                    <Popover>
-                                        <PopoverTrigger className="text-blue-600 dark:text-blue-400 hover:underline">📝 Nota</PopoverTrigger>
-                                        <PopoverContent className="p-3 bg-white dark:bg-gray-900 border dark:border-gray-700 rounded w-80">
-                                            <textarea
-                                                value={notaEdit[d.id] || d.nota_disputa || ""}
-                                                onChange={(e) => setNotaEdit(prev => ({ ...prev, [d.id]: e.target.value }))}
-                                                placeholder="Adicionar detalhes..."
-                                                className="w-full p-2 border rounded dark:border-gray-600 dark:bg-gray-800 dark:text-white mb-2"
-                                            />
-                                            <label className="block text-sm text-gray-700 dark:text-gray-200 mb-1">Etiquetas:</label>
-                                            <select
-                                                multiple
-                                                className="w-full p-2 border rounded dark:border-gray-600 dark:bg-gray-800 dark:text-white mb-2"
-                                                value={selectedEtiquetas[d.id] || []}
-                                                onChange={(e) => {
-                                                    const options = Array.from(e.target.selectedOptions, option => option.value);
-                                                    setSelectedEtiquetas(prev => ({ ...prev, [d.id]: options }));
-                                                }}
-                                            >
-                                                <option value="Cobrança em disputa">Cobrança em disputa</option>
-                                                <option value="Cliente contactado">Cliente contactado</option>
-                                                <option value="A aguardar viagogo">A aguardar viagogo</option>
-                                            </select>
-                                            <button
-                                                onClick={() => guardarNota(d.id)}
-                                                className="w-full bg-blue-600 hover:bg-blue-700 text-white p-2 rounded"
-                                            >
-                                                Guardar Nota
-                                            </button>
-                                        </PopoverContent>
-                                    </Popover>
-                                    <label className="cursor-pointer text-green-600 dark:text-green-400 flex items-center gap-1">
-                                        <FaUpload />
-                                        <input
-                                            type="file"
-                                            multiple
-                                            className="hidden"
-                                            onChange={(e) => uploadFicheiros(d.id, e.target.files)}
-                                        />
-                                        Anexar
-                                    </label>
-                                </td>
-                            </tr>
+                            <>
+                                <tr key={d.id} className="border-t bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800">
+                                    <td className="p-2">{d.id_venda}</td>
+                                    <td className="p-2">{d.data_venda ? new Date(d.data_venda).toLocaleDateString("pt-PT") : ""}</td>
+                                    <td className="p-2">{d.data_evento ? new Date(d.data_evento).toLocaleDateString("pt-PT") : ""}</td>
+                                    <td className="p-2">{d.evento}</td>
+                                    <td className="p-2">{d.estadio}</td>
+                                    <td className="p-2">{d.ganho} €</td>
+                                    <td className="p-2">
+                                        <select
+                                            value={d.estado}
+                                            onChange={(e) => atualizarEstado(d.id, e.target.value)}
+                                            className="border p-1 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                                        >
+                                            {["Disputa", "Pago", "Entregue", "Cancelado"].map(status => (
+                                                <option key={status} value={status}>{status}</option>
+                                            ))}
+                                        </select>
+                                    </td>
+                                    <td className="p-2">
+                                        <button
+                                            onClick={() => toggleExpandRow(d.id)}
+                                            className="text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1"
+                                        >
+                                            {expandedRow === d.id ? <FaChevronUp /> : <FaChevronDown />}
+                                            Detalhes
+                                        </button>
+                                    </td>
+                                </tr>
+                                {expandedRow === d.id && (
+                                    <tr className="bg-gray-50 dark:bg-gray-800 border-b">
+                                        <td colSpan={8} className="p-4">
+                                            <div className="flex flex-col gap-2">
+                                                <textarea
+                                                    value={notaEdit[d.id] || d.nota_disputa || ""}
+                                                    onChange={(e) => setNotaEdit(prev => ({ ...prev, [d.id]: e.target.value }))}
+                                                    placeholder="Adicionar nota sobre a disputa..."
+                                                    className="w-full p-2 border rounded dark:border-gray-600 dark:bg-gray-900 dark:text-white"
+                                                />
+                                                <select
+                                                    multiple
+                                                    className="w-full p-2 border rounded dark:border-gray-600 dark:bg-gray-900 dark:text-white"
+                                                    value={selectedEtiquetas[d.id] || []}
+                                                    onChange={(e) => {
+                                                        const options = Array.from(e.target.selectedOptions, option => option.value);
+                                                        setSelectedEtiquetas(prev => ({ ...prev, [d.id]: options }));
+                                                    }}
+                                                >
+                                                    <option value="Cobrança em disputa">Cobrança em disputa</option>
+                                                    <option value="Cliente contactado">Cliente contactado</option>
+                                                    <option value="A aguardar viagogo">A aguardar viagogo</option>
+                                                </select>
+                                                <div className="flex gap-2">
+                                                    <button
+                                                        onClick={() => guardarNota(d.id)}
+                                                        className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded"
+                                                    >
+                                                        Guardar Nota
+                                                    </button>
+                                                    <label className="cursor-pointer bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded flex items-center gap-1">
+                                                        <FaUpload />
+                                                        Anexar Ficheiros
+                                                        <input
+                                                            type="file"
+                                                            multiple
+                                                            className="hidden"
+                                                            onChange={(e) => uploadFicheiros(d.id, e.target.files)}
+                                                        />
+                                                    </label>
+                                                </div>
+                                                {ficheiros[d.id]?.length > 0 && (
+                                                    <div className="mt-2">
+                                                        <p className="font-semibold">📂 Ficheiros anexados:</p>
+                                                        <ul className="list-disc ml-5">
+                                                            {ficheiros[d.id].map((file, idx) => (
+                                                                <li key={idx}>
+                                                                    <a href={file.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1">
+                                                                        <FaFileAlt /> {file.nome}
+                                                                    </a>
+                                                                </li>
+                                                            ))}
+                                                        </ul>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                )}
+                            </>
                         ))}
                     </tbody>
                 </table>
