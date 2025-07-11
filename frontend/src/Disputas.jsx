@@ -146,7 +146,7 @@ export default function Disputas() {
                                                             ? notaEdit[d.id]
                                                             : d.nota_disputa || ""
                                                     }
-                                                        nChange={(e) =>
+                                                    onChange={(e) =>
                                                         setNotaEdit(prev => ({
                                                             ...prev,
                                                             [d.id]: e.target.value
