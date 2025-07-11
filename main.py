@@ -6,7 +6,7 @@ import requests
 from fastapi import FastAPI, Form, HTTPException, Depends, status, Query
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Optional
 from datetime import datetime, date, timedelta
 from sqlalchemy import func, desc
 from io import BytesIO
@@ -55,8 +55,14 @@ def root():
 
 # ---------------- LISTAGEM DE VENDAS ----------------
 @app.get("/listagem_vendas", response_model=List[ListagemVendasOut])
-def obter_vendas(db: Session = Depends(get_db)):
-    return db.query(ListagemVendas).all()
+def obter_vendas(
+    estado: Optional[str] = Query(None),
+    db: Session = Depends(get_db)
+):
+    query = db.query(ListagemVendas)
+    if estado:
+        query = query.filter(ListagemVendas.estado == estado)
+    return query.all()
 
 
 @app.get("/listagem_vendas/por_id_venda/{id_venda}")
