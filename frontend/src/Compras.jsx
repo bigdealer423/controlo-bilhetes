@@ -120,7 +120,6 @@ export default function Compras() {
   };
 
   const guardarCompra = async () => {
-    console.log("GuardarCompra chamado");
   const camposObrigatorios = {
     evento: "Evento",
     data_evento: "Data do Evento",
@@ -130,7 +129,7 @@ export default function Compras() {
 
   for (const campo in camposObrigatorios) {
     if (!novaCompra[campo] || novaCompra[campo].toString().trim() === "") {
-      toast.error(`Preencher campo ${camposObrigatorios[campo]}`);
+      toast.error(`Preencher campo ${camposObrigatorios[campo]}`, {   toastId: `erro-${campo}` });
       return;
     }
   }
