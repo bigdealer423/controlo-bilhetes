@@ -115,12 +115,15 @@ def atualizar_venda(venda_id: int, venda: ListagemVendasUpdate, db: Session = De
     existente = db.query(ListagemVendas).filter(ListagemVendas.id == venda_id).first()
     if not existente:
         raise HTTPException(status_code=404, detail="Venda não encontrada")
-    for key, value in venda.dict().items():
+    
+    for key, value in venda.dict(exclude_unset=True).items():
         setattr(existente, key, value)
+    
     db.commit()
     db.refresh(existente)
     atualizar_ganhos_gastos_eventos(db)
     return existente
+
     
 @app.get("/entregas_pendentes_proximos_15_dias")
 def entregas_pendentes_proximos_15_dias(db: Session = Depends(get_db)):
