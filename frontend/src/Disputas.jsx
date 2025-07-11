@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { FaUpload, FaFileAlt } from "react-icons/fa";
+import { FaUpload } from "react-icons/fa";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 
 export default function Disputas() {
@@ -63,50 +63,59 @@ export default function Disputas() {
     };
 
     return (
-        <div className="p-4 min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
-            <h1 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">🛡️ Disputas</h1>
-            <div className="overflow-x-auto">
-                <table className="min-w-full border dark:border-gray-700 text-sm">
-                    <thead className="bg-gray-100 dark:bg-gray-800">
+        <div className="p-6 max-w-7xl mx-auto min-h-screen bg-white dark:bg-gray-900 dark:text-gray-100 rounded shadow-lg transition-colors duration-300">
+            <h1 className="text-2xl font-bold mb-4">🛡️ Disputas</h1>
+
+            <div className="overflow-x-auto w-full">
+                <table className="min-w-full border border-gray-300 dark:border-gray-600 text-sm text-left text-gray-900 dark:text-gray-100 transition-colors duration-300">
+                    <thead className="bg-gray-100 dark:bg-gray-800 transition-colors duration-300">
                         <tr>
-                            {["ID", "Evento", "Ganho", "Estado", "Notas", "Ficheiros"].map((header) => (
-                                <th
-                                    key={header}
-                                    className="p-2 border text-gray-900 dark:text-gray-200 dark:border-gray-700"
-                                >
-                                    {header}
-                                </th>
-                            ))}
+                            <th className="p-2">ID Venda</th>
+                            <th className="p-2">Data Venda</th>
+                            <th className="p-2">Data Evento</th>
+                            <th className="p-2">Evento</th>
+                            <th className="p-2">Bilhete</th>
+                            <th className="p-2">Ganho (€)</th>
+                            <th className="p-2">Estado</th>
+                            <th className="p-2">Ações</th>
                         </tr>
                     </thead>
                     <tbody>
                         {disputas.map((d) => (
-                            <tr key={d.id} className="hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                                <td className="p-2 border text-gray-900 dark:text-gray-200 dark:border-gray-700">{d.id}</td>
-                                <td className="p-2 border text-gray-900 dark:text-gray-200 dark:border-gray-700">{d.evento}</td>
-                                <td className="p-2 border text-gray-900 dark:text-gray-200 dark:border-gray-700">{d.ganho}€</td>
-                                <td className="p-2 border dark:border-gray-700">
+                            <tr key={d.id} className="border-t bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800">
+                                <td className="p-2">{d.id_venda}</td>
+                                <td className="p-2">
+                                    {d.data_venda ? new Date(d.data_venda).toLocaleDateString("pt-PT") : ""}
+                                </td>
+                                <td className="p-2">
+                                    {d.data_evento ? new Date(d.data_evento).toLocaleDateString("pt-PT") : ""}
+                                </td>
+                                <td className="p-2">{d.evento}</td>
+                                <td className="p-2">{d.estadio}</td>
+                                <td className="p-2">{d.ganho} €</td>
+                                <td className="p-2">
                                     <select
                                         value={d.estado}
                                         onChange={(e) => atualizarEstado(d.id, e.target.value)}
-                                        className="p-1 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white border dark:border-gray-600"
+                                        className="border p-1 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                                     >
-                                        {["Disputa", "Pago", "Cancelado", "Entregue"].map(status => (
-                                            <option key={status} value={status}>{status}</option>
-                                        ))}
+                                        <option value="Disputa">Disputa</option>
+                                        <option value="Pago">Pago</option>
+                                        <option value="Entregue">Entregue</option>
+                                        <option value="Cancelado">Cancelado</option>
                                     </select>
                                 </td>
-                                <td className="p-2 border dark:border-gray-700">
+                                <td className="p-2 flex flex-wrap gap-2">
                                     <Popover>
-                                        <PopoverTrigger className="p-1 text-blue-600 dark:text-blue-400 hover:underline">📝 Editar</PopoverTrigger>
-                                        <PopoverContent className="p-2 bg-white dark:bg-gray-900 border dark:border-gray-700 w-80">
+                                        <PopoverTrigger className="text-blue-600 dark:text-blue-400 hover:underline">📝 Nota</PopoverTrigger>
+                                        <PopoverContent className="p-3 bg-white dark:bg-gray-900 border dark:border-gray-700 rounded w-80">
                                             <textarea
                                                 value={notaEdit[d.id] || d.nota_disputa || ""}
                                                 onChange={(e) => setNotaEdit(prev => ({ ...prev, [d.id]: e.target.value }))}
                                                 placeholder="Adicionar detalhes..."
                                                 className="w-full p-2 border rounded dark:border-gray-600 dark:bg-gray-800 dark:text-white mb-2"
                                             />
-                                            <label className="block text-sm mb-1 text-gray-900 dark:text-gray-200">Etiquetas:</label>
+                                            <label className="block text-sm text-gray-700 dark:text-gray-200 mb-1">Etiquetas:</label>
                                             <select
                                                 multiple
                                                 className="w-full p-2 border rounded dark:border-gray-600 dark:bg-gray-800 dark:text-white mb-2"
@@ -122,22 +131,21 @@ export default function Disputas() {
                                             </select>
                                             <button
                                                 onClick={() => guardarNota(d.id)}
-                                                className="w-full p-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
+                                                className="w-full bg-blue-600 hover:bg-blue-700 text-white p-2 rounded"
                                             >
                                                 Guardar Nota
                                             </button>
                                         </PopoverContent>
                                     </Popover>
-                                </td>
-                                <td className="p-2 border dark:border-gray-700">
-                                    <label className="cursor-pointer text-blue-600 dark:text-blue-400">
-                                        <FaUpload className="inline mr-1" />
+                                    <label className="cursor-pointer text-green-600 dark:text-green-400 flex items-center gap-1">
+                                        <FaUpload />
                                         <input
                                             type="file"
                                             multiple
                                             className="hidden"
                                             onChange={(e) => uploadFicheiros(d.id, e.target.files)}
                                         />
+                                        Anexar
                                     </label>
                                 </td>
                             </tr>
