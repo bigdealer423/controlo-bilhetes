@@ -32,6 +32,10 @@ class ListagemVendas(Base):
     # Novos campos
     circulo_estado_venda = Column(String, default="cinzento")  # "vermelho", "verde", "cinzento"
     nota_estado_venda = Column(String, default="")
+     # 🚨 Adiciona estes:
+    nota_disputa = Column(String, default="")
+    etiquetas_disputa = Column(String, default="")
+
 
 class EventoDropdown(Base):
     __tablename__ = "eventos_dropdown"
