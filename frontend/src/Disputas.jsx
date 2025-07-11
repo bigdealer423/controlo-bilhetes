@@ -35,7 +35,8 @@ export default function Disputas() {
     };
 
     const guardarNota = async (id) => {
-        await fetch(`/listagem_vendas/${id}`, {
+    try {
+        await fetch(`https://controlo-bilhetes.onrender.com/listagem_vendas/${id}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -43,7 +44,13 @@ export default function Disputas() {
                 etiquetas_disputa: selectedEtiquetas[id]?.join(", ") || ""
             }),
         });
-    };
+        toast.success("Nota guardada com sucesso.");
+    } catch (error) {
+        console.error("Erro ao guardar nota:", error);
+        toast.error("Erro ao guardar nota.");
+    }
+};
+
 
     const uploadFicheiros = async (id, files) => {
         const formData = new FormData();
