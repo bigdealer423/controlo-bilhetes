@@ -87,10 +87,31 @@ class ListagemVendasCreate(ListagemVendasBase):
     pass
 
 class ListagemVendasUpdate(ListagemVendasBase):
-    pass
+    id_venda: Optional[int] = None
+    data_venda: Optional[date] = None
+    data_evento: Optional[date] = None
+    evento: Optional[str] = None
+    estadio: Optional[str] = None
+    ganho: Optional[float] = None
+    estado: Optional[EstadoVenda] = None
+    circulo_estado_venda: Optional[str] = "cinzento"
+    nota_estado_venda: Optional[str] = ""
+    nota_disputa: Optional[str] = None
+    etiquetas_disputa: Optional[str] = None
 
 class ListagemVendasOut(ListagemVendasBase):
     id: int
+    id_venda: int
+    data_venda: date
+    data_evento: date
+    evento: str
+    estadio: str
+    ganho: float
+    estado: EstadoVenda
+    circulo_estado_venda: str = "cinzento"
+    nota_estado_venda: str = ""
+    nota_disputa: Optional[str] = None
+    etiquetas_disputa: Optional[str] = None
 
     class Config:
         from_attributes = True
