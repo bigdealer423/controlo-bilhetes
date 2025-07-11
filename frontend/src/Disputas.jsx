@@ -11,7 +11,7 @@ export default function Disputas() {
 
     const fetchDisputas = async () => {
         try {
-            const res = await fetch("/listagem_vendas?estado=Disputa");
+            const res = await fetch("https://controlo-bilhetes.onrender.com/listagem_vendas?estado=Disputa");
             const data = await res.json();
             setDisputas(data);
         } catch (error) {
