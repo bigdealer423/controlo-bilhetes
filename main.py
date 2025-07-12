@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from datetime import datetime, date, timedelta
-from sqlalchemy import func, desc
+from sqlalchemy import func, desc, and_
 from io import BytesIO
 from database import engine, get_db
 from models import (
@@ -434,6 +434,14 @@ def resumo_mensal_eventos(db: Session = Depends(get_db)):
     mes = hoje.month
     ano = hoje.year
 
+    # Definir limites da época atual
+    if mes >= 7:
+        inicio_epoca = date(ano, 7, 1)
+        fim_epoca = date(ano + 1, 6, 30)
+    else:
+        inicio_epoca = date(ano - 1, 7, 1)
+        fim_epoca = date(ano, 6, 30)
+
     # Eventos do mês atual
     eventos_mes = db.query(EventoCompletoModel).filter(
         extract("month", EventoCompletoModel.data_evento) == mes,
@@ -441,8 +449,6 @@ def resumo_mensal_eventos(db: Session = Depends(get_db)):
     ).all()
 
     lucro = 0
-
-    # ✅ LUCRO: eventos do mês atual, estado="Pago" ou ganho>0
     for evento in eventos_mes:
         ganho = evento.ganho or 0
         gasto = evento.gasto or 0
@@ -451,15 +457,22 @@ def resumo_mensal_eventos(db: Session = Depends(get_db)):
         if estado == "pago" or ganho > 0:
             lucro += ganho - gasto
 
-    # ✅ PAGAMENTO: vendas com estado ≠ "Pago"
+    # Pagamento pendente
     pagamento_query = db.query(func.sum(ListagemVendas.ganho)).filter(
         ListagemVendas.estado != "Pago"
     ).scalar()
     pagamento = round(pagamento_query or 0)
 
+    # ✅ Total de bilhetes vendidos nesta época (contar linhas)
+    total_bilhetes = db.query(func.count()).filter(
+        ListagemVendas.data_evento >= inicio_epoca,
+        ListagemVendas.data_evento <= fim_epoca
+    ).scalar()
+
     return {
         "lucro": round(lucro),
-        "pagamento": pagamento
+        "pagamento": pagamento,
+        "bilhetes_epoca": total_bilhetes
     }
 
 
