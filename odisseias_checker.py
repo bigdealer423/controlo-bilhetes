@@ -5,17 +5,17 @@ import time
 import os
 
 # ---- CONFIGURAÇÕES ----
-EMAIL = "teu_email@exemplo.com"
-PASSWORD = "tua_password_segura"
+EMAIL = "miguelitocosta423@gmail.com"
+PASSWORD = "Pedrosara18#"
 LOGIN_URL = "https://www.odisseias.com/Account/Login"
 PRODUTOS_URL = "https://www.odisseias.com/Book/ProductList"
 PALAVRA_CHAVE = "sporting"
 
 # Email de envio
-EMAIL_FROM = "teu_email@gmail.com"         # Gmail ou outro
-EMAIL_TO = "teu_email@gmail.com"           # Para onde queres receber
-EMAIL_PASS = os.getenv("EMAIL_PASSWORD")   # Usar variável ou pôr direto (ver notas abaixo)
-SMTP_SERVER = "smtp.gmail.com"
+EMAIL_FROM = os.getenv("EMAIL_USERNAME")
+EMAIL_TO = os.getenv("EMAIL_USERNAME")
+EMAIL_PASS = os.getenv("EMAIL_PASSWORD")
+SMTP_SERVER = 'smtp.gmail.com'
 SMTP_PORT = 587
 
 def enviar_email_alerta():
