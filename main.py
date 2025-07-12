@@ -447,12 +447,6 @@ def resumo_mensal_eventos(db: Session = Depends(get_db)):
         extract("year", EventoCompletoModel.data_evento) == ano
     ).all()
 
-    # Todos os eventos da época
-    eventos_epoca = db.query(EventoCompletoModel).filter(
-        EventoCompletoModel.data_evento >= inicio_epoca,
-        EventoCompletoModel.data_evento <= fim_epoca
-    ).all()
-
     # Lucro mensal
     lucro = 0
     for evento in eventos_mes:
@@ -462,14 +456,30 @@ def resumo_mensal_eventos(db: Session = Depends(get_db)):
         if estado == "pago" or ganho > 0:
             lucro += ganho - gasto
 
-    # Pagamento pendente
+    # Pagamentos pendentes (ganhos com estado != Pago)
     pagamento_query = db.query(func.sum(ListagemVendas.ganho)).filter(
         ListagemVendas.estado != "Pago"
     ).scalar()
     pagamento = round(pagamento_query or 0)
 
-    # ✅ Total de bilhetes vendidos na época (com base em eventos)
-    total_bilhetes = sum(e.vendas for e in eventos_epoca if e.vendas)
+    # -------------------------
+    # Cálculo dos bilhetes vendidos esta época
+    # -------------------------
+    vendas_epoca = db.query(ListagemVendas).filter(
+        ListagemVendas.data_evento >= inicio_epoca,
+        ListagemVendas.data_evento <= fim_epoca
+    ).all()
+
+    total_bilhetes = 0
+    for v in vendas_epoca:
+        texto = (v.estadio or "").strip()
+
+        if texto.isdigit():
+            total_bilhetes += int(texto)
+        else:
+            match = re.search(r"\((\d+)\s*Bilhetes?\)", texto, re.IGNORECASE)
+            if match:
+                total_bilhetes += int(match.group(1))
 
     return {
         "lucro": round(lucro),
