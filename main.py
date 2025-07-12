@@ -426,33 +426,42 @@ def obter_resumo():
 
 # ---------------- RESUMO MENSAL EVENTOS ----------------
 
+
+
 @app.get("/resumo_mensal_eventos")
 def resumo_mensal_eventos(db: Session = Depends(get_db)):
     hoje = datetime.now()
     mes = hoje.month
     ano = hoje.year
 
-    # ✅ LUCRO: somatório (ganho - gasto) de vendas do mês atual com estado = "Pago"
-    lucro_query = db.query(func.sum(ListagemVendas.ganho - ListagemVendas.gasto)).filter(
-        extract("month", ListagemVendas.data_evento) == mes,
-        extract("year", ListagemVendas.data_evento) == ano,
-        ListagemVendas.estado == "Pago"
-    ).scalar()
+    # Eventos do mês atual
+    eventos_mes = db.query(EventoCompletoModel).filter(
+        extract("month", EventoCompletoModel.data_evento) == mes,
+        extract("year", EventoCompletoModel.data_evento) == ano
+    ).all()
 
-    lucro = round(lucro_query or 0)
+    lucro = 0
 
-    # ✅ PAGAMENTO: somatório dos ganhos de vendas com estado ≠ "Pago"
+    # ✅ LUCRO: eventos do mês atual, estado="Pago" ou ganho>0
+    for evento in eventos_mes:
+        ganho = evento.ganho or 0
+        gasto = evento.gasto or 0
+        estado = (evento.estado or "").strip().lower()
+
+        if estado == "pago" or ganho > 0:
+            lucro += ganho - gasto
+
+    # ✅ PAGAMENTO: vendas com estado ≠ "Pago"
     pagamento_query = db.query(func.sum(ListagemVendas.ganho)).filter(
-        ListagemVendas.estado != "Pago",
-        ListagemVendas.ganho > 0
+        ListagemVendas.estado != "Pago"
     ).scalar()
-
     pagamento = round(pagamento_query or 0)
 
     return {
-        "lucro": lucro,
+        "lucro": round(lucro),
         "pagamento": pagamento
     }
+
 
     
 # 🔹 Criar as tabelas no arranque
