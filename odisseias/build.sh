@@ -1,10 +1,11 @@
 #!/bin/bash
-set -e  # Termina se der erro
+set -e
 
-echo "🚧 A instalar Playwright via pip..."
+echo "🚧 A instalar playwright..."
+pip install --upgrade pip
 pip install playwright
 
-echo "🎯 A instalar browsers do Playwright..."
+echo "🎯 A instalar os browsers..."
 playwright install chromium
 
-echo "✅ Instalação completa!"
+echo "✅ Playwright e browsers instalados com sucesso!"
