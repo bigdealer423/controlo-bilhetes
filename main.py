@@ -425,45 +425,35 @@ def obter_resumo():
     return resumo_mais_recente or {"mensagem": "Sem resumo disponível ainda."}
 
 # ---------------- RESUMO MENSAL EVENTOS ----------------
+
 @app.get("/resumo_mensal_eventos")
 def resumo_mensal_eventos(db: Session = Depends(get_db)):
     hoje = datetime.now()
     mes = hoje.month
     ano = hoje.year
 
-    # Eventos do mês atual
-    eventos_mes = db.query(EventoCompletoModel).filter(
-        extract("month", EventoCompletoModel.data_evento) == mes,
-        extract("year", EventoCompletoModel.data_evento) == ano
-    ).all()
+    # ✅ LUCRO: somatório (ganho - gasto) de vendas do mês atual com estado = "Pago"
+    lucro_query = db.query(func.sum(ListagemVendas.ganho - ListagemVendas.gasto)).filter(
+        extract("month", ListagemVendas.data_evento) == mes,
+        extract("year", ListagemVendas.data_evento) == ano,
+        ListagemVendas.estado == "Pago"
+    ).scalar()
 
-    # Todos os eventos (para pagamento)
-    todos_eventos = db.query(EventoCompletoModel).all()
+    lucro = round(lucro_query or 0)
 
-    lucro = 0
-    pagamento = 0
+    # ✅ PAGAMENTO: somatório dos ganhos de vendas com estado ≠ "Pago"
+    pagamento_query = db.query(func.sum(ListagemVendas.ganho)).filter(
+        ListagemVendas.estado != "Pago",
+        ListagemVendas.ganho > 0
+    ).scalar()
 
-    # ✅ LUCRO: eventos do mês atual, estado="Pago" ou ganho>0
-    for evento in eventos_mes:
-        ganho = evento.ganho or 0
-        gasto = evento.gasto or 0
-        estado = (evento.estado or "").strip().lower()
-
-        if estado == "pago" or ganho > 0:
-            lucro += ganho - gasto
-
-    # ✅ PAGAMENTO: eventos com estado ≠ "Pago" e ganho > 0
-    for evento in todos_eventos:
-        ganho = evento.ganho or 0
-        estado = (evento.estado or "").strip().lower()
-
-        if estado != "pago" and ganho > 0:
-            pagamento += ganho
+    pagamento = round(pagamento_query or 0)
 
     return {
-        "lucro": round(lucro),
-        "pagamento": round(pagamento)
+        "lucro": lucro,
+        "pagamento": pagamento
     }
+
     
 # 🔹 Criar as tabelas no arranque
 ClubesInfo.__table__.create(bind=engine, checkfirst=True)
