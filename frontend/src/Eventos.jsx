@@ -37,7 +37,7 @@ useEffect(() => {
 }, [location.search, registos]);
 
 
-  const [resumoMensal, setResumoMensal] = useState({ lucro: 0, pagamento: 0 });
+  const [resumoMensal, setResumoMensal] = useState({ lucro: 0, pagamento: 0, bilhetes_epoca: 0 });
   const [modoEdicaoCompra, setModoEdicaoCompra] = useState(null);
   const [compraEditada, setCompraEditada] = useState({});
   const [modoEdicaoVenda, setModoEdicaoVenda] = useState(null);
@@ -357,6 +357,7 @@ return (
   <p className="font-semibold">Resumo Mensal</p>
   <p>📆 Lucro de {new Date().toLocaleString("pt-PT", { month: "long", year: "numeric" })}: <strong>{resumoMensal.lucro} €</strong></p>
 <p>💸 A aguardar pagamento: <strong>{resumoMensal.pagamento} €</strong></p>
+<p>🎟️ Bilhetes vendidos esta época: <strong>{resumoMensal.bilhetes_epoca}</strong></p>
 
 </div>
 
