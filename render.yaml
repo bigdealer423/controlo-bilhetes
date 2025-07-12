@@ -6,3 +6,11 @@ services:
     plan: free
     buildCommand: "playwright install chromium"
     startCommand: "python check_benfica_tickets.py"
+
+  - type: cron
+      name: odisseias-ticket-checker
+      schedule: "@hourly"
+      runtime: python
+      plan: free
+      buildCommand: "pip install playwright && playwright install chromium"
+      startCommand: "python odisseias/odisseias_checker.py"
