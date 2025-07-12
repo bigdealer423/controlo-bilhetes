@@ -8,9 +8,19 @@ services:
     startCommand: "python check_benfica_tickets.py"
 
   - type: cron
-      name: odisseias-ticket-checker
-      schedule: "@hourly"
-      runtime: python
-      plan: free
-      buildCommand: "pip install playwright && playwright install chromium"
-      startCommand: "python odisseias/odisseias_checker.py"
+    name: odisseias-ticket-checker
+    schedule: "@hourly"
+    runtime: python
+    plan: free
+    buildCommand: |
+      pip install --upgrade pip
+      pip install playwright
+      playwright install chromium
+    startCommand: python odisseias/odisseias_checker.py
+    envVars:
+      - key: EMAIL_PASSWORD
+        sync: false
+      - key: EMAIL_FROM
+        sync: false
+      - key: EMAIL_TO
+        sync: false
