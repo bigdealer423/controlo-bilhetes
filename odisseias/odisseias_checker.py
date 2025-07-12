@@ -46,7 +46,7 @@ def verificar_sporting():
 
         page.fill('input[name="Email"]', EMAIL)
         page.fill('input[name="Password"]', PASSWORD)
-        page.click('button[type="submit"]')
+        page.locator("form#loginForm button[type='submit']").click()
 
         page.wait_for_load_state("networkidle")
         time.sleep(2)
