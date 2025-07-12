@@ -421,7 +421,7 @@ return (
     linhaExpandida === r.id
       ? "bg-blue-100 dark:bg-blue-800 text-gray-900 dark:text-gray-100 font-semibold"
       : r.estado === "Pago"
-      ? "bg-green-100"
+      ? "bg-green-100 dark:bg-green-700"
       : r.estado === "Entregue"
       ? "bg-yellow-100 dark:bg-yellow-700" 
       : ""
