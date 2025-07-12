@@ -39,10 +39,15 @@ def enviar_email_alerta():
 def verificar_sporting():
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
-        page = browser.new_page()
+        context = browser.new_context(user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36")
+        page = context.new_page()
+
 
         print("🚀 A aceder à página de login...")
-        page.goto(LOGIN_URL)
+        print("🔐 Login concluído. A aceder à lista de produtos...")
+        page.goto(PRODUTOS_URL, timeout=60000, wait_until="networkidle")
+        time.sleep(3)
+
 
         page.fill('input[name="Email"]', EMAIL)
         page.fill('input[name="Password"]', PASSWORD)
