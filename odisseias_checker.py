@@ -2,8 +2,8 @@ from playwright.sync_api import sync_playwright
 import time
 
 # ---- CONFIGURAÇÕES ----
-EMAIL = "teu_email@exemplo.com"       # <-- coloca aqui o teu email
-PASSWORD = "tua_password_segura"      # <-- coloca aqui a tua password
+EMAIL = "miguelitocosta423@gmail.com"       # <-- coloca aqui o teu email
+PASSWORD = "Pedrosara18#"      # <-- coloca aqui a tua password
 LOGIN_URL = "https://www.odisseias.com/Account/Login"
 PRODUTOS_URL = "https://www.odisseias.com/Book/ProductList"
 PALAVRA_CHAVE = "sporting"            # <-- palavra a procurar
