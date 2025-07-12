@@ -427,14 +427,13 @@ def obter_resumo():
 # ---------------- RESUMO MENSAL EVENTOS ----------------
 
 
-
 @app.get("/resumo_mensal_eventos")
 def resumo_mensal_eventos(db: Session = Depends(get_db)):
     hoje = datetime.now()
     mes = hoje.month
     ano = hoje.year
 
-    # Definir limites da época atual
+    # Definir época
     if mes >= 7:
         inicio_epoca = date(ano, 7, 1)
         fim_epoca = date(ano + 1, 6, 30)
@@ -448,12 +447,18 @@ def resumo_mensal_eventos(db: Session = Depends(get_db)):
         extract("year", EventoCompletoModel.data_evento) == ano
     ).all()
 
+    # Todos os eventos da época
+    eventos_epoca = db.query(EventoCompletoModel).filter(
+        EventoCompletoModel.data_evento >= inicio_epoca,
+        EventoCompletoModel.data_evento <= fim_epoca
+    ).all()
+
+    # Lucro mensal
     lucro = 0
     for evento in eventos_mes:
         ganho = evento.ganho or 0
         gasto = evento.gasto or 0
         estado = (evento.estado or "").strip().lower()
-
         if estado == "pago" or ganho > 0:
             lucro += ganho - gasto
 
@@ -463,17 +468,15 @@ def resumo_mensal_eventos(db: Session = Depends(get_db)):
     ).scalar()
     pagamento = round(pagamento_query or 0)
 
-    # ✅ Total de bilhetes vendidos nesta época (contar linhas)
-    total_bilhetes = db.query(func.count()).filter(
-        ListagemVendas.data_evento >= inicio_epoca,
-        ListagemVendas.data_evento <= fim_epoca
-    ).scalar()
+    # ✅ Total de bilhetes vendidos na época (com base em eventos)
+    total_bilhetes = sum(e.vendas for e in eventos_epoca if e.vendas)
 
     return {
         "lucro": round(lucro),
         "pagamento": pagamento,
         "bilhetes_epoca": total_bilhetes
     }
+
 
 
     
