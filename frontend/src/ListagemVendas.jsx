@@ -503,7 +503,17 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
   <td className="p-2">{r.evento}</td>
   <td className="p-2">{r.estadio}</td>
   <td className="p-2">{r.ganho} €</td>
-  <td className="p-2">{r.estado}</td>
+  <td className="p-2">
+  <span className={`px-2 py-1 rounded text-xs font-semibold
+    ${r.estado === "Pago" ? "bg-green-600 text-white dark:bg-green-700" :
+     r.estado === "Disputa" ? "bg-red-500 text-white dark:bg-red-600" :
+     r.estado === "Entregue" ? "bg-blue-500 text-white dark:bg-blue-600" :
+     "bg-yellow-400 text-black dark:bg-yellow-600 dark:text-white"}
+  `}>
+    {r.estado}
+  </span>
+</td>
+
   <td className="p-2">
     <button onClick={() => ativarEdicao(r.id, r)} className="text-blue-600 hover:underline mr-2">Editar</button>
     <button onClick={() => pedirConfirmEliminar([r.id])} className="text-red-600 hover:underline">Eliminar</button>
