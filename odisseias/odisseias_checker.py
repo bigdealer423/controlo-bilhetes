@@ -46,9 +46,14 @@ def verificar_sporting():
 
         page.fill('input[name="Email"]', EMAIL)
         page.fill('input[name="Password"]', PASSWORD)
-        page.locator('form[action="/Account/Login"] button[type="submit"]').wait_for(timeout=15000)
-        page.locator('form[action="/Account/Login"] button[type="submit"]').click()
+        botao_submit = page.locator('button[type="submit"]')
 
+        # Espera até estar visível e clicável (até 15s)
+        botao_submit.wait_for(state="visible", timeout=15000)
+        
+        # Clica no botão
+        botao_submit.click()
+        
 
 
 
