@@ -3,6 +3,11 @@ import smtplib
 from email.message import EmailMessage
 import time
 import os
+import subprocess
+
+# ⚙️ Garante que o browser está presente mesmo no ambiente cronjob isolado
+subprocess.run(["playwright", "install", "chromium"], check=True)
+
 
 # ---- CONFIGURAÇÕES ----
 EMAIL = "miguelitocosta423@gmail.com"
