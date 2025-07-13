@@ -39,11 +39,18 @@ export default function ComparadorViagogo() {
     <div className="p-4 space-y-4">
       <h1 className="text-xl font-bold">Comparador de Listagens Viagogo</h1>
 
-      <input type="file" accept=".csv" onChange={handleFicheiro} className="mb-2" />
+      <input
+        type="file"
+        accept=".csv"
+        onChange={handleFicheiro}
+        className="mb-2"
+      />
 
       {dadosCSV.length > 0 && (
         <>
-          <Button onClick={enviarParaComparacao}>Comparar com Viagogo</Button>
+          <Button onClick={enviarParaComparacao}>
+            Comparar com Viagogo
+          </Button>
 
           <Card className="mt-4">
             <CardContent className="overflow-x-auto">
@@ -60,13 +67,16 @@ export default function ComparadorViagogo() {
                 </thead>
                 <tbody>
                   {dadosCSV.map((linha, idx) => (
-                    <tr key={idx} className="border-b dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800">
-                      <td className="p-2">{linha.EventName?.replaceAll('"', '')}</td>
-                      <td className="p-2">{linha.Section?.replaceAll('"', '')}</td>
-                      <td className="p-2">{linha.Qty}</td>
-                      <td className="p-2">{linha.PricePerTicketAmount}</td>
-                      <td className="p-2">{linha.PayoutPerTicketAmount}</td>
-                      <td className="p-2">{linha.SaleEnds?.split("T")[0]}</td>
+                    <tr
+                      key={idx}
+                      className="border-b dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800"
+                    >
+                      <td className="p-2">{(linha.EventName || "").replace(/"/g, "")}</td>
+                      <td className="p-2">{(linha.Section || "").replace(/"/g, "")}</td>
+                      <td className="p-2">{linha.Qty || ""}</td>
+                      <td className="p-2">{linha.PricePerTicketAmount || ""}</td>
+                      <td className="p-2">{linha.PayoutPerTicketAmount || ""}</td>
+                      <td className="p-2">{(linha.SaleEnds || "").split("T")[0]}</td>
                     </tr>
                   ))}
                 </tbody>
