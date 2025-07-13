@@ -24,3 +24,21 @@ services:
         sync: false
       - key: EMAIL_TO
         sync: false
+
+services:
+  - type: web
+    name: controlo-bilhetes-api
+    env: python
+    plan: free
+    buildCommand: |
+      pip install --upgrade pip
+      pip install -r requirements.txt
+      playwright install --with-deps
+    startCommand: bash start.sh
+    envVars:
+      - key: EMAIL_PASSWORD
+        sync: false
+      - key: EMAIL_FROM
+        sync: false
+      - key: EMAIL_TO
+        sync: false
