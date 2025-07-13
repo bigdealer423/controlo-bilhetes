@@ -13,12 +13,12 @@ RUN apt-get update && apt-get install -y \
     libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Copia todos os ficheiros para dentro do container
-COPY . .
+# Etapa separada para instalar dependências — aproveita cache do Docker
+COPY requirements.txt .
+RUN pip install --upgrade pip && pip install -r requirements.txt
 
-# Instala dependências Python
-RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
+# Copia o restante código (após dependências)
+COPY . .
 
 # Porta que o Render expõe
 EXPOSE 8000
