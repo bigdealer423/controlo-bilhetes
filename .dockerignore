@@ -1,13 +1,34 @@
+# Pastas e ficheiros temporários
 __pycache__/
-*.pyc
+*.py[cod]
 *.pyo
-*.pyd
+
+# Base de dados local
 *.db
 *.sqlite3
-.env
+
+# Virtualenvs (local)
 venv/
 .venv/
-.git
+
+# Variáveis de ambiente
+.env
+.env.*
+
+# Git
+.git/
 .gitignore
+
+# Docker files (não precisam de estar no container)
 Dockerfile
 .dockerignore
+
+# Cache/editor
+*.log
+*.bak
+*.swp
+*.tmp
+*.cache/
+.cache/
+.idea/
+.vscode/
