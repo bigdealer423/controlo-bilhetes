@@ -26,7 +26,12 @@ async def obter_preco_com_playwright(base_url: str, setor: str, quantidade: int)
             browser = await p.firefox.launch(headless=True)
             page = await browser.new_page(user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36")
             print("🔗 A carregar:", url)
-            await page.goto(url, wait_until="domcontentloaded", timeout=60000)
+            try:
+                await page.goto(url, wait_until="domcontentloaded", timeout=20000)
+                print("✅ Página carregada com sucesso")
+            except Exception as e:
+                print("❌ Erro ao fazer goto:", e)
+                return None
             await page.wait_for_timeout(5000)
 
 
