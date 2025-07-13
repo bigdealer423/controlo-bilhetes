@@ -55,11 +55,12 @@ export default function ComparadorViagogo() {
 
 
   const enviarParaComparacao = async () => {
-  const resposta = await fetch("/api/comparar_listagens", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ listagens: dadosCSV }),
+  const resposta = await fetch("https://controlo-bilhetes.onrender.com/api/comparar_listagens", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ listagens: dadosCSV }),
   });
+
 
   if (!resposta.ok) {
     console.error("Erro na resposta:", resposta.status);
