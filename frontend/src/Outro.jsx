@@ -55,14 +55,32 @@ export default function ComparadorViagogo() {
 
 
   const enviarParaComparacao = async () => {
-    const resposta = await fetch("/api/comparar_listagens", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ listagens: dadosCSV }),
-    });
-    const resultado = await resposta.json();
+  const resposta = await fetch("/api/comparar_listagens", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ listagens: dadosCSV }),
+  });
+
+  if (!resposta.ok) {
+    console.error("Erro na resposta:", resposta.status);
+    return;
+  }
+
+  const texto = await resposta.text();
+  if (!texto) {
+    console.warn("Resposta vazia");
+    return;
+  }
+
+  try {
+    const resultado = JSON.parse(texto);
     setComparacoes(resultado);
-  };
+  } catch (erro) {
+    console.error("Erro ao fazer parse do JSON:", erro);
+    console.log("Conteúdo recebido:", texto);
+  }
+};
+
 
   return (
     <div className="p-4 space-y-4">
