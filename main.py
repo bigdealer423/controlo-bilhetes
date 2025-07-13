@@ -638,6 +638,10 @@ def resumo_dashboard(db: Session = Depends(get_db)):
 
 
 # COMPARAR VIAGOGO
+from routes.comparar import comparar_router  # ← importa o router
+
+app = FastAPI()
+app.include_router(comparar_router, prefix="/api")  # ← adiciona o router
 
 @app.post("/api/comparar_listagens")
 async def comparar_listagens(request: Request):
