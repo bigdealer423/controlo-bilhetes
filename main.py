@@ -584,7 +584,7 @@ def eventos_calendario(db: Session = Depends(get_db)):
             "id": evento.id,
             "nome_evento": evento.evento,   # <-- aqui corrigir de `evento.nome` para `evento.evento`
             "data_evento": evento.data_evento.strftime("%d/%m/%Y") if isinstance(evento.data_evento, date) else str(evento.data_evento),
-            "estado": e.estado
+            "estado": evento.estado
         }
         for evento in eventos
     ]
