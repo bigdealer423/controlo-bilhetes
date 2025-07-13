@@ -35,7 +35,7 @@ export default function ComparadorViagogo() {
         },
       });
     };
-    reader.readAsText(ficheiro, "ISO-8859-1");
+    reader.readAsText(ficheiro, "utf-8");
   };
 
   const enviarParaComparacao = async () => {
