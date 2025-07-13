@@ -115,3 +115,20 @@ async def comparar_listagens(request: Request):
     except Exception as e:
         print("❌ Erro na comparação:", e)
         return JSONResponse(status_code=500, content={"erro": str(e)})
+
+
+@comparar_router.get("/teste_playwright")
+async def teste_playwright():
+    try:
+        from playwright.async_api import async_playwright
+
+        async with async_playwright() as p:
+            browser = await p.chromium.launch(headless=True)
+            page = await browser.new_page()
+            await page.goto("https://example.com", timeout=15000)
+            title = await page.title()
+            await browser.close()
+            return {"titulo": title}
+    except Exception as e:
+        return {"erro": str(e)}
+
