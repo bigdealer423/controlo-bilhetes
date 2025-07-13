@@ -16,17 +16,21 @@ export default function ComparadorViagogo() {
       Papa.parse(reader.result, {
         header: true,
         skipEmptyLines: true,
-        delimiter: ",",
-        quoteChar: '"',
+        delimiter: ",", // Pode mudar para ; se necessário
         complete: (resultado) => {
-          const limpos = resultado.data.map((linha) => ({
-            evento: linha.EventName?.replace(/"/g, "") || "",
-            setor: linha.Section?.replace(/"/g, "") || "",
-            qtd: linha.Qty || "",
-            preco: (linha.PricePerTicketAmount || "").replace(",", "."),
-            ganho: (linha.PayoutPerTicketAmount || "").replace(",", "."),
-            fimVenda: (linha.SaleEnds || "").split("T")[0],
-          }));
+          console.log("RAW:", resultado.data);
+
+          // Tenta limpar aspas extras
+          const limpos = resultado.data.map((linha) => {
+            const novaLinha = {};
+            for (const key in linha) {
+              const valor = linha[key];
+              novaLinha[key.trim()] = typeof valor === "string" ? valor.replaceAll('"', "").trim() : valor;
+            }
+            return novaLinha;
+          });
+
+          console.log("CSV LIMPO:", limpos);
           setDadosCSV(limpos);
         },
       });
@@ -70,12 +74,9 @@ export default function ComparadorViagogo() {
                 <tbody>
                   {dadosCSV.map((linha, idx) => (
                     <tr key={idx} className="border-b dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800">
-                      <td className="p-2">{linha.evento}</td>
-                      <td className="p-2">{linha.setor}</td>
-                      <td className="p-2">{linha.qtd}</td>
-                      <td className="p-2">{linha.preco}</td>
-                      <td className="p-2">{linha.ganho}</td>
-                      <td className="p-2">{linha.fimVenda}</td>
+                      <td className="p-2" colSpan={6}>
+                        <pre className="text-xs">{JSON.stringify(linha)}</pre>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -83,6 +84,38 @@ export default function ComparadorViagogo() {
             </CardContent>
           </Card>
         </>
+      )}
+
+      {comparacoes.length > 0 && (
+        <div className="mt-6">
+          <h2 className="text-lg font-semibold">Resultados da Comparação</h2>
+          <Card className="mt-2">
+            <CardContent className="overflow-x-auto">
+              <table className="min-w-full text-sm">
+                <thead>
+                  <tr>
+                    <th className="text-left p-2 border-b dark:border-gray-700">Evento</th>
+                    <th className="text-left p-2 border-b dark:border-gray-700">Setor</th>
+                    <th className="text-left p-2 border-b dark:border-gray-700">Teu Preço (€)</th>
+                    <th className="text-left p-2 border-b dark:border-gray-700">Concorrência (€)</th>
+                    <th className="text-left p-2 border-b dark:border-gray-700">Sugestão</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {comparacoes.map((item, idx) => (
+                    <tr key={idx} className="border-b dark:border-gray-700">
+                      <td className="p-2">{item.evento}</td>
+                      <td className="p-2">{item.setor}</td>
+                      <td className="p-2">{item.teu_preco}</td>
+                      <td className="p-2">{item.concorrente_preco}</td>
+                      <td className="p-2">{item.sugestao}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </CardContent>
+          </Card>
+        </div>
       )}
     </div>
   );
