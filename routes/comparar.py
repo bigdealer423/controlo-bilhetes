@@ -19,8 +19,10 @@ async def obter_preco_com_playwright(base_url: str, setor: str, quantidade: int)
     print("🔎 URL usado:", url)
 
     async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=True)
-        page = await browser.new_page()
+        browser = await p.firefox.launch(headless=True)  # ← usar Firefox
+        page = await browser.new_page(
+            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"
+        )
         await page.goto(url, timeout=60000)
         await page.wait_for_timeout(5000)
 
