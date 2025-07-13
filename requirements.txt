@@ -1,7 +1,6 @@
 fastapi
 uvicorn
 sqlalchemy==2.0.30
-greenlet==2.0.2
 psycopg2-binary
 python-multipart
 playwright==1.44.0
