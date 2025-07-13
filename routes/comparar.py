@@ -3,98 +3,56 @@ from fastapi.responses import JSONResponse
 import re
 import cloudscraper
 from bs4 import BeautifulSoup
-import difflib
 
 comparar_router = APIRouter()
 
-CLUBES_URLS = {
-    "SL Benfica": "https://www.viagogo.pt/Bilhetes-Desporto/Futebol/Primeira-Liga/SL-Benfica-Bilhetes",
-    "Sporting CP": "https://www.viagogo.pt/Bilhetes-Desporto/Futebol/Sporting-CP-Bilhetes",
-    "FC Porto": "https://www.viagogo.pt/Bilhetes-Desporto/Futebol/FC-Porto-Bilhetes",
-}
+# Link fixo para o Benfica vs Rio Ave (exemplo)
+BASE_LINK = "https://www.viagogo.pt/Bilhetes-Desporto/Futebol/Primeira-Liga/SL-Benfica-Bilhetes/E-158801955"
 
-def obter_clube_url(evento_nome: str) -> str:
-    evento_lower = evento_nome.lower()
-    if "benfica" in evento_lower:
-        return CLUBES_URLS["SL Benfica"]
-    elif "sporting" in evento_lower:
-        return CLUBES_URLS["Sporting CP"]
-    elif "porto" in evento_lower:
-        return CLUBES_URLS["FC Porto"]
-    return None
 
-def obter_preco_viagogo(evento_nome: str, setor: str, quantidade: int):
+def obter_preco_com_quantidade(base_url: str, setor: str, quantidade: int):
+    if quantidade == 1:
+        url = base_url + "?quantity=1"
+    elif 2 <= quantidade < 6:
+        url = base_url + "?quantity=2"
+    else:
+        url = base_url + "?quantity=6"
+
+    print("🔎 URL usado:", url)
+
     scraper = cloudscraper.create_scraper()
-    url_base = obter_clube_url(evento_nome)
-
-    if not url_base:
-        print(f"❌ Clube não reconhecido no evento: {evento_nome}")
+    response = scraper.get(url)
+    if response.status_code != 200:
+        print("❌ Erro ao carregar a página do evento:", response.status_code)
         return None
 
-    # Verifica até 3 páginas por clube
-    for pagina in range(1, 4):
-        if pagina == 1:
-            url = url_base
+    soup = BeautifulSoup(response.text, "html.parser")
+    listagens = soup.select(".ticket-listing")
+    menor_preco = None
+
+    for item in listagens:
+        texto = item.get_text()
+        if setor.lower() not in texto.lower():
+            continue
+
+        # Verifica a quantidade
+        match_qtd = re.search(r"(\d+)\s*Bilhete", texto)
+        if match_qtd:
+            qtd = int(match_qtd.group(1))
+            if qtd != quantidade:
+                continue
         else:
-            sufixo = "&restPage=" + str(pagina) if "Sporting" in url_base or "Porto" in url_base else "&primaryPage=" + str(pagina)
-            url = url_base + sufixo
-
-        print(f"🔍 A procurar em: {url}")
-        response = scraper.get(url)
-        if response.status_code != 200:
-            print("❌ Erro ao carregar página:", response.status_code)
             continue
 
-        soup = BeautifulSoup(response.text, "html.parser")
-        eventos = []
-        for a in soup.find_all("a", href=True):
-            texto = a.get_text(strip=True)
-            if "vs" in texto:
-                eventos.append((texto, a["href"]))
+        # Verifica o preço
+        match_preco = re.search(r"€\s*(\d+(?:,\d{2})?)", texto)
+        if match_preco:
+            preco_str = match_preco.group(1).replace(",", ".")
+            preco = float(preco_str)
+            if menor_preco is None or preco < menor_preco:
+                menor_preco = preco
 
-        nomes = [e[0] for e in eventos]
-        semelhantes = difflib.get_close_matches(evento_nome, nomes, n=1, cutoff=0.6)
-
-        if not semelhantes:
-            continue
-
-        nome_encontrado = semelhantes[0]
-        href = next(link for nome, link in eventos if nome == nome_encontrado)
-        evento_link = "https://www.viagogo.pt" + href
-        print(f"✅ Match encontrado: '{nome_encontrado}' → {evento_link}")
-
-        response_evento = scraper.get(evento_link)
-        if response_evento.status_code != 200:
-            print("❌ Erro ao carregar evento:", response_evento.status_code)
-            return None
-
-        soup_evento = BeautifulSoup(response_evento.text, "html.parser")
-        listagens = soup_evento.select(".ticket-listing")
-        menor_preco = None
-
-        for item in listagens:
-            texto = item.get_text()
-            if setor.lower() not in texto.lower():
-                continue
-
-            match_qtd = re.search(r"(\d+)\s*Bilhete", texto)
-            if match_qtd:
-                qtd = int(match_qtd.group(1))
-                if qtd != quantidade:
-                    continue
-            else:
-                continue
-
-            match_preco = re.search(r"€\s*(\d+(?:,\d{2})?)", texto)
-            if match_preco:
-                preco = float(match_preco.group(1).replace(",", "."))
-                if menor_preco is None or preco < menor_preco:
-                    menor_preco = preco
-
-        return menor_preco
-
-    print("❌ Evento não encontrado após todas as páginas:", evento_nome)
-    return None
+    return menor_preco
 
 
 @comparar_router.post("/comparar_listagens")
@@ -110,7 +68,8 @@ async def comparar_listagens(request: Request):
             teu_preco = float(linha.get("PricePerTicketAmount", 0))
             quantidade = int(linha.get("Quantity", 1))
 
-            preco_viagogo = obter_preco_viagogo(evento, setor, quantidade)
+            # Usa o link fixo para este evento de teste
+            preco_viagogo = obter_preco_com_quantidade(BASE_LINK, setor, quantidade)
 
             if preco_viagogo is None:
                 sugestao = "Sem dados"
