@@ -12,20 +12,20 @@ export default function ComparadorViagogo() {
     const ficheiro = e.target.files[0];
     if (!ficheiro) return;
 
-  const reader = new FileReader();
-    reader.onload = () => {
-      Papa.parse(reader.result, {
-        header: true,
-        skipEmptyLines: true,
-        delimiter: ";", // ← importante para números com vírgula decimal
-        complete: (resultado) => {
-          setDadosCSV(resultado.data);
-          setCabecalhos(Object.keys(resultado.data[0]));
-        },
-      });
-    };
-    reader.readAsText(ficheiro, "ISO-8859-1"); // ← encoding correto
-
+    const reader = new FileReader();
+      reader.onload = () => {
+        Papa.parse(reader.result, {
+          header: true,
+          skipEmptyLines: true,
+          delimiter: ";", // ← importante para números com vírgula decimal
+          complete: (resultado) => {
+            setDadosCSV(resultado.data);
+            setCabecalhos(Object.keys(resultado.data[0]));
+          },
+        });
+      };
+      reader.readAsText(ficheiro, "ISO-8859-1"); // ← encoding correto
+  };
 
   const enviarParaComparacao = async () => {
     const resposta = await fetch("/api/comparar_listagens", {
