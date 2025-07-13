@@ -1,3 +1,5 @@
+import os
+os.environ["PLAYWRIGHT_BROWSERS_PATH"] = "/opt/render/project/.playwright"
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
 import re
