@@ -90,9 +90,12 @@ export default function ComparadorViagogo() {
                 <tbody>
                   {dadosCSV.map((linha, idx) => (
                     <tr key={idx} className="border-b dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800">
-                      <td className="p-2" colSpan={6}>
-                        <pre className="text-xs">{JSON.stringify(linha)}</pre>
-                      </td>
+                      <td className="p-2">{linha.EventName}</td>
+                      <td className="p-2">{linha.Section}</td>
+                      <td className="p-2">{linha.Qty}</td>
+                      <td className="p-2">{linha.PricePerTicketAmount}</td>
+                      <td className="p-2">{linha.PayoutPerTicketAmount}</td>
+                      <td className="p-2">{linha.SaleEnds?.split("T")[0]}</td>
                     </tr>
                   ))}
                 </tbody>
