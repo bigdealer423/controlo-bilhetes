@@ -33,7 +33,7 @@ services:
     buildCommand: |
       pip install --upgrade pip
       pip install -r requirements.txt
-      npx playwright install --with-deps
+      python -m playwright install --with-deps chromium
     startCommand: bash start.sh
     envVars:
       - key: EMAIL_PASSWORD
