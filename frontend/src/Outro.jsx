@@ -26,13 +26,20 @@ export default function ComparadorViagogo() {
         delimiter: ",",
         complete: (resultado) => {
           const limpos = resultado.data.map((linha) => {
-            const novaLinha = {};
-            for (const key in linha) {
-              const valor = linha[key];
-              novaLinha[key.trim()] = typeof valor === "string" ? valor.replaceAll('"', "").trim() : valor;
+            const keys = Object.keys(linha);
+            if (keys.length === 1) {
+              try {
+                const jsonStr = linha[keys[0]];
+                const obj = JSON.parse(jsonStr);
+                return obj;
+              } catch (erro) {
+                console.error("Erro ao fazer parse JSON de linha:", linha);
+                return {};
+              }
             }
-            return novaLinha;
+            return linha;
           });
+
 
           console.log("CORRIGIDO:", limpos);
           setDadosCSV(limpos);
