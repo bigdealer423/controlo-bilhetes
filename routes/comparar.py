@@ -1,16 +1,22 @@
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
+import requests
 import re
 from bs4 import BeautifulSoup
-import cloudscraper
 
 comparar_router = APIRouter()
 
-# Link fixo para o jogo SL Benfica vs Rio Ave FC
 BASE_LINK = "https://www.viagogo.pt/Bilhetes-Desporto/Futebol/Primeira-Liga/SL-Benfica-Bilhetes/E-158801955"
 
-def obter_preco_com_cloudscraper(base_url: str, setor: str, quantidade: int):
-    # Determina a URL correta consoante a quantidade
+HEADERS = {
+    "User-Agent": (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/115.0.0.0 Safari/537.36"
+    )
+}
+
+def obter_preco_com_requests(base_url: str, setor: str, quantidade: int):
     if quantidade == 1:
         url = base_url + "?quantity=1"
     elif 2 <= quantidade < 6:
@@ -21,14 +27,9 @@ def obter_preco_com_cloudscraper(base_url: str, setor: str, quantidade: int):
     print("🔎 URL usado:", url)
 
     try:
-        scraper = cloudscraper.create_scraper()
-        resposta = scraper.get(url, timeout=30)
-        resposta.raise_for_status()
+        resp = requests.get(url, headers=HEADERS, timeout=20)
+        soup = BeautifulSoup(resp.text, "html.parser")
 
-        html = resposta.text
-        print("📄 HTML carregado com sucesso, tamanho:", len(html))
-
-        soup = BeautifulSoup(html, "html.parser")
         listagens = soup.select(".ticket-listing")
         print("🎫 Listagens encontradas:", len(listagens))
 
@@ -58,7 +59,7 @@ def obter_preco_com_cloudscraper(base_url: str, setor: str, quantidade: int):
         return menor_preco
 
     except Exception as e:
-        print("❌ Erro cloudscraper:", e)
+        print("❌ Erro requests:", e)
         return None
 
 
@@ -77,7 +78,7 @@ async def comparar_listagens(request: Request):
 
             print(f"\n🧪 Comparando evento: {evento} | Setor: {setor} | Qtd: {quantidade} | Teu preço: {teu_preco}")
 
-            preco_viagogo = obter_preco_com_cloudscraper(BASE_LINK, setor, quantidade)
+            preco_viagogo = obter_preco_com_requests(BASE_LINK, setor, quantidade)
 
             if preco_viagogo is None:
                 sugestao = "Sem dados"
@@ -99,16 +100,3 @@ async def comparar_listagens(request: Request):
     except Exception as e:
         print("❌ Erro na comparação:", e)
         return JSONResponse(status_code=500, content={"erro": str(e)})
-
-@comparar_router.get("/teste_requests")
-def teste_requests():
-    import requests
-    try:
-        resp = requests.get("https://www.viagogo.pt/", timeout=10)
-        print("Status code:", resp.status_code)
-        return {
-            "status": resp.status_code,
-            "html_inicio": resp.text[:500]  # Mostra apenas os primeiros 500 caracteres
-        }
-    except Exception as e:
-        return {"erro": str(e)}
