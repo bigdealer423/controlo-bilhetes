@@ -12,7 +12,7 @@ export default function ComparadorViagogo() {
     const ficheiro = e.target.files[0];
     if (!ficheiro) return;
 
-    const reader = new FileReader();
+  const reader = new FileReader();
     reader.onload = () => {
       Papa.parse(reader.result, {
         header: true,
