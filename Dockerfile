@@ -35,8 +35,9 @@ COPY . .
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
-# Instala os browsers do Playwright
-RUN playwright install --with-deps
+# ⚠️ Instala o Chromium do Playwright no caminho correto para Render
+ENV PLAYWRIGHT_BROWSERS_PATH=0
+RUN playwright install chromium
 
 # Porta que o Render expõe
 EXPOSE 8000
