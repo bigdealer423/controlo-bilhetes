@@ -14,31 +14,36 @@ export default function ComparadorViagogo() {
   const reader = new FileReader();
 
   reader.onload = () => {
-    // Tenta converter com TextDecoder
-    const uint8Array = new Uint8Array(reader.result);
-    const text = new TextDecoder("utf-8").decode(uint8Array);
+    try {
+      const uint8Array = new Uint8Array(reader.result);
 
-    Papa.parse(text, {
-      header: true,
-      skipEmptyLines: true,
-      delimiter: ",",
-      complete: (resultado) => {
-        const limpos = resultado.data.map((linha) => {
-          const novaLinha = {};
-          for (const key in linha) {
-            const valor = linha[key];
-            novaLinha[key.trim()] = typeof valor === "string" ? valor.replaceAll('"', "").trim() : valor;
-          }
-          return novaLinha;
-        });
+      // ✅ usar utf-16le explicitamente!
+      const text = new TextDecoder("utf-16le").decode(uint8Array);
 
-        console.log("CORRIGIDO:", limpos);
-        setDadosCSV(limpos);
-      },
-    });
+      Papa.parse(text, {
+        header: true,
+        skipEmptyLines: true,
+        delimiter: ",",
+        complete: (resultado) => {
+          const limpos = resultado.data.map((linha) => {
+            const novaLinha = {};
+            for (const key in linha) {
+              const valor = linha[key];
+              novaLinha[key.trim()] = typeof valor === "string" ? valor.replaceAll('"', "").trim() : valor;
+            }
+            return novaLinha;
+          });
+
+          console.log("CORRIGIDO:", limpos);
+          setDadosCSV(limpos);
+        },
+      });
+    } catch (erro) {
+      console.error("Erro ao processar ficheiro:", erro);
+    }
   };
 
-  reader.readAsArrayBuffer(ficheiro); // ← importante
+  reader.readAsArrayBuffer(ficheiro); // ← essencial!
 };
 
 
