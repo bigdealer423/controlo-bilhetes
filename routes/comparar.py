@@ -3,13 +3,12 @@ from fastapi.responses import JSONResponse
 import re
 import cloudscraper
 from bs4 import BeautifulSoup
+import difflib  # 🚀 para matching tolerante
 
 comparar_router = APIRouter()
 
-# Função para obter preços do Viagogo (sem playwright)
 def obter_preco_viagogo(evento_nome: str, setor: str, quantidade: int):
     url_base = "https://www.viagogo.pt/Bilhetes-Desporto/Futebol/Primeira-Liga"
-
     scraper = cloudscraper.create_scraper()
     response = scraper.get(url_base)
 
@@ -19,16 +18,25 @@ def obter_preco_viagogo(evento_nome: str, setor: str, quantidade: int):
 
     soup = BeautifulSoup(response.text, "html.parser")
 
-    # Procurar o link do evento
-    evento_link = None
+    # Lista de títulos e links
+    eventos = []
     for a in soup.find_all("a", href=True):
-        if evento_nome.lower() in a.text.lower():
-            evento_link = "https://www.viagogo.pt" + a["href"]
-            break
+        texto = a.get_text(strip=True)
+        if "vs" in texto:
+            eventos.append((texto, a["href"]))
 
-    if not evento_link:
+    # Procurar o mais semelhante
+    nomes = [e[0] for e in eventos]
+    semelhantes = difflib.get_close_matches(evento_nome, nomes, n=1, cutoff=0.6)
+
+    if not semelhantes:
         print("❌ Evento não encontrado:", evento_nome)
         return None
+
+    nome_encontrado = semelhantes[0]
+    evento_href = next(link for nome, link in eventos if nome == nome_encontrado)
+    evento_link = "https://www.viagogo.pt" + evento_href
+    print(f"✅ Match encontrado: '{nome_encontrado}' → {evento_link}")
 
     # Visitar a página do evento
     response_evento = scraper.get(evento_link)
@@ -37,7 +45,6 @@ def obter_preco_viagogo(evento_nome: str, setor: str, quantidade: int):
         return None
 
     soup_evento = BeautifulSoup(response_evento.text, "html.parser")
-
     listagens = soup_evento.select(".ticket-listing")
     menor_preco = None
 
@@ -46,7 +53,6 @@ def obter_preco_viagogo(evento_nome: str, setor: str, quantidade: int):
         if setor.lower() not in texto.lower():
             continue
 
-        # Verifica a quantidade
         match_qtd = re.search(r"(\d+)\s*Bilhete", texto)
         if match_qtd:
             qtd = int(match_qtd.group(1))
@@ -55,11 +61,9 @@ def obter_preco_viagogo(evento_nome: str, setor: str, quantidade: int):
         else:
             continue
 
-        # Verifica o preço
         match_preco = re.search(r"€\s*(\d+(?:,\d{2})?)", texto)
         if match_preco:
-            preco_str = match_preco.group(1).replace(",", ".")
-            preco = float(preco_str)
+            preco = float(match_preco.group(1).replace(",", "."))
             if menor_preco is None or preco < menor_preco:
                 menor_preco = preco
 
@@ -70,7 +74,6 @@ async def comparar_listagens(request: Request):
     try:
         body = await request.json()
         listagens = body.get("listagens", [])
-
         resultados = []
 
         for linha in listagens:
@@ -92,12 +95,4 @@ async def comparar_listagens(request: Request):
                 "evento": evento,
                 "setor": setor,
                 "teu_preco": teu_preco,
-                "concorrente_preco": preco_viagogo if preco_viagogo is not None else "-",
-                "sugestao": sugestao,
-            })
-
-        return JSONResponse(content=resultados)
-
-    except Exception as e:
-        print("❌ Erro na comparação:", e)
-        return JSONResponse(status_code=500, content={"erro": str(e)})
+                "concorrente_preco": p_
