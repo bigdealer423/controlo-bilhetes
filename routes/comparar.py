@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 import re
 import cloudscraper
 from bs4 import BeautifulSoup
-import difflib  # 🚀 para matching tolerante
+import difflib
 
 comparar_router = APIRouter()
 
@@ -17,29 +17,27 @@ def obter_preco_viagogo(evento_nome: str, setor: str, quantidade: int):
             print("❌ Erro ao carregar homepage Viagogo:", response.status_code)
             return None
 
-        soup = BeautifulSoup(response.text, "html.parser")
-        eventos = []
-        for a in soup.find_all("a", href=True):
-            texto = a.get_text(strip=True)
-            if "vs" in texto or " - " in texto:
-                eventos.append((texto, a["href"]))
+        html = response.text
 
-        nomes = [e[0] for e in eventos]
+        # Extrair todos os pares "name":"...", "url":"..."
+        matches = re.findall(r'"name"\s*:\s*"([^"]+?)"\s*,\s*"url"\s*:\s*"([^"]+?)"', html)
+        nomes = [nome for nome, _ in matches]
         semelhantes = difflib.get_close_matches(evento_nome, nomes, n=1, cutoff=0.6)
 
         if not semelhantes:
             return None
 
         nome_encontrado = semelhantes[0]
-        href = next(link for nome, link in eventos if nome == nome_encontrado)
-        return "https://www.viagogo.pt" + href
+        url_encontrado = next(url for nome, url in matches if nome == nome_encontrado)
+        print(f"✅ Match encontrado via homepage: '{nome_encontrado}' → {url_encontrado}")
+        return url_encontrado
 
-    # 1. Tentar encontrar na homepage
+    # Tenta na homepage
     evento_link = procurar_evento_viagogo()
 
-    # 2. Se falhar, tenta a página da Primeira Liga
+    # Fallback: Primeira Liga
     if not evento_link:
-        print("⚠️ Tentar página da Primeira Liga...")
+        print("⚠️ Tentar fallback: Primeira Liga...")
         url_base = "https://www.viagogo.pt/Bilhetes-Desporto/Futebol/Primeira-Liga"
         response = scraper.get(url_base)
         if response.status_code != 200:
@@ -63,10 +61,9 @@ def obter_preco_viagogo(evento_nome: str, setor: str, quantidade: int):
         nome_encontrado = semelhantes[0]
         href = next(link for nome, link in eventos if nome == nome_encontrado)
         evento_link = "https://www.viagogo.pt" + href
+        print(f"✅ Match encontrado via fallback: '{nome_encontrado}' → {evento_link}")
 
-    print(f"✅ Match encontrado: '{evento_nome}' → {evento_link}")
-
-    # 3. Scraping dos preços
+    # Scraping de preços
     response_evento = scraper.get(evento_link)
     if response_evento.status_code != 200:
         print("❌ Erro ao carregar evento:", response_evento.status_code)
