@@ -100,7 +100,7 @@ useEffect(() => {
             className="mb-4 rounded shadow"
             tileClassName={({ date, view }) => {
               if (view === "month") {
-                const existeEvento = eventosCalendario.some(evento => {
+                const eventosDoDia = eventosCalendario.filter(evento => {
                   const [dia, mes, ano] = evento.data_evento.split("/");
                   return (
                     parseInt(dia) === date.getDate() &&
@@ -108,11 +108,17 @@ useEffect(() => {
                     parseInt(ano) === date.getFullYear()
                   );
                 });
-                return existeEvento
-                  ? "bg-blue-200 dark:bg-blue-700 text-blue-900 dark:text-blue-100 font-semibold rounded-full hover:bg-blue-300 dark:hover:bg-blue-600 transition-colors duration-200"
-                  : null;
+            
+                if (eventosDoDia.length > 0) {
+                  const temEventoPago = eventosDoDia.some(e => e.estado === "Pago");
+                  return temEventoPago
+                    ? "bg-green-300 dark:bg-green-700 text-white font-semibold rounded-full hover:bg-green-400 dark:hover:bg-green-600 transition-colors duration-200"
+                    : "bg-blue-200 dark:bg-blue-700 text-blue-900 dark:text-blue-100 font-semibold rounded-full hover:bg-blue-300 dark:hover:bg-blue-600 transition-colors duration-200";
+                }
               }
+              return null;
             }}
+
             tileContent={({ date, view }) => {
               if (view === "month") {
                 const eventosDoDia = eventosCalendario.filter(evento => {
