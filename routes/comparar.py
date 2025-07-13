@@ -1,67 +1,69 @@
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
 import re
-import cloudscraper
-from bs4 import BeautifulSoup
+from playwright.sync_api import sync_playwright
 
 comparar_router = APIRouter()
 
 # Link fixo para o Benfica vs Rio Ave (exemplo)
 BASE_LINK = "https://www.viagogo.pt/Bilhetes-Desporto/Futebol/Primeira-Liga/SL-Benfica-Bilhetes/E-158801955"
 
-def obter_preco_com_quantidade(base_url: str, setor: str, quantidade: int):
-    if quantidade == 1:
-        url = base_url + "?quantity=1"
-    elif 2 <= quantidade < 6:
-        url = base_url + "?quantity=2"
-    else:
-        url = base_url + "?quantity=6"
+def obter_com_playwright(url, setor, quantidade):
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        page = browser.new_page()
+        print("\n🔗 A carregar:", url)
 
-    print("🔎 URL usado:", url)
+        try:
+            page.goto(url, timeout=60000)
+            page.wait_for_timeout(5000)
+        except Exception as e:
+            print("❌ Erro ao carregar a página:", e)
+            browser.close()
+            return None
 
-    scraper = cloudscraper.create_scraper()
-    response = scraper.get(url)
-    if response.status_code != 200:
-        print("❌ Erro ao carregar a página do evento:", response.status_code)
-        return None
+        html = page.content()
+        with open("debug.html", "w", encoding="utf-8") as f:
+            f.write(html)
 
-    soup = BeautifulSoup(response.text, "html.parser")
-    listagens = soup.select(".ticket-listing")
-    menor_preco = None
+        listagens = page.query_selector_all(".ticket-listing")
+        print(f"🎫 Listagens encontradas: {len(listagens)}")
 
-    print(f"🧾 Listagens encontradas: {len(listagens)}")
+        menor_preco = None
 
-    for idx, item in enumerate(listagens):
-        texto = item.get_text()
-        print(f"\n📄 Listagem #{idx+1}:\n{texto[:300]}")
+        for item in listagens:
+            texto = item.inner_text()
+            print("---\n", texto)
 
-        if setor.lower() not in texto.lower():
-            print("❌ Setor não corresponde:", setor)
-            continue
-
-        match_qtd = re.search(r"(\d+)\s*Bilhete", texto)
-        if match_qtd:
-            qtd = int(match_qtd.group(1))
-            print(f"🔢 Quantidade detectada: {qtd}")
-            if qtd != quantidade:
-                print("❌ Quantidade não corresponde:", quantidade)
+            if setor.lower() not in texto.lower():
                 continue
-        else:
-            print("❌ Quantidade não identificada.")
-            continue
 
-        match_preco = re.search(r"€\s*(\d+(?:,\d{2})?)", texto)
-        if match_preco:
-            preco_str = match_preco.group(1).replace(",", ".")
-            preco = float(preco_str)
-            print(f"💶 Preço encontrado: {preco}€")
-            if menor_preco is None or preco < menor_preco:
-                menor_preco = preco
-        else:
-            print("❌ Preço não identificado.")
+            match_qtd = re.search(r"(\d+)\s*Bilhete", texto)
+            if match_qtd:
+                qtd = int(match_qtd.group(1))
+                if qtd != quantidade:
+                    continue
+            else:
+                continue
 
-    print(f"\n✅ Menor preço final encontrado: {menor_preco}€")
-    return menor_preco
+            match_preco = re.search(r"\u20ac\s*(\d+(?:,\d{2})?)", texto)
+            if match_preco:
+                preco_str = match_preco.group(1).replace(",", ".")
+                preco = float(preco_str)
+                if menor_preco is None or preco < menor_preco:
+                    menor_preco = preco
+
+        browser.close()
+        return menor_preco
+
+
+def gerar_url(base_url: str, quantidade: int):
+    if quantidade == 1:
+        return base_url + "?quantity=1"
+    elif 2 <= quantidade < 6:
+        return base_url + "?quantity=2"
+    else:
+        return base_url + "?quantity=6"
 
 
 @comparar_router.post("/comparar_listagens")
@@ -78,9 +80,13 @@ async def comparar_listagens(request: Request):
             quantidade = int(linha.get("Quantity", 1))
 
             print("\n===============================")
-            print(f"🧪 Comparando evento: {evento} | Setor: {setor} | Qtd: {quantidade} | Teu preço: {teu_preco}")
+            print(f"\U0001f9ea Comparando evento: {evento} | Setor: {setor} | Qtd: {quantidade} | Teu preço: {teu_preco}")
 
-            preco_viagogo = obter_preco_com_quantidade(BASE_LINK, setor, quantidade)
+            url = gerar_url(BASE_LINK, quantidade)
+            print("\U0001f50e URL usado:", url)
+
+            preco_viagogo = obter_com_playwright(url, setor, quantidade)
+            print("✅ Menor preço final encontrado:", f"{preco_viagogo}€" if preco_viagogo else "None")
 
             if preco_viagogo is None:
                 sugestao = "Sem dados"
