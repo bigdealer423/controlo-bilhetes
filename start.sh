@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
-playwright install chromium
+playwright install --with-deps
 python main.py
