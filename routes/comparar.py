@@ -90,4 +90,6 @@ async def comparar_listagens(request: Request):
         return JSONResponse(content=resultados)
 
     except Exception as e:
+        print("❌ Erro na comparação:", e)  # <-- LOG PARA DEBUG
         return JSONResponse(status_code=500, content={"erro": str(e)})
+
