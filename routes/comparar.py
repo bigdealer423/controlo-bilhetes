@@ -8,42 +8,41 @@ import difflib
 comparar_router = APIRouter()
 
 CLUBES_URLS = {
-    "benfica": "https://www.viagogo.pt/Bilhetes-Desporto/Futebol/Primeira-Liga/SL-Benfica-Bilhetes",
-    "sporting": "https://www.viagogo.pt/Bilhetes-Desporto/Futebol/Sporting-CP-Bilhetes",
-    "porto": "https://www.viagogo.pt/Bilhetes-Desporto/Futebol/FC-Porto-Bilhetes",
+    "SL Benfica": "https://www.viagogo.pt/Bilhetes-Desporto/Futebol/Primeira-Liga/SL-Benfica-Bilhetes",
+    "Sporting CP": "https://www.viagogo.pt/Bilhetes-Desporto/Futebol/Sporting-CP-Bilhetes",
+    "FC Porto": "https://www.viagogo.pt/Bilhetes-Desporto/Futebol/FC-Porto-Bilhetes",
 }
 
-# Define mapeamento entre nomes e URLs
-
-def identificar_clube(evento_nome: str):
+def obter_clube_url(evento_nome: str) -> str:
     evento_lower = evento_nome.lower()
     if "benfica" in evento_lower:
-        return "benfica"
+        return CLUBES_URLS["SL Benfica"]
     elif "sporting" in evento_lower:
-        return "sporting"
+        return CLUBES_URLS["Sporting CP"]
     elif "porto" in evento_lower:
-        return "porto"
+        return CLUBES_URLS["FC Porto"]
     return None
 
 def obter_preco_viagogo(evento_nome: str, setor: str, quantidade: int):
-    clube = identificar_clube(evento_nome)
-    if not clube:
-        print("❌ Clube não reconhecido no evento:", evento_nome)
+    scraper = cloudscraper.create_scraper()
+    url_base = obter_clube_url(evento_nome)
+
+    if not url_base:
+        print(f"❌ Clube não reconhecido no evento: {evento_nome}")
         return None
 
-    url_base = CLUBES_URLS[clube]
-    scraper = cloudscraper.create_scraper()
+    # Verifica até 3 páginas por clube
+    for pagina in range(1, 4):
+        if pagina == 1:
+            url = url_base
+        else:
+            sufixo = "&restPage=" + str(pagina) if "Sporting" in url_base or "Porto" in url_base else "&primaryPage=" + str(pagina)
+            url = url_base + sufixo
 
-    for pagina in range(1, 6):
-        url_pagina = url_base
-        if "Benfica" in url_base and pagina > 1:
-            url_pagina += f"?primaryPage={pagina}"
-        elif pagina > 1:
-            url_pagina += f"?restPage={pagina}"
-
-        response = scraper.get(url_pagina)
+        print(f"🔍 A procurar em: {url}")
+        response = scraper.get(url)
         if response.status_code != 200:
-            print(f"⚠️ Falha na página {pagina} do {clube}: {response.status_code}")
+            print("❌ Erro ao carregar página:", response.status_code)
             continue
 
         soup = BeautifulSoup(response.text, "html.parser")
@@ -62,7 +61,7 @@ def obter_preco_viagogo(evento_nome: str, setor: str, quantidade: int):
         nome_encontrado = semelhantes[0]
         href = next(link for nome, link in eventos if nome == nome_encontrado)
         evento_link = "https://www.viagogo.pt" + href
-        print(f"✅ Match encontrado na página {pagina}: '{nome_encontrado}' → {evento_link}")
+        print(f"✅ Match encontrado: '{nome_encontrado}' → {evento_link}")
 
         response_evento = scraper.get(evento_link)
         if response_evento.status_code != 200:
@@ -86,7 +85,7 @@ def obter_preco_viagogo(evento_nome: str, setor: str, quantidade: int):
             else:
                 continue
 
-            match_preco = re.search(r"\u20ac\s*(\d+(?:,\d{2})?)", texto)
+            match_preco = re.search(r"€\s*(\d+(?:,\d{2})?)", texto)
             if match_preco:
                 preco = float(match_preco.group(1).replace(",", "."))
                 if menor_preco is None or preco < menor_preco:
@@ -94,8 +93,9 @@ def obter_preco_viagogo(evento_nome: str, setor: str, quantidade: int):
 
         return menor_preco
 
-    print("❌ Evento não encontrado em nenhuma página:", evento_nome)
+    print("❌ Evento não encontrado após todas as páginas:", evento_nome)
     return None
+
 
 @comparar_router.post("/comparar_listagens")
 async def comparar_listagens(request: Request):
