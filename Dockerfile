@@ -1,13 +1,11 @@
 # Usa imagem oficial com Python 3.10
 FROM python:3.10-slim
 
-# Evita input interativo
 ENV PYTHONUNBUFFERED=1
 
-# Define diretório de trabalho dentro do container
 WORKDIR /app
 
-# Instala bibliotecas do sistema necessárias para psycopg2 e playwright
+# Instala libs do sistema
 RUN apt-get update && apt-get install -y \
     build-essential \
     libpq-dev \
@@ -31,16 +29,19 @@ RUN apt-get update && apt-get install -y \
 # Copia os ficheiros
 COPY . .
 
-# Instala dependências do Python
+# Instala Python deps
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
-# ⚠️ Instala o Chromium do Playwright no caminho correto para Render
-ENV PLAYWRIGHT_BROWSERS_PATH=0
-RUN playwright install chromium
+# ⚠ Instala Chromium forçando o caminho
+ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+RUN playwright install --with-deps chromium
 
-# Porta que o Render expõe
+# Porta do Render
 EXPOSE 8000
 
-# Comando para arrancar a aplicação
+# Define variável de ambiente também no runtime
+ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+
+# Arranque da app
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
