@@ -8,35 +8,39 @@ export default function ComparadorViagogo() {
   const [comparacoes, setComparacoes] = useState([]);
 
   const handleFicheiro = (e) => {
-    const ficheiro = e.target.files[0];
-    if (!ficheiro) return;
+  const ficheiro = e.target.files[0];
+  if (!ficheiro) return;
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      Papa.parse(reader.result, {
-        header: true,
-        skipEmptyLines: true,
-        delimiter: ",", // Pode mudar para ; se necessário
-        complete: (resultado) => {
-          console.log("RAW:", resultado.data);
+  const reader = new FileReader();
 
-          // Tenta limpar aspas extras
-          const limpos = resultado.data.map((linha) => {
-            const novaLinha = {};
-            for (const key in linha) {
-              const valor = linha[key];
-              novaLinha[key.trim()] = typeof valor === "string" ? valor.replaceAll('"', "").trim() : valor;
-            }
-            return novaLinha;
-          });
+  reader.onload = () => {
+    // Tenta converter com TextDecoder
+    const uint8Array = new Uint8Array(reader.result);
+    const text = new TextDecoder("utf-8").decode(uint8Array);
 
-          console.log("CSV LIMPO:", limpos);
-          setDadosCSV(limpos);
-        },
-      });
-    };
-    reader.readAsText(ficheiro, "utf-8");
+    Papa.parse(text, {
+      header: true,
+      skipEmptyLines: true,
+      delimiter: ",",
+      complete: (resultado) => {
+        const limpos = resultado.data.map((linha) => {
+          const novaLinha = {};
+          for (const key in linha) {
+            const valor = linha[key];
+            novaLinha[key.trim()] = typeof valor === "string" ? valor.replaceAll('"', "").trim() : valor;
+          }
+          return novaLinha;
+        });
+
+        console.log("CORRIGIDO:", limpos);
+        setDadosCSV(limpos);
+      },
+    });
   };
+
+  reader.readAsArrayBuffer(ficheiro); // ← importante
+};
+
 
   const enviarParaComparacao = async () => {
     const resposta = await fetch("/api/comparar_listagens", {
