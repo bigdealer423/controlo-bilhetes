@@ -3,7 +3,7 @@ uvicorn
 sqlalchemy
 psycopg2-binary
 python-multipart
-playwright
+playwright==1.44.0
 
 requests
 beautifulsoup4
