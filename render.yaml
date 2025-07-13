@@ -27,6 +27,7 @@ services:
 
 
 
+
   - type: web
     name: controlo-bilhetes-api
     env: python
@@ -34,15 +35,8 @@ services:
     buildCommand: |
       pip install --upgrade pip
       pip install -r requirements.txt
-      python -m playwright install chromium --target=/opt/render/project/.playwright
+      python -m playwright install chromium --with-deps --target=/opt/render/project/.playwright
     startCommand: bash start.sh
     envVars:
-      - key: EMAIL_PASSWORD
-        sync: false
-      - key: EMAIL_FROM
-        sync: false
-      - key: EMAIL_TO
-        sync: false
       - key: PLAYWRIGHT_BROWSERS_PATH
         value: /opt/render/project/.playwright
-
