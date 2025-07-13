@@ -25,7 +25,7 @@ services:
       - key: EMAIL_TO
         sync: false
 
-services:
+
   - type: web
     name: controlo-bilhetes-api
     env: python
