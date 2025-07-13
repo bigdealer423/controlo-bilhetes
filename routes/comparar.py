@@ -99,3 +99,16 @@ async def comparar_listagens(request: Request):
     except Exception as e:
         print("❌ Erro na comparação:", e)
         return JSONResponse(status_code=500, content={"erro": str(e)})
+
+@comparar_router.get("/teste_requests")
+def teste_requests():
+    import requests
+    try:
+        resp = requests.get("https://www.viagogo.pt/", timeout=10)
+        print("Status code:", resp.status_code)
+        return {
+            "status": resp.status_code,
+            "html_inicio": resp.text[:500]  # Mostra apenas os primeiros 500 caracteres
+        }
+    except Exception as e:
+        return {"erro": str(e)}
