@@ -56,7 +56,7 @@ async def obter_preco_com_playwright(base_url: str, setor: str, quantidade: int)
         return menor_preco
 
 
-@comparar_router.post("/api/comparar_listagens")
+@comparar_router.post("/comparar_listagens")
 async def comparar_listagens(request: Request):
     try:
         body = await request.json()
