@@ -28,7 +28,7 @@ services:
 
 
 
-  services:
+  
   - type: web
     name: controlo-bilhetes-api
     env: python
