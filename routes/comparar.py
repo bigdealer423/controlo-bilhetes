@@ -8,37 +8,65 @@ import difflib  # 🚀 para matching tolerante
 comparar_router = APIRouter()
 
 def obter_preco_viagogo(evento_nome: str, setor: str, quantidade: int):
-    url_base = "https://www.viagogo.pt/Bilhetes-Desporto/Futebol/Primeira-Liga"
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(url_base)
 
-    if response.status_code != 200:
-        print("❌ Erro ao carregar página Viagogo:", response.status_code)
-        return None
+    def procurar_evento_viagogo():
+        homepage = "https://www.viagogo.pt/"
+        response = scraper.get(homepage)
+        if response.status_code != 200:
+            print("❌ Erro ao carregar homepage Viagogo:", response.status_code)
+            return None
 
-    soup = BeautifulSoup(response.text, "html.parser")
+        soup = BeautifulSoup(response.text, "html.parser")
+        eventos = []
+        for a in soup.find_all("a", href=True):
+            texto = a.get_text(strip=True)
+            if "vs" in texto or " - " in texto:
+                eventos.append((texto, a["href"]))
 
-    # Lista de títulos e links
-    eventos = []
-    for a in soup.find_all("a", href=True):
-        texto = a.get_text(strip=True)
-        if "vs" in texto:
-            eventos.append((texto, a["href"]))
+        nomes = [e[0] for e in eventos]
+        semelhantes = difflib.get_close_matches(evento_nome, nomes, n=1, cutoff=0.6)
 
-    # Procurar o mais semelhante
-    nomes = [e[0] for e in eventos]
-    semelhantes = difflib.get_close_matches(evento_nome, nomes, n=1, cutoff=0.6)
+        if not semelhantes:
+            return None
 
-    if not semelhantes:
-        print("❌ Evento não encontrado:", evento_nome)
-        return None
+        nome_encontrado = semelhantes[0]
+        href = next(link for nome, link in eventos if nome == nome_encontrado)
+        return "https://www.viagogo.pt" + href
 
-    nome_encontrado = semelhantes[0]
-    evento_href = next(link for nome, link in eventos if nome == nome_encontrado)
-    evento_link = "https://www.viagogo.pt" + evento_href
-    print(f"✅ Match encontrado: '{nome_encontrado}' → {evento_link}")
+    # 1. Tentar encontrar na homepage
+    evento_link = procurar_evento_viagogo()
 
-    # Visitar a página do evento
+    # 2. Se falhar, tenta a página da Primeira Liga
+    if not evento_link:
+        print("⚠️ Tentar página da Primeira Liga...")
+        url_base = "https://www.viagogo.pt/Bilhetes-Desporto/Futebol/Primeira-Liga"
+        response = scraper.get(url_base)
+        if response.status_code != 200:
+            print("❌ Erro ao carregar Primeira Liga:", response.status_code)
+            return None
+
+        soup = BeautifulSoup(response.text, "html.parser")
+        eventos = []
+        for a in soup.find_all("a", href=True):
+            texto = a.get_text(strip=True)
+            if "vs" in texto:
+                eventos.append((texto, a["href"]))
+
+        nomes = [e[0] for e in eventos]
+        semelhantes = difflib.get_close_matches(evento_nome, nomes, n=1, cutoff=0.6)
+
+        if not semelhantes:
+            print("❌ Evento não encontrado:", evento_nome)
+            return None
+
+        nome_encontrado = semelhantes[0]
+        href = next(link for nome, link in eventos if nome == nome_encontrado)
+        evento_link = "https://www.viagogo.pt" + href
+
+    print(f"✅ Match encontrado: '{evento_nome}' → {evento_link}")
+
+    # 3. Scraping dos preços
     response_evento = scraper.get(evento_link)
     if response_evento.status_code != 200:
         print("❌ Erro ao carregar evento:", response_evento.status_code)
@@ -68,6 +96,7 @@ def obter_preco_viagogo(evento_nome: str, setor: str, quantidade: int):
                 menor_preco = preco
 
     return menor_preco
+
 
 @comparar_router.post("/comparar_listagens")
 async def comparar_listagens(request: Request):
