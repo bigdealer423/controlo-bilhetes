@@ -95,4 +95,12 @@ async def comparar_listagens(request: Request):
                 "evento": evento,
                 "setor": setor,
                 "teu_preco": teu_preco,
-                "concorrente_preco": p_
+                "concorrente_preco": preco_viagogo if preco_viagogo is not None else "-",
+                "sugestao": sugestao,
+            })
+
+        return JSONResponse(content=resultados)
+
+    except Exception as e:
+        print("❌ Erro na comparação:", e)
+        return JSONResponse(status_code=500, content={"erro": str(e)})
