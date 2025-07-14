@@ -3,19 +3,19 @@ from fastapi.responses import JSONResponse
 import requests
 import re
 from bs4 import BeautifulSoup
-import os
 
 comparar_router = APIRouter()
 
-# URL base para o jogo fixo
+# URL base para o jogo
 BASE_LINK = "https://www.viagogo.pt/Bilhetes-Desporto/Futebol/Primeira-Liga/SL-Benfica-Bilhetes/E-158801955"
 
-# Autenticação Oxylabs
+# Autenticação Web Scraper API
 OXYLABS_USERNAME = "bigdealer.QM6VP"
 OXYLABS_PASSWORD = "Pedrosara18="
-OXYLABS_URL = "https://realtime.oxylabs.io/v1/queries"
+OXYLABS_URL = "https://scraper-api.oxylabs.io/v1"
 
 def obter_preco_com_oxylabs(base_url: str, setor: str, quantidade: int):
+    # Monta URL com quantidade
     if quantidade == 1:
         url = base_url + "?quantity=1"
     elif 2 <= quantidade < 6:
@@ -26,28 +26,27 @@ def obter_preco_com_oxylabs(base_url: str, setor: str, quantidade: int):
     print("🔎 URL usado:", url)
 
     payload = {
-        "source": "universal",
         "url": url,
-        "render": "html",  # 🚨 Importante para carregar JS
-        "geo_location": "Portugal"
+        "geo_location": "Portugal",
+        "render": True,  # 🚀 Ativa JS rendering
     }
 
     try:
-        resp = requests.post(
+        response = requests.post(
             OXYLABS_URL,
             auth=(OXYLABS_USERNAME, OXYLABS_PASSWORD),
             json=payload,
             timeout=60
         )
 
-        print(f"🌐 Código de estado Oxylabs: {resp.status_code}")
-        if resp.status_code != 200:
-            print("❌ Conteúdo de erro:", resp.text)
+        print(f"🌐 Código de estado Oxylabs: {response.status_code}")
+
+        if response.status_code != 200:
+            print("❌ Conteúdo de erro:", response.text)
             return None
 
-        html = resp.json().get("results", [{}])[0].get("content", "")
-        print("📄 Primeiros 500 caracteres de HTML:")
-        print(html[:500])
+        html = response.json().get("results", [{}])[0].get("content", "")
+        print("📄 Primeiros 500 caracteres de HTML:\n", html[:500])
 
         soup = BeautifulSoup(html, "html.parser")
         listagens = soup.select(".ticket-listing")
@@ -76,14 +75,16 @@ def obter_preco_com_oxylabs(base_url: str, setor: str, quantidade: int):
                     menor_preco = preco
 
         if menor_preco is None:
-            print("⚠️ Nenhuma listagem válida encontrada para este setor e quantidade.")
+            print("⚠️ Nenhuma listagem válida encontrada.")
         else:
             print(f"✅ Menor preço final encontrado: {menor_preco}€")
+
         return menor_preco
 
     except Exception as e:
         print("❌ Erro Oxylabs:", e)
         return None
+
 
 @comparar_router.post("/comparar_listagens")
 async def comparar_listagens(request: Request):
