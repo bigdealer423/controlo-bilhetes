@@ -9,7 +9,7 @@ comparar_router = APIRouter()
 
 BASE_LINK = "https://www.viagogo.pt/Bilhetes-Desporto/Futebol/Primeira-Liga/SL-Benfica-Bilhetes/E-158801955"
 
-USERNAME = "bigdealer_OMGVP"
+USERNAME = "bigdealer_QM6VP"
 PASSWORD = "Pedrosara18="  # <- Substituir
 
 def obter_preco_com_oxylabs(base_url: str, setor: str, quantidade: int):
