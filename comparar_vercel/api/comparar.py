@@ -50,6 +50,8 @@ def comparar_listagens():
     return jsonify({"preview": resultado})
 
 # GET para a homepage (evita erro 404 no browser)
-@app.route("/", methods=["GET"])
-def home():
-    return "✅ API Comparador ativa. Usa POST para /api/comparar_listagens"
+@app.route("/api/testar_viagogo")
+def testar_viagogo():
+    url = "https://www.viagogo.pt/Bilhetes-Desporto/Futebol/Primeira-Liga/SL-Benfica-Bilhetes/E-158801955?quantity=1"
+    resultado = obter_preco_com_oxylabs(url)
+    return jsonify({"preview": resultado})
