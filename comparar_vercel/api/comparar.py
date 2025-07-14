@@ -4,7 +4,7 @@ import requests
 import re
 from bs4 import BeautifulSoup
 
-app = FastAPI()
+app = Flask(__name__)
 
 USERNAME = "bigdealer.QM6VP"
 PASSWORD = "Pedrosara18="
