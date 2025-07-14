@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 import requests
 from bs4 import BeautifulSoup
+import re
 
 app = Flask(__name__)
 
@@ -13,32 +14,38 @@ def obter_preco_com_oxylabs(url: str):
         "url": url,
         "geo_location": "Portugal"
     }
-    response = requests.post(
-        OXYLABS_URL,
-        auth=(USERNAME, PASSWORD),
-        json=payload,
-        timeout=60
-    )
 
-    if response.status_code != 200:
-        return f"Erro Oxylabs: {response.status_code} - {response.text}"
+    try:
+        response = requests.post(
+            OXYLABS_URL,
+            auth=(USERNAME, PASSWORD),
+            json=payload,
+            timeout=60
+        )
 
-    html = response.json().get("results", [{}])[0].get("content", "")
-    soup = BeautifulSoup(html, "html.parser")
+        if response.status_code != 200:
+            return f"Erro Oxylabs: {response.status_code} - {response.text}"
 
-    resultados = []
-    for item in soup.select(".ticket-listing"):
-        texto = item.get_text(separator=" ", strip=True)
-        match_setor = re.search(r"Setor\s*:\s*(.*?)\s", texto)
-        match_preco = re.search(r"€\s*(\d+(?:,\d{2})?)", texto)
+        html = response.json().get("results", [{}])[0].get("content", "")
+        soup = BeautifulSoup(html, "html.parser")
 
-        if match_setor and match_preco:
-            setor = match_setor.group(1)
-            preco = float(match_preco.group(1).replace(",", "."))
-            resultados.append({"setor": setor, "preco": preco})
+        # Extrair setores e preços (exemplo simples)
+        resultados = []
+        for item in soup.select(".ticket-listing"):
+            texto = item.get_text(separator=" ", strip=True)
+            match_preco = re.search(r"€\s*(\d+(?:,\d{2})?)", texto)
+            if match_preco:
+                preco = float(match_preco.group(1).replace(",", "."))
+                resultados.append(preco)
 
-    return resultados if resultados else "Nenhuma listagem encontrada"
+        return resultados if resultados else "Nenhuma listagem com preço encontrada."
 
+    except Exception as e:
+        return f"Erro na extração: {str(e)}"
+
+@app.route("/")
+def home():
+    return "✅ API Comparador ativa. Usa POST em /api/comparar_listagens ou GET em /api/testar_viagogo"
 
 @app.route("/api/comparar_listagens", methods=["POST"])
 def comparar_listagens():
@@ -49,8 +56,7 @@ def comparar_listagens():
     resultado = obter_preco_com_oxylabs(url)
     return jsonify({"preview": resultado})
 
-# GET para a homepage (evita erro 404 no browser)
-@app.route("/api/testar_viagogo")
+@app.route("/api/testar_viagogo", methods=["GET"])
 def testar_viagogo():
     url = "https://www.viagogo.pt/Bilhetes-Desporto/Futebol/Primeira-Liga/SL-Benfica-Bilhetes/E-158801955?quantity=1"
     resultado = obter_preco_com_oxylabs(url)
