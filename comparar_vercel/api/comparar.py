@@ -21,14 +21,13 @@ def obter_preco_com_oxylabs(url: str):
     )
     html = response.json().get("results", [{}])[0].get("content", "")
     soup = BeautifulSoup(html, "html.parser")
-    # Aqui podes pôr a lógica de parsing
-    return html[:500]  # Só para exemplo
+    return html[:500]  # Só para teste
 
-@app.post("/api/comparar_listagens")
-async def comparar_listagens(request: Request):
-    body = await request.json()
-    url = body.get("url")
+@app.route("/api/comparar_listagens", methods=["POST"])
+def comparar_listagens():
+    data = request.get_json()
+    url = data.get("url")
     if not url:
-        return JSONResponse(status_code=400, content={"erro": "Falta URL"})
+        return jsonify({"erro": "Falta URL"}), 400
     resultado = obter_preco_com_oxylabs(url)
-    return {"preview": resultado}
+    return jsonify({"preview": resultado})
