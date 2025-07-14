@@ -1,16 +1,19 @@
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
 import requests
-from requests.auth import HTTPBasicAuth
 import re
 from bs4 import BeautifulSoup
+import os
 
 comparar_router = APIRouter()
 
+# URL base para o jogo fixo
 BASE_LINK = "https://www.viagogo.pt/Bilhetes-Desporto/Futebol/Primeira-Liga/SL-Benfica-Bilhetes/E-158801955"
 
-USERNAME = "bigdealer_QM6VP"
-PASSWORD = "Pedrosara18="  # <- Substituir
+# Autenticação Oxylabs
+OXYLABS_USERNAME = "bigdealer.QM6VP"
+OXYLABS_PASSWORD = "Pedrosara18="
+OXYLABS_URL = "https://realtime.oxylabs.io/v1/queries"
 
 def obter_preco_com_oxylabs(base_url: str, setor: str, quantidade: int):
     if quantidade == 1:
@@ -22,22 +25,27 @@ def obter_preco_com_oxylabs(base_url: str, setor: str, quantidade: int):
 
     print("🔎 URL usado:", url)
 
+    payload = {
+        "source": "universal",
+        "url": url,
+        "render": "html",  # 🚨 Importante para carregar JS
+        "geo_location": "Portugal"
+    }
+
     try:
-        response = requests.post(
-            "https://realtime.oxylabs.io/v1/queries",
-            auth=HTTPBasicAuth(USERNAME, PASSWORD),
-            headers={"Content-Type": "application/json"},
-            json={"source": "universal", "url": url},
+        resp = requests.post(
+            OXYLABS_URL,
+            auth=(OXYLABS_USERNAME, OXYLABS_PASSWORD),
+            json=payload,
             timeout=60
         )
 
-        print(f"🌐 Código de estado Oxylabs: {response.status_code}")
-        if response.status_code != 200:
-            print("❌ Conteúdo de erro:", response.text)
+        print(f"🌐 Código de estado Oxylabs: {resp.status_code}")
+        if resp.status_code != 200:
+            print("❌ Conteúdo de erro:", resp.text)
             return None
 
-        result = response.json()
-        html = result.get("results", [{}])[0].get("content", "")
+        html = resp.json().get("results", [{}])[0].get("content", "")
         print("📄 Primeiros 500 caracteres de HTML:")
         print(html[:500])
 
@@ -46,12 +54,9 @@ def obter_preco_com_oxylabs(base_url: str, setor: str, quantidade: int):
         print("🎫 Listagens encontradas:", len(listagens))
 
         menor_preco = None
-        listagens_validas = 0
 
         for item in listagens:
-            texto = item.get_text(separator=" ").strip()
-            print("🔍 Texto da listagem:", texto[:200])
-
+            texto = item.get_text()
             if setor.lower() not in texto.lower():
                 continue
 
@@ -67,20 +72,18 @@ def obter_preco_com_oxylabs(base_url: str, setor: str, quantidade: int):
             if match_preco:
                 preco_str = match_preco.group(1).replace(",", ".")
                 preco = float(preco_str)
-                listagens_validas += 1
                 if menor_preco is None or preco < menor_preco:
                     menor_preco = preco
 
-        if listagens_validas == 0:
+        if menor_preco is None:
             print("⚠️ Nenhuma listagem válida encontrada para este setor e quantidade.")
-
-        print(f"✅ Menor preço final encontrado: {menor_preco}€")
+        else:
+            print(f"✅ Menor preço final encontrado: {menor_preco}€")
         return menor_preco
 
     except Exception as e:
         print("❌ Erro Oxylabs:", e)
         return None
-
 
 @comparar_router.post("/comparar_listagens")
 async def comparar_listagens(request: Request):
