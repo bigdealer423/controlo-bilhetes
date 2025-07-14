@@ -20,14 +20,25 @@ def obter_preco_com_oxylabs(url: str):
         timeout=60
     )
 
-    # Verifica se a resposta está OK
     if response.status_code != 200:
         return f"Erro Oxylabs: {response.status_code} - {response.text}"
 
     html = response.json().get("results", [{}])[0].get("content", "")
     soup = BeautifulSoup(html, "html.parser")
 
-    return soup.prettify()[:1000]  # devolve os primeiros 1000 chars para debug
+    resultados = []
+    for item in soup.select(".ticket-listing"):
+        texto = item.get_text(separator=" ", strip=True)
+        match_setor = re.search(r"Setor\s*:\s*(.*?)\s", texto)
+        match_preco = re.search(r"€\s*(\d+(?:,\d{2})?)", texto)
+
+        if match_setor and match_preco:
+            setor = match_setor.group(1)
+            preco = float(match_preco.group(1).replace(",", "."))
+            resultados.append({"setor": setor, "preco": preco})
+
+    return resultados if resultados else "Nenhuma listagem encontrada"
+
 
 @app.route("/api/comparar_listagens", methods=["POST"])
 def comparar_listagens():
