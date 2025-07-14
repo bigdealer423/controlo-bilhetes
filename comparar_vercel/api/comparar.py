@@ -1,7 +1,5 @@
-from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
+from flask import Flask, request, jsonify
 import requests
-import re
 from bs4 import BeautifulSoup
 
 app = Flask(__name__)
