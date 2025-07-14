@@ -1,22 +1,20 @@
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
 import requests
+from requests.auth import HTTPBasicAuth
 import re
 from bs4 import BeautifulSoup
 
 comparar_router = APIRouter()
 
+# Link fixo
 BASE_LINK = "https://www.viagogo.pt/Bilhetes-Desporto/Futebol/Primeira-Liga/SL-Benfica-Bilhetes/E-158801955"
 
-HEADERS = {
-    "User-Agent": (
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-        "AppleWebKit/537.36 (KHTML, like Gecko) "
-        "Chrome/115.0.0.0 Safari/537.36"
-    )
-}
+# Credenciais da Oxylabs
+USERNAME = "bigdealer_OMGVP"
+PASSWORD = "Pedrosara18="
 
-def obter_preco_com_requests(base_url: str, setor: str, quantidade: int):
+def obter_preco_com_oxylabs(base_url: str, setor: str, quantidade: int):
     if quantidade == 1:
         url = base_url + "?quantity=1"
     elif 2 <= quantidade < 6:
@@ -27,9 +25,25 @@ def obter_preco_com_requests(base_url: str, setor: str, quantidade: int):
     print("🔎 URL usado:", url)
 
     try:
-        resp = requests.get(url, headers=HEADERS, timeout=20)
-        soup = BeautifulSoup(resp.text, "html.parser")
+        response = requests.post(
+            "https://realtime.oxylabs.io/v1/queries",
+            auth=HTTPBasicAuth(USERNAME, PASSWORD),
+            headers={"Content-Type": "application/json"},
+            json={
+                "source": "universal",
+                "url": url
+            },
+            timeout=60
+        )
 
+        if response.status_code != 200:
+            print("❌ Erro Oxylabs:", response.status_code, response.text)
+            return None
+
+        result = response.json()
+        html = result.get("results", [{}])[0].get("content", "")
+
+        soup = BeautifulSoup(html, "html.parser")
         listagens = soup.select(".ticket-listing")
         print("🎫 Listagens encontradas:", len(listagens))
 
@@ -78,7 +92,7 @@ async def comparar_listagens(request: Request):
 
             print(f"\n🧪 Comparando evento: {evento} | Setor: {setor} | Qtd: {quantidade} | Teu preço: {teu_preco}")
 
-            preco_viagogo = obter_preco_com_requests(BASE_LINK, setor, quantidade)
+            preco_viagogo = obter_preco_com_oxylabs(BASE_LINK, setor, quantidade)
 
             if preco_viagogo is None:
                 sugestao = "Sem dados"
