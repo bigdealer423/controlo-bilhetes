@@ -1,9 +1,15 @@
 {
   "version": 2,
   "builds": [
-    { "src": "api/comparar.py", "use": "@vercel/python" }
+    {
+      "src": "api/comparar.py",
+      "use": "@vercel/python"
+    }
   ],
   "routes": [
-    { "src": "/api/.*", "dest": "api/comparar.py" }
+    {
+      "src": "/api/.*",
+      "dest": "api/comparar.py"
+    }
   ]
 }
