@@ -7,12 +7,10 @@ from bs4 import BeautifulSoup
 
 comparar_router = APIRouter()
 
-# Link fixo
 BASE_LINK = "https://www.viagogo.pt/Bilhetes-Desporto/Futebol/Primeira-Liga/SL-Benfica-Bilhetes/E-158801955"
 
-# Credenciais da Oxylabs
 USERNAME = "bigdealer_OMGVP"
-PASSWORD = "Pedrosara18="
+PASSWORD = "A_TUA_PASSWORD_REAL_AQUI"  # <- Substituir
 
 def obter_preco_com_oxylabs(base_url: str, setor: str, quantidade: int):
     if quantidade == 1:
@@ -29,28 +27,31 @@ def obter_preco_com_oxylabs(base_url: str, setor: str, quantidade: int):
             "https://realtime.oxylabs.io/v1/queries",
             auth=HTTPBasicAuth(USERNAME, PASSWORD),
             headers={"Content-Type": "application/json"},
-            json={
-                "source": "universal",
-                "url": url
-            },
+            json={"source": "universal", "url": url},
             timeout=60
         )
 
+        print(f"🌐 Código de estado Oxylabs: {response.status_code}")
         if response.status_code != 200:
-            print("❌ Erro Oxylabs:", response.status_code, response.text)
+            print("❌ Conteúdo de erro:", response.text)
             return None
 
         result = response.json()
         html = result.get("results", [{}])[0].get("content", "")
+        print("📄 Primeiros 500 caracteres de HTML:")
+        print(html[:500])
 
         soup = BeautifulSoup(html, "html.parser")
         listagens = soup.select(".ticket-listing")
         print("🎫 Listagens encontradas:", len(listagens))
 
         menor_preco = None
+        listagens_validas = 0
 
         for item in listagens:
-            texto = item.get_text()
+            texto = item.get_text(separator=" ").strip()
+            print("🔍 Texto da listagem:", texto[:200])
+
             if setor.lower() not in texto.lower():
                 continue
 
@@ -66,14 +67,18 @@ def obter_preco_com_oxylabs(base_url: str, setor: str, quantidade: int):
             if match_preco:
                 preco_str = match_preco.group(1).replace(",", ".")
                 preco = float(preco_str)
+                listagens_validas += 1
                 if menor_preco is None or preco < menor_preco:
                     menor_preco = preco
+
+        if listagens_validas == 0:
+            print("⚠️ Nenhuma listagem válida encontrada para este setor e quantidade.")
 
         print(f"✅ Menor preço final encontrado: {menor_preco}€")
         return menor_preco
 
     except Exception as e:
-        print("❌ Erro requests:", e)
+        print("❌ Erro Oxylabs:", e)
         return None
 
 
