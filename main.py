@@ -637,5 +637,9 @@ def resumo_dashboard(db: Session = Depends(get_db)):
     }
 
 
+from routes.comparar import comparar_router  # <- caminho correto para o ficheiro onde definiste a rota
+app.include_router(comparar_router, prefix="/api")  # <- isto cria o /api/comparar_listagens
+
+
 
 
