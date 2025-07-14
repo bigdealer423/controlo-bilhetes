@@ -24,24 +24,28 @@ def obter_preco_com_oxylabs(url: str):
         )
 
         if response.status_code != 200:
-            return f"Erro Oxylabs: {response.status_code} - {response.text}"
+            return {
+                "erro": f"Erro Oxylabs: {response.status_code}",
+                "detalhe": response.text
+            }
 
-        html = response.json().get("results", [{}])[0].get("content", "")
+        # Tenta extrair HTML renderizado
+        json_result = response.json()
+        if not json_result.get("results"):
+            return {"erro": "Resposta da Oxylabs sem resultados"}
+
+        html = json_result["results"][0].get("content", "")
+        if not html:
+            return {"erro": "HTML vazio"}
+
         soup = BeautifulSoup(html, "html.parser")
+        primeiros_500 = soup.get_text(separator="\n")[:500]
 
-        # Extrair setores e preços (exemplo simples)
-        resultados = []
-        for item in soup.select(".ticket-listing"):
-            texto = item.get_text(separator=" ", strip=True)
-            match_preco = re.search(r"€\s*(\d+(?:,\d{2})?)", texto)
-            if match_preco:
-                preco = float(match_preco.group(1).replace(",", "."))
-                resultados.append(preco)
-
-        return resultados if resultados else "Nenhuma listagem com preço encontrada."
+        return {"html_preview": primeiros_500}
 
     except Exception as e:
-        return f"Erro na extração: {str(e)}"
+        return {"erro": "Exceção ao contactar Oxylabs", "detalhe": str(e)}
+
 
 @app.route("/")
 def home():
@@ -59,5 +63,5 @@ def comparar_listagens():
 @app.route("/api/testar_viagogo", methods=["GET"])
 def testar_viagogo():
     url = "https://www.viagogo.pt/Bilhetes-Desporto/Futebol/Primeira-Liga/SL-Benfica-Bilhetes/E-158801955?quantity=1"
-    resultado = obter_preco_com_oxylabs(url)
-    return jsonify({"preview": resultado})
+    return jsonify(obter_preco_com_oxylabs(url))
+
