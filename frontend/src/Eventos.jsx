@@ -745,9 +745,10 @@ return (
             </ul>
 
             {Array.isArray(lucrosMensais) && (
-              <div className="text-right font-semibold border-t pt-2">
+              <div className="text-right font-bold text-lg border-t pt-2 text-black dark:text-white">
                 Total: {lucrosMensais.reduce((acc, cur) => acc + cur.lucro, 0).toFixed(2)} €
               </div>
+
             )}
 
             <button
