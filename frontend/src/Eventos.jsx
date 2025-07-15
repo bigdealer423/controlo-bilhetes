@@ -168,9 +168,9 @@ useEffect(() => {
   try {
     const res = await fetch("https://controlo-bilhetes.onrender.com/lucro_por_mes");
     const data = await res.json();
-    console.log("📊 Dados recebidos de /lucro_por_mes:", data); // <--- isto
+    console.log("📊 Dados recebidos:", data);
     setLucrosMensais(data);
-    setMostrarResumoDetalhado(true);
+    setMostrarResumoDetalhado(true); // 👈 abre o modal
   } catch (err) {
     console.error("Erro ao buscar lucros mensais:", err);
   }
@@ -371,11 +371,12 @@ return (
   <div className="flex items-center justify-between mb-2">
     <p className="font-semibold text-lg">Resumo Mensal</p>
     <button
-      onClick={buscarLucrosMensais}
-      className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 text-sm"
-    >
-      📊 Ver Lucros por Mês
-    </button>
+  type="button"
+  onClick={buscarLucrosMensais}
+  className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 text-sm"
+>
+  📊 Ver Lucros por Mês
+</button>
   </div>
   <p>📆 Lucro de {new Date().toLocaleString("pt-PT", { month: "long", year: "numeric" })}: <strong>{resumoMensal.lucro} €</strong></p>
   <p>💸 A aguardar pagamento: <strong>{resumoMensal.pagamento} €</strong></p>
