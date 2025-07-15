@@ -12,8 +12,17 @@ import cloudscraper
 URLS = [
     'https://bilheteira.fpf.pt/',
     'https://viagens.slbenfica.pt/follow-my-team/futebol',
+    'https://viagens.slbenfica.pt/follow-my-team/futebol/primeira-liga-fora',
+    'https://viagens.slbenfica.pt/follow-my-team/futebol/primeira-liga-casa',
+    'https://viagens.slbenfica.pt/follow-my-team/futebol/taca-de-portugal',
+    'https://viagens.slbenfica.pt/follow-my-team/futebol/champions-league',
+    'https://viagens.slbenfica.pt/follow-my-team/futebol/taca-da-liga',
+    'https://viagens.slbenfica.pt/follow-my-team/futebol/liga-europa',
+    'https://viagens.slbenfica.pt/follow-my-team/futebol/supertaca-candido-de-oliveira',
+    'https://viagens.slbenfica.pt/follow-my-team/futebol/eusebio-cup',
     'https://www.sporting.pt/pt/bilhetes-e-gamebox/bilhetes'
 ]
+
 HIST_FILE = 'fpf_hist.json'
 EMAIL_FROM = os.getenv("EMAIL_USERNAME")
 EMAIL_TO = os.getenv("EMAIL_USERNAME")
