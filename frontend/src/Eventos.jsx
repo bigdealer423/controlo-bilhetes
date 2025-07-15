@@ -23,6 +23,9 @@ export default function Eventos() {
   const observerRef = useRef();
   const limit = 15;
   const location = useLocation();
+  const [mostrarResumoDetalhado, setMostrarResumoDetalhado] = useState(false);
+  const [lucrosMensais, setLucrosMensais] = useState([]);
+
 
 useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -161,6 +164,17 @@ useEffect(() => {
     }
   };
 
+  const buscarLucrosMensais = async () => {
+    try {
+      const res = await fetch("https://controlo-bilhetes.onrender.com/lucro_por_mes");
+      const data = await res.json();
+      setLucrosMensais(data);
+      setMostrarResumoDetalhado(true);
+    } catch (err) {
+      console.error("Erro ao buscar lucros mensais:", err);
+    }
+  };
+  
   const ordenarEventosDropdown = (data) => {
     return [...data].sort((a, b) => {
       const nomeA = a.nome.toLowerCase();
@@ -353,13 +367,20 @@ return (
 
 
       <div className="bg-yellow-100 dark:bg-yellow-900 border-l-4 border-yellow-600 dark:border-yellow-400 text-yellow-800 dark:text-yellow-200 p-4 mb-6 rounded transition-colors duration-300">
-
-  <p className="font-semibold">Resumo Mensal</p>
+  <div className="flex items-center justify-between mb-2">
+    <p className="font-semibold text-lg">Resumo Mensal</p>
+    <button
+      onClick={buscarLucrosMensais}
+      className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 text-sm"
+    >
+      📊 Ver Lucros por Mês
+    </button>
+  </div>
   <p>📆 Lucro de {new Date().toLocaleString("pt-PT", { month: "long", year: "numeric" })}: <strong>{resumoMensal.lucro} €</strong></p>
-<p>💸 A aguardar pagamento: <strong>{resumoMensal.pagamento} €</strong></p>
-<p>🎟️ Bilhetes vendidos esta época: <strong>{resumoMensal.bilhetes_epoca}</strong></p>
-
+  <p>💸 A aguardar pagamento: <strong>{resumoMensal.pagamento} €</strong></p>
+  <p>🎟️ Bilhetes vendidos esta época: <strong>{resumoMensal.bilhetes_epoca}</strong></p>
 </div>
+
 
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-2">
 
@@ -705,22 +726,45 @@ return (
        </div>   
       </div>
 
-      {/* Modal de confirmação */}
-      {mostrarModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 dark:text-gray-100 p-6 rounded shadow-lg transition-colors duration-300">
-            <p className="mb-4">Tem a certeza que quer eliminar este registo?</p>
-            <div className="flex justify-end space-x-4">
-              <button onClick={() => setMostrarModal(false)} className="bg-gray-300 px-4 py-2 rounded">
-                Cancelar
-              </button>
-              <button onClick={eliminarRegisto} className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
-                Confirmar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Modal de lucros por mês */}
+{mostrarResumoDetalhado && (
+  <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
+    <div className="bg-white dark:bg-gray-800 p-6 rounded shadow-lg max-w-md w-full">
+      <h2 className="text-lg font-bold mb-4 text-gray-900 dark:text-white">Lucro por Mês</h2>
+      <ul className="mb-4 space-y-1">
+        {lucrosMensais.map((item, idx) => (
+          <li key={idx} className="flex justify-between">
+            <span>{item.mes}</span>
+            <span>{item.lucro.toFixed(2)} €</span>
+          </li>
+        ))}
+      </ul>
+      <div className="text-right font-semibold border-t pt-2">
+        Total: {lucrosMensais.reduce((acc, cur) => acc + cur.lucro, 0).toFixed(2)} €
+      </div>
+      <button
+        onClick={() => setMostrarResumoDetalhado(false)}
+        className="mt-4 bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-white px-4 py-2 rounded hover:bg-gray-400 dark:hover:bg-gray-600"
+      >
+        Fechar
+      </button>
     </div>
-  );
-}
+  </div>
+)}
+
+{/* Modal de confirmação */}
+{mostrarModal && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="bg-white dark:bg-gray-800 dark:text-gray-100 p-6 rounded shadow-lg transition-colors duration-300">
+      <p className="mb-4">Tem a certeza que quer eliminar este registo?</p>
+      <div className="flex justify-end space-x-4">
+        <button onClick={() => setMostrarModal(false)} className="bg-gray-300 px-4 py-2 rounded">
+          Cancelar
+        </button>
+        <button onClick={eliminarRegisto} className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+          Confirmar
+        </button>
+      </div>
+    </div>
+  </div>
+)}
