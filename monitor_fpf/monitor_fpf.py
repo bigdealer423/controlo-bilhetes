@@ -34,7 +34,7 @@ def guardar_historico(historico):
         json.dump(historico, f)
 
 PALAVRAS_CHAVE_FPF = ["Comprar", "Adquirir", "Bilhete", "Ingressos", "Buy", "IRL", "HUN", "Irlanda", "Hungria"] 
-PALAVRAS_CHAVE_SLB = ["Carcavelos", "Fatima", "1ª Jornada"]
+PALAVRAS_CHAVE_SLB = ["Carcavelos", "Fatima", "15ª Jornada"]
 PALAVRAS_CHAVE_SPORTING = ["comprar bilhetes"]
 
 
