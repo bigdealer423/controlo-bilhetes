@@ -731,7 +731,7 @@ return (
          {/* Modal de lucros por mês */}
       {mostrarResumoDetalhado && (
         <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white dark:bg-gray-800 p-6 rounded shadow-lg max-w-md w-full">
+          <div className="bg-white dark:bg-gray-800 text-black dark:text-white p-6 rounded shadow-lg">
             <h2 className="text-lg font-bold mb-4 text-gray-900 dark:text-white">Lucro por Mês</h2>
             <ul className="mb-4 space-y-1">
               {Array.isArray(lucrosMensais) && lucrosMensais.map((item, idx) => (
