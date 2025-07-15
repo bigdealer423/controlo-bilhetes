@@ -733,14 +733,17 @@ return (
         <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
           <div className="bg-white dark:bg-gray-800 text-black dark:text-white p-6 rounded shadow-lg">
             <h2 className="text-lg font-bold mb-4 text-gray-900 dark:text-white">Lucro por Mês</h2>
-            <ul className="mb-4 space-y-1">
+            <ul className="mb-4 space-y-1 text-black dark:text-white">
               {Array.isArray(lucrosMensais) && lucrosMensais.map((item, idx) => (
                 <li key={idx} className="flex justify-between">
                   <span>{item.mes}</span>
-                  <span>{item.lucro.toFixed(2)} €</span>
+                  <span className={item.lucro < 0 ? "text-red-500" : ""}>
+                    {item.lucro.toFixed(2)} €
+                  </span>
                 </li>
               ))}
             </ul>
+
             {Array.isArray(lucrosMensais) && (
               <div className="text-right font-semibold border-t pt-2">
                 Total: {lucrosMensais.reduce((acc, cur) => acc + cur.lucro, 0).toFixed(2)} €
