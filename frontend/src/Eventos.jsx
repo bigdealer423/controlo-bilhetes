@@ -165,15 +165,16 @@ useEffect(() => {
   };
 
   const buscarLucrosMensais = async () => {
-    try {
-      const res = await fetch("https://controlo-bilhetes.onrender.com/lucro_por_mes");
-      const data = await res.json();
-      setLucrosMensais(data);
-      setMostrarResumoDetalhado(true);
-    } catch (err) {
-      console.error("Erro ao buscar lucros mensais:", err);
-    }
-  };
+  try {
+    const res = await fetch("https://controlo-bilhetes.onrender.com/lucro_por_mes");
+    const data = await res.json();
+    console.log("📊 Dados recebidos de /lucro_por_mes:", data); // <--- isto
+    setLucrosMensais(data);
+    setMostrarResumoDetalhado(true);
+  } catch (err) {
+    console.error("Erro ao buscar lucros mensais:", err);
+  }
+};
   
   const ordenarEventosDropdown = (data) => {
     return [...data].sort((a, b) => {
@@ -732,7 +733,7 @@ return (
           <div className="bg-white dark:bg-gray-800 p-6 rounded shadow-lg max-w-md w-full">
             <h2 className="text-lg font-bold mb-4 text-gray-900 dark:text-white">Lucro por Mês</h2>
             <ul className="mb-4 space-y-1">
-              {lucrosMensais.map((item, idx) => (
+              {Array.isArray(lucrosMensais) && lucrosMensais.map((item, idx) => (
                 <li key={idx} className="flex justify-between">
                   <span>{item.mes}</span>
                   <span>{item.lucro.toFixed(2)} €</span>
