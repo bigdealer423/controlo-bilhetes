@@ -726,7 +726,7 @@ return (
        </div>   
       </div>
 
-            {/* Modal de lucros por mês */}
+         {/* Modal de lucros por mês */}
       {mostrarResumoDetalhado && (
         <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
           <div className="bg-white dark:bg-gray-800 p-6 rounded shadow-lg max-w-md w-full">
@@ -751,7 +751,7 @@ return (
           </div>
         </div>
       )}
-
+  
       {/* Modal de confirmação */}
       {mostrarModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
