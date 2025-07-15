@@ -726,31 +726,31 @@ return (
        </div>   
       </div>
 </div>
-      {/* Modal de lucros por mês */}
-{mostrarResumoDetalhado && (
-  <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
-    <div className="bg-white dark:bg-gray-800 p-6 rounded shadow-lg max-w-md w-full">
-      <h2 className="text-lg font-bold mb-4 text-gray-900 dark:text-white">Lucro por Mês</h2>
-      <ul className="mb-4 space-y-1">
-        {lucrosMensais.map((item, idx) => (
-          <li key={idx} className="flex justify-between">
-            <span>{item.mes}</span>
-            <span>{item.lucro.toFixed(2)} €</span>
-          </li>
-        ))}
-      </ul>
-      <div className="text-right font-semibold border-t pt-2">
-        Total: {lucrosMensais.reduce((acc, cur) => acc + cur.lucro, 0).toFixed(2)} €
-      </div>
-      <button
-        onClick={() => setMostrarResumoDetalhado(false)}
-        className="mt-4 bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-white px-4 py-2 rounded hover:bg-gray-400 dark:hover:bg-gray-600"
-      >
-        Fechar
-      </button>
-    </div>
-  </div>
-)}
+            {/* Modal de lucros por mês */}
+      {mostrarResumoDetalhado && (
+        <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded shadow-lg max-w-md w-full">
+            <h2 className="text-lg font-bold mb-4 text-gray-900 dark:text-white">Lucro por Mês</h2>
+            <ul className="mb-4 space-y-1">
+              {lucrosMensais.map((item, idx) => (
+                <li key={idx} className="flex justify-between">
+                  <span>{item.mes}</span>
+                  <span>{item.lucro.toFixed(2)} €</span>
+                </li>
+              ))}
+            </ul>
+            <div className="text-right font-semibold border-t pt-2">
+              Total: {lucrosMensais.reduce((acc, cur) => acc + cur.lucro, 0).toFixed(2)} €
+            </div>
+            <button
+              onClick={() => setMostrarResumoDetalhado(false)}
+              className="mt-4 bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-white px-4 py-2 rounded hover:bg-gray-400 dark:hover:bg-gray-600"
+            >
+              Fechar
+            </button>
+          </div>
+        </div>
+      )}
 
     {/* Modal de confirmação */}
     {mostrarModal && (
