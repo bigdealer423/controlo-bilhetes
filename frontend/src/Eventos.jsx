@@ -741,9 +741,12 @@ return (
                 </li>
               ))}
             </ul>
-            <div className="text-right font-semibold border-t pt-2">
-              Total: {lucrosMensais.reduce((acc, cur) => acc + cur.lucro, 0).toFixed(2)} €
-            </div>
+            {Array.isArray(lucrosMensais) && (
+              <div className="text-right font-semibold border-t pt-2">
+                Total: {lucrosMensais.reduce((acc, cur) => acc + cur.lucro, 0).toFixed(2)} €
+              </div>
+            )}
+
             <button
               onClick={() => setMostrarResumoDetalhado(false)}
               className="mt-4 bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-white px-4 py-2 rounded hover:bg-gray-400 dark:hover:bg-gray-600"
