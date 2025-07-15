@@ -333,32 +333,36 @@ useEffect(() => {
   };
 
   const renderEventoComSimbolos = (eventoNome) => {
-    // Limpa "vs vs" duplicados antes de partir
-    const nomeLimpo = eventoNome.replace(/\bvs\b\s*\bvs\b/gi, "vs");
+  // Limpa "vs vs", "vs  vs", etc.
+  const nomeLimpo = eventoNome.replace(/\b(vs\s*){2,}/gi, "vs");
 
-    // Usar expressão que só separa em "vs" como palavra isolada
-    const partes = nomeLimpo.split(/\bvs\b|x|-|,|\//i).map(p => p.trim()).filter(p => p.length > 0);
+  // Divide apenas por "vs" como palavra isolada
+  const partes = nomeLimpo.split(/\bvs\b/i)
+    .map(p => p.trim())
+    .filter(p => p.length > 0);
 
-    return partes.map((parte, idx) => {
-        const clubeMatch = clubesInfo.find(clube =>
-            parte.toLowerCase().includes(clube.nome.toLowerCase().slice(0, 5))
-        );
+  return partes.map((parte, idx) => {
+    const clubeMatch = clubesInfo.find(clube =>
+      parte.toLowerCase().includes(clube.nome.toLowerCase().slice(0, 5))
+    );
 
-        return (
-            <span key={idx} className="inline-flex items-center gap-1 mr-2">
-                {clubeMatch && clubeMatch.simbolo && (
-                    <img
-                        src={clubeMatch.simbolo}
-                        alt={clubeMatch.nome}
-                        className="w-5 h-5 object-contain inline-block"
-                    />
-                )}
-                {parte}
-                {idx !== partes.length - 1 && <span className="mx-1">vs</span>}
-            </span>
-        );
-    });
+    return (
+      <span key={idx} className="inline-flex items-center gap-1 mr-2">
+        {clubeMatch && clubeMatch.simbolo && (
+          <img
+            src={clubeMatch.simbolo}
+            alt={clubeMatch.nome}
+            className="w-5 h-5 object-contain inline-block"
+          />
+        )}
+        {parte}
+        {/* Só adiciona "vs" entre os dois clubes */}
+        {idx === 0 && partes.length > 1 && <span className="mx-1">vs</span>}
+      </span>
+    );
+  });
 };
+
 
 
 
