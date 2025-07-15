@@ -1,3 +1,5 @@
+from collections import defaultdict
+import calendar
 from sqlalchemy import extract
 from fastapi import File, UploadFile
 from fastapi.staticfiles import StaticFiles
@@ -488,7 +490,32 @@ def resumo_mensal_eventos(db: Session = Depends(get_db)):
         "bilhetes_epoca": total_bilhetes
     }
 
+@app.get("/lucro_por_mes")
+def lucro_por_mes(db: Session = Depends(get_db)):
+    eventos = db.query(EventoCompletoModel).all()
 
+    # Agrupar lucros por mês/ano
+    lucros = defaultdict(float)
+
+    for evento in eventos:
+        if evento.data_evento and evento.ganho is not None and evento.gasto is not None:
+            mes = evento.data_evento.month
+            ano = evento.data_evento.year
+            nome_mes = f"{calendar.month_name[mes]} {ano}"
+            ganho = evento.ganho or 0
+            gasto = evento.gasto or 0
+            estado = (evento.estado or "").strip().lower()
+
+            if estado == "pago" or ganho > 0:
+                lucros[nome_mes] += ganho - gasto
+
+    # Converter em lista ordenada por ano e mês
+    resultado = [
+        {"mes": nome_mes, "lucro": round(valor, 2)}
+        for nome_mes, valor in sorted(lucros.items(), key=lambda x: (int(x[0].split()[-1]), list(calendar.month_name).index(x[0].split()[0])))
+    ]
+
+    return resultado
 
     
 # 🔹 Criar as tabelas no arranque
