@@ -735,12 +735,13 @@ return (
             <h2 className="text-lg font-bold mb-4 text-gray-900 dark:text-white">Lucro por Mês</h2>
             <ul className="mb-4 space-y-1 text-black dark:text-white">
               {Array.isArray(lucrosMensais) && lucrosMensais.map((item, idx) => (
-                <li key={idx} className="flex justify-between">
+                <li key={idx} className="flex justify-between gap-8">
                   <span>{item.mes}</span>
                   <span className={item.lucro < 0 ? "text-red-500" : ""}>
                     {item.lucro.toFixed(2)} €
                   </span>
                 </li>
+
               ))}
             </ul>
 
