@@ -280,77 +280,81 @@ def processar_email_stubhub(content, data_venda):
         return "erro"
 
 def verificar_emails_entregues_stubhub(username, password, dias=PERIODO_DIAS):
-    from datetime import datetime, timedelta
     import email
     import re
     import requests
+    from datetime import datetime, timedelta
+    from email.header import decode_header
 
     mail = connect_email(username, password)
     mail.select("inbox")
 
     data_limite = (datetime.today() - timedelta(days=dias)).strftime("%d-%b-%Y")
+    
+    # 🔄 Alterado: pesquisa só por remetente
     status, mensagens = mail.search(
         None,
-        f'(SUBJECT "Os seus bilhetes foram entregues para o pedido" FROM "order-update@orders.stubhubinternational.com" SINCE {data_limite})'
+        f'(FROM "order-update@orders.stubhubinternational.com" SINCE {data_limite})'
     )
     ids = mensagens[0].split()
-    print(f"📩 [StubHub] Emails a verificar para entregas: {len(ids)}")
+    print(f"📩 Emails StubHub encontrados: {len(ids)}")
 
     ids_entregues = []
 
     for msg_id in ids:
-        _, msg = mail.fetch(msg_id, "(RFC822)")
-        for response_part in msg:
+        _, msg_data = mail.fetch(msg_id, "(RFC822)")
+        for response_part in msg_data:
             if isinstance(response_part, tuple):
                 msg = email.message_from_bytes(response_part[1])
-                assunto = msg["Subject"]
-                remetente = msg["From"]
 
-                print(f"\n📧 Assunto: {assunto}")
-                print(f"📤 Remetente: {remetente}")
+                # ✅ Decodificar o assunto corretamente
+                raw_subject = msg["Subject"]
+                decoded_parts = decode_header(raw_subject)
+                subject = ''.join([
+                    part.decode(enc or "utf-8") if isinstance(part, bytes) else part
+                    for part, enc in decoded_parts
+                ])
+                print(f"📧 Assunto decodificado: {subject}")
 
-                match = re.search(r"pedido\s*n[º°#]*\s*(\d{6,12})", assunto, re.IGNORECASE)
-                if match:
-                    id_venda = match.group(1).strip()
-                    print(f"🆔 ID de venda extraído: {id_venda}")
-                    
-                    try:
-                        url = f"https://controlo-bilhetes.onrender.com/listagem_vendas/por_id_venda/{id_venda}"
-                        print(f"🔎 [GET] {url}")
-                        res = requests.get(url)
-                        print(f"🔁 Status do GET: {res.status_code}")
+                # Procurar pela frase específica no assunto
+                if "Os seus bilhetes foram entregues para o pedido" in subject:
+                    match = re.search(r"pedido\s*n[º°#]*\s*(\d{6,12})", subject, re.IGNORECASE)
+                    if match:
+                        id_venda = match.group(1).strip()
+                        print(f"🔄 Atualizar ID {id_venda} para 'Entregue'")
 
-                        if res.status_code == 200:
-                            dados = res.json()
-                            print(f"📦 Dados da venda: {dados}")
-
-                            if dados.get("estado") != "Entregue":
-                                dados["estado"] = "Entregue"
-                                update_url = f"https://controlo-bilhetes.onrender.com/listagem_vendas/{dados['id']}"
-                                print(f"⬆️ [PUT] {update_url} com payload: {dados}")
-                                update = requests.put(update_url, json=dados)
-                                print(f"📤 PUT status: {update.status_code}")
-
-                                if update.status_code == 200:
-                                    print(f"✅ Estado atualizado para 'Entregue' no ID {id_venda}")
-                                    ids_entregues.append(id_venda)
+                        try:
+                            url = f"https://controlo-bilhetes.onrender.com/listagem_vendas/por_id_venda/{id_venda}"
+                            res = requests.get(url)
+                            if res.status_code == 200:
+                                dados = res.json()
+                                if dados.get("estado") != "Entregue":
+                                    dados["estado"] = "Entregue"
+                                    update = requests.put(
+                                        f"https://controlo-bilhetes.onrender.com/listagem_vendas/{dados['id']}",
+                                        json=dados
+                                    )
+                                    print(f"📡 PUT resposta ({update.status_code}): {update.text}")
+                                    if update.status_code == 200:
+                                        print(f"✅ Estado do ID {id_venda} atualizado para 'Entregue'")
+                                        ids_entregues.append(id_venda)
+                                    else:
+                                        print(f"❌ Erro ao atualizar ID {id_venda}: {update.status_code}")
                                 else:
-                                    print(f"❌ Erro ao atualizar ID {id_venda}: PUT status {update.status_code}")
+                                    print(f"ℹ️ ID {id_venda} já está como 'Entregue'.")
                             else:
-                                print(f"ℹ️ ID {id_venda} já está como 'Entregue'")
-                        else:
-                            print(f"⚠️ ID {id_venda} não encontrado na base de dados")
-
-                    except Exception as e:
-                        print(f"❌ Erro ao comunicar com API para o ID {id_venda}: {e}")
-                else:
-                    print("⚠️ ID da venda não encontrado no assunto!")
+                                print(f"⚠️ ID {id_venda} não encontrado na base de dados.")
+                        except Exception as e:
+                            print(f"❌ Erro na comunicação com API para ID {id_venda}: {e}")
+                    else:
+                        print("⚠️ Não foi possível extrair o ID da venda do assunto.")
 
     return {
         "total_verificados": len(ids),
         "alterados_para_entregue": len(ids_entregues),
         "ids_entregues": ids_entregues
     }
+
 
 
 
