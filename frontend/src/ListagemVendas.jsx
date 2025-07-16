@@ -532,7 +532,7 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
           </tbody>
         </table>
       </div>
-      </div> {/* Fecha o contentor da tabela */}
+      
 
       <div className="space-y-5 md:hidden px-2">
         {registos.map((r) => {
