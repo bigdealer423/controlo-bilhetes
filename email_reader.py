@@ -570,9 +570,10 @@ def verificar_emails_entregues_stubhub(username, password, dias=PERIODO_DIAS):
                         if res.status_code == 200:
                             dados = res.json()
                             if dados.get("estado") != "Entregue":
+                                dados["estado"] = "Entregue"
                                 update = requests.put(
                                     f"https://controlo-bilhetes.onrender.com/listagem_vendas/{dados['id']}",
-                                    json={"estado": "Entregue"}
+                                    json=dados
                                 )
                                 print(f"📡 PUT resposta ({update.status_code}): {update.text}")
                                 if update.status_code == 200:
