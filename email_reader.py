@@ -572,38 +572,46 @@ def verificar_emails_entregues_stubhub(username, password, dias=PERIODO_DIAS):
                 corpo = get_email_body_stubhub(msg)
                 print("🔍 Conteúdo do email:\n", corpo[:1000])
 
-                if "Obrigado por entregar os bilhetes para o pedido" in corpo:
-                    match = re.search(r"pedido\s*(?:n[º°#]*)?\s*(\d{6,12})", corpo)
-                    if match:
-                        id_venda = match.group(1)
-                        print(f"🔄 Atualizar ID {id_venda} para 'Entregue'")
+                # Normalizar corpo
+corpo_normalizado = unicodedata.normalize("NFKD", corpo).encode("ASCII", "ignore").decode("utf-8")
+corpo_normalizado = re.sub(r'\s+', ' ', corpo_normalizado)  # Remove múltiplos espaços
 
-                        try:
-                            url = f"https://controlo-bilhetes.onrender.com/listagem_vendas/por_id_venda/{id_venda}"
-                            res = requests.get(url)
-                            if res.status_code == 200:
-                                dados = res.json()
-                                if dados["estado"] != "Entregue":
-                                    dados["estado"] = "Entregue"
-                                    update = requests.put(
-                                        f"https://controlo-bilhetes.onrender.com/listagem_vendas/{dados['id']}",
-                                        json=dados
-                                    )
-                                    if update.status_code == 200:
-                                        print(f"✅ Estado do ID {id_venda} atualizado para 'Entregue'")
-                                        ids_entregues.append(id_venda)
-                                    else:
-                                        print(f"❌ Erro ao atualizar ID {id_venda}: {update.status_code}")
-                                else:
-                                    print(f"ℹ️ ID {id_venda} já estava como 'Entregue'.")
-                            else:
-                                print(f"⚠️ ID {id_venda} não encontrado na base de dados.")
-                        except Exception as e:
-                            print(f"❌ Erro na comunicação com API para ID {id_venda}: {e}")
-                    else:
-                        print("❌ Frase encontrada mas não foi possível extrair o ID.")
+# Expressão flexível que ignora tags e espaços a mais
+frase_pattern = re.compile(
+    r"obrigado\s*por\s*entregar\s+os\s+(?:bilhetes|ingressos)\s+para\s+o\s+pedido\s+(\d{6,12})",
+    re.IGNORECASE
+)
+
+match = frase_pattern.search(corpo_normalizado)
+if match:
+    id_venda = match.group(1)
+    print(f"🔄 Atualizar ID {id_venda} para 'Entregue'")
+
+    try:
+        url = f"https://controlo-bilhetes.onrender.com/listagem_vendas/por_id_venda/{id_venda}"
+        res = requests.get(url)
+        if res.status_code == 200:
+            dados = res.json()
+            if dados["estado"] != "Entregue":
+                dados["estado"] = "Entregue"
+                update = requests.put(
+                    f"https://controlo-bilhetes.onrender.com/listagem_vendas/{dados['id']}",
+                    json=dados
+                )
+                if update.status_code == 200:
+                    print(f"✅ Estado do ID {id_venda} atualizado para 'Entregue'")
+                    ids_entregues.append(id_venda)
                 else:
-                    print("❌ Frase de entrega não encontrada neste email.")
+                    print(f"❌ Erro ao atualizar ID {id_venda}: {update.status_code}")
+            else:
+                print(f"ℹ️ ID {id_venda} já estava como 'Entregue'.")
+        else:
+            print(f"⚠️ ID {id_venda} não encontrado na base de dados.")
+    except Exception as e:
+        print(f"❌ Erro na comunicação com API para ID {id_venda}: {e}")
+else:
+    print("❌ Frase de entrega não encontrada neste email.")
+
 
     return {
         "total_verificados": len(ids),
