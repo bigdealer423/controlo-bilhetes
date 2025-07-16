@@ -189,6 +189,8 @@ def extract_stubhub_email_content_and_date(mail, email_id):
                         html = part.get_payload(decode=True).decode(errors='ignore')
                         soup = BeautifulSoup(html, "html.parser")
                         texto = soup.get_text(separator="\n")
+                        print("\n🧾 Conteúdo completo extraído do email StubHub:\n")
+                        print(texto[:3000])  # Mostra os primeiros 3000 caracteres
                         return texto, data_venda
                     except Exception as e:
                         print("Erro ao processar HTML StubHub:", e)
