@@ -20,7 +20,8 @@ URLS = [
     'https://viagens.slbenfica.pt/follow-my-team/futebol/liga-europa',
     'https://viagens.slbenfica.pt/follow-my-team/futebol/supertaca-candido-de-oliveira',
     'https://viagens.slbenfica.pt/follow-my-team/futebol/eusebio-cup',
-    'https://www.sporting.pt/pt/bilhetes-e-gamebox/bilhetes'
+    'https://www.sporting.pt/pt/bilhetes-e-gamebox/bilhetes',
+    'https://blueticket.meo.pt/pt/search?q=desporto&page=2'
 ]
 
 HIST_FILE = 'fpf_hist.json'
@@ -30,7 +31,10 @@ EMAIL_PASS = os.getenv("EMAIL_PASSWORD")
 SMTP_SERVER = 'smtp.gmail.com'
 SMTP_PORT = 587
 
-# --------------------------------------------------
+PALAVRAS_CHAVE_FPF = ["Comprar", "Adquirir", "Bilhete", "Ingressos", "Buy", "IRL", "HUN", "Irlanda", "Hungria"]
+PALAVRAS_CHAVE_SLB = ["Carcavelos", "Fatima", "17ª Jornada", "18ª Jornada"]
+PALAVRAS_CHAVE_SPORTING = ["comprar bilhetes"]
+PALAVRAS_CHAVE_BLUETICKET = ["Benfica"]
 
 def carregar_historico():
     if os.path.exists(HIST_FILE):
@@ -42,12 +46,6 @@ def guardar_historico(historico):
     with open(HIST_FILE, 'w') as f:
         json.dump(historico, f)
 
-PALAVRAS_CHAVE_FPF = ["Comprar", "Adquirir", "Bilhete", "Ingressos", "Buy", "IRL", "HUN", "Irlanda", "Hungria"] 
-PALAVRAS_CHAVE_SLB = ["Carcavelos", "Fatima", "17ª Jornada", "18ª Jornada"]
-PALAVRAS_CHAVE_SPORTING = ["comprar bilhetes"]
-
-
-
 def buscar_links_novos():
     links_encontrados = []
 
@@ -57,13 +55,11 @@ def buscar_links_novos():
     session.mount('https://', adapter)
     session.mount('http://', adapter)
 
-
-
     for url in URLS:
         try:
             print(f"🔍 A verificar {url}...", flush=True)
 
-            # FPF: GET direto com retry
+            # FPF
             if 'bilheteira.fpf.pt' in url:
                 resp = session.get(url, timeout=15)
                 soup = BeautifulSoup(resp.text, 'html.parser')
@@ -76,7 +72,7 @@ def buscar_links_novos():
                     links_encontrados.extend(links)
                     print(f"✅ Encontrados {len(links)} novos links na FPF.", flush=True)
 
-            # Benfica Viagens: usar cloudscraper para ultrapassar bloqueios
+            # SL Benfica Viagens
             elif 'viagens.slbenfica.pt' in url:
                 scraper = cloudscraper.create_scraper()
                 try:
@@ -89,30 +85,44 @@ def buscar_links_novos():
                     texto_site = soup.get_text(separator=' ', strip=True)
                     if any(palavra.lower() in texto_site.lower() for palavra in PALAVRAS_CHAVE_SLB):
                         links_encontrados.append(url)
-                        print(f"✅ Encontrada referência a uma das palavras {PALAVRAS_CHAVE_SLB} em Benfica Viagens.", flush=True)
+                        print(f"✅ Encontrada referência a {PALAVRAS_CHAVE_SLB} em Benfica Viagens.", flush=True)
 
                 except Exception as e:
                     print(f"⚠️ Benfica Viagens não respondeu ou bloqueou: {e}", flush=True)
                     continue
 
-            # 👇 SPORTING
+            # Sporting
             elif 'sporting.pt' in url:
-                headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36"}
+                headers = {"User-Agent": "Mozilla/5.0"}
                 resp = session.get(url, headers=headers, timeout=15)
                 if resp.status_code != 200:
                     print(f"⚠️ Sporting respondeu com status {resp.status_code}, ignorado.", flush=True)
                     continue
-    
+
                 soup = BeautifulSoup(resp.text, 'html.parser')
                 texto_site = soup.get_text(separator=' ', strip=True).lower()
-    
                 if any(palavra in texto_site for palavra in PALAVRAS_CHAVE_SPORTING):
                     links_encontrados.append(url)
                     print(f"✅ Encontrada referência a {PALAVRAS_CHAVE_SPORTING} no Sporting.", flush=True)
                 else:
                     print("✅ Sporting verificado, 'comprar bilhetes' não encontrado no momento.", flush=True)
 
-        
+            # Blueticket
+            elif 'blueticket.meo.pt' in url:
+                headers = {"User-Agent": "Mozilla/5.0"}
+                resp = session.get(url, headers=headers, timeout=15)
+                if resp.status_code != 200:
+                    print(f"⚠️ Blueticket respondeu com status {resp.status_code}, ignorado.", flush=True)
+                    continue
+
+                soup = BeautifulSoup(resp.text, 'html.parser')
+                texto_site = soup.get_text(separator=' ', strip=True).lower()
+                if any(palavra.lower() in texto_site for palavra in PALAVRAS_CHAVE_BLUETICKET):
+                    links_encontrados.append(url)
+                    print(f"✅ Encontrada referência a {PALAVRAS_CHAVE_BLUETICKET} no Blueticket.", flush=True)
+                else:
+                    print("✅ Blueticket verificado, 'Benfica' não encontrado no momento.", flush=True)
+
         except Exception as e:
             print(f"❌ Erro ao processar {url}: {e}", flush=True)
             continue
