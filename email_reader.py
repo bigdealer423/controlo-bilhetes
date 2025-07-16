@@ -211,33 +211,28 @@ def search_emails_stubhub(mail, date_from=None):
 
 def processar_email_stubhub(content, data_venda):
     try:
-        # ID da venda
-        match_id = re.search(r'ID do pedido\s*(?:n[º°.]?)?\s*\.?\s*(\d{6,12})', content, re.IGNORECASE)
+        # 🟡 ID da venda
+        match_id = re.search(r'ID do pedido\s*(?:n[º°.]*)?\s*(\d{6,12})', content, re.IGNORECASE)
         if not match_id:
             print("❌ ID do pedido não encontrado no seguinte conteúdo:")
-            print(content[:1000])  # Mostra os primeiros 1000 caracteres para debug
+            print(content[:1000])
             return "erro"
-        
         id_venda = match_id.group(1).strip()
-        
 
-        # Evento
-        match_evento = re.search(r'Informações sobre a venda\s*([\w\s\-À-ÿ&]+) Tickets', content)
+        # 🟡 Evento
+        match_evento = re.search(r'Informações sobre a venda\s*(.*?)\s*Tickets', content, re.DOTALL)
         evento = match_evento.group(1).strip() if match_evento else "Desconhecido"
 
-        # Data do evento (com hora, mas vamos extrair apenas a data)
-        match_data = re.search(r'(?:QUA|TER|SEG|SEX|SÁB|DOM),\s*(\d{2}/\d{02}/\d{4}),\s*(\d{2}:\d{2})', content)
+        # 🟡 Data do evento (dia-mês-ano)
+        match_data = re.search(r'(?:SEG|TER|QUA|QUI|SEX|SÁB|DOM),\s*(\d{2}/\d{2}/\d{4})', content)
         if match_data:
-            data_str = match_data.group(1)  # ex: 16/07/2025
-            hora_str = match_data.group(2)  # ex: 20:00
-            data_completa = datetime.strptime(f"{data_str} {hora_str}", "%d/%m/%Y %H:%M")
-            data_evento_formatada = data_completa.strftime("%d-%m-%Y")  # ✅ formato final
+            data_str = match_data.group(1)
+            data_evento_formatada = datetime.strptime(data_str, "%d/%m/%Y").strftime("%d-%m-%Y")
         else:
             data_evento_formatada = (data_venda + timedelta(days=10)).strftime("%d-%m-%Y")
 
-        # Setor + quantidade
-        match_bilhetes = re.search(r'(\d+)\s+bilhete\(s\)\s*\n+([^\n\r]+)', content, re.DOTALL)
-
+        # 🟡 Setor + Quantidade
+        match_bilhetes = re.search(r'(\d+)\s+bilhete\(s\)\s*[\r\n]+(.*?)\s*[\r\n]+Fila', content, re.DOTALL)
         if match_bilhetes:
             qtd = match_bilhetes.group(1).strip()
             setor = match_bilhetes.group(2).strip()
@@ -245,14 +240,11 @@ def processar_email_stubhub(content, data_venda):
         else:
             bilhetes = "Desconhecido"
 
-        # Ganho
-        match_valor = re.search(r'Total de pagamento\s*€?([\d\.,]+)', content)
+        # 🟡 Ganho
+        match_valor = re.search(r'Total de pagamento\s*€?\s*([\d\.,]+)', content)
         ganho = float(match_valor.group(1).replace(".", "").replace(",", ".")) if match_valor else 0.0
 
-        if not id_venda:
-            print("❌ ID do pedido não encontrado.")
-            return "erro"
-
+        # ✅ Enviar para API
         return enviar_para_fastapi(
             id_venda=id_venda,
             evento=evento,
@@ -261,9 +253,11 @@ def processar_email_stubhub(content, data_venda):
             data_evento=data_evento_formatada,
             bilhetes=bilhetes
         )
+
     except Exception as e:
         print(f"❌ Erro no processamento StubHub: {e}")
         return "erro"
+
 
 
 def auto_update_email_data(username, password, date_from=None):
