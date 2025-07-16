@@ -431,69 +431,68 @@ def enviar_resumo_email(total_emails, sucesso, falha, ja_existentes, ids_erro=No
         traceback.print_exc()
 import json
 
-def verificar_emails_entregues(username, password, dias=PERIODO_DIAS):
+def verificar_emails_entregues_stubhub(username, password, dias=PERIODO_DIAS):
+    from datetime import datetime, timedelta
+    import email
+    import re
+    import requests
 
     mail = connect_email(username, password)
     mail.select("inbox")
 
-    data_limite = (datetime.today() - timedelta(days=PERIODO_DIAS)).strftime("%d-%b-%Y")
-    status, mensagens = mail.search(None, f'(FROM "viagogo" SINCE {data_limite})')
+    data_limite = (datetime.today() - timedelta(days=dias)).strftime("%d-%b-%Y")
+    status, mensagens = mail.search(
+        None,
+        f'(SUBJECT "Os seus bilhetes foram entregues para o pedido" FROM "order-update@orders.stubhubinternational.com" SINCE {data_limite})'
+    )
     ids = mensagens[0].split()
-    print(f"📩 Emails a verificar para entregas: {len(ids)}")
+    print(f"📩 Emails StubHub a verificar para entregas: {len(ids)}")
 
-    ids_atualizados = []
+    ids_entregues = []
 
     for msg_id in ids:
-        conteudo, _ = extract_email_content_and_date(mail, msg_id)
-        print(f"🔍 Conteúdo do email:\n{conteudo}\n")
+        _, msg = mail.fetch(msg_id, "(RFC822)")
+        for response_part in msg:
+            if isinstance(response_part, tuple):
+                msg = email.message_from_bytes(response_part[1])
+                assunto = msg["Subject"]
 
-        if not conteudo:
-            continue
+                print(f"📧 Assunto do email: {assunto}")
 
-        # Normalizar acentuação
-        conteudo_normalizado = unicodedata.normalize('NFD', conteudo).encode('ascii', 'ignore').decode('utf-8')
-
-        # Frases alvo
-        frases_chave = [
-            "Agradecemos por confirmar a transferencia do pedido",
-            "Obrigado por entregar os ingressos para o pedido"
-        ]
-
-        # Verifica se contém alguma das frases
-        for frase in frases_chave:
-            if frase in conteudo_normalizado:
-                match = re.search(rf"{re.escape(frase)}[^\d]*(\d+)", conteudo_normalizado)
+                match = re.search(r"pedido n[º°#]*\s*(\d{6,12})", assunto, re.IGNORECASE)
                 if match:
-                    id_venda = match.group(1).strip().strip(".")
-                    print(f"🔎 Pedido confirmado: {id_venda}")
+                    id_venda = match.group(1).strip()
+                    print(f"🔄 Atualizar ID {id_venda} para 'Entregue'")
 
-                    # Atualiza o estado via API se existir
-                    url = f"https://controlo-bilhetes.onrender.com/listagem_vendas/por_id_venda/{id_venda}"
                     try:
+                        url = f"https://controlo-bilhetes.onrender.com/listagem_vendas/por_id_venda/{id_venda}"
                         res = requests.get(url)
                         if res.status_code == 200:
                             dados = res.json()
-                            if dados["estado"] != "Entregue":
-                                dados["estado"] = "Entregue"
-                                update = requests.put(f"https://controlo-bilhetes.onrender.com/listagem_vendas/{dados['id']}", json=dados)
+                            if dados.get("estado") != "Entregue":
+                                update = requests.put(
+                                    f"https://controlo-bilhetes.onrender.com/listagem_vendas/{dados['id']}",
+                                    json={"estado": "Entregue"}
+                                )
+                                print(f"📡 PUT resposta ({update.status_code}): {update.text}")
                                 if update.status_code == 200:
-                                    print(f"✅ Estado atualizado para 'Entregue' no ID {id_venda}")
-                                    ids_atualizados.append(id_venda)
+                                    print(f"✅ Estado do ID {id_venda} atualizado para 'Entregue'")
+                                    ids_entregues.append(id_venda)
                                 else:
-                                    print(f"❌ Falha ao atualizar ID {id_venda}: {update.status_code}")
+                                    print(f"❌ Erro ao atualizar ID {id_venda}: {update.status_code}")
                             else:
                                 print(f"ℹ️ ID {id_venda} já está como 'Entregue'.")
                         else:
-                            print(f"⚠️ ID {id_venda} não existe na base de dados.")
+                            print(f"⚠️ ID {id_venda} não encontrado na base de dados.")
                     except Exception as e:
-                        print(f"Erro na comunicação com API para ID {id_venda}: {e}")
-                break  # Se encontrar uma frase válida, não precisa verificar a segunda
+                        print(f"❌ Erro na comunicação com API para ID {id_venda}: {e}")
 
     return {
         "total_verificados": len(ids),
-        "alterados_para_entregue": len(ids_atualizados),
-        "ids_entregues": ids_atualizados
+        "alterados_para_entregue": len(ids_entregues),
+        "ids_entregues": ids_entregues
     }
+
 
 
 
