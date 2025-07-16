@@ -416,6 +416,41 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
 
           </div>
         </div>
+      {/* Vista MOBILE - cartões responsivos */}
+      <div className="space-y-4 md:hidden">
+        {registos
+          .filter(v => {
+            const correspondeEvento = filtroEvento === "" || v.evento === filtroEvento;
+            const correspondeID = filtroIdVenda === "" || v.id_venda.toString().includes(filtroIdVenda);
+            return correspondeEvento && correspondeID;
+          })
+          .map(r => (
+            <div key={r.id} className="bg-gray-800 text-white rounded-lg shadow-md p-4">
+              {/* Campos visuais adaptados */}
+              <p className="text-sm"><strong>ID Venda:</strong> {r.id_venda}</p>
+              <p className="text-sm"><strong>Data Venda:</strong> {r.data_venda && new Date(r.data_venda).toLocaleDateString("pt-PT")}</p>
+              <p className="text-sm"><strong>Data Evento:</strong> {r.data_evento && new Date(r.data_evento).toLocaleDateString("pt-PT")}</p>
+              <p className="text-sm"><strong>Evento:</strong> {r.evento}</p>
+              <p className="text-sm"><strong>Bilhete:</strong> {r.estadio}</p>
+              <p className="text-sm"><strong>Ganho:</strong> {r.ganho} €</p>
+              <p className="text-sm">
+                <strong>Estado:</strong>{" "}
+                <span className={`inline-block px-2 py-1 rounded text-xs font-semibold
+                  ${r.estado === "Pago" ? "bg-green-600" :
+                    r.estado === "Disputa" ? "bg-red-500" :
+                    r.estado === "Entregue" ? "bg-blue-500" :
+                    "bg-yellow-400 text-black"}`}>
+                  {r.estado}
+                </span>
+              </p>
+              <div className="mt-2 flex justify-end gap-4">
+                <button onClick={() => ativarEdicao(r.id, r)} className="text-blue-400 hover:underline text-sm">Editar</button>
+                <button onClick={() => pedirConfirmEliminar([r.id])} className="text-red-400 hover:underline text-sm">Eliminar</button>
+              </div>
+            </div>
+          ))}
+      </div>
+  
       <div className="overflow-x-auto w-full">
         <table className="min-w-full border border-gray-300 dark:border-gray-600 text-sm text-left text-gray-900 dark:text-gray-100 transition-colors duration-300">
          <thead className="bg-gray-100 dark:bg-gray-800 transition-colors duration-300">
