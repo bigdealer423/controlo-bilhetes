@@ -1,9 +1,11 @@
 PERIODO_DIAS = 2
 
+from dateutil.parser import parse
 from dotenv import load_dotenv
 import os
 import smtplib
 import time
+
 
 load_dotenv()  # Carrega as variáveis do ficheiro .env
 
@@ -211,6 +213,13 @@ def search_emails_stubhub(mail, date_from=None):
 
 def processar_email_stubhub(content, data_venda):
     try:
+        # 🔐 Garantir que data_venda é datetime mesmo que venha em string de email
+        if isinstance(data_venda, str):
+            try:
+                data_venda = parse(data_venda)
+            except:
+                data_venda = datetime.now()
+    
         # ID da venda
         match_id = re.search(r'ID do pedido\s*(?:n[º°.]*)?\s*(\d{6,12})', content, re.IGNORECASE)
         if not match_id:
@@ -227,7 +236,7 @@ def processar_email_stubhub(content, data_venda):
         match_data = re.search(r'(?:SEG|TER|QUA|QUI|SEX|SÁB|DOM),\s*(\d{2}/\d{2}/\d{4})', content)
         if match_data:
             data_str = match_data.group(1)
-            data_evento_formatada = datetime.strptime(data_str, "%d/%m/%Y").strftime("%d-%m-%Y")
+            data_evento_formatada = datetime.strptime(data_str, "%d/%m/%Y")
         else:
             data_evento_formatada = (data_venda + timedelta(days=10)).strftime("%d-%m-%Y")
 
@@ -249,7 +258,7 @@ def processar_email_stubhub(content, data_venda):
             evento=evento,
             ganho=ganho,
             data_venda=data_venda.strftime("%d-%m-%Y"),
-            data_evento=data_evento_formatada,
+            data_evento=data_evento_formatada.strftime("%d-%m-%Y"),
             bilhetes=bilhetes
         )
 
