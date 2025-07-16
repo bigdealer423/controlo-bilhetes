@@ -676,9 +676,10 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
                   </button>
                 </div>
               </div>
-            );
-        })}
-        </div>
+            </div>
+          );
+       })}
+    </div>
 
 
 
