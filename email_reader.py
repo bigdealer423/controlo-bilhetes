@@ -286,7 +286,10 @@ def verificar_emails_entregues_stubhub(username, password, dias=PERIODO_DIAS):
     mail.select("inbox")
 
     data_limite = (datetime.today() - timedelta(days=dias)).strftime("%d-%b-%Y")
-    status, mensagens = mail.search(None, f'(FROM "order-update@orders.stubhubinternational.com" SINCE {data_limite})')
+    status, mensagens = mail.search(
+    None,
+    f'(FROM "order-update@orders.stubhubinternational.com" SINCE {data_limite})'
+)
 
     ids = mensagens[0].split()
     print(f"📩 Emails StubHub a verificar para entregas (por conteúdo): {len(ids)}")
@@ -315,6 +318,7 @@ def verificar_emails_entregues_stubhub(username, password, dias=PERIODO_DIAS):
                 # Mostrar conteúdo para debug
                 print("🔍 A verificar corpo do email StubHub...")
                 print(corpo[:500])
+                conteudo_normalizado = unicodedata.normalize('NFD', corpo).encode('ascii', 'ignore').decode('utf-8')
 
                 # Procurar a frase com ID
                 match = re.search(r"Obrigado por entregar os bilhetes para o pedido\s+(\d{6,12})", corpo)
