@@ -3,6 +3,8 @@ import { toast } from "react-toastify";
 import { FaFileExcel } from "react-icons/fa"
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
+import { FaEdit, FaTrash } from "react-icons/fa";
+
 
 
 export default function ListagemVendas(props) {
@@ -646,29 +648,49 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
                 )}
               </div>
       
-              {/* Botões */}
-              <div className="flex justify-end gap-5 mt-3 text-sm">
-                {emEdicao ? (
+              {/* Linha com ícones e valor */}
+              <div className="flex justify-between items-center mt-4">
+                <div className="flex gap-4 text-xl">
+                  {emEdicao ? (
+                    <button
+                      onClick={atualizarRegisto}
+                      className="text-green-400 hover:text-green-300"
+                      title="Guardar"
+                    >
+                      💾
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => ativarEdicao(r.id, r)}
+                      className="text-blue-400 hover:text-blue-300"
+                      title="Editar"
+                    >
+                      <FaEdit />
+                    </button>
+                  )}
                   <button
-                    onClick={atualizarRegisto}
-                    className="text-green-400 hover:underline"
+                    onClick={() => pedirConfirmEliminar([r.id])}
+                    className="text-red-400 hover:text-red-300"
+                    title="Eliminar"
                   >
-                    Guardar
+                    <FaTrash />
                   </button>
-                ) : (
-                  <button
-                    onClick={() => ativarEdicao(r.id, r)}
-                    className="text-blue-400 hover:underline"
-                  >
-                    Editar
-                  </button>
-                )}
-                <button
-                  onClick={() => pedirConfirmEliminar([r.id])}
-                  className="text-red-400 hover:underline"
-                >
-                  Eliminar
-                </button>
+                </div>
+              
+                <div className="text-2xl font-extrabold text-green-400 text-right">
+                  {emEdicao ? (
+                    <input
+                      type="number"
+                      value={registoEditado.ganho}
+                      onChange={(e) =>
+                        setRegistoEditado({ ...registoEditado, ganho: e.target.value })
+                      }
+                      className="w-24 bg-gray-900 border border-gray-500 p-1 rounded text-green-400 text-right"
+                    />
+                  ) : (
+                    `+ ${r.ganho} €`
+                  )}
+                </div>
               </div>
             </div>
           );
