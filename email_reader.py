@@ -174,6 +174,67 @@ def processar_email(content, data_venda):
 
     return enviar_para_fastapi(id_encomenda, evento, ganho_total, data_venda, data_evento, bilhetes)
 
+def search_emails_stubhub(mail, date_from=None):
+    mail.select("inbox")
+    if date_from is None:
+        date_from = (datetime.today() - timedelta(days=PERIODO_DIAS)).strftime("%d-%b-%Y")
+    else:
+        date_from = datetime.strptime(date_from, "%d-%b-%Y").strftime("%d-%b-%Y")
+
+    # ⚠️ Não usamos aspas no SUBJECT para permitir parcial match
+    status, messages = mail.search(None, f'(FROM "order-update@orders.stubhubinternational.com" SUBJECT "Vendeu o seu ticket" SINCE {date_from})')
+    return messages[0].split()
+
+def processar_email_stubhub(content, data_venda):
+    try:
+        # ID da venda
+        match_id = re.search(r'ID do pedido n[º°]?\s*(\d+)', content)
+        id_venda = match_id.group(1).strip() if match_id else None
+
+        # Evento
+        match_evento = re.search(r'Informações sobre a venda\s*([\w\s\-À-ÿ&]+) Tickets', content)
+        evento = match_evento.group(1).strip() if match_evento else "Desconhecido"
+
+        # Data do evento (com hora, mas vamos extrair apenas a data)
+        match_data = re.search(r'(?:QUA|TER|SEG|SEX|SÁB|DOM),\s*(\d{2}/\d{02}/\d{4}),\s*(\d{2}:\d{2})', content)
+        if match_data:
+            data_str = match_data.group(1)  # ex: 16/07/2025
+            hora_str = match_data.group(2)  # ex: 20:00
+            data_completa = datetime.strptime(f"{data_str} {hora_str}", "%d/%m/%Y %H:%M")
+            data_evento_formatada = data_completa.strftime("%d-%m-%Y")  # ✅ formato final
+        else:
+            data_evento_formatada = (data_venda + timedelta(days=10)).strftime("%d-%m-%Y")
+
+        # Setor + quantidade
+        match_bilhetes = re.search(r'(\d+)\s+bilhete\(s\).*?\n([^\n]+)\nFila', content, re.DOTALL)
+        if match_bilhetes:
+            qtd = match_bilhetes.group(1).strip()
+            setor = match_bilhetes.group(2).strip()
+            bilhetes = f"{setor} ({qtd} bilhetes)"
+        else:
+            bilhetes = "Desconhecido"
+
+        # Ganho
+        match_valor = re.search(r'Total de pagamento\s*€?([\d\.,]+)', content)
+        ganho = float(match_valor.group(1).replace(".", "").replace(",", ".")) if match_valor else 0.0
+
+        if not id_venda:
+            print("❌ ID do pedido não encontrado.")
+            return "erro"
+
+        return enviar_para_fastapi(
+            id_venda=id_venda,
+            evento=evento,
+            ganho=ganho,
+            data_venda=data_venda.strftime("%d-%m-%Y"),
+            data_evento=data_evento_formatada,
+            bilhetes=bilhetes
+        )
+    except Exception as e:
+        print(f"❌ Erro no processamento StubHub: {e}")
+        return "erro"
+
+
 def auto_update_email_data(username, password, date_from=None):
     mail = connect_email(username, password)
     mensagens = search_emails(mail, date_from=date_from)
@@ -443,6 +504,29 @@ def verificar_emails_pagamento(username, password, dias=PERIODO_DIAS):
 if __name__ == "__main__":
     auto_update_email_data(username, password, date_from=(datetime.today() - timedelta(days=PERIODO_DIAS)).strftime("%d-%b-%Y"))
 
+  # === Processar emails da StubHub (mesma conta que Viagogo)
+print("\n📥 A processar StubHub...")
+
+mail = connect_email(username, password)
+mensagens = search_emails_stubhub(mail)
+print(f"📬 Emails encontrados StubHub: {len(mensagens)}")
+
+sucesso_stubhub = 0
+falha_stubhub = 0
+
+for msg_id in mensagens:
+    conteudo, data_venda = extract_email_content_and_date(mail, msg_id)
+    resultado = processar_email_stubhub(conteudo, data_venda)
+    if resultado == "inserido":
+        sucesso_stubhub += 1
+    elif resultado == "erro":
+        falha_stubhub += 1
+
+print(f"✅ StubHub inseridos com sucesso: {sucesso_stubhub}")
+print(f"❌ StubHub com erro: {falha_stubhub}")
+
+
+
     # Pequeno delay para garantir que os registos novos foram processados e guardados
     time.sleep(5)
 
@@ -454,6 +538,8 @@ if __name__ == "__main__":
     try:
         with open("resumo_leitura.json", "r+") as f:
             resumo = json.load(f)
+            resumo["sucesso"] += sucesso_stubhub
+            resumo["total_lidos"] += sucesso_stubhub + falha_stubhub
             resumo["entregues"] = entregues_resumo["alterados_para_entregue"]
             resumo["ids_entregues"] = entregues_resumo["ids_entregues"]
             resumo["pagos"] = resultado_pagamentos["pagos"]
