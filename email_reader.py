@@ -530,19 +530,20 @@ def get_email_body_stubhub(msg):
         if "attachment" in content_disposition:
             continue
 
-        if content_type == "text/plain":
+        if content_type == "text/html":
+            try:
+                html = part.get_payload(decode=True).decode(errors="ignore")
+                soup = BeautifulSoup(html, "html.parser")
+                return soup.get_text(separator=" ")  # <--- Junta com espaços
+            except:
+                continue
+        elif content_type == "text/plain":
             try:
                 return part.get_payload(decode=True).decode(errors="ignore")
             except:
                 continue
-        elif content_type == "text/html":
-            try:
-                html = part.get_payload(decode=True).decode(errors="ignore")
-                soup = BeautifulSoup(html, "html.parser")
-                return soup.get_text(separator="\n")
-            except:
-                continue
     return ""
+
 
 def verificar_emails_entregues_stubhub(username, password, dias=PERIODO_DIAS):
     import unicodedata
