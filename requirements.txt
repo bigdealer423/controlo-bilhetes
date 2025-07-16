@@ -4,7 +4,7 @@ sqlalchemy==2.0.30
 psycopg2-binary==2.9.9
 python-multipart==0.0.6
 greenlet==3.0.3
-
+python-dateutil
 
 requests==2.32.3
 beautifulsoup4==4.13.0
