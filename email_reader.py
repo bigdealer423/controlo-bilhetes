@@ -270,8 +270,8 @@ def processar_email_stubhub(content, data_venda):
             id_venda=id_venda,
             evento=evento,
             ganho=ganho,
-            data_venda=data_venda.strftime("%Y-%m-%d"),
-            data_evento=data_evento_formatada.strftime("%Y-%m-%d"),
+            data_venda=data_venda,  # ainda como datetime
+            data_evento=data_evento_formatada,  # ainda como datetime
             bilhetes=bilhetes
         )
 
