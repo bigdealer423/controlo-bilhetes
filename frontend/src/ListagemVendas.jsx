@@ -677,8 +677,8 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
                 </div>
               </div>
             );
-        })}
-      </div>
+          })}
+        </div>
 
 
 
