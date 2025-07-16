@@ -397,27 +397,30 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
 
 
       <div className="bg-white dark:bg-gray-800 shadow-md rounded p-4 transition-colors duration-300">
-        <div className="flex justify-between items-center mb-2">
-          <h2 className="text-lg font-semibold">Vendas</h2>
-          <div className="flex gap-2">
-            <button
-  onClick={forcarAtualizacaoEmail}
-  className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700"
->
-  🔄 Verificar E-mails
-</button>  {/* <<< isto estava em falta */}
+  <div className="flex justify-between items-center mb-2">
+    <h2 className="text-lg font-semibold">Vendas</h2>
+    <div className="flex gap-2 flex-wrap">
 
-<button
-  onClick={() => exportarParaExcel(registos)}
-  className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-xl shadow-md transition"
->
-  <FaFileExcel size={18} />
-  Exportar Excel
-</button>
+      {/* Botão Verificar E-mails - responsivo */}
+      <button
+        onClick={forcarAtualizacaoEmail}
+        className="bg-green-600 text-white px-2 py-1 text-sm md:px-3 md:py-1.5 md:text-base rounded hover:bg-green-700 transition"
+      >
+        🔄 Verificar E-mails
+      </button>
 
+      {/* Botão Exportar Excel - só aparece em desktop */}
+      <button
+        onClick={() => exportarParaExcel(registos)}
+        className="hidden md:flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-xl shadow-md transition"
+      >
+        <FaFileExcel size={18} />
+        Exportar Excel
+      </button>
 
-          </div>
-        </div>
+    </div>
+  </div>
+
       
   
       <div className="hidden md:block overflow-x-auto w-full">
