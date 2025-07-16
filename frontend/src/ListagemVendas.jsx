@@ -730,6 +730,6 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
 
 )}
 
-    </div> // Fecha o container principal da página
+    </div> 
   );
 }
