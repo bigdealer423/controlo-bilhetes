@@ -1,3 +1,4 @@
+import NavbarInferior from "./components/NavbarInferior";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import LoginPage from "./LoginPage";
 import Dashboard from "./Dashboard";
@@ -59,6 +60,7 @@ export default function App() {
                   <>
                     <Dashboard onAtualizarEventos={forcarAtualizacaoEventos} />
                     <ListagemVendas atualizarEventos={true} />
+                    <NavbarInferior />
                   </>
                 ) : (
                   <Navigate to="/" replace />
@@ -73,6 +75,7 @@ export default function App() {
                   <>
                     <Dashboard onAtualizarEventos={forcarAtualizacaoEventos} />
                     <Eventos />
+                    <NavbarInferior />
                   </>
                 ) : (
                   <Navigate to="/" replace />
@@ -87,6 +90,7 @@ export default function App() {
                   <>
                     <Dashboard onAtualizarEventos={forcarAtualizacaoEventos} />
                     <InfoClubes />
+                    <NavbarInferior />
                   </>
                 ) : (
                   <Navigate to="/" replace />
@@ -101,6 +105,7 @@ export default function App() {
                   <>
                     <Dashboard onAtualizarEventos={forcarAtualizacaoEventos} />
                     <Disputas />
+                    <NavbarInferior />
                   </>
                 ) : (
                   <Navigate to="/" replace />
@@ -115,6 +120,7 @@ export default function App() {
                   <>
                     <Dashboard onAtualizarEventos={forcarAtualizacaoEventos} />
                     <Compras />
+                    <NavbarInferior />
                   </>
                 ) : (
                   <Navigate to="/" replace />
@@ -129,6 +135,7 @@ export default function App() {
                   <>
                     <Dashboard onAtualizarEventos={forcarAtualizacaoEventos} />
                     <Outro />
+                    <NavbarInferior />
                   </>
                 ) : (
                   <Navigate to="/" replace />
