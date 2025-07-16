@@ -211,7 +211,10 @@ def search_emails_stubhub(mail, date_from=None):
 
 def processar_email_stubhub(content, data_venda):
     try:
-        # 🟡 ID da venda
+        if isinstance(data_venda, str):
+            data_venda = datetime.strptime(data_venda, "%d-%m-%Y")
+
+        # ID da venda
         match_id = re.search(r'ID do pedido\s*(?:n[º°.]*)?\s*(\d{6,12})', content, re.IGNORECASE)
         if not match_id:
             print("❌ ID do pedido não encontrado no seguinte conteúdo:")
@@ -219,11 +222,11 @@ def processar_email_stubhub(content, data_venda):
             return "erro"
         id_venda = match_id.group(1).strip()
 
-        # 🟡 Evento
+        # Evento
         match_evento = re.search(r'Informações sobre a venda\s*(.*?)\s*Tickets', content, re.DOTALL)
         evento = match_evento.group(1).strip() if match_evento else "Desconhecido"
 
-        # 🟡 Data do evento (dia-mês-ano)
+        # Data do evento
         match_data = re.search(r'(?:SEG|TER|QUA|QUI|SEX|SÁB|DOM),\s*(\d{2}/\d{2}/\d{4})', content)
         if match_data:
             data_str = match_data.group(1)
@@ -231,7 +234,7 @@ def processar_email_stubhub(content, data_venda):
         else:
             data_evento_formatada = (data_venda + timedelta(days=10)).strftime("%d-%m-%Y")
 
-        # 🟡 Setor + Quantidade
+        # Setor + Quantidade
         match_bilhetes = re.search(r'(\d+)\s+bilhete\(s\)\s*[\r\n]+(.*?)\s*[\r\n]+Fila', content, re.DOTALL)
         if match_bilhetes:
             qtd = match_bilhetes.group(1).strip()
@@ -240,11 +243,10 @@ def processar_email_stubhub(content, data_venda):
         else:
             bilhetes = "Desconhecido"
 
-        # 🟡 Ganho
+        # Ganho
         match_valor = re.search(r'Total de pagamento\s*€?\s*([\d\.,]+)', content)
         ganho = float(match_valor.group(1).replace(".", "").replace(",", ".")) if match_valor else 0.0
 
-        # ✅ Enviar para API
         return enviar_para_fastapi(
             id_venda=id_venda,
             evento=evento,
@@ -257,6 +259,7 @@ def processar_email_stubhub(content, data_venda):
     except Exception as e:
         print(f"❌ Erro no processamento StubHub: {e}")
         return "erro"
+
 
 
 
