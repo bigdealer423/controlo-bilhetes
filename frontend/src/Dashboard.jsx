@@ -47,11 +47,11 @@ export default function Dashboard({ onAtualizarEventos }) {
   return (
     <>
       <div className="bg-gray-100 dark:bg-gray-800 p-3 flex justify-between items-center border-b border-gray-300 dark:border-gray-700 mb-4 transition-colors duration-300">
-        <div className="flex gap-2 flex-wrap">
+        <div className="hidden md:flex gap-2 flex-wrap">
           {menus.map((menu) => (
             <button
               key={menu.rota}
-              onClick={(e) => handleMenuClick(e, menu.rota)}  // Impede navegação imediata
+              onClick={(e) => handleMenuClick(e, menu.rota)}
               className={`px-3 py-1 text-sm rounded transition-colors duration-300 ${
                 rotaAtual === menu.rota
                   ? "bg-blue-600 text-white"
@@ -62,6 +62,7 @@ export default function Dashboard({ onAtualizarEventos }) {
             </button>
           ))}
         </div>
+
   
         <div className="flex items-center space-x-4 ml-4">
           <ThemeToggle />  {/* Aqui, alinhado com os botões de topo */}
