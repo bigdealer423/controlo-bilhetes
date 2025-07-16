@@ -211,9 +211,6 @@ def search_emails_stubhub(mail, date_from=None):
 
 def processar_email_stubhub(content, data_venda):
     try:
-        if isinstance(data_venda, str):
-            data_venda = datetime.strptime(data_venda, "%d-%m-%Y")
-
         # ID da venda
         match_id = re.search(r'ID do pedido\s*(?:n[º°.]*)?\s*(\d{6,12})', content, re.IGNORECASE)
         if not match_id:
@@ -259,7 +256,6 @@ def processar_email_stubhub(content, data_venda):
     except Exception as e:
         print(f"❌ Erro no processamento StubHub: {e}")
         return "erro"
-
 
 
 
