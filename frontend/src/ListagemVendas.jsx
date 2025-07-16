@@ -677,20 +677,6 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
                   </button>
                 </div>
               
-                <div className="text-2xl font-extrabold text-green-400 text-right">
-                  {emEdicao ? (
-                    <input
-                      type="number"
-                      value={registoEditado.ganho}
-                      onChange={(e) =>
-                        setRegistoEditado({ ...registoEditado, ganho: e.target.value })
-                      }
-                      className="w-24 bg-gray-900 border border-gray-500 p-1 rounded text-green-400 text-right"
-                    />
-                  ) : (
-                    `+ ${r.ganho} €`
-                  )}
-                </div>
               </div>
             </div>
           );
