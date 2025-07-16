@@ -279,23 +279,24 @@ def processar_email_stubhub(content, data_venda):
         print(f"❌ Erro no processamento StubHub: {e}")
         return "erro"
 
+from email.header import decode_header
+
 def verificar_emails_entregues_stubhub(username, password, dias=PERIODO_DIAS):
     mail = connect_email(username, password)
     mail.select("inbox")
 
     data_limite = (datetime.today() - timedelta(days=dias)).strftime("%d-%b-%Y")
-
-    print(f"🧪 DEBUG: A procurar todos os emails dos últimos {dias} dias...")
-    status, mensagens = mail.search(None, f'(SINCE {data_limite})')
+    status, mensagens = mail.search(None, f'(FROM "order-update@orders.stubhubinternational.com" SINCE {data_limite})')
     ids = mensagens[0].split()
-    print(f"📨 Total de emails desde {data_limite}: {len(ids)}")
+    print(f"📩 Emails StubHub a verificar para entregas: {len(ids)}")
+
+    ids_entregues = []
 
     for msg_id in ids:
         _, msg = mail.fetch(msg_id, "(RFC822)")
         for response_part in msg:
             if isinstance(response_part, tuple):
                 email_msg = email.message_from_bytes(response_part[1])
-                remetente = email_msg.get("From", "")
                 assunto_raw = email_msg.get("Subject", "")
                 assunto_decod = decode_header(assunto_raw)
                 assunto = ""
@@ -305,10 +306,38 @@ def verificar_emails_entregues_stubhub(username, password, dias=PERIODO_DIAS):
                     else:
                         assunto += part
 
-                print("📥", assunto)
-                print("📤", remetente)
-                print("-" * 60)
+                print(f"📧 Assunto decodificado: {assunto}")
 
+                match = re.search(r"pedido\s+n[º°#]*\s*(\d{6,12})", assunto, re.IGNORECASE)
+                if match:
+                    id_venda = match.group(1).strip()
+                    print(f"🔄 Atualizar ID {id_venda} para 'Entregue'")
+
+                    try:
+                        url = f"https://controlo-bilhetes.onrender.com/listagem_vendas/por_id_venda/{id_venda}"
+                        res = requests.get(url)
+                        if res.status_code == 200:
+                            dados = res.json()
+                            if dados["estado"] != "Entregue":
+                                dados["estado"] = "Entregue"
+                                update = requests.put(f"https://controlo-bilhetes.onrender.com/listagem_vendas/{dados['id']}", json=dados)
+                                if update.status_code == 200:
+                                    print(f"✅ Estado do ID {id_venda} atualizado para 'Entregue'")
+                                    ids_entregues.append(id_venda)
+                                else:
+                                    print(f"❌ Erro ao atualizar ID {id_venda}: {update.status_code}")
+                            else:
+                                print(f"ℹ️ ID {id_venda} já está como 'Entregue'.")
+                        else:
+                            print(f"⚠️ ID {id_venda} não encontrado na base de dados.")
+                    except Exception as e:
+                        print(f"❌ Erro na comunicação com API para ID {id_venda}: {e}")
+
+    return {
+        "total_verificados": len(ids),
+        "alterados_para_entregue": len(ids_entregues),
+        "ids_entregues": ids_entregues
+    }
 
 
 
