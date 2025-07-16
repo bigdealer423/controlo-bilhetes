@@ -537,7 +537,7 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
           >
             {/* Topo: ID + Estado */}
             <div className="flex justify-between items-center text-sm mb-2">
-              <div className="text-gray-400">ID: <span className="font-semibold">{r.id}</span></div>
+              <div className="text-gray-400">ID Venda: <span className="font-semibold">{r.id_venda}</span></div>
               <div className={`px-3 py-1 rounded-full text-xs font-bold ${
                 r.estado === "Pago" ? "bg-green-500 text-white" :
                 r.estado === "Entregue" ? "bg-blue-500 text-white" :
