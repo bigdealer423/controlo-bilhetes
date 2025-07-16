@@ -632,24 +632,23 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
                 </div>
               </div>
       
-              {/* Ganho */}
-              <div className="text-right mt-4 text-2xl font-extrabold text-green-400">
-                {emEdicao ? (
-                  <input
-                    type="number"
-                    value={registoEditado.ganho}
-                    onChange={(e) =>
-                      setRegistoEditado({ ...registoEditado, ganho: e.target.value })
-                    }
-                    className="w-24 bg-gray-900 border border-gray-500 p-1 rounded text-green-400 text-right"
-                  />
-                ) : (
-                  `+ ${r.ganho} €`
-                )}
-              </div>
-      
-              {/* Linha com ícones e valor */}
+              {/* Linha final com ganho + ações */}
               <div className="flex justify-between items-center mt-4">
+                <div className="text-2xl font-extrabold text-green-400">
+                  {emEdicao ? (
+                    <input
+                      type="number"
+                      value={registoEditado.ganho}
+                      onChange={(e) =>
+                        setRegistoEditado({ ...registoEditado, ganho: e.target.value })
+                      }
+                      className="w-24 bg-gray-900 border border-gray-500 p-1 rounded text-green-400 text-right"
+                    />
+                  ) : (
+                    `+ ${r.ganho} €`
+                  )}
+                </div>
+              
                 <div className="flex gap-4 text-xl">
                   {emEdicao ? (
                     <button
@@ -676,9 +675,7 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
                     <FaTrash />
                   </button>
                 </div>
-              
               </div>
-            </div>
           );
         })}
       </div>
