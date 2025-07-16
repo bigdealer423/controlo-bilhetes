@@ -212,7 +212,7 @@ def search_emails_stubhub(mail, date_from=None):
 def processar_email_stubhub(content, data_venda):
     try:
         # ID da venda
-        match_id = re.search(r'ID do pedido\s*n[º°.]?\s*\.?\s*(\d+)', content, re.IGNORECASE)
+        match_id = re.search(r'ID do pedido\s*(?:n[º°.]?)?\s*\.?\s*(\d{6,12})', content, re.IGNORECASE)
         if not match_id:
             print("❌ ID do pedido não encontrado no seguinte conteúdo:")
             print(content[:1000])  # Mostra os primeiros 1000 caracteres para debug
@@ -236,7 +236,8 @@ def processar_email_stubhub(content, data_venda):
             data_evento_formatada = (data_venda + timedelta(days=10)).strftime("%d-%m-%Y")
 
         # Setor + quantidade
-        match_bilhetes = re.search(r'(\d+)\s+bilhete\(s\).*?\n([^\n]+)\nFila', content, re.DOTALL)
+        match_bilhetes = re.search(r'(\d+)\s+bilhete\(s\)\s*\n+([^\n\r]+)', content, re.DOTALL)
+
         if match_bilhetes:
             qtd = match_bilhetes.group(1).strip()
             setor = match_bilhetes.group(2).strip()
