@@ -319,7 +319,7 @@ def verificar_emails_entregues_stubhub(username, password, dias=PERIODO_DIAS):
 
                 # Procurar pela frase específica no assunto
                 if "Os seus bilhetes foram entregues para o pedido" in subject:
-                    match = re.search(r"pedido\s*n[º°#]*\s*(\d{6,12})", subject, re.IGNORECASE)
+                    match = re.search(r"pedido\s+n[^\d]*\s*(\d{6,12})", assunto, re.IGNORECASE)
                     if match:
                         id_venda = match.group(1).strip()
                         print(f"🔄 Atualizar ID {id_venda} para 'Entregue'")
