@@ -397,28 +397,28 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
 
 
       <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-md rounded-xl px-4 py-3 mb-4 flex items-center justify-between transition-colors duration-300">
-  <h2 className="text-lg font-bold text-gray-900 dark:text-white">Vendas</h2>
-  <div className="flex gap-2 flex-wrap">
-
-    {/* Botão Verificar E-mails - responsivo */}
-    <button
-      onClick={forcarAtualizacaoEmail}
-      className="bg-green-600 text-white px-2 py-1 text-sm md:px-3 md:py-1.5 md:text-base rounded hover:bg-green-700 transition"
-    >
-      🔄 Verificar E-mails
-    </button>
-
-    {/* Botão Exportar Excel - só em desktop */}
-    <button
-      onClick={() => exportarParaExcel(registos)}
-      className="hidden md:flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-xl shadow-md transition"
-    >
-      <FaFileExcel size={18} />
-      Exportar Excel
-    </button>
-
-  </div>
-</div>
+        <h2 className="text-lg font-bold text-gray-900 dark:text-white">Vendas</h2>
+        <div className="flex gap-2 flex-wrap">
+      
+          {/* Botão Verificar E-mails - responsivo */}
+          <button
+            onClick={forcarAtualizacaoEmail}
+            className="bg-green-600 text-white px-2 py-1 text-sm md:px-3 md:py-1.5 md:text-base rounded hover:bg-green-700 transition"
+          >
+            🔄 Verificar E-mails
+          </button>
+      
+          {/* Botão Exportar Excel - só em desktop */}
+          <button
+            onClick={() => exportarParaExcel(registos)}
+            className="hidden md:flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-xl shadow-md transition"
+          >
+            <FaFileExcel size={18} />
+            Exportar Excel
+          </button>
+      
+        </div>
+      </div>
 
 
       
