@@ -189,7 +189,13 @@ def processar_email_stubhub(content, data_venda):
     try:
         # ID da venda
         match_id = re.search(r'ID do pedido\s*n[º°.]?\s*\.?\s*(\d+)', content, re.IGNORECASE)
-        id_venda = match_id.group(1).strip() if match_id else None
+        if not match_id:
+            print("❌ ID do pedido não encontrado no seguinte conteúdo:")
+            print(content[:1000])  # Mostra os primeiros 1000 caracteres para debug
+            return "erro"
+        
+        id_venda = match_id.group(1).strip()
+        
 
         # Evento
         match_evento = re.search(r'Informações sobre a venda\s*([\w\s\-À-ÿ&]+) Tickets', content)
