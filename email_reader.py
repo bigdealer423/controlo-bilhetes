@@ -634,6 +634,9 @@ if __name__ == "__main__":
         "ids_entregues": list(set(entregues_stubhub.get("ids_entregues", []) + entregues_viagogo.get("ids_entregues", [])))
     }
 
+    # ✅ ADICIONAR AQUI:
+    resultado_pagamentos = verificar_emails_pagamento(username, password, dias=PERIODO_DIAS)
+
     # Atualiza o resumo com resultados
     try:
         with open("resumo_leitura.json", "r+") as f:
