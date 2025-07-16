@@ -522,11 +522,30 @@ def verificar_emails_entregues(username, password, dias=PERIODO_DIAS):
     }
 
 
+def get_email_body_stubhub(msg):
+    for part in msg.walk():
+        content_type = part.get_content_type()
+        content_disposition = str(part.get("Content-Disposition"))
+
+        if "attachment" in content_disposition:
+            continue
+
+        if content_type == "text/plain":
+            try:
+                return part.get_payload(decode=True).decode(errors="ignore")
+            except:
+                continue
+        elif content_type == "text/html":
+            try:
+                html = part.get_payload(decode=True).decode(errors="ignore")
+                soup = BeautifulSoup(html, "html.parser")
+                return soup.get_text(separator="\n")
+            except:
+                continue
+    return ""
+
 def verificar_emails_entregues_stubhub(username, password, dias=PERIODO_DIAS):
-    from datetime import datetime, timedelta
-    import email
-    import re
-    import requests
+    import unicodedata
 
     mail = connect_email(username, password)
     mail.select("inbox")
@@ -534,7 +553,7 @@ def verificar_emails_entregues_stubhub(username, password, dias=PERIODO_DIAS):
     data_limite = (datetime.today() - timedelta(days=dias)).strftime("%d-%b-%Y")
     status, mensagens = mail.search(
         None,
-        f'(SUBJECT "Os seus bilhetes foram entregues para o pedido" FROM "order-update@orders.stubhubinternational.com" SINCE {data_limite})'
+        f'(FROM "order-update@orders.stubhubinternational.com" SINCE {data_limite})'
     )
     ids = mensagens[0].split()
     print(f"📩 Emails StubHub a verificar para entregas: {len(ids)}")
@@ -542,48 +561,55 @@ def verificar_emails_entregues_stubhub(username, password, dias=PERIODO_DIAS):
     ids_entregues = []
 
     for msg_id in ids:
-        _, msg = mail.fetch(msg_id, "(RFC822)")
-        for response_part in msg:
+        _, msg_data = mail.fetch(msg_id, "(RFC822)")
+        for response_part in msg_data:
             if isinstance(response_part, tuple):
                 msg = email.message_from_bytes(response_part[1])
-                assunto = msg["Subject"]
+                subject = msg["Subject"]
+                print(f"📧 Assunto do email: {subject}")
 
-                print(f"📧 Assunto do email: {assunto}")
+                corpo = get_email_body_stubhub(msg)
+                print("🔍 Conteúdo do email:\n", corpo[:1000])
 
-                match = re.search(r"pedido n[º°#]*\s*(\d{6,12})", assunto, re.IGNORECASE)
-                if match:
-                    id_venda = match.group(1).strip()
-                    print(f"🔄 Atualizar ID {id_venda} para 'Entregue'")
+                if "Obrigado por entregar os bilhetes para o pedido" in corpo:
+                    match = re.search(r"pedido\s*(?:n[º°#]*)?\s*(\d{6,12})", corpo)
+                    if match:
+                        id_venda = match.group(1)
+                        print(f"🔄 Atualizar ID {id_venda} para 'Entregue'")
 
-                    try:
-                        url = f"https://controlo-bilhetes.onrender.com/listagem_vendas/por_id_venda/{id_venda}"
-                        res = requests.get(url)
-                        if res.status_code == 200:
-                            dados = res.json()
-                            if dados.get("estado") != "Entregue":
-                                dados["estado"] = "Entregue"
-                                update = requests.put(
-                                    f"https://controlo-bilhetes.onrender.com/listagem_vendas/{dados['id']}",
-                                    json=dados
-                                )
-                                print(f"📡 PUT resposta ({update.status_code}): {update.text}")
-                                if update.status_code == 200:
-                                    print(f"✅ Estado do ID {id_venda} atualizado para 'Entregue'")
-                                    ids_entregues.append(id_venda)
+                        try:
+                            url = f"https://controlo-bilhetes.onrender.com/listagem_vendas/por_id_venda/{id_venda}"
+                            res = requests.get(url)
+                            if res.status_code == 200:
+                                dados = res.json()
+                                if dados["estado"] != "Entregue":
+                                    dados["estado"] = "Entregue"
+                                    update = requests.put(
+                                        f"https://controlo-bilhetes.onrender.com/listagem_vendas/{dados['id']}",
+                                        json=dados
+                                    )
+                                    if update.status_code == 200:
+                                        print(f"✅ Estado do ID {id_venda} atualizado para 'Entregue'")
+                                        ids_entregues.append(id_venda)
+                                    else:
+                                        print(f"❌ Erro ao atualizar ID {id_venda}: {update.status_code}")
                                 else:
-                                    print(f"❌ Erro ao atualizar ID {id_venda}: {update.status_code}")
+                                    print(f"ℹ️ ID {id_venda} já estava como 'Entregue'.")
                             else:
-                                print(f"ℹ️ ID {id_venda} já está como 'Entregue'.")
-                        else:
-                            print(f"⚠️ ID {id_venda} não encontrado na base de dados.")
-                    except Exception as e:
-                        print(f"❌ Erro na comunicação com API para ID {id_venda}: {e}")
+                                print(f"⚠️ ID {id_venda} não encontrado na base de dados.")
+                        except Exception as e:
+                            print(f"❌ Erro na comunicação com API para ID {id_venda}: {e}")
+                    else:
+                        print("❌ Frase encontrada mas não foi possível extrair o ID.")
+                else:
+                    print("❌ Frase de entrega não encontrada neste email.")
 
     return {
         "total_verificados": len(ids),
         "alterados_para_entregue": len(ids_entregues),
         "ids_entregues": ids_entregues
     }
+
 
 
 
