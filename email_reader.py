@@ -280,11 +280,10 @@ def processar_email_stubhub(content, data_venda):
         return "erro"
 
 def verificar_emails_entregues_stubhub(username, password, dias=PERIODO_DIAS):
+    from datetime import datetime, timedelta
     import email
     import re
     import requests
-    from datetime import datetime, timedelta
-    from email.header import decode_header
 
     mail = connect_email(username, password)
     mail.select("inbox")
@@ -292,11 +291,10 @@ def verificar_emails_entregues_stubhub(username, password, dias=PERIODO_DIAS):
     data_limite = (datetime.today() - timedelta(days=dias)).strftime("%d-%b-%Y")
     status, mensagens = mail.search(
         None,
-        f'(FROM "order-update@orders.stubhubinternational.com" TEXT "foram entregues para o pedido" SINCE {data_limite})'
+        f'(SUBJECT "Os seus bilhetes foram entregues para o pedido" FROM "order-update@orders.stubhubinternational.com" SINCE {data_limite})'
     )
-
     ids = mensagens[0].split()
-    print(f"📩 Emails StubHub a verificar para entregas: {len(ids)}")
+    print(f"📩 [StubHub] Emails a verificar para entregas: {len(ids)}")
 
     ids_entregues = []
 
@@ -305,25 +303,17 @@ def verificar_emails_entregues_stubhub(username, password, dias=PERIODO_DIAS):
         for response_part in msg:
             if isinstance(response_part, tuple):
                 msg = email.message_from_bytes(response_part[1])
+                assunto = msg["Subject"]
+                remetente = msg["From"]
 
-                # Decode do assunto (pode vir codificado em base64)
-                raw_subject = msg["Subject"]
-                decoded_parts = decode_header(raw_subject)
-                subject = ''
-                for part, encoding in decoded_parts:
-                    if isinstance(part, bytes):
-                        subject += part.decode(encoding or 'utf-8')
-                    else:
-                        subject += part
+                print(f"\n📧 Assunto: {assunto}")
+                print(f"📤 Remetente: {remetente}")
 
-                print(f"📧 Assunto do email decodificado: {subject}")
-
-                # Extrair ID do pedido do assunto
-                match = re.search(r"pedido\s*n[º°#]*\s*(\d{6,12})", subject, re.IGNORECASE)
+                match = re.search(r"pedido\s*n[º°#]*\s*(\d{6,12})", assunto, re.IGNORECASE)
                 if match:
                     id_venda = match.group(1).strip()
-                    print(f"🔄 Tentar atualizar ID {id_venda} para 'Entregue' (StubHub)")
-
+                    print(f"🆔 ID de venda extraído: {id_venda}")
+                    
                     try:
                         url = f"https://controlo-bilhetes.onrender.com/listagem_vendas/por_id_venda/{id_venda}"
                         print(f"🔎 [GET] {url}")
@@ -332,36 +322,36 @@ def verificar_emails_entregues_stubhub(username, password, dias=PERIODO_DIAS):
 
                         if res.status_code == 200:
                             dados = res.json()
-                            print(f"📦 Dados recebidos: {dados}")
+                            print(f"📦 Dados da venda: {dados}")
 
                             if dados.get("estado") != "Entregue":
                                 dados["estado"] = "Entregue"
                                 update_url = f"https://controlo-bilhetes.onrender.com/listagem_vendas/{dados['id']}"
-                                print(f"⬆️ [PUT] {update_url} com dados: {dados}")
+                                print(f"⬆️ [PUT] {update_url} com payload: {dados}")
                                 update = requests.put(update_url, json=dados)
                                 print(f"📤 PUT status: {update.status_code}")
 
                                 if update.status_code == 200:
-                                    print(f"✅ Estado do ID {id_venda} atualizado com sucesso para 'Entregue'")
+                                    print(f"✅ Estado atualizado para 'Entregue' no ID {id_venda}")
                                     ids_entregues.append(id_venda)
                                 else:
                                     print(f"❌ Erro ao atualizar ID {id_venda}: PUT status {update.status_code}")
                             else:
-                                print(f"ℹ️ ID {id_venda} já estava com estado 'Entregue'")
+                                print(f"ℹ️ ID {id_venda} já está como 'Entregue'")
                         else:
-                            print(f"⚠️ ID {id_venda} não encontrado na base de dados (status {res.status_code})")
+                            print(f"⚠️ ID {id_venda} não encontrado na base de dados")
 
                     except Exception as e:
-                        print(f"❌ Erro ao comunicar com a API para o ID {id_venda}: {e}")
-
+                        print(f"❌ Erro ao comunicar com API para o ID {id_venda}: {e}")
                 else:
-                    print("⚠️ Não foi possível extrair o ID da venda do assunto!")
+                    print("⚠️ ID da venda não encontrado no assunto!")
 
     return {
         "total_verificados": len(ids),
         "alterados_para_entregue": len(ids_entregues),
         "ids_entregues": ids_entregues
     }
+
 
 
 
