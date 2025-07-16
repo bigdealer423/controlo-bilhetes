@@ -188,7 +188,7 @@ def search_emails_stubhub(mail, date_from=None):
 def processar_email_stubhub(content, data_venda):
     try:
         # ID da venda
-        match_id = re.search(r'ID do pedido n[º°]?\s*(\d+)', content)
+        match_id = re.search(r'ID do pedido\s*n[º°.]?\s*\.?\s*(\d+)', content, re.IGNORECASE)
         id_venda = match_id.group(1).strip() if match_id else None
 
         # Evento
