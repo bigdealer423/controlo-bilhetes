@@ -504,26 +504,26 @@ def verificar_emails_pagamento(username, password, dias=PERIODO_DIAS):
 if __name__ == "__main__":
     auto_update_email_data(username, password, date_from=(datetime.today() - timedelta(days=PERIODO_DIAS)).strftime("%d-%b-%Y"))
 
-  # === Processar emails da StubHub (mesma conta que Viagogo)
-print("\n📥 A processar StubHub...")
-
-mail = connect_email(username, password)
-mensagens = search_emails_stubhub(mail)
-print(f"📬 Emails encontrados StubHub: {len(mensagens)}")
-
-sucesso_stubhub = 0
-falha_stubhub = 0
-
-for msg_id in mensagens:
-    conteudo, data_venda = extract_email_content_and_date(mail, msg_id)
-    resultado = processar_email_stubhub(conteudo, data_venda)
-    if resultado == "inserido":
-        sucesso_stubhub += 1
-    elif resultado == "erro":
-        falha_stubhub += 1
-
-print(f"✅ StubHub inseridos com sucesso: {sucesso_stubhub}")
-print(f"❌ StubHub com erro: {falha_stubhub}")
+      # === Processar emails da StubHub (mesma conta que Viagogo)
+    print("\n📥 A processar StubHub...")
+    
+    mail = connect_email(username, password)
+    mensagens = search_emails_stubhub(mail)
+    print(f"📬 Emails encontrados StubHub: {len(mensagens)}")
+    
+    sucesso_stubhub = 0
+    falha_stubhub = 0
+    
+    for msg_id in mensagens:
+        conteudo, data_venda = extract_email_content_and_date(mail, msg_id)
+        resultado = processar_email_stubhub(conteudo, data_venda)
+        if resultado == "inserido":
+            sucesso_stubhub += 1
+        elif resultado == "erro":
+            falha_stubhub += 1
+    
+    print(f"✅ StubHub inseridos com sucesso: {sucesso_stubhub}")
+    print(f"❌ StubHub com erro: {falha_stubhub}")
 
 
 
