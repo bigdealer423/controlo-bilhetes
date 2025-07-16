@@ -562,44 +562,48 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
       </div>
       </div> {/* Fecha o contentor da tabela */}
 
-      <div className="space-y-4 md:hidden">
+      <div className="space-y-5 md:hidden px-2">
         {registos.map((r) => (
-          <div key={r.id} className="bg-zinc-800 rounded-2xl shadow-md px-5 py-4 border border-zinc-700">
-            <div className="flex justify-between items-center mb-2">
-              <div className="text-xs text-zinc-400">ID: <span className="text-white">{r.id}</span></div>
-              <span className={`text-xs font-semibold px-3 py-1 rounded-full ${
-                r.estado === "Pago" ? "bg-green-600 text-white" :
+          <div
+            key={r.id}
+            className="rounded-xl border border-gray-700 bg-gradient-to-br from-zinc-900 to-gray-800 p-4 shadow-xl text-white"
+          >
+            {/* Topo: ID + Estado */}
+            <div className="flex justify-between items-center text-sm mb-2">
+              <div className="text-gray-400">ID: <span className="font-semibold">{r.id}</span></div>
+              <div className={`px-3 py-1 rounded-full text-xs font-bold ${
+                r.estado === "Pago" ? "bg-green-500 text-white" :
                 r.estado === "Entregue" ? "bg-blue-500 text-white" :
                 "bg-yellow-400 text-black"
               }`}>
                 {r.estado}
-              </span>
+              </div>
             </div>
       
-            <div className="text-sm text-zinc-400">
-              <strong className="text-zinc-300">Evento:</strong> {r.evento}
+            {/* Evento + Bilhete */}
+            <div className="text-lg font-bold mb-1 text-amber-400">{r.evento}</div>
+            <div className="text-sm italic text-gray-300">{r.bilhete}</div>
+      
+            {/* Datas */}
+            <div className="flex justify-between text-sm text-gray-400 mt-3">
+              <span>📅 Venda: <strong>{r.data_venda}</strong></span>
+              <span>🎫 Evento: <strong>{r.data_evento}</strong></span>
             </div>
       
-            <div className="text-sm text-zinc-400 mt-1">
-              <strong className="text-zinc-300">Bilhete:</strong> {r.bilhete}
-            </div>
-      
-            <div className="flex justify-between text-sm text-zinc-400 mt-2">
-              <span>🗓️ <strong>Venda:</strong> {r.data_venda}</span>
-              <span>🎫 <strong>Evento:</strong> {r.data_evento}</span>
-            </div>
-      
-            <div className="mt-3 text-right text-lg font-semibold text-green-400">
+            {/* Ganho */}
+            <div className="text-right mt-4 text-2xl font-extrabold text-green-400">
               + {r.ganho} €
             </div>
       
-            <div className="flex justify-end gap-6 pt-3 text-sm">
+            {/* Botões */}
+            <div className="flex justify-end gap-5 mt-3 text-sm">
               <button onClick={() => ativarEdicao(r.id, r)} className="text-blue-400 hover:underline">Editar</button>
               <button onClick={() => pedirConfirmEliminar([r.id])} className="text-red-400 hover:underline">Eliminar</button>
             </div>
           </div>
         ))}
       </div>
+
 
 
 
