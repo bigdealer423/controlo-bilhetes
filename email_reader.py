@@ -174,6 +174,32 @@ def processar_email(content, data_venda):
 
     return enviar_para_fastapi(id_encomenda, evento, ganho_total, data_venda, data_evento, bilhetes)
 
+def extract_stubhub_email_content_and_date(mail, email_id):
+    _, msg = mail.fetch(email_id, "(RFC822)")
+    for response_part in msg:
+        if isinstance(response_part, tuple):
+            msg = email.message_from_bytes(response_part[1])
+            raw_date = msg["Date"]
+            data_venda = datetime.fromtimestamp(mktime_tz(parsedate_tz(raw_date)))
+
+            for part in msg.walk():
+                if part.get_content_type() == "text/plain":
+                    try:
+                        text = part.get_payload(decode=True).decode(errors='ignore')
+                        return text, data_venda
+                    except:
+                        continue
+                elif part.get_content_type() == "text/html":
+                    try:
+                        html = part.get_payload(decode=True).decode(errors='ignore')
+                        soup = BeautifulSoup(html, "html.parser")
+                        texto = soup.get_text(separator="\n")
+                        return texto, data_venda
+                    except:
+                        continue
+
+    return "", datetime.now()
+
 def search_emails_stubhub(mail, date_from=None):
     mail.select("inbox")
     if date_from is None:
@@ -521,7 +547,7 @@ if __name__ == "__main__":
     falha_stubhub = 0
     
     for msg_id in mensagens:
-        conteudo, data_venda = extract_email_content_and_date(mail, msg_id)
+        conteudo, data_venda = extract_stubhub_email_content_and_date(mail, msg_id)
         resultado = processar_email_stubhub(conteudo, data_venda)
         if resultado == "inserido":
             sucesso_stubhub += 1
