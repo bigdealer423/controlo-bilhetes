@@ -213,13 +213,13 @@ def search_emails_stubhub(mail, date_from=None):
 
 def processar_email_stubhub(content, data_venda):
     try:
-        # 🔐 Garantir que data_venda é datetime mesmo que venha em string de email
+        # 🔐 Garantir que data_venda é datetime mesmo que venha em string
         if isinstance(data_venda, str):
             try:
                 data_venda = parse(data_venda)
             except:
                 data_venda = datetime.now()
-    
+
         # ID da venda
         match_id = re.search(r'ID do pedido\s*(?:n[º°.]*)?\s*(\d{6,12})', content, re.IGNORECASE)
         if not match_id:
@@ -238,7 +238,7 @@ def processar_email_stubhub(content, data_venda):
             data_str = match_data.group(1)
             data_evento_formatada = datetime.strptime(data_str, "%d/%m/%Y")
         else:
-            data_evento_formatada = (data_venda + timedelta(days=10)).strftime("%d-%m-%Y")
+            data_evento_formatada = data_venda + timedelta(days=10)
 
         # Setor + Quantidade
         match_bilhetes = re.search(r'(\d+)\s+bilhete\(s\)\s*[\r\n]+(.*?)\s*[\r\n]+Fila', content, re.DOTALL)
@@ -257,14 +257,15 @@ def processar_email_stubhub(content, data_venda):
             id_venda=id_venda,
             evento=evento,
             ganho=ganho,
-            data_venda=data_venda.strftime("%d-%m-%Y"),
-            data_evento=data_evento_formatada.strftime("%d-%m-%Y"),
+            data_venda=data_venda.strftime("%Y-%m-%d"),
+            data_evento=data_evento_formatada.strftime("%Y-%m-%d"),
             bilhetes=bilhetes
         )
 
     except Exception as e:
         print(f"❌ Erro no processamento StubHub: {e}")
         return "erro"
+
 
 
 
