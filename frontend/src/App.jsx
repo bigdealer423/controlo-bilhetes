@@ -46,6 +46,7 @@ export default function App() {
                   <div>
                     <Dashboard onAtualizarEventos={forcarAtualizacaoEventos} />
                     <DashboardPrincipal />
+                    <NavbarInferior />
                   </div>
                 ) : (
                   <LoginPage />
