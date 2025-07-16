@@ -563,42 +563,43 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
       </div> {/* Fecha o contentor da tabela */}
 
       <div className="space-y-4 md:hidden">
-        {vendas.map((venda) => (
-          <div key={venda.id} className="bg-zinc-900 rounded-xl shadow-md p-4 space-y-2 border border-zinc-700">
-            <div className="text-sm text-zinc-400">ID Venda: <span className="text-white font-medium">{venda.id}</span></div>
+        {registos.map((r) => (
+          <div key={r.id} className="bg-zinc-900 rounded-xl shadow-md p-4 space-y-2 border border-zinc-700">
+            <div className="text-sm text-zinc-400">ID Venda: <span className="text-white font-medium">{r.id}</span></div>
       
             <div className="text-sm text-zinc-400 flex justify-between">
-              <span>📅 Venda: <span className="text-white">{venda.data_venda}</span></span>
-              <span>🎫 Evento: <span className="text-white">{venda.data_evento}</span></span>
+              <span>📅 Venda: <span className="text-white">{r.data_venda}</span></span>
+              <span>🎫 Evento: <span className="text-white">{r.data_evento}</span></span>
             </div>
       
             <div className="text-white font-semibold text-base">
-              {venda.evento}
+              {r.evento}
             </div>
       
             <div className="text-sm text-zinc-300 italic">
-              Bilhete: {venda.bilhete}
+              Bilhete: {r.bilhete}
             </div>
       
             <div className="flex justify-between items-center">
-              <div className="text-green-400 font-bold text-base">+ {venda.ganho} €</div>
+              <div className="text-green-400 font-bold text-base">+ {r.ganho} €</div>
       
               <span className={`text-xs font-bold px-2 py-1 rounded ${
-                venda.estado === "Pago" ? "bg-green-600 text-white" :
-                venda.estado === "Entregue" ? "bg-blue-600 text-white" :
+                r.estado === "Pago" ? "bg-green-600 text-white" :
+                r.estado === "Entregue" ? "bg-blue-600 text-white" :
                 "bg-yellow-400 text-black"
               }`}>
-                {venda.estado}
+                {r.estado}
               </span>
             </div>
       
             <div className="flex justify-end gap-4 text-sm pt-2">
-              <button className="text-blue-400 hover:underline">Editar</button>
-              <button className="text-red-400 hover:underline">Eliminar</button>
+              <button onClick={() => ativarEdicao(r.id, r)} className="text-blue-400 hover:underline">Editar</button>
+              <button onClick={() => pedirConfirmEliminar([r.id])} className="text-red-400 hover:underline">Eliminar</button>
             </div>
           </div>
         ))}
       </div>
+
 
 
       {/* Modal de confirmação */}
