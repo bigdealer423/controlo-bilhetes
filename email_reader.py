@@ -286,13 +286,10 @@ def verificar_emails_entregues_stubhub(username, password, dias=PERIODO_DIAS):
     mail.select("inbox")
 
     data_limite = (datetime.today() - timedelta(days=dias)).strftime("%d-%b-%Y")
-    status, mensagens = mail.search(
-        None,
-        f'(SUBJECT "Os seus bilhetes foram entregues para o pedido" FROM "order-update@orders.stubhubinternational.com" SINCE {data_limite})'
-    )
+    status, mensagens = mail.search(None, f'(FROM "order-update@orders.stubhubinternational.com" SINCE {data_limite})')
 
     ids = mensagens[0].split()
-    print(f"📩 Emails StubHub a verificar para entregas: {len(ids)}")
+    print(f"📩 Emails StubHub a verificar para entregas (por conteúdo): {len(ids)}")
 
     ids_entregues = []
 
@@ -301,48 +298,49 @@ def verificar_emails_entregues_stubhub(username, password, dias=PERIODO_DIAS):
         for response_part in msg:
             if isinstance(response_part, tuple):
                 email_msg = email.message_from_bytes(response_part[1])
+                
+                # Procurar parte HTML ou texto
+                corpo = ""
+                for part in email_msg.walk():
+                    if part.get_content_type() == "text/plain" or part.get_content_type() == "text/html":
+                        try:
+                            corpo = part.get_payload(decode=True).decode(errors="ignore")
+                            break
+                        except:
+                            continue
 
-                # Decodificar o assunto corretamente (mesmo se vier codificado em várias partes)
-                raw_subject = email_msg.get("Subject", "")
-                try:
-                    assunto = str(make_header(decode_header(raw_subject)))
-                except Exception as e:
-                    print(f"❌ Erro ao decodificar o assunto: {e}")
-                    assunto = raw_subject
+                if not corpo:
+                    continue
 
-                print(f"📧 Assunto decodificado: {assunto}")
+                # Mostrar conteúdo para debug
+                print("🔍 A verificar corpo do email StubHub...")
+                print(corpo[:500])
 
-                # Extrair o ID do pedido do assunto
-                match = re.search(r"pedido\s+n[º°#]*\s*(\d{6,12})", assunto, re.IGNORECASE)
+                # Procurar a frase com ID
+                match = re.search(r"Obrigado por entregar os bilhetes para o pedido\s+(\d{6,12})", corpo)
                 if match:
                     id_venda = match.group(1)
-                    print(f"🔄 Atualizar ID {id_venda} para 'Entregue'")
+                    print(f"🔄 Detetado ID entregue: {id_venda}")
 
                     try:
-                        # Obter dados atuais da venda
                         url = f"https://controlo-bilhetes.onrender.com/listagem_vendas/por_id_venda/{id_venda}"
                         res = requests.get(url)
                         if res.status_code == 200:
                             dados = res.json()
                             if dados.get("estado") != "Entregue":
                                 dados["estado"] = "Entregue"
-                                update = requests.put(
-                                    f"https://controlo-bilhetes.onrender.com/listagem_vendas/{dados['id']}",
-                                    json=dados
-                                )
+                                update = requests.put(f"https://controlo-bilhetes.onrender.com/listagem_vendas/{dados['id']}", json=dados)
                                 if update.status_code == 200:
                                     print(f"✅ Estado do ID {id_venda} atualizado para 'Entregue'")
                                     ids_entregues.append(id_venda)
                                 else:
                                     print(f"❌ Erro ao atualizar ID {id_venda}: {update.status_code}")
                             else:
-                                print(f"ℹ️ ID {id_venda} já está como 'Entregue'.")
+                                print(f"ℹ️ ID {id_venda} já estava como 'Entregue'")
                         else:
                             print(f"⚠️ ID {id_venda} não encontrado na base de dados.")
                     except Exception as e:
-                        print(f"❌ Erro na comunicação com API para ID {id_venda}: {e}")
-                else:
-                    print("⚠️ Nenhum ID encontrado no assunto.")
+                        print(f"❌ Erro ao contactar API para ID {id_venda}: {e}")
 
     return {
         "total_verificados": len(ids),
