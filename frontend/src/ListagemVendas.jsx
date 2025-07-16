@@ -530,46 +530,151 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
       </div> {/* Fecha o contentor da tabela */}
 
       <div className="space-y-5 md:hidden px-2">
-        {registos.map((r) => (
-          <div
-            key={r.id}
-            className="rounded-xl border border-gray-700 bg-gradient-to-br from-zinc-900 to-gray-800 p-4 shadow-xl text-white"
-          >
-            {/* Topo: ID + Estado */}
-            <div className="flex justify-between items-center text-sm mb-2">
-              <div className="text-gray-400">ID Venda: <span className="font-semibold">{r.id_venda}</span></div>
-              <div className={`px-3 py-1 rounded-full text-xs font-bold ${
-                r.estado === "Pago" ? "bg-green-500 text-white" :
-                r.estado === "Entregue" ? "bg-blue-500 text-white" :
-                "bg-yellow-400 text-black"
-              }`}>
-                {r.estado}
+        {registos.map((r) => {
+          const emEdicao = modoEdicao === r.id;
+          return (
+            <div
+              key={r.id}
+              className="rounded-xl border border-gray-700 bg-gradient-to-br from-zinc-900 to-gray-800 p-4 shadow-xl text-white"
+            >
+              {/* Topo: ID + Estado */}
+              <div className="flex justify-between items-center text-sm mb-2">
+                <div className="text-gray-400">
+                  ID:{" "}
+                  <span className="font-semibold">
+                    {emEdicao ? (
+                      <input
+                        type="number"
+                        value={registoEditado.id_venda}
+                        onChange={(e) =>
+                          setRegistoEditado({ ...registoEditado, id_venda: e.target.value })
+                        }
+                        className="w-20 bg-gray-900 border border-gray-500 p-1 rounded text-white"
+                      />
+                    ) : (
+                      r.id_venda
+                    )}
+                  </span>
+                </div>
+                <div
+                  className={`px-3 py-1 rounded-full text-xs font-bold ${
+                    r.estado === "Pago"
+                      ? "bg-green-500 text-white"
+                      : r.estado === "Entregue"
+                      ? "bg-blue-500 text-white"
+                      : "bg-yellow-400 text-black"
+                  }`}
+                >
+                  {r.estado}
+                </div>
+              </div>
+      
+              {/* Evento + Bilhete */}
+              {emEdicao ? (
+                <>
+                  <input
+                    type="text"
+                    value={registoEditado.evento}
+                    onChange={(e) =>
+                      setRegistoEditado({ ...registoEditado, evento: e.target.value })
+                    }
+                    className="w-full mb-2 bg-gray-900 border border-gray-500 p-2 rounded text-white"
+                  />
+                  <input
+                    type="text"
+                    value={registoEditado.estadio}
+                    onChange={(e) =>
+                      setRegistoEditado({ ...registoEditado, estadio: e.target.value })
+                    }
+                    className="w-full mb-2 bg-gray-900 border border-gray-500 p-2 rounded text-white"
+                  />
+                </>
+              ) : (
+                <>
+                  <div className="text-lg font-bold mb-1 text-amber-400">{r.evento}</div>
+                  <div className="text-sm italic text-gray-300">{r.estadio}</div>
+                </>
+              )}
+      
+              {/* Datas */}
+              <div className="flex justify-between text-sm text-gray-400 mt-3 gap-2">
+                <div>
+                  📅 Venda:{" "}
+                  {emEdicao ? (
+                    <input
+                      type="date"
+                      value={registoEditado.data_venda}
+                      onChange={(e) =>
+                        setRegistoEditado({ ...registoEditado, data_venda: e.target.value })
+                      }
+                      className="bg-gray-900 border border-gray-500 p-1 rounded text-white"
+                    />
+                  ) : (
+                    <strong>{r.data_venda}</strong>
+                  )}
+                </div>
+                <div>
+                  🎫 Evento:{" "}
+                  {emEdicao ? (
+                    <input
+                      type="date"
+                      value={registoEditado.data_evento}
+                      onChange={(e) =>
+                        setRegistoEditado({ ...registoEditado, data_evento: e.target.value })
+                      }
+                      className="bg-gray-900 border border-gray-500 p-1 rounded text-white"
+                    />
+                  ) : (
+                    <strong>{r.data_evento}</strong>
+                  )}
+                </div>
+              </div>
+      
+              {/* Ganho */}
+              <div className="text-right mt-4 text-2xl font-extrabold text-green-400">
+                {emEdicao ? (
+                  <input
+                    type="number"
+                    value={registoEditado.ganho}
+                    onChange={(e) =>
+                      setRegistoEditado({ ...registoEditado, ganho: e.target.value })
+                    }
+                    className="w-24 bg-gray-900 border border-gray-500 p-1 rounded text-green-400 text-right"
+                  />
+                ) : (
+                  `+ ${r.ganho} €`
+                )}
+              </div>
+      
+              {/* Botões */}
+              <div className="flex justify-end gap-5 mt-3 text-sm">
+                {emEdicao ? (
+                  <button
+                    onClick={atualizarRegisto}
+                    className="text-green-400 hover:underline"
+                  >
+                    Guardar
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => ativarEdicao(r.id, r)}
+                    className="text-blue-400 hover:underline"
+                  >
+                    Editar
+                  </button>
+                )}
+                <button
+                  onClick={() => pedirConfirmEliminar([r.id])}
+                  className="text-red-400 hover:underline"
+                >
+                  Eliminar
+                </button>
               </div>
             </div>
-      
-            {/* Evento + Bilhete */}
-            <div className="text-lg font-bold mb-1 text-amber-400">{r.evento}</div>
-            <div className="text-sm italic text-gray-300">{r.bilhete}</div>
-      
-            {/* Datas */}
-            <div className="flex justify-between text-sm text-gray-400 mt-3">
-              <span>📅 Venda: <strong>{r.data_venda}</strong></span>
-              <span>🎫 Evento: <strong>{r.data_evento}</strong></span>
-            </div>
-      
-            {/* Ganho */}
-            <div className="text-right mt-4 text-2xl font-extrabold text-green-400">
-              + {r.ganho} €
-            </div>
-      
-            {/* Botões */}
-            <div className="flex justify-end gap-5 mt-3 text-sm">
-              <button onClick={() => ativarEdicao(r.id, r)} className="text-blue-400 hover:underline">Editar</button>
-              <button onClick={() => pedirConfirmEliminar([r.id])} className="text-red-400 hover:underline">Eliminar</button>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
+
 
 
 
