@@ -292,7 +292,7 @@ def verificar_emails_entregues_stubhub(username, password, dias=PERIODO_DIAS):
     data_limite = (datetime.today() - timedelta(days=dias)).strftime("%d-%b-%Y")
     status, mensagens = mail.search(
         None,
-        f'(SUBJECT "Os seus bilhetes foram entregues para o pedido" FROM "order-update@orders.stubhubinternational.com" SINCE {data_limite})'
+        f'(FROM "order-update@orders.stubhubinternational.com" TEXT "foram entregues para o pedido" SINCE {data_limite})'
     )
 
     ids = mensagens[0].split()
