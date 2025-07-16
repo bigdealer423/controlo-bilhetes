@@ -286,7 +286,11 @@ def verificar_emails_entregues_stubhub(username, password, dias=PERIODO_DIAS):
     mail.select("inbox")
 
     data_limite = (datetime.today() - timedelta(days=dias)).strftime("%d-%b-%Y")
-    status, mensagens = mail.search(None, f'(FROM "order-update@orders.stubhubinternational.com" SINCE {data_limite})')
+    status, mensagens = mail.search(
+        None,
+        f'(SUBJECT "Os seus bilhetes foram entregues para o pedido" FROM "order-update@orders.stubhubinternational.com" SINCE {data_limite})'
+    )
+
     ids = mensagens[0].split()
     print(f"📩 Emails StubHub a verificar para entregas: {len(ids)}")
 
@@ -297,30 +301,35 @@ def verificar_emails_entregues_stubhub(username, password, dias=PERIODO_DIAS):
         for response_part in msg:
             if isinstance(response_part, tuple):
                 email_msg = email.message_from_bytes(response_part[1])
-                assunto_raw = email_msg.get("Subject", "")
-                assunto_decod = decode_header(assunto_raw)
-                assunto = ""
-                for part, encoding in assunto_decod:
-                    if isinstance(part, bytes):
-                        assunto += part.decode(encoding or "utf-8", errors="ignore")
-                    else:
-                        assunto += part
+
+                # Decodificar o assunto corretamente (mesmo se vier codificado em várias partes)
+                raw_subject = email_msg.get("Subject", "")
+                try:
+                    assunto = str(make_header(decode_header(raw_subject)))
+                except Exception as e:
+                    print(f"❌ Erro ao decodificar o assunto: {e}")
+                    assunto = raw_subject
 
                 print(f"📧 Assunto decodificado: {assunto}")
 
+                # Extrair o ID do pedido do assunto
                 match = re.search(r"pedido\s+n[º°#]*\s*(\d{6,12})", assunto, re.IGNORECASE)
                 if match:
-                    id_venda = match.group(1).strip()
+                    id_venda = match.group(1)
                     print(f"🔄 Atualizar ID {id_venda} para 'Entregue'")
 
                     try:
+                        # Obter dados atuais da venda
                         url = f"https://controlo-bilhetes.onrender.com/listagem_vendas/por_id_venda/{id_venda}"
                         res = requests.get(url)
                         if res.status_code == 200:
                             dados = res.json()
-                            if dados["estado"] != "Entregue":
+                            if dados.get("estado") != "Entregue":
                                 dados["estado"] = "Entregue"
-                                update = requests.put(f"https://controlo-bilhetes.onrender.com/listagem_vendas/{dados['id']}", json=dados)
+                                update = requests.put(
+                                    f"https://controlo-bilhetes.onrender.com/listagem_vendas/{dados['id']}",
+                                    json=dados
+                                )
                                 if update.status_code == 200:
                                     print(f"✅ Estado do ID {id_venda} atualizado para 'Entregue'")
                                     ids_entregues.append(id_venda)
@@ -332,6 +341,8 @@ def verificar_emails_entregues_stubhub(username, password, dias=PERIODO_DIAS):
                             print(f"⚠️ ID {id_venda} não encontrado na base de dados.")
                     except Exception as e:
                         print(f"❌ Erro na comunicação com API para ID {id_venda}: {e}")
+                else:
+                    print("⚠️ Nenhum ID encontrado no assunto.")
 
     return {
         "total_verificados": len(ids),
