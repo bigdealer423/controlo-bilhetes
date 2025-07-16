@@ -287,7 +287,8 @@ def verificar_emails_entregues_stubhub(username, password, dias=PERIODO_DIAS):
     from email.header import decode_header
 
     mail = connect_email(username, password)
-    mail.select("inbox")
+    mail.select('"[Gmail]/All Mail"')
+
 
     data_limite = (datetime.today() - timedelta(days=dias)).strftime("%d-%b-%Y")
     
