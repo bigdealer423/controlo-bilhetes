@@ -182,20 +182,16 @@ def extract_stubhub_email_content_and_date(mail, email_id):
             raw_date = msg["Date"]
             data_venda = datetime.fromtimestamp(mktime_tz(parsedate_tz(raw_date)))
 
+            # Forçar a usar HTML e limpar com BeautifulSoup
             for part in msg.walk():
-                if part.get_content_type() == "text/plain":
-                    try:
-                        text = part.get_payload(decode=True).decode(errors='ignore')
-                        return text, data_venda
-                    except:
-                        continue
-                elif part.get_content_type() == "text/html":
+                if part.get_content_type() == "text/html":
                     try:
                         html = part.get_payload(decode=True).decode(errors='ignore')
                         soup = BeautifulSoup(html, "html.parser")
                         texto = soup.get_text(separator="\n")
                         return texto, data_venda
-                    except:
+                    except Exception as e:
+                        print("Erro ao processar HTML StubHub:", e)
                         continue
 
     return "", datetime.now()
