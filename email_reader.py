@@ -213,32 +213,37 @@ def search_emails_stubhub(mail, date_from=None):
 
 def processar_email_stubhub(content, data_venda):
     try:
-        # 🔐 Garantir que data_venda é datetime mesmo que venha em string
+        # Garantir que data_venda é datetime
         if isinstance(data_venda, str):
             try:
                 data_venda = parse(data_venda)
             except:
                 data_venda = datetime.now()
 
+        print("\n🔍 [DEBUG] A processar email StubHub...")
+
         # ID da venda
         match_id = re.search(r'ID do pedido\s*(?:n[º°.]*)?\s*(\d{6,12})', content, re.IGNORECASE)
         if not match_id:
-            print("❌ ID do pedido não encontrado no seguinte conteúdo:")
-            print(content[:1000])
+            print("❌ ID do pedido não encontrado.")
             return "erro"
         id_venda = match_id.group(1).strip()
+        print(f"🆔 ID da Venda: {id_venda}")
 
         # Evento
         match_evento = re.search(r'Informações sobre a venda\s*(.*?)\s*Tickets', content, re.DOTALL)
         evento = match_evento.group(1).strip() if match_evento else "Desconhecido"
+        print(f"🎫 Evento: {evento}")
 
         # Data do evento
         match_data = re.search(r'(?:SEG|TER|QUA|QUI|SEX|SÁB|DOM),\s*(\d{2}/\d{2}/\d{4})', content)
         if match_data:
             data_str = match_data.group(1)
             data_evento_formatada = datetime.strptime(data_str, "%d/%m/%Y")
+            print(f"📅 Data do Evento: {data_evento_formatada.strftime('%Y-%m-%d')}")
         else:
             data_evento_formatada = data_venda + timedelta(days=10)
+            print(f"⚠️ Data do Evento não encontrada, usada estimativa: {data_evento_formatada.strftime('%Y-%m-%d')}")
 
         # Setor + Quantidade
         match_bilhetes = re.search(r'(\d+)\s+bilhete\(s\)\s*[\r\n]+(.*?)\s*[\r\n]+Fila', content, re.DOTALL)
@@ -248,10 +253,18 @@ def processar_email_stubhub(content, data_venda):
             bilhetes = f"{setor} ({qtd} bilhetes)"
         else:
             bilhetes = "Desconhecido"
+        print(f"🎟️ Bilhetes: {bilhetes}")
 
         # Ganho
         match_valor = re.search(r'Total de pagamento\s*€?\s*([\d\.,]+)', content)
-        ganho = float(match_valor.group(1).replace(".", "").replace(",", ".")) if match_valor else 0.0
+        if match_valor:
+            valor_str = match_valor.group(1)
+            ganho = float(valor_str.replace(".", "").replace(",", "."))
+        else:
+            ganho = 0.0
+        print(f"💶 Ganho: {ganho:.2f}€")
+
+        print(f"🗓️ Data da Venda (email): {data_venda.strftime('%Y-%m-%d')}")
 
         return enviar_para_fastapi(
             id_venda=id_venda,
