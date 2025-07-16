@@ -25,6 +25,8 @@ export default function ListagemVendas(props) {
   const [mensagemModal, setMensagemModal] = useState("");
   const [filtroEvento, setFiltroEvento] = useState("");
   const [filtroIdVenda, setFiltroIdVenda] = useState("");
+  const [mostrarFormularioMobile, setMostrarFormularioMobile] = useState(false);
+
 
    const forcarAtualizacaoEmail = async () => {
   setMensagemModal("⏳ A processar leitura de e-mails...");
@@ -288,10 +290,20 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
   <p>💰 Ganho de hoje: {resumoDiario.ganho} €</p>
 </div>
 
-<div className="bg-white dark:bg-gray-800 shadow-md rounded p-4 mb-6 transition-colors duration-300">
+{/* Botão toggle visível só no mobile */}
+<div className="md:hidden mb-4">
+  <button
+    onClick={() => setMostrarFormularioMobile(!mostrarFormularioMobile)}
+    className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700 transition"
+  >
+    {mostrarFormularioMobile ? "✖ Fechar Formulário" : "➕ Adicionar Registo"}
+  </button>
+</div>
+
+{/* Formulário de adicionar registo */}
+<div className={`${mostrarFormularioMobile ? "block" : "hidden"} md:block bg-white dark:bg-gray-800 shadow-md rounded p-4 mb-6 transition-colors duration-300`}>
   <h2 className="text-lg font-semibold mb-2">Adicionar Registo</h2>
   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-
     {/* ID Venda */}
     <div className="flex flex-col">
       <label className="text-sm font-medium text-gray-700 dark:text-gray-200">ID Venda</label>
@@ -299,7 +311,7 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
         name="id_venda"
         type="number"
         placeholder="ID Venda"
-        className="h-10 w-full border rounded p-2 bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300 appearance-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+        className="h-10 w-full border rounded p-2 bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-gray-100"
         value={novoRegisto.id_venda}
         onChange={handleChange}
       />
@@ -311,7 +323,7 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
       <input
         name="data_venda"
         type="date"
-        className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300 dark:[color-scheme:dark]"
+        className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 dark:[color-scheme:dark]"
         value={novoRegisto.data_venda}
         onChange={handleChange}
       />
@@ -323,7 +335,7 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
       <input
         name="data_evento"
         type="date"
-        className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300 dark:[color-scheme:dark]"
+        className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 dark:[color-scheme:dark]"
         value={novoRegisto.data_evento}
         onChange={handleChange}
       />
@@ -334,7 +346,7 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
       <label className="text-sm font-medium text-gray-700 dark:text-gray-200">Evento</label>
       <select
         name="evento"
-        className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
+        className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
         value={novoRegisto.evento}
         onChange={handleChange}
       >
@@ -351,7 +363,7 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
       <input
         name="estadio"
         placeholder="Bilhete"
-        className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
+        className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
         value={novoRegisto.estadio}
         onChange={handleChange}
       />
@@ -364,7 +376,7 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
         name="ganho"
         type="number"
         placeholder="Ganho (€)"
-        className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
+        className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
         value={novoRegisto.ganho}
         onChange={handleChange}
       />
@@ -375,7 +387,7 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
       <label className="text-sm font-medium text-gray-700 dark:text-gray-200">Estado</label>
       <select
         name="estado"
-        className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
+        className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
         value={novoRegisto.estado}
         onChange={handleChange}
       >
@@ -394,6 +406,7 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
     Guardar Registo
   </button>
 </div>
+
 
 
       <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-md rounded-xl px-4 py-3 mb-4 flex items-center justify-between transition-colors duration-300">
