@@ -740,39 +740,16 @@ return (
                   key={r.id}
                   className="rounded-xl border border-gray-700 bg-gradient-to-br from-zinc-900 to-gray-800 p-4 shadow-xl text-white"
                 >
-                  {/* Topo: Evento + Data */}
+                  {/* Topo: Data + Estado */}
                   <div className="flex justify-between items-center text-sm mb-2">
-                    <div className="text-gray-400">
-                      Evento:
-                      {emEdicao ? (
-                        <select
-                          value={eventoEditado.evento}
-                          onChange={(e) =>
-                            setEventoEditado({ ...eventoEditado, evento: e.target.value })
-                          }
-                          className="ml-1 bg-gray-900 border border-gray-500 text-white rounded"
-                        >
-                          <option value="">Selecione</option>
-                          {eventosDropdown.map((ev) => (
-                            <option key={ev.id} value={ev.nome}>
-                              {ev.nome}
-                            </option>
-                          ))}
-                        </select>
-                      ) : (
-                        <span className="font-semibold ml-1 text-amber-400">{r.evento}</span>
-                      )}
-                    </div>
-          
+                    {/* Data */}
                     <div className="text-xs font-semibold bg-blue-600 text-white px-2 py-1 rounded-full">
                       {r.data_evento
                         ? new Date(r.data_evento).toLocaleDateString("pt-PT")
                         : "—"}
                     </div>
-                  </div>
           
-                  {/* Estado */}
-                  <div className="flex justify-between items-center text-xs mt-2">
+                    {/* Estado */}
                     {emEdicao ? (
                       <select
                         value={eventoEditado.estado}
@@ -786,7 +763,7 @@ return (
                       </select>
                     ) : (
                       <span
-                        className={`font-bold px-2 py-1 rounded-full text-xs ${
+                        className={`font-bold px-3 py-1 rounded-full text-xs ${
                           r.estado === "Pago"
                             ? "bg-green-500 text-white"
                             : r.estado === "Disputa"
@@ -798,6 +775,28 @@ return (
                       >
                         {r.estado}
                       </span>
+                    )}
+                  </div>
+          
+                  {/* Evento com símbolos */}
+                  <div className="text-lg font-bold mb-2 text-amber-400">
+                    {emEdicao ? (
+                      <select
+                        value={eventoEditado.evento}
+                        onChange={(e) =>
+                          setEventoEditado({ ...eventoEditado, evento: e.target.value })
+                        }
+                        className="w-full bg-gray-900 border border-gray-500 p-2 rounded text-white"
+                      >
+                        <option value="">-- Selecionar Evento --</option>
+                        {eventosDropdown.map((ev) => (
+                          <option key={ev.id} value={ev.nome}>
+                            {ev.nome}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <div className="flex flex-wrap items-center gap-1">{renderEventoComSimbolos(r.evento)}</div>
                     )}
                   </div>
           
@@ -852,10 +851,10 @@ return (
                     )}
                   </div>
           
-                  {/* Expansão futura de Vendas/Compras mobile */}
+                  {/* ⚙️ A seguir: renderização mobile de vendas e compras se expandido */}
                   {linhaExpandida === r.id && (
                     <div className="mt-4 text-sm text-gray-300 italic">
-                      (⚙️ Renderização mobile de vendas/compras a seguir — posso gerar já se quiseres)
+                      (⚙️ A seguir: cartões mobile para vendas e compras)
                     </div>
                   )}
                 </div>
