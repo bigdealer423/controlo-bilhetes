@@ -890,10 +890,13 @@ return (
                       )}
                     </div>
                   )}
-                </div>
+                </div> {/* Fecha cartão do evento */}
               );
             })}
-
+          </div> {/* Fecha .space-y-5 md:hidden */}
+        </div> {/* Fecha container principal */}
+      );
+    }
 
           {hasMore && (
             <div ref={observerRef} className="text-center py-4 text-gray-700 dark:text-gray-300">
