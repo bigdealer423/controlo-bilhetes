@@ -807,7 +807,7 @@ return (
                     ) : (
                       <button
                         onClick={() => ativarEdicao(r.id, r)}
-                        className="flex-1 bg-blue-500 text-white py-1 rounded"
+                        className="px-3 py-1 bg-blue-500 text-white rounded text-sm w-fit"
                       >
                         ✏️ Editar
                       </button>
