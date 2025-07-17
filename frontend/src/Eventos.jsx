@@ -890,11 +890,11 @@ return (
                       )}
                     </div>
                   )}
-                </div> {/* Fecha cartão do evento */}
+                </div> 
               );
             })}
-          </div> {/* Fecha .space-y-5 md:hidden */}
-        </div> {/* Fecha container principal */}
+          </div> 
+        </div> 
       );
     }
 
