@@ -738,7 +738,7 @@ return (
               return (
                 <div
                   key={r.id}
-                  className="rounded-xl border border-gray-700 bg-gradient-to-br from-zinc-900 to-gray-800 p-4 shadow-xl text-white"
+                  className="w-full rounded-xl border border-gray-700 bg-gradient-to-br from-zinc-900 to-gray-800 p-4 shadow-xl text-white"
                 >
                   {/* Topo: Data + Estado */}
                   <div className="flex justify-between items-center text-sm mb-2">
