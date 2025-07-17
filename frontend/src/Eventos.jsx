@@ -416,14 +416,14 @@ return (
     className="p-2 border rounded w-full md:w-72 bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
   />
 
-  {/* Botão Exportar Excel à direita */}
   <button
     onClick={() => exportarEventosParaExcel(registos)}
-    className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-xl shadow-md transition"
+    className="hidden md:flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-xl shadow-md transition"
   >
     <FaFileExcel size={18} />
     Exportar Excel
   </button>
+
 
 </div>
 
