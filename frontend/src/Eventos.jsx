@@ -48,6 +48,7 @@ useEffect(() => {
   const [tooltips, setTooltips] = useState({});
   const [clubesInfo, setClubesInfo] = useState([]);
   const [filtroPesquisa, setFiltroPesquisa] = useState("");
+  
 
 
   useEffect(() => {
@@ -724,6 +725,99 @@ return (
             ))}
           </tbody>
         </table>
+
+const ativarEdicao = (id, registo) => {
+  setModoEdicao(id);
+  setEventoEditado({ ...registo });
+};
+
+          
+          <div className="space-y-5 md:hidden px-2 mt-6">
+            {registos.map((r) => {
+              const emEdicao = modoEdicao === r.id;
+              return (
+                <div
+                  key={r.id}
+                  className="rounded-xl border border-gray-700 bg-gradient-to-br from-zinc-900 to-gray-800 p-4 shadow-xl text-white"
+                >
+                  {/* Topo: Evento + Data */}
+                  <div className="flex justify-between items-center text-sm mb-2">
+                    <div className="text-gray-400">
+                      Evento:
+                      {emEdicao ? (
+                        <input
+                          type="text"
+                          value={eventoEditado.nome}
+                          onChange={(e) => setEventoEditado({ ...eventoEditado, nome: e.target.value })}
+                          className="ml-2 bg-gray-900 border border-gray-500 p-1 rounded text-white"
+                        />
+                      ) : (
+                        <span className="font-semibold ml-1">{r.nome}</span>
+                      )}
+                    </div>
+                    <div className="text-xs font-semibold bg-blue-600 text-white px-2 py-1 rounded-full">
+                      {r.data_evento ? new Date(r.data_evento).toLocaleDateString("pt-PT") : "—"}
+                    </div>
+                  </div>
+          
+                  {/* Gasto / Ganho / Lucro */}
+                  <div className="text-sm text-gray-300 mb-1">
+                    Gasto:{" "}
+                    {emEdicao ? (
+                      <input
+                        type="number"
+                        value={eventoEditado.gasto}
+                        onChange={(e) => setEventoEditado({ ...eventoEditado, gasto: e.target.value })}
+                        className="ml-2 w-24 bg-gray-900 border border-gray-500 p-1 rounded text-red-400"
+                      />
+                    ) : (
+                      <span className="text-red-400 font-bold">{r.gasto || 0} €</span>
+                    )}
+                  </div>
+                  <div className="text-sm text-gray-300 mb-1">
+                    Ganho:{" "}
+                    {emEdicao ? (
+                      <input
+                        type="number"
+                        value={eventoEditado.ganho}
+                        onChange={(e) => setEventoEditado({ ...eventoEditado, ganho: e.target.value })}
+                        className="ml-2 w-24 bg-gray-900 border border-gray-500 p-1 rounded text-green-400"
+                      />
+                    ) : (
+                      <span className="text-green-400 font-bold">{r.ganho || 0} €</span>
+                    )}
+                  </div>
+                  <div className="text-sm text-gray-300 mb-1">
+                    Lucro:{" "}
+                    <span className="text-yellow-300 font-bold">
+                      {(r.ganho || 0) - (r.gasto || 0)} €
+                    </span>
+                  </div>
+          
+                  {/* Botões */}
+                  <div className="mt-3 flex gap-4">
+                    {emEdicao ? (
+                      <button
+                        onClick={() => guardarEvento(eventoEditado)}
+                        className="flex-1 bg-green-600 text-white py-1 rounded"
+                      >
+                        💾 Guardar
+                      </button>
+
+                    ) : (
+                      <button
+                        onClick={() => ativarEdicao(r.id, r)}
+                        className="flex-1 bg-blue-500 text-white py-1 rounded"
+                      >
+                        ✏️ Editar
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
           {hasMore && (
             <div ref={observerRef} className="text-center py-4 text-gray-700 dark:text-gray-300">
               🔄 A carregar mais eventos...
