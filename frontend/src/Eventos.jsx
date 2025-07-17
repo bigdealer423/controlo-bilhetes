@@ -745,18 +745,25 @@ return (
                     <div className="text-gray-400">
                       Evento:
                       {emEdicao ? (
-                        <input
-                          type="text"
+                        <select
                           value={eventoEditado.evento}
                           onChange={(e) =>
                             setEventoEditado({ ...eventoEditado, evento: e.target.value })
                           }
                           className="ml-2 bg-gray-900 border border-gray-500 p-1 rounded text-white"
-                        />
+                        >
+                          <option value="">Selecione</option>
+                          {eventosDropdown.map((ev, idx) => (
+                            <option key={idx} value={ev.nome_evento}>
+                              {ev.nome_evento}
+                            </option>
+                          ))}
+                        </select>
                       ) : (
                         <span className="font-semibold ml-1">{r.evento}</span>
                       )}
                     </div>
+
                     <div className="text-xs font-semibold bg-blue-600 text-white px-2 py-1 rounded-full">
                       {r.data_evento
                         ? new Date(r.data_evento).toLocaleDateString("pt-PT")
