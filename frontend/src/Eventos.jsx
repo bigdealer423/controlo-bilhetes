@@ -747,17 +747,33 @@ return (
                       {emEdicao ? (
                         <input
                           type="text"
-                          value={eventoEditado.nome}
-                          onChange={(e) => setEventoEditado({ ...eventoEditado, nome: e.target.value })}
+                          value={eventoEditado.evento}
+                          onChange={(e) =>
+                            setEventoEditado({ ...eventoEditado, evento: e.target.value })
+                          }
                           className="ml-2 bg-gray-900 border border-gray-500 p-1 rounded text-white"
                         />
                       ) : (
-                        <span className="font-semibold ml-1">{r.nome}</span>
+                        <span className="font-semibold ml-1">{r.evento}</span>
                       )}
                     </div>
                     <div className="text-xs font-semibold bg-blue-600 text-white px-2 py-1 rounded-full">
-                      {r.data_evento ? new Date(r.data_evento).toLocaleDateString("pt-PT") : "—"}
+                      {r.data_evento
+                        ? new Date(r.data_evento).toLocaleDateString("pt-PT")
+                        : "—"}
                     </div>
+                  </div>
+                  
+                  {/* Estado */}
+                  <div className="flex justify-between items-center text-xs mt-2">
+                    <span className={`font-bold px-2 py-1 rounded-full ${
+                      r.estado === "Pago" ? "bg-green-500 text-white" :
+                      r.estado === "Disputa" ? "bg-red-500 text-white" :
+                      r.estado === "Entregue" ? "bg-blue-500 text-white" :
+                      "bg-yellow-400 text-black"
+                    }`}>
+                      {r.estado}
+                    </span>
                   </div>
           
                   {/* Gasto / Ganho / Lucro */}
