@@ -868,8 +868,22 @@ return (
                       </div>
                   
                       {/* Lucro */}
-                      <div className="text-yellow-300">
-                        <span>{(r.ganho || 0) - (r.gasto || 0)} €</span>
+                      <div className="text-sm font-semibold">
+                        {emEdicao ? (
+                          <span className="text-yellow-300">
+                            {(eventoEditado.ganho || 0) - (eventoEditado.gasto || 0)} €
+                          </span>
+                        ) : (
+                          <span
+                            className={
+                              (r.ganho || 0) - (r.gasto || 0) < 0
+                                ? "flash-lucro-negativo"
+                                : "flash-lucro-positivo"
+                            }
+                          >
+                            {(r.ganho || 0) - (r.gasto || 0)} €
+                          </span>
+                        )}
                       </div>
                     </div>
                   </div>
