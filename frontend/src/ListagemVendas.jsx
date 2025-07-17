@@ -683,7 +683,7 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
                       className="w-24 bg-gray-900 border border-gray-500 p-1 rounded text-green-400 text-right"
                     />
                   ) : (
-                    `+ ${r.ganho} €`
+                    <span className="flash-ganho-verde text-2xl font-extrabold">+ {r.ganho} €</span>
                   )}
                 </div>
 
