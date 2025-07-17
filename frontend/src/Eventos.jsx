@@ -750,6 +750,7 @@ return (
                           onChange={(e) =>
                             setEventoEditado({ ...eventoEditado, evento: e.target.value })
                           }
+                          className="ml-1 bg-gray-900 border border-gray-500 text-white rounded"
                         >
                           <option value="">Selecione</option>
                           {eventosDropdown.map((ev) => (
@@ -759,17 +760,17 @@ return (
                           ))}
                         </select>
                       ) : (
-                        <span className="font-semibold ml-1">{r.evento}</span>
+                        <span className="font-semibold ml-1 text-amber-400">{r.evento}</span>
                       )}
                     </div>
-
+          
                     <div className="text-xs font-semibold bg-blue-600 text-white px-2 py-1 rounded-full">
                       {r.data_evento
                         ? new Date(r.data_evento).toLocaleDateString("pt-PT")
                         : "—"}
                     </div>
                   </div>
-                  
+          
                   {/* Estado */}
                   <div className="flex justify-between items-center text-xs mt-2">
                     {emEdicao ? (
@@ -781,11 +782,11 @@ return (
                         <option value="Entregue">Entregue</option>
                         <option value="Pago">Pago</option>
                         <option value="Disputa">Disputa</option>
-                        <option value="Pendente">Pendente</option>
+                        <option value="Por entregar">Por entregar</option>
                       </select>
                     ) : (
                       <span
-                        className={`font-bold px-2 py-1 rounded-full ${
+                        className={`font-bold px-2 py-1 rounded-full text-xs ${
                           r.estado === "Pago"
                             ? "bg-green-500 text-white"
                             : r.estado === "Disputa"
@@ -799,53 +800,47 @@ return (
                       </span>
                     )}
                   </div>
-
-
           
                   {/* Gasto / Ganho / Lucro */}
-                  <div className="text-sm text-gray-300 mb-1">
-                    Gasto:{" "}
-                    {emEdicao ? (
-                      <input
-                        type="number"
-                        value={eventoEditado.gasto}
-                        onChange={(e) => setEventoEditado({ ...eventoEditado, gasto: e.target.value })}
-                        className="ml-2 w-24 bg-gray-900 border border-gray-500 p-1 rounded text-red-400"
-                      />
-                    ) : (
-                      <span className="text-red-400 font-bold">{r.gasto || 0} €</span>
-                    )}
-                  </div>
-                  <div className="text-sm text-gray-300 mb-1">
-                    Ganho:{" "}
-                    {emEdicao ? (
-                      <input
-                        type="number"
-                        value={eventoEditado.ganho}
-                        onChange={(e) => setEventoEditado({ ...eventoEditado, ganho: e.target.value })}
-                        className="ml-2 w-24 bg-gray-900 border border-gray-500 p-1 rounded text-green-400"
-                      />
-                    ) : (
-                      <span className="text-green-400 font-bold">{r.ganho || 0} €</span>
-                    )}
-                  </div>
-                  <div className="text-sm text-gray-300 mb-1">
-                    Lucro:{" "}
-                    <span className="text-yellow-300 font-bold">
-                      {(r.ganho || 0) - (r.gasto || 0)} €
-                    </span>
+                  <div className="text-sm text-gray-300 mt-3 space-y-1">
+                    <div>
+                      Gasto: {emEdicao ? (
+                        <input
+                          type="number"
+                          value={eventoEditado.gasto}
+                          onChange={(e) => setEventoEditado({ ...eventoEditado, gasto: e.target.value })}
+                          className="ml-2 w-24 bg-gray-900 border border-gray-500 p-1 rounded text-red-400"
+                        />
+                      ) : (
+                        <span className="text-red-400 font-bold">{r.gasto || 0} €</span>
+                      )}
+                    </div>
+                    <div>
+                      Ganho: {emEdicao ? (
+                        <input
+                          type="number"
+                          value={eventoEditado.ganho}
+                          onChange={(e) => setEventoEditado({ ...eventoEditado, ganho: e.target.value })}
+                          className="ml-2 w-24 bg-gray-900 border border-gray-500 p-1 rounded text-green-400"
+                        />
+                      ) : (
+                        <span className="text-green-400 font-bold">{r.ganho || 0} €</span>
+                      )}
+                    </div>
+                    <div>
+                      Lucro: <span className="text-yellow-300 font-bold">{(r.ganho || 0) - (r.gasto || 0)} €</span>
+                    </div>
                   </div>
           
                   {/* Botões */}
-                  <div className="mt-3 flex gap-4">
+                  <div className="mt-4 flex justify-end gap-4">
                     {emEdicao ? (
                       <button
                         onClick={() => guardarEvento(eventoEditado)}
-                        className="flex-1 bg-green-600 text-white py-1 rounded"
+                        className="bg-green-600 text-white py-1 px-3 rounded"
                       >
                         💾 Guardar
                       </button>
-
                     ) : (
                       <button
                         onClick={() => ativarEdicao(r.id, r)}
@@ -856,10 +851,18 @@ return (
                       </button>
                     )}
                   </div>
+          
+                  {/* Expansão futura de Vendas/Compras mobile */}
+                  {linhaExpandida === r.id && (
+                    <div className="mt-4 text-sm text-gray-300 italic">
+                      (⚙️ Renderização mobile de vendas/compras a seguir — posso gerar já se quiseres)
+                    </div>
+                  )}
                 </div>
               );
             })}
           </div>
+
 
           {hasMore && (
             <div ref={observerRef} className="text-center py-4 text-gray-700 dark:text-gray-300">
