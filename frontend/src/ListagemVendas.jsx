@@ -628,7 +628,7 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
                       className="bg-gray-900 border border-gray-500 p-1 rounded text-white"
                     />
                   ) : (
-                    <strong>{r.data_venda}</strong>
+                    <strong>{r.data_venda ? new Date(r.data_venda).toLocaleDateString("pt-PT") : ""}</strong>
                   )}
                 </div>
                 <div>
@@ -643,7 +643,7 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
                       className="bg-gray-900 border border-gray-500 p-1 rounded text-white"
                     />
                   ) : (
-                    <strong>{r.data_evento}</strong>
+                    <strong>{r.data_evento ? new Date(r.data_evento).toLocaleDateString("pt-PT") : ""}</strong>
                   )}
                 </div>
               </div>
