@@ -732,7 +732,7 @@ return (
             ))}
           </tbody>
         </table>       
-          <div className="space-y-5 md:hidden mt-6 px-0 w-full">
+          <div className="space-y-5 md:hidden mt-6 px-0 w-full max-w-full">
             {registos.map((r) => {
               const emEdicao = modoEdicao === r.id;
               return (
