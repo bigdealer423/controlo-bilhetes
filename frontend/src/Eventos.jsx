@@ -1,5 +1,6 @@
 
 
+
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useRef } from "react";
@@ -418,12 +419,13 @@ return (
   {/* Botão Exportar Excel à direita */}
   <button
     onClick={() => exportarEventosParaExcel(registos)}
-    className="hidden md:flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-xl shadow-md transition"
+    className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-xl shadow-md transition"
   >
     <FaFileExcel size={18} />
     Exportar Excel
   </button>
 
+</div>
 
 
 
@@ -732,9 +734,7 @@ return (
           </tbody>
         </table>       
           <div className="space-y-5 md:hidden mt-6 px-0 w-full max-w-full">
-            {registos
-              .filter(r => r.evento.toLowerCase().includes(filtroPesquisa.toLowerCase()))
-              .map((r) => {
+            {registos.map((r) => {
               const emEdicao = modoEdicao === r.id;
               return (
                 <div
