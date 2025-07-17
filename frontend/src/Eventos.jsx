@@ -877,8 +877,8 @@ return (
                           <span
                             className={
                               (r.ganho || 0) - (r.gasto || 0) < 0
-                                ? "flash-lucro-negativo"
-                                : "flash-lucro-positivo"
+                                ? "flash-lucro-negativo text-sm"
+                                : "flash-lucro-positivo text-sm"
                             }
                           >
                             {(r.ganho || 0) - (r.gasto || 0)} €
