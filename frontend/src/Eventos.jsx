@@ -746,16 +746,15 @@ return (
                       Evento:
                       {emEdicao ? (
                         <select
-                          value={eventoEditado?.evento || ""}
+                          value={eventoEditado.evento}
                           onChange={(e) =>
                             setEventoEditado({ ...eventoEditado, evento: e.target.value })
                           }
-                          className="ml-2 bg-gray-900 border border-gray-500 p-1 rounded text-white"
                         >
                           <option value="">Selecione</option>
-                          {eventosDropdown.map((ev, idx) => (
-                            <option key={idx} value={ev}>
-                              {ev}
+                          {eventosDropdown.map((ev) => (
+                            <option key={ev.id} value={ev.nome}>
+                              {ev.nome}
                             </option>
                           ))}
                         </select>
