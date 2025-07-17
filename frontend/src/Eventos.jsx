@@ -753,8 +753,8 @@ return (
                           className="ml-2 bg-gray-900 border border-gray-500 p-1 rounded text-white"
                         >
                           <option value="">Selecione</option>
-                          {eventosDropdown.map((ev, idx) => (
-                            <option key={idx} value={ev.nome_evento}>
+                          {eventosDropdown.map((ev) => (
+                            <option key={ev.id} value={ev.nome_evento}>
                               {ev.nome_evento}
                             </option>
                           ))}
