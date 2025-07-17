@@ -259,6 +259,12 @@ useEffect(() => {
     }
   };
 
+  const ativarEdicao = (id, registo) => {
+    setModoEdicao(id);
+    setEventoEditado({ ...registo });
+  };
+
+
   const adicionarLinha = async () => {
     const novo = {
         data_evento: new Date().toISOString().split("T")[0],
@@ -724,14 +730,7 @@ return (
               </>
             ))}
           </tbody>
-        </table>
-
-const ativarEdicao = (id, registo) => {
-  setModoEdicao(id);
-  setEventoEditado({ ...registo });
-};
-
-          
+        </table>       
           <div className="space-y-5 md:hidden px-2 mt-6">
             {registos.map((r) => {
               const emEdicao = modoEdicao === r.id;
