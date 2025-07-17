@@ -749,6 +749,9 @@ return (
                   className="w-full mx-0 rounded-xl border border-gray-700 bg-gradient-to-br from-zinc-900 to-gray-800 p-4 shadow-xl text-white cursor-pointer"
                 >
 
+                  <div className="text-xs text-gray-400">
+                    Expandido: {linhaExpandida === r.id ? "Sim" : "Não"}
+                  </div>
                   {/* Topo: Data + Estado */}
                   <div className="flex justify-between items-center text-sm mb-2">
                     {/* Data */}
