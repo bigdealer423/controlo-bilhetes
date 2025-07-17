@@ -741,8 +741,14 @@ return (
               return (
                 <div
                   key={r.id}
-                  className="w-full mx-0 rounded-xl border border-gray-700 bg-gradient-to-br from-zinc-900 to-gray-800 p-4 shadow-xl text-white"
+                  onClick={(e) => {
+                    if (!e.target.closest("button")) {
+                      setLinhaExpandida(linhaExpandida === r.id ? null : r.id);
+                    }
+                  }}
+                  className="w-full mx-0 rounded-xl border border-gray-700 bg-gradient-to-br from-zinc-900 to-gray-800 p-4 shadow-xl text-white cursor-pointer"
                 >
+
                   {/* Topo: Data + Estado */}
                   <div className="flex justify-between items-center text-sm mb-2">
                     {/* Data */}
