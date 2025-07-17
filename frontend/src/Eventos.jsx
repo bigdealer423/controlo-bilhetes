@@ -775,27 +775,31 @@ return (
                     {emEdicao ? (
                       <select
                         value={eventoEditado.estado}
-                        onChange={(e) =>
-                          setEventoEditado({ ...eventoEditado, estado: e.target.value })
-                        }
-                        className="bg-gray-900 border border-gray-500 text-white p-1 rounded"
+                        onChange={(e) => setEventoEditado({ ...eventoEditado, estado: e.target.value })}
+                        className="bg-gray-900 border border-gray-500 text-white text-xs px-2 py-1 rounded"
                       >
-                        <option value="Pendente">Pendente</option>
+                        <option value="Entregue">Entregue</option>
                         <option value="Pago">Pago</option>
                         <option value="Disputa">Disputa</option>
-                        <option value="Entregue">Entregue</option>
+                        <option value="Pendente">Pendente</option>
                       </select>
                     ) : (
-                      <span className={`font-bold px-2 py-1 rounded-full ${
-                        r.estado === "Pago" ? "bg-green-500 text-white" :
-                        r.estado === "Disputa" ? "bg-red-500 text-white" :
-                        r.estado === "Entregue" ? "bg-blue-500 text-white" :
-                        "bg-yellow-400 text-black"
-                      }`}>
+                      <span
+                        className={`font-bold px-2 py-1 rounded-full ${
+                          r.estado === "Pago"
+                            ? "bg-green-500 text-white"
+                            : r.estado === "Disputa"
+                            ? "bg-red-500 text-white"
+                            : r.estado === "Entregue"
+                            ? "bg-blue-500 text-white"
+                            : "bg-yellow-400 text-black"
+                        }`}
+                      >
                         {r.estado}
                       </span>
                     )}
                   </div>
+
 
           
                   {/* Gasto / Ganho / Lucro */}
