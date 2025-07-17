@@ -800,36 +800,46 @@ return (
                     )}
                   </div>
           
-                  {/* Gasto / Ganho / Lucro */}
-                  <div className="text-sm text-gray-300 mt-3 space-y-1">
-                    <div>
-                      Gasto: {emEdicao ? (
+                  {/* Totais em linha */}
+                  <div className="flex justify-between text-sm text-white font-semibold mt-4 px-1">
+                    <div className="text-red-400">
+                      Gasto:
+                      {emEdicao ? (
                         <input
                           type="number"
                           value={eventoEditado.gasto}
-                          onChange={(e) => setEventoEditado({ ...eventoEditado, gasto: e.target.value })}
-                          className="ml-2 w-24 bg-gray-900 border border-gray-500 p-1 rounded text-red-400"
+                          onChange={(e) =>
+                            setEventoEditado({ ...eventoEditado, gasto: e.target.value })
+                          }
+                          className="ml-1 w-16 bg-gray-900 border border-gray-500 p-1 rounded text-right text-red-400"
                         />
                       ) : (
-                        <span className="text-red-400 font-bold">{r.gasto || 0} €</span>
+                        <span className="ml-1">{r.gasto || 0} €</span>
                       )}
                     </div>
-                    <div>
-                      Ganho: {emEdicao ? (
+                    <div className="text-green-400">
+                      Ganho:
+                      {emEdicao ? (
                         <input
                           type="number"
                           value={eventoEditado.ganho}
-                          onChange={(e) => setEventoEditado({ ...eventoEditado, ganho: e.target.value })}
-                          className="ml-2 w-24 bg-gray-900 border border-gray-500 p-1 rounded text-green-400"
+                          onChange={(e) =>
+                            setEventoEditado({ ...eventoEditado, ganho: e.target.value })
+                          }
+                          className="ml-1 w-16 bg-gray-900 border border-gray-500 p-1 rounded text-right text-green-400"
                         />
                       ) : (
-                        <span className="text-green-400 font-bold">{r.ganho || 0} €</span>
+                        <span className="ml-1">{r.ganho || 0} €</span>
                       )}
                     </div>
-                    <div>
-                      Lucro: <span className="text-yellow-300 font-bold">{(r.ganho || 0) - (r.gasto || 0)} €</span>
+                    <div className="text-yellow-300">
+                      Lucro:
+                      <span className="ml-1">
+                        {(r.ganho || 0) - (r.gasto || 0)} €
+                      </span>
                     </div>
                   </div>
+
           
                   {/* Botões */}
                   <div className="mt-4 flex justify-end gap-4">
