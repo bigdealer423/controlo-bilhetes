@@ -800,45 +800,53 @@ return (
                     )}
                   </div>
           
-                  {/* Totais em linha */}
-                  <div className="flex justify-between text-sm text-white font-semibold mt-4 px-1">
-                    <div className="text-red-400">
-                      Gasto:
-                      {emEdicao ? (
-                        <input
-                          type="number"
-                          value={eventoEditado.gasto}
-                          onChange={(e) =>
-                            setEventoEditado({ ...eventoEditado, gasto: e.target.value })
-                          }
-                          className="ml-1 w-16 bg-gray-900 border border-gray-500 p-1 rounded text-right text-red-400"
-                        />
-                      ) : (
-                        <span className="ml-1">{r.gasto || 0} €</span>
-                      )}
+                  {/* Totais em colunas alinhadas */}
+                  <div className="mt-4">
+                    <div className="flex justify-between text-xs text-gray-400 font-semibold px-1">
+                      <div>Gasto</div>
+                      <div>Ganho</div>
+                      <div>Lucro</div>
                     </div>
-                    <div className="text-green-400">
-                      Ganho:
-                      {emEdicao ? (
-                        <input
-                          type="number"
-                          value={eventoEditado.ganho}
-                          onChange={(e) =>
-                            setEventoEditado({ ...eventoEditado, ganho: e.target.value })
-                          }
-                          className="ml-1 w-16 bg-gray-900 border border-gray-500 p-1 rounded text-right text-green-400"
-                        />
-                      ) : (
-                        <span className="ml-1">{r.ganho || 0} €</span>
-                      )}
-                    </div>
-                    <div className="text-yellow-300">
-                      Lucro:
-                      <span className="ml-1">
-                        {(r.ganho || 0) - (r.gasto || 0)} €
-                      </span>
+                    <div className="flex justify-between text-sm text-white font-semibold px-1 mt-1">
+                      {/* Gasto */}
+                      <div className="text-red-400">
+                        {emEdicao ? (
+                          <input
+                            type="number"
+                            value={eventoEditado.gasto}
+                            onChange={(e) =>
+                              setEventoEditado({ ...eventoEditado, gasto: e.target.value })
+                            }
+                            className="w-20 bg-gray-900 border border-gray-500 p-1 rounded text-right text-red-400"
+                          />
+                        ) : (
+                          <span>{r.gasto || 0} €</span>
+                        )}
+                      </div>
+                  
+                      {/* Ganho */}
+                      <div className="text-green-400">
+                        {emEdicao ? (
+                          <input
+                            type="number"
+                            value={eventoEditado.ganho}
+                            onChange={(e) =>
+                              setEventoEditado({ ...eventoEditado, ganho: e.target.value })
+                            }
+                            className="w-20 bg-gray-900 border border-gray-500 p-1 rounded text-right text-green-400"
+                          />
+                        ) : (
+                          <span>{r.ganho || 0} €</span>
+                        )}
+                      </div>
+                  
+                      {/* Lucro */}
+                      <div className="text-yellow-300">
+                        <span>{(r.ganho || 0) - (r.gasto || 0)} €</span>
+                      </div>
                     </div>
                   </div>
+
 
           
                   {/* Botões */}
