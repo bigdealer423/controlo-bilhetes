@@ -574,17 +574,39 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
                     )}
                   </span>
                 </div>
-                <div
-                  className={`px-3 py-1 rounded-full text-xs font-bold ${
-                    r.estado === "Pago"
-                      ? "bg-green-500 text-white"
-                      : r.estado === "Entregue"
-                      ? "bg-blue-500 text-white"
-                      : "bg-yellow-400 text-black"
-                  }`}
-                >
-                  {r.estado}
-                </div>
+                {emEdicao ? (
+                  <select
+                    value={registoEditado.estado}
+                    onChange={(e) =>
+                      setRegistoEditado({ ...registoEditado, estado: e.target.value })
+                    }
+                    className={`px-3 py-1 rounded-full text-xs font-bold appearance-none ${
+                      registoEditado.estado === "Pago"
+                        ? "bg-green-500 text-white"
+                        : registoEditado.estado === "Entregue"
+                        ? "bg-blue-500 text-white"
+                        : "bg-yellow-400 text-black"
+                    }`}
+                  >
+                    <option value="Entregue">Entregue</option>
+                    <option value="Por entregar">Por entregar</option>
+                    <option value="Disputa">Disputa</option>
+                    <option value="Pago">Pago</option>
+                  </select>
+                ) : (
+                  <div
+                    className={`px-3 py-1 rounded-full text-xs font-bold ${
+                      r.estado === "Pago"
+                        ? "bg-green-500 text-white"
+                        : r.estado === "Entregue"
+                        ? "bg-blue-500 text-white"
+                        : "bg-yellow-400 text-black"
+                    }`}
+                  >
+                    {r.estado}
+                  </div>
+                )}
+
               </div>
       
               {/* Evento + Bilhete */}
