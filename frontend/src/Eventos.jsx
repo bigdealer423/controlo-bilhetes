@@ -832,17 +832,18 @@ return (
                       <div>Ganho</div>
                       <div>Lucro</div>
                     </div>
-                    <div className="flex justify-between text-sm text-white font-semibold px-1 mt-1">
+                    <div className="flex justify-between text-lg text-white font-bold px-1 mt-1">
                       {/* Gasto */}
                       <div className="text-red-400">
                         {emEdicao ? (
                           <input
                             type="number"
                             value={eventoEditado.gasto}
+                            onClick={(e) => e.stopPropagation()}
                             onChange={(e) =>
                               setEventoEditado({ ...eventoEditado, gasto: e.target.value })
                             }
-                            className="w-20 bg-gray-900 border border-gray-500 p-1 rounded text-right text-red-400"
+                            className="w-20 bg-gray-900 border border-gray-500 p-1 rounded text-right text-red-400 text-lg"
                           />
                         ) : (
                           <span>{r.gasto || 0} €</span>
@@ -855,10 +856,11 @@ return (
                           <input
                             type="number"
                             value={eventoEditado.ganho}
+                            onClick={(e) => e.stopPropagation()}
                             onChange={(e) =>
                               setEventoEditado({ ...eventoEditado, ganho: e.target.value })
                             }
-                            className="w-20 bg-gray-900 border border-gray-500 p-1 rounded text-right text-green-400"
+                            className="w-20 bg-gray-900 border border-gray-500 p-1 rounded text-right text-green-400 text-lg"
                           />
                         ) : (
                           <span>{r.ganho || 0} €</span>
