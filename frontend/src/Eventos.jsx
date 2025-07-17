@@ -418,13 +418,12 @@ return (
   {/* Botão Exportar Excel à direita */}
   <button
     onClick={() => exportarEventosParaExcel(registos)}
-    className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-xl shadow-md transition"
+    className="hidden md:flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-xl shadow-md transition"
   >
     <FaFileExcel size={18} />
     Exportar Excel
   </button>
 
-</div>
 
 
 
