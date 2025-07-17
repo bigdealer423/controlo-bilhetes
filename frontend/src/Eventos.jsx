@@ -849,9 +849,10 @@ return (
                     ) : (
                       <button
                         onClick={() => ativarEdicao(r.id, r)}
-                        className="px-3 py-1 bg-blue-500 text-white rounded text-sm w-fit"
+                        className="text-blue-400 hover:text-blue-300"
+                        title="Editar"
                       >
-                        ✏️ Editar
+                        <FaEdit />
                       </button>
                     )}
                   </div>
