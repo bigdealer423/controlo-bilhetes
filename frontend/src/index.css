@@ -66,9 +66,9 @@ html, body {
 }
 
 
-@keyframes flash-yellow {
-  0%, 100% { color: #fde047; } /* amarelo base */
-  50% { color: #fff176; }      /* amarelo claro */
+@keyframes flash-green {
+  0%, 100% { color: #4ade80; } /* verde base */
+  50% { color: #86efac; }      /* verde claro */
 }
 
 @keyframes flash-red {
@@ -77,7 +77,7 @@ html, body {
 }
 
 .flash-lucro-positivo {
-  animation: flash-yellow 1s ease-in-out infinite;
+  animation: flash-green 1s ease-in-out infinite;
 }
 
 .flash-lucro-negativo {
