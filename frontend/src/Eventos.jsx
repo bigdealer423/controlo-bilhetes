@@ -732,166 +732,169 @@ return (
           </tbody>
         </table>       
           <div className="space-y-5 md:hidden px-2 mt-6">
-                    {registos.map((r) => {
-                      const emEdicao = modoEdicao === r.id;
-                      return (
-                        <div
-                          key={r.id}
-                          className="rounded-xl border border-gray-700 bg-gradient-to-br from-zinc-900 to-gray-800 p-4 shadow-xl text-white"
-                        >
-                          {/* Topo: Evento + Data */}
-                          <div className="flex justify-between items-center text-sm mb-2">
-                            <div className="text-gray-400">
-                              Evento:
-                              {emEdicao ? (
-                                <input
-                                  type="text"
-                                  value={eventoEditado.evento}
-                                  onChange={(e) =>
-                                    setEventoEditado({ ...eventoEditado, evento: e.target.value })
-                                  }
-                                  className="ml-2 bg-gray-900 border border-gray-500 p-1 rounded text-white"
-                                />
-                              ) : (
-                                <span className="font-semibold ml-1">{r.evento}</span>
-                              )}
-                            </div>
-                            <div className="text-xs font-semibold bg-blue-600 text-white px-2 py-1 rounded-full">
-                              {r.data_evento
-                                ? new Date(r.data_evento).toLocaleDateString("pt-PT")
-                                : "—"}
-                            </div>
-                          </div>
-            
-                          {/* Estado */}
-                          <div className="flex justify-between items-center text-xs mt-2">
-                            <span
-                              className={`font-bold px-2 py-1 rounded-full ${
-                                r.estado === "Pago"
-                                  ? "bg-green-500 text-white"
-                                  : r.estado === "Disputa"
-                                  ? "bg-red-500 text-white"
-                                  : r.estado === "Entregue"
-                                  ? "bg-blue-500 text-white"
-                                  : "bg-yellow-400 text-black"
-                              }`}
-                            >
-                              {r.estado}
-                            </span>
-                          </div>
-            
-                          {/* Gasto / Ganho / Lucro */}
-                          <div className="text-sm text-gray-300 mb-1">
-                            Gasto:{" "}
-                            {emEdicao ? (
-                              <input
-                                type="number"
-                                value={eventoEditado.gasto}
-                                onChange={(e) =>
-                                  setEventoEditado({ ...eventoEditado, gasto: e.target.value })
-                                }
-                                className="ml-2 w-24 bg-gray-900 border border-gray-500 p-1 rounded text-red-400"
-                              />
-                            ) : (
-                              <span className="text-red-400 font-bold">{r.gasto || 0} €</span>
-                            )}
-                          </div>
-                          <div className="text-sm text-gray-300 mb-1">
-                            Ganho:{" "}
-                            {emEdicao ? (
-                              <input
-                                type="number"
-                                value={eventoEditado.ganho}
-                                onChange={(e) =>
-                                  setEventoEditado({ ...eventoEditado, ganho: e.target.value })
-                                }
-                                className="ml-2 w-24 bg-gray-900 border border-gray-500 p-1 rounded text-green-400"
-                              />
-                            ) : (
-                              <span className="text-green-400 font-bold">{r.ganho || 0} €</span>
-                            )}
-                          </div>
-                          <div className="text-sm text-gray-300 mb-1">
-                            Lucro:{" "}
-                            <span className="text-yellow-300 font-bold">
-                              {(r.ganho || 0) - (r.gasto || 0)} €
-                            </span>
-                          </div>
-            
-                          {/* Botões */}
-                          <div className="mt-3 flex gap-4">
-                            {emEdicao ? (
-                              <button
-                                onClick={() => guardarEvento(eventoEditado)}
-                                className="flex-1 bg-green-600 text-white py-1 rounded"
-                              >
-                                💾 Guardar
-                              </button>
-                            ) : (
-                              <button
-                                onClick={() => ativarEdicao(r.id, r)}
-                                className="px-3 py-1 bg-blue-500 text-white rounded text-sm w-fit"
-                              >
-                                ✏️ Editar
-                              </button>
-                            )}
-                          </div>
-            
-                          {/* Botão expandir e detalhes */}
-                          {!emEdicao && (
-                            <div className="mt-3">
-                              <button
-                                onClick={() =>
-                                  setLinhaExpandida(linhaExpandida === r.id ? null : r.id)
-                                }
-                                className="text-xs text-blue-400 underline"
-                              >
-                                {linhaExpandida === r.id ? "Fechar detalhes" : "Ver detalhes"}
-                              </button>
-            
-                              {linhaExpandida === r.id && (
-                                <div className="mt-2 text-sm space-y-2">
-                                  <div>
-                                    <strong>Vendas:</strong>
-                                    {vendas
-                                      .filter(
-                                        (v) =>
-                                          v.evento === r.evento &&
-                                          v.data_evento === r.data_evento
-                                      )
-                                      .map((v, idx) => (
-                                        <div
-                                          key={idx}
-                                          className="bg-blue-900 p-2 rounded text-white text-xs mt-1"
-                                        >
-                                          ID: {v.id_venda}, Bilhete: {v.estadio}, Ganho: {v.ganho} €, Estado: {v.estado}
-                                        </div>
-                                      ))}
-                                  </div>
-                                  <div>
-                                    <strong>Compras:</strong>
-                                    {compras
-                                      .filter(
-                                        (c) =>
-                                          c.evento === r.evento &&
-                                          c.data_evento === r.data_evento
-                                      )
-                                      .map((c, idx) => (
-                                        <div
-                                          key={idx}
-                                          className="bg-yellow-700 p-2 rounded text-white text-xs mt-1"
-                                        >
-                                          Setor: {c.setor}, Qt: {c.quantidade}, Gasto: {c.gasto} €
-                                        </div>
-                                      ))}
-                                  </div>
+            {registos.map((r) => {
+              const emEdicao = modoEdicao === r.id;
+              return (
+                <div
+                  key={r.id}
+                  className="rounded-xl border border-gray-700 bg-gradient-to-br from-zinc-900 to-gray-800 p-4 shadow-xl text-white"
+                >
+                  {/* Topo: Evento + Data */}
+                  <div className="flex justify-between items-center text-sm mb-2">
+                    <div className="text-gray-400">
+                      Evento:
+                      {emEdicao ? (
+                        <input
+                          type="text"
+                          value={eventoEditado.evento}
+                          onChange={(e) =>
+                            setEventoEditado({ ...eventoEditado, evento: e.target.value })
+                          }
+                          className="ml-2 bg-gray-900 border border-gray-500 p-1 rounded text-white"
+                        />
+                      ) : (
+                        <span className="font-semibold ml-1">{r.evento}</span>
+                      )}
+                    </div>
+                    <div className="text-xs font-semibold bg-blue-600 text-white px-2 py-1 rounded-full">
+                      {r.data_evento
+                        ? new Date(r.data_evento).toLocaleDateString("pt-PT")
+                        : "—"}
+                    </div>
+                  </div>
+          
+                  {/* Estado */}
+                  <div className="flex justify-between items-center text-xs mt-2">
+                    <span
+                      className={`font-bold px-2 py-1 rounded-full ${
+                        r.estado === "Pago"
+                          ? "bg-green-500 text-white"
+                          : r.estado === "Disputa"
+                          ? "bg-red-500 text-white"
+                          : r.estado === "Entregue"
+                          ? "bg-blue-500 text-white"
+                          : "bg-yellow-400 text-black"
+                      }`}
+                    >
+                      {r.estado}
+                    </span>
+                  </div>
+          
+                  {/* Gasto / Ganho / Lucro */}
+                  <div className="text-sm text-gray-300 mb-1">
+                    Gasto:{" "}
+                    {emEdicao ? (
+                      <input
+                        type="number"
+                        value={eventoEditado.gasto}
+                        onChange={(e) =>
+                          setEventoEditado({ ...eventoEditado, gasto: e.target.value })
+                        }
+                        className="ml-2 w-24 bg-gray-900 border border-gray-500 p-1 rounded text-red-400"
+                      />
+                    ) : (
+                      <span className="text-red-400 font-bold">{r.gasto || 0} €</span>
+                    )}
+                  </div>
+                  <div className="text-sm text-gray-300 mb-1">
+                    Ganho:{" "}
+                    {emEdicao ? (
+                      <input
+                        type="number"
+                        value={eventoEditado.ganho}
+                        onChange={(e) =>
+                          setEventoEditado({ ...eventoEditado, ganho: e.target.value })
+                        }
+                        className="ml-2 w-24 bg-gray-900 border border-gray-500 p-1 rounded text-green-400"
+                      />
+                    ) : (
+                      <span className="text-green-400 font-bold">{r.ganho || 0} €</span>
+                    )}
+                  </div>
+                  <div className="text-sm text-gray-300 mb-1">
+                    Lucro:{" "}
+                    <span className="text-yellow-300 font-bold">
+                      {(r.ganho || 0) - (r.gasto || 0)} €
+                    </span>
+                  </div>
+          
+                  {/* Botões */}
+                  <div className="mt-3 flex gap-4">
+                    {emEdicao ? (
+                      <button
+                        onClick={() => guardarEvento(eventoEditado)}
+                        className="flex-1 bg-green-600 text-white py-1 rounded"
+                      >
+                        💾 Guardar
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => ativarEdicao(r.id, r)}
+                        className="px-3 py-1 bg-blue-500 text-white rounded text-sm w-fit"
+                      >
+                        ✏️ Editar
+                      </button>
+                    )}
+                  </div>
+          
+                  {/* Botão expandir e detalhes */}
+                  {!emEdicao && (
+                    <div className="mt-3">
+                      <button
+                        onClick={() =>
+                          setLinhaExpandida(linhaExpandida === r.id ? null : r.id)
+                        }
+                        className="text-xs text-blue-400 underline"
+                      >
+                        {linhaExpandida === r.id ? "Fechar detalhes" : "Ver detalhes"}
+                      </button>
+          
+                      {linhaExpandida === r.id && (
+                        <div className="mt-2 text-sm space-y-2">
+                          <div>
+                            <strong>Vendas:</strong>
+                            {vendas
+                              .filter(
+                                (v) =>
+                                  v.evento === r.evento &&
+                                  v.data_evento === r.data_evento
+                              )
+                              .map((v, idx) => (
+                                <div
+                                  key={idx}
+                                  className="bg-blue-900 p-2 rounded text-white text-xs mt-1"
+                                >
+                                  ID: {v.id_venda}, Bilhete: {v.estadio}, Ganho:{" "}
+                                  {v.ganho} €, Estado: {v.estado}
                                 </div>
-                              )}
-                            </div>
-                          )}
+                              ))}
+                          </div>
+                          <div>
+                            <strong>Compras:</strong>
+                            {compras
+                              .filter(
+                                (c) =>
+                                  c.evento === r.evento &&
+                                  c.data_evento === r.data_evento
+                              )
+                              .map((c, idx) => (
+                                <div
+                                  key={idx}
+                                  className="bg-yellow-700 p-2 rounded text-white text-xs mt-1"
+                                >
+                                  Setor: {c.setor}, Qt: {c.quantidade}, Gasto: {c.gasto} €
+                                </div>
+                              ))}
+                          </div>
                         </div>
-                      );
-                    })}
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div> {/* 👈 FECHO IMPORTANTE DA DIV PRINCIPAL */}
+
             
                     {/* Loader scroll infinito */}
                     {hasMore && (
