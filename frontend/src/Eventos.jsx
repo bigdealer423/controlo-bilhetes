@@ -732,13 +732,13 @@ return (
             ))}
           </tbody>
         </table>       
-          <div className="space-y-5 md:hidden px-2 mt-6">
+          <div className="space-y-5 md:hidden mt-6 px-0 w-full">
             {registos.map((r) => {
               const emEdicao = modoEdicao === r.id;
               return (
                 <div
                   key={r.id}
-                  className="w-full rounded-xl border border-gray-700 bg-gradient-to-br from-zinc-900 to-gray-800 p-4 shadow-xl text-white"
+                  className="w-full mx-0 rounded-xl border border-gray-700 bg-gradient-to-br from-zinc-900 to-gray-800 p-4 shadow-xl text-white"
                 >
                   {/* Topo: Data + Estado */}
                   <div className="flex justify-between items-center text-sm mb-2">
