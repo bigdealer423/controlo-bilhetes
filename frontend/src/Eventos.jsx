@@ -870,7 +870,7 @@ return (
                       {/* Lucro */}
                       <div className="text-sm font-semibold">
                         {emEdicao ? (
-                          <span className="text-yellow-400">
+                          <span className="text-yellow-500">
                             {(eventoEditado.ganho || 0) - (eventoEditado.gasto || 0)} €
                           </span>
                         ) : (
