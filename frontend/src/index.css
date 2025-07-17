@@ -67,21 +67,23 @@ html, body {
 
 
 @keyframes flash-green {
-  0%, 100% { color: #4ade80; } /* verde base */
-  50% { color: #86efac; }      /* verde claro */
+  0%, 100% { color: #22c55e; }   /* verde forte */
+  50% { color: #bbf7d0; }        /* verde muito claro */
 }
 
 @keyframes flash-red {
-  0%, 100% { color: #f87171; } /* vermelho base */
-  50% { color: #fca5a5; }      /* vermelho claro */
+  0%, 100% { color: #ef4444; }   /* vermelho forte */
+  50% { color: #fecaca; }        /* vermelho muito claro */
 }
 
 .flash-lucro-positivo {
-  animation: flash-green 1s ease-in-out infinite;
+  animation: flash-green 0.6s ease-in-out infinite;
+  text-shadow: 0 0 6px #22c55e;
 }
 
 .flash-lucro-negativo {
-  animation: flash-red 1s ease-in-out infinite;
+  animation: flash-red 0.6s ease-in-out infinite;
+  text-shadow: 0 0 6px #ef4444;
 }
 
 
