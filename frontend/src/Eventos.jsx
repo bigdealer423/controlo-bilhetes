@@ -746,19 +746,40 @@ return (
                       {emEdicao ? (
                         <input
                           type="text"
-                          value={eventoEditado.nome}
-                          onChange={(e) => setEventoEditado({ ...eventoEditado, nome: e.target.value })}
+                          value={eventoEditado.evento}
+                          onChange={(e) =>
+                            setEventoEditado({ ...eventoEditado, evento: e.target.value })
+                          }
                           className="ml-2 bg-gray-900 border border-gray-500 p-1 rounded text-white"
                         />
                       ) : (
-                        <span className="font-semibold ml-1">{r.nome}</span>
+                        <span className="font-semibold ml-1">{r.evento}</span>
                       )}
                     </div>
                     <div className="text-xs font-semibold bg-blue-600 text-white px-2 py-1 rounded-full">
-                      {r.data_evento ? new Date(r.data_evento).toLocaleDateString("pt-PT") : "—"}
+                      {r.data_evento
+                        ? new Date(r.data_evento).toLocaleDateString("pt-PT")
+                        : "—"}
                     </div>
                   </div>
-          
+            
+                  {/* Estado */}
+                  <div className="flex justify-between items-center text-xs mt-2">
+                    <span
+                      className={`font-bold px-2 py-1 rounded-full ${
+                        r.estado === "Pago"
+                          ? "bg-green-500 text-white"
+                          : r.estado === "Disputa"
+                          ? "bg-red-500 text-white"
+                          : r.estado === "Entregue"
+                          ? "bg-blue-500 text-white"
+                          : "bg-yellow-400 text-black"
+                      }`}
+                    >
+                      {r.estado}
+                    </span>
+                  </div>
+            
                   {/* Gasto / Ganho / Lucro */}
                   <div className="text-sm text-gray-300 mb-1">
                     Gasto:{" "}
@@ -766,7 +787,9 @@ return (
                       <input
                         type="number"
                         value={eventoEditado.gasto}
-                        onChange={(e) => setEventoEditado({ ...eventoEditado, gasto: e.target.value })}
+                        onChange={(e) =>
+                          setEventoEditado({ ...eventoEditado, gasto: e.target.value })
+                        }
                         className="ml-2 w-24 bg-gray-900 border border-gray-500 p-1 rounded text-red-400"
                       />
                     ) : (
@@ -779,7 +802,9 @@ return (
                       <input
                         type="number"
                         value={eventoEditado.ganho}
-                        onChange={(e) => setEventoEditado({ ...eventoEditado, ganho: e.target.value })}
+                        onChange={(e) =>
+                          setEventoEditado({ ...eventoEditado, ganho: e.target.value })
+                        }
                         className="ml-2 w-24 bg-gray-900 border border-gray-500 p-1 rounded text-green-400"
                       />
                     ) : (
@@ -792,7 +817,7 @@ return (
                       {(r.ganho || 0) - (r.gasto || 0)} €
                     </span>
                   </div>
-          
+            
                   {/* Botões */}
                   <div className="mt-3 flex gap-4">
                     {emEdicao ? (
@@ -802,20 +827,73 @@ return (
                       >
                         💾 Guardar
                       </button>
-
                     ) : (
                       <button
                         onClick={() => ativarEdicao(r.id, r)}
-                        className="flex-1 bg-blue-500 text-white py-1 rounded"
+                        className="px-3 py-1 bg-blue-500 text-white rounded text-sm w-fit"
                       >
                         ✏️ Editar
                       </button>
                     )}
                   </div>
+            
+                  {/* Botão expandir e detalhes */}
+                  {!emEdicao && (
+                    <div className="mt-3">
+                      <button
+                        onClick={() =>
+                          setLinhaExpandida(linhaExpandida === r.id ? null : r.id)
+                        }
+                        className="text-xs text-blue-400 underline"
+                      >
+                        {linhaExpandida === r.id ? "Fechar detalhes" : "Ver detalhes"}
+                      </button>
+            
+                      {linhaExpandida === r.id && (
+                        <div className="mt-2 text-sm space-y-2">
+                          <div>
+                            <strong>Vendas:</strong>
+                            {vendas
+                              .filter(
+                                (v) =>
+                                  v.evento === r.evento &&
+                                  v.data_evento === r.data_evento
+                              )
+                              .map((v, idx) => (
+                                <div
+                                  key={idx}
+                                  className="bg-blue-900 p-2 rounded text-white text-xs mt-1"
+                                >
+                                  ID: {v.id_venda}, Bilhete: {v.estadio}, Ganho:{" "}
+                                  {v.ganho} €, Estado: {v.estado}
+                                </div>
+                              ))}
+                          </div>
+                          <div>
+                            <strong>Compras:</strong>
+                            {compras
+                              .filter(
+                                (c) =>
+                                  c.evento === r.evento &&
+                                  c.data_evento === r.data_evento
+                              )
+                              .map((c, idx) => (
+                                <div
+                                  key={idx}
+                                  className="bg-yellow-700 p-2 rounded text-white text-xs mt-1"
+                                >
+                                  Setor: {c.setor}, Qt: {c.quantidade}, Gasto: {c.gasto} €
+                                </div>
+                              ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               );
             })}
-          </div>
+
 
           {hasMore && (
             <div ref={observerRef} className="text-center py-4 text-gray-700 dark:text-gray-300">
