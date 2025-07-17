@@ -86,4 +86,12 @@ html, body {
   text-shadow: 0 0 6px #ef4444;
 }
 
+@keyframes flash-green {
+  0%, 100% { color: #22c55e; }
+  50% { color: #bbf7d0; }
+}
 
+.flash-ganho-verde {
+  animation: flash-green 0.6s ease-in-out infinite;
+  text-shadow: 0 0 6px #22c55e;
+}
