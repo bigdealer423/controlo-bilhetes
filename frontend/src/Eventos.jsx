@@ -1,4 +1,5 @@
 
+
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useRef } from "react";
@@ -732,165 +733,149 @@ return (
           </tbody>
         </table>       
           <div className="space-y-5 md:hidden px-2 mt-6">
-  {registos.map((r) => {
-    const emEdicao = modoEdicao === r.id;
-    return (
-      <div
-        key={r.id}
-        className="rounded-xl border border-gray-700 bg-gradient-to-br from-zinc-900 to-gray-800 p-4 shadow-xl text-white"
-      >
-        {/* Topo: Evento + Data */}
-        <div className="flex justify-between items-center text-sm mb-2">
-          <div className="text-gray-400">
-            Evento:
-            {emEdicao ? (
-              <input
-                type="text"
-                value={eventoEditado.evento}
-                onChange={(e) =>
-                  setEventoEditado({ ...eventoEditado, evento: e.target.value })
-                }
-                className="ml-2 bg-gray-900 border border-gray-500 p-1 rounded text-white"
-              />
-            ) : (
-              <span className="font-semibold ml-1">{r.evento}</span>
-            )}
-          </div>
-          <div className="text-xs font-semibold bg-blue-600 text-white px-2 py-1 rounded-full">
-            {r.data_evento
-              ? new Date(r.data_evento).toLocaleDateString("pt-PT")
-              : "—"}
-          </div>
-        </div>
-
-        {/* Estado */}
-        <div className="flex justify-between items-center text-xs mt-2">
-          <span
-            className={`font-bold px-2 py-1 rounded-full ${
-              r.estado === "Pago"
-                ? "bg-green-500 text-white"
-                : r.estado === "Disputa"
-                ? "bg-red-500 text-white"
-                : r.estado === "Entregue"
-                ? "bg-blue-500 text-white"
-                : "bg-yellow-400 text-black"
-            }`}
-          >
-            {r.estado}
-          </span>
-        </div>
-
-        {/* Gasto / Ganho / Lucro */}
-        <div className="text-sm text-gray-300 mb-1">
-          Gasto:{" "}
-          {emEdicao ? (
-            <input
-              type="number"
-              value={eventoEditado.gasto}
-              onChange={(e) =>
-                setEventoEditado({ ...eventoEditado, gasto: e.target.value })
-              }
-              className="ml-2 w-24 bg-gray-900 border border-gray-500 p-1 rounded text-red-400"
-            />
-          ) : (
-            <span className="text-red-400 font-bold">{r.gasto || 0} €</span>
-          )}
-        </div>
-        <div className="text-sm text-gray-300 mb-1">
-          Ganho:{" "}
-          {emEdicao ? (
-            <input
-              type="number"
-              value={eventoEditado.ganho}
-              onChange={(e) =>
-                setEventoEditado({ ...eventoEditado, ganho: e.target.value })
-              }
-              className="ml-2 w-24 bg-gray-900 border border-gray-500 p-1 rounded text-green-400"
-            />
-          ) : (
-            <span className="text-green-400 font-bold">{r.ganho || 0} €</span>
-          )}
-        </div>
-        <div className="text-sm text-gray-300 mb-1">
-          Lucro:{" "}
-          <span className="text-yellow-300 font-bold">
-            {(r.ganho || 0) - (r.gasto || 0)} €
-          </span>
-        </div>
-
-        {/* Botões */}
-        <div className="mt-3 flex gap-4">
-          {emEdicao ? (
-            <button
-              onClick={() => guardarEvento(eventoEditado)}
-              className="flex-1 bg-green-600 text-white py-1 rounded"
-            >
-              💾 Guardar
-            </button>
-          ) : (
-            <button
-              onClick={() => ativarEdicao(r.id, r)}
-              className="px-3 py-1 bg-blue-500 text-white rounded text-sm w-fit"
-            >
-              ✏️ Editar
-            </button>
-          )}
-        </div>
-
-        {/* Botão expandir e detalhes */}
-        {!emEdicao && (
-          <div className="mt-3">
-            <button
-              onClick={() =>
-                setLinhaExpandida(linhaExpandida === r.id ? null : r.id)
-              }
-              className="text-xs text-blue-400 underline"
-            >
-              {linhaExpandida === r.id ? "Fechar detalhes" : "Ver detalhes"}
-            </button>
-
-            {linhaExpandida === r.id && (
-              <div className="mt-2 text-sm space-y-2">
-                <div>
-                  <strong>Vendas:</strong>
-                  {vendas
-                    .filter(
-                      (v) =>
-                        v.evento === r.evento &&
-                        v.data_evento === r.data_evento
-                    )
-                    .map((v, idx) => (
-                      <div
-                        key={idx}
-                        className="bg-blue-900 p-2 rounded text-white text-xs mt-1"
+            {registos.map((r) => {
+              const emEdicao = modoEdicao === r.id;
+              return (
+                <div
+                  key={r.id}
+                  className="rounded-xl border border-gray-700 bg-gradient-to-br from-zinc-900 to-gray-800 p-4 shadow-xl text-white"
+                >
+                  {/* Topo: Evento + Data */}
+                  <div className="flex justify-between items-center text-sm mb-2">
+                    <div className="text-gray-400">
+                      Evento:
+                      {emEdicao ? (
+                        <input
+                          type="text"
+                          value={eventoEditado.nome}
+                          onChange={(e) => setEventoEditado({ ...eventoEditado, nome: e.target.value })}
+                          className="ml-2 bg-gray-900 border border-gray-500 p-1 rounded text-white"
+                        />
+                      ) : (
+                        <span className="font-semibold ml-1">{r.nome}</span>
+                      )}
+                    </div>
+                    <div className="text-xs font-semibold bg-blue-600 text-white px-2 py-1 rounded-full">
+                      {r.data_evento ? new Date(r.data_evento).toLocaleDateString("pt-PT") : "—"}
+                    </div>
+                  </div>
+          
+                  {/* Gasto / Ganho / Lucro */}
+                  <div className="text-sm text-gray-300 mb-1">
+                    Gasto:{" "}
+                    {emEdicao ? (
+                      <input
+                        type="number"
+                        value={eventoEditado.gasto}
+                        onChange={(e) => setEventoEditado({ ...eventoEditado, gasto: e.target.value })}
+                        className="ml-2 w-24 bg-gray-900 border border-gray-500 p-1 rounded text-red-400"
+                      />
+                    ) : (
+                      <span className="text-red-400 font-bold">{r.gasto || 0} €</span>
+                    )}
+                  </div>
+                  <div className="text-sm text-gray-300 mb-1">
+                    Ganho:{" "}
+                    {emEdicao ? (
+                      <input
+                        type="number"
+                        value={eventoEditado.ganho}
+                        onChange={(e) => setEventoEditado({ ...eventoEditado, ganho: e.target.value })}
+                        className="ml-2 w-24 bg-gray-900 border border-gray-500 p-1 rounded text-green-400"
+                      />
+                    ) : (
+                      <span className="text-green-400 font-bold">{r.ganho || 0} €</span>
+                    )}
+                  </div>
+                  <div className="text-sm text-gray-300 mb-1">
+                    Lucro:{" "}
+                    <span className="text-yellow-300 font-bold">
+                      {(r.ganho || 0) - (r.gasto || 0)} €
+                    </span>
+                  </div>
+          
+                  {/* Botões */}
+                  <div className="mt-3 flex gap-4">
+                    {emEdicao ? (
+                      <button
+                        onClick={() => guardarEvento(eventoEditado)}
+                        className="flex-1 bg-green-600 text-white py-1 rounded"
                       >
-                        ID: {v.id_venda}, Bilhete: {v.estadio}, Ganho: {v.ganho} €, Estado: {v.estado}
-                      </div>
-                    ))}
-                </div>
-                <div>
-                  <strong>Compras:</strong>
-                  {compras
-                    .filter(
-                      (c) =>
-                        c.evento === r.evento &&
-                        c.data_evento === r.data_evento
-                    )
-                    .map((c, idx) => (
-                      <div
-                        key={idx}
-                        className="bg-yellow-700 p-2 rounded text-white text-xs mt-1"
+                        💾 Guardar
+                      </button>
+
+                    ) : (
+                      <button
+                        onClick={() => ativarEdicao(r.id, r)}
+                        className="flex-1 bg-blue-500 text-white py-1 rounded"
                       >
-                        Setor: {c.setor}, Qt: {c.quantidade}, Gasto: {c.gasto} €
-                      </div>
-                    ))}
+                        ✏️ Editar
+                      </button>
+                    )}
+                  </div>
                 </div>
-              </div>
-            )}
+              );
+            })}
           </div>
-        )}
+
+          {hasMore && (
+            <div ref={observerRef} className="text-center py-4 text-gray-700 dark:text-gray-300">
+              🔄 A carregar mais eventos...
+            </div>
+          )}
+       </div>   
       </div>
-    );
-  }
 
+         {/* Modal de lucros por mês */}
+      {mostrarResumoDetalhado && (
+        <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white dark:bg-gray-800 text-black dark:text-white p-6 rounded shadow-lg">
+            <h2 className="text-lg font-bold mb-4 text-gray-900 dark:text-white">Lucro por Mês</h2>
+            <ul className="mb-4 space-y-1 text-black dark:text-white">
+              {Array.isArray(lucrosMensais) && lucrosMensais.map((item, idx) => (
+                <li key={idx} className="flex justify-between gap-8">
+                  <span>{item.mes}</span>
+                  <span className={item.lucro < 0 ? "text-red-500" : ""}>
+                    {item.lucro.toFixed(2)} €
+                  </span>
+                </li>
 
+              ))}
+            </ul>
+
+            {Array.isArray(lucrosMensais) && (
+              <div className="text-right font-bold text-lg border-t pt-2 text-black dark:text-white">
+                Total: {lucrosMensais.reduce((acc, cur) => acc + cur.lucro, 0).toFixed(2)} €
+              </div>
+
+            )}
+
+            <button
+              onClick={() => setMostrarResumoDetalhado(false)}
+              className="mt-4 bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-white px-4 py-2 rounded hover:bg-gray-400 dark:hover:bg-gray-600"
+            >
+              Fechar
+            </button>
+          </div>
+        </div>
+      )}
+  
+      {/* Modal de confirmação */}
+      {mostrarModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 dark:text-gray-100 p-6 rounded shadow-lg transition-colors duration-300">
+            <p className="mb-4">Tem a certeza que quer eliminar este registo?</p>
+            <div className="flex justify-end space-x-4">
+              <button onClick={() => setMostrarModal(false)} className="bg-gray-300 px-4 py-2 rounded">
+                Cancelar
+              </button>
+              <button onClick={eliminarRegisto} className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+                Confirmar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+   </div>
+  );
+}
