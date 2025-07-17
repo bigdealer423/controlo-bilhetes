@@ -664,7 +664,25 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
                     `+ ${r.ganho} €`
                   )}
                 </div>
-              
+
+                                {/* Estado (mobile) */}
+                {emEdicao && (
+                  <select
+                    value={registoEditado.estado}
+                    onChange={(e) =>
+                      setRegistoEditado({ ...registoEditado, estado: e.target.value })
+                    }
+                    className="w-full mt-3 bg-gray-900 border border-gray-500 p-2 rounded text-white"
+                  >
+                    <option value="Entregue">Entregue</option>
+                    <option value="Por entregar">Por entregar</option>
+                    <option value="Disputa">Disputa</option>
+                    <option value="Pago">Pago</option>
+                  </select>
+                )}
+
+
+                
                 <div className="flex gap-4 text-xl">
                   {emEdicao ? (
                     <button
