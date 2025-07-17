@@ -746,7 +746,7 @@ return (
                       Evento:
                       {emEdicao ? (
                         <select
-                          value={eventoEditado.evento}
+                          value={eventoEditado?.evento || ""}
                           onChange={(e) =>
                             setEventoEditado({ ...eventoEditado, evento: e.target.value })
                           }
