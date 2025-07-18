@@ -1006,7 +1006,7 @@ return (
             </div>
           )}
        </div>   
-      </div>
+      
 
          {/* Modal de lucros por mês */}
       {mostrarResumoDetalhado && (
