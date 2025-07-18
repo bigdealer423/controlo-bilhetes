@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { FaFileExcel } from "react-icons/fa"
@@ -560,16 +561,12 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
 </td>
 
   <td className="p-2 flex items-center gap-2">
-  <button onClick={() => iniciarEdicao(r)}>Editar</button>
-  <button onClick={() => confirmarEliminar(r.id)}>Eliminar</button>
   {
     eventosChaveSet.size > 0 &&
     !eventosChaveSet.has(`${(r.evento || "").trim()}|${(r.data_evento || "").split("T")[0]}`) && (
-      <span title="Venda não associada a evento" className="text-yellow-500 text-lg">⚠️</span>
+      <span className="text-yellow-500 text-lg" title="Não associado a evento">⚠️</span>
     )
   }
-</td>
-
 
 
 
