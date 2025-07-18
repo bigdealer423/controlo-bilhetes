@@ -28,7 +28,20 @@ export default function ListagemVendas(props) {
   const [mostrarFormularioMobile, setMostrarFormularioMobile] = useState(false);
   const [eventosChaveSet, setEventosChaveSet] = useState(new Set());
 
-
+useEffect(() => {
+  fetch("https://controlo-bilhetes-api.onrender.com/eventos_completos2?limit=1000")
+    .then((res) => res.json())
+    .then((data) => {
+      const chaves = new Set(
+        data
+          .filter(e => e.nome && e.data_evento)
+          .map(e => `${e.nome.trim()}|${e.data_evento.split("T")[0]}`)
+      );
+      setEventosChaveSet(chaves);
+      console.log("✅ Eventos carregados:", [...chaves]);
+    })
+    .catch(err => console.error("❌ Erro ao carregar eventos:", err));
+}, []);
 
    const forcarAtualizacaoEmail = async () => {
   setMensagemModal("⏳ A processar leitura de e-mails...");
