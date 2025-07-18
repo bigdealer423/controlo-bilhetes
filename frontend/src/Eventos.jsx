@@ -31,6 +31,7 @@ export default function Eventos() {
   const location = useLocation();
   const [mostrarResumoDetalhado, setMostrarResumoDetalhado] = useState(false);
   const [lucrosMensais, setLucrosMensais] = useState([]);
+  const linhaRefs = useRef({});
 
 
 useEffect(() => {
