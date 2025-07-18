@@ -3,6 +3,7 @@
 
 
 
+
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useRef } from "react";
@@ -920,85 +921,58 @@ return (
                   {linhaExpandida === r.id && (
                     <div className="mt-4 space-y-3">
                   
-                      {/* ✅ Cabeçalho VENDAS */}
-                      <div className="text-sm font-semibold text-blue-300">
-                        Vendas (
-                        {
-                          vendas
-                            .filter(v => v.evento === r.evento && v.data_evento === r.data_evento)
-                            .reduce((acc, v) => {
-                              const texto = v.estadio?.trim();
-                              if (/^\\d+$/.test(texto)) return acc + parseInt(texto);
-                              const match = texto.match(/\\((\\d+)\\s*Bilhetes?\\)/i);
-                              return acc + (match ? parseInt(match[1]) : 0);
-                            }, 0)
-                        }
-                        )
-                      </div>
-                  
                       {/* VENDAS */}
-                      {vendas
-                        .filter(v => v.evento === r.evento && v.data_evento === r.data_evento)
-                        .map((v) => (
-                          <div key={v.id} className="bg-blue-900 text-white p-3 rounded shadow">
-                            <div className="flex justify-between text-xs text-gray-300">
-                              <span>ID: {v.id_venda}</span>
-                              <span className="font-bold">{v.estado}</span>
-                            </div>
-                            <div className="mt-1 text-sm">
-                              <div><span className="text-gray-400">Bilhetes:</span> {v.estadio}</div>
-                              <div><span className="text-gray-400">Ganho:</span> {v.ganho} €</div>
-                            </div>
-                            <div className="mt-2">
-                              <CirculoEstado
-                                tipo="listagem_vendas"
-                                id={v.id}
-                                texto_estado={v.circulo_estado_venda}
-                                nota_estado={v.nota_estado_venda}
-                                setVendas={setVendas}
-                              />
-                            </div>
+                      {vendas.filter(v => v.evento === r.evento && v.data_evento === r.data_evento).map((v) => (
+                        <div key={v.id} className="bg-blue-900 text-white p-3 rounded shadow">
+                          <div className="flex justify-between text-xs text-gray-300">
+                            <span>ID: {v.id_venda}</span>
+                            <span className="font-bold">{v.estado}</span>
                           </div>
-                        ))}
-                  
-                      {/* ✅ Cabeçalho COMPRAS */}
-                      <div className="text-sm font-semibold text-yellow-300 mt-4">
-                        Compras (
-                        {
-                          compras
-                            .filter(c => c.evento === r.evento && c.data_evento === r.data_evento)
-                            .reduce((acc, c) => acc + Number(c.quantidade || 0), 0)
-                        }
-                        )
-                      </div>
+                          <div className="mt-1 text-sm">
+                            <div><span className="text-gray-400">Bilhetes:</span> {v.estadio}</div>
+                            <div><span className="text-gray-400">Ganho:</span> {v.ganho} €</div>
+                          </div>
+                          <div className="mt-2">
+                            <CirculoEstado
+                              tipo="listagem_vendas"
+                              id={v.id}
+                              texto_estado={v.circulo_estado_venda}
+                              nota_estado={v.nota_estado_venda}
+                              setVendas={setVendas}
+                            />
+                          </div>
+                        </div>
+                      ))}
                   
                       {/* COMPRAS */}
-                      {compras
-                        .filter(c => c.evento === r.evento && c.data_evento === r.data_evento)
-                        .map((c) => (
-                          <div key={c.id} className="bg-yellow-800 text-white p-3 rounded shadow">
-                            <div className="text-xs text-gray-300 mb-1">Compra #{c.id}</div>
-                            <div className="text-sm space-y-1">
-                              <div><span className="text-gray-400">Local:</span> {c.local_compras}</div>
-                              <div><span className="text-gray-400">Setor:</span> {c.setor}</div>
-                              <div><span className="text-gray-400">Fila:</span> {c.fila}</div>
-                              <div><span className="text-gray-400">Qtd:</span> {c.quantidade}</div>
-                              <div><span className="text-gray-400">Gasto:</span> {c.gasto} €</div>
-                            </div>
-                            <div className="mt-2">
-                              <CirculoEstado
-                                tipo="compras"
-                                id={c.id}
-                                texto_estado={c.circulo_estado_compra}
-                                nota_estado={c.nota_estado_compra}
-                                setCompras={setCompras}
-                              />
-                            </div>
+                      {compras.filter(c => c.evento === r.evento && c.data_evento === r.data_evento).map((c) => (
+                        <div key={c.id} className="bg-yellow-800 text-white p-3 rounded shadow">
+                          <div className="text-xs text-gray-300 mb-1">Compra #{c.id}</div>
+                          <div className="text-sm space-y-1">
+                            <div><span className="text-gray-400">Local:</span> {c.local_compras}</div>
+                            <div><span className="text-gray-400">Setor:</span> {c.setor}</div>
+                            <div><span className="text-gray-400">Fila:</span> {c.fila}</div>
+                            <div><span className="text-gray-400">Qtd:</span> {c.quantidade}</div>
+                            <div><span className="text-gray-400">Gasto:</span> {c.gasto} €</div>
                           </div>
-                        ))}
+                          <div className="mt-2">
+                            <CirculoEstado
+                              tipo="compras"
+                              id={c.id}
+                              texto_estado={c.circulo_estado_compra}
+                              nota_estado={c.nota_estado_compra}
+                              setCompras={setCompras}
+                            />
+                          </div>
+                        </div>
+                      ))}
                   
                     </div>
                   )}
+                </div>
+              );
+            })}
+          </div>
 
 
           {hasMore && (
@@ -1006,59 +980,59 @@ return (
               🔄 A carregar mais eventos...
             </div>
           )}
-         
-      
+       </div>   
+      </div>
 
          {/* Modal de lucros por mês */}
-          {mostrarResumoDetalhado && (
-            <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
-              <div className="bg-white dark:bg-gray-800 text-black dark:text-white p-6 rounded shadow-lg">
-                <h2 className="text-lg font-bold mb-4 text-gray-900 dark:text-white">Lucro por Mês</h2>
-                <ul className="mb-4 space-y-1 text-black dark:text-white">
-                  {Array.isArray(lucrosMensais) && lucrosMensais.map((item, idx) => (
-                    <li key={idx} className="flex justify-between gap-8">
-                      <span>{item.mes}</span>
-                      <span className={item.lucro < 0 ? "text-red-500" : ""}>
-                        {item.lucro.toFixed(2)} €
-                      </span>
-                    </li>
-    
-                  ))}
-                </ul>
-    
-                {Array.isArray(lucrosMensais) && (
-                  <div className="text-right font-bold text-lg border-t pt-2 text-black dark:text-white">
-                    Total: {lucrosMensais.reduce((acc, cur) => acc + cur.lucro, 0).toFixed(2)} €
-                  </div>
-    
-                )}
-    
-                <button
-                  onClick={() => setMostrarResumoDetalhado(false)}
-                  className="mt-4 bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-white px-4 py-2 rounded hover:bg-gray-400 dark:hover:bg-gray-600"
-                >
-                  Fechar
-                </button>
+      {mostrarResumoDetalhado && (
+        <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white dark:bg-gray-800 text-black dark:text-white p-6 rounded shadow-lg">
+            <h2 className="text-lg font-bold mb-4 text-gray-900 dark:text-white">Lucro por Mês</h2>
+            <ul className="mb-4 space-y-1 text-black dark:text-white">
+              {Array.isArray(lucrosMensais) && lucrosMensais.map((item, idx) => (
+                <li key={idx} className="flex justify-between gap-8">
+                  <span>{item.mes}</span>
+                  <span className={item.lucro < 0 ? "text-red-500" : ""}>
+                    {item.lucro.toFixed(2)} €
+                  </span>
+                </li>
+
+              ))}
+            </ul>
+
+            {Array.isArray(lucrosMensais) && (
+              <div className="text-right font-bold text-lg border-t pt-2 text-black dark:text-white">
+                Total: {lucrosMensais.reduce((acc, cur) => acc + cur.lucro, 0).toFixed(2)} €
               </div>
+
+            )}
+
+            <button
+              onClick={() => setMostrarResumoDetalhado(false)}
+              className="mt-4 bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-white px-4 py-2 rounded hover:bg-gray-400 dark:hover:bg-gray-600"
+            >
+              Fechar
+            </button>
+          </div>
+        </div>
+      )}
+  
+      {/* Modal de confirmação */}
+      {mostrarModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 dark:text-gray-100 p-6 rounded shadow-lg transition-colors duration-300">
+            <p className="mb-4">Tem a certeza que quer eliminar este registo?</p>
+            <div className="flex justify-end space-x-4">
+              <button onClick={() => setMostrarModal(false)} className="bg-gray-300 px-4 py-2 rounded">
+                Cancelar
+              </button>
+              <button onClick={eliminarRegisto} className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+                Confirmar
+              </button>
             </div>
-          )}
-      
-          {/* Modal de confirmação */}
-          {mostrarModal && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-              <div className="bg-white dark:bg-gray-800 dark:text-gray-100 p-6 rounded shadow-lg transition-colors duration-300">
-                <p className="mb-4">Tem a certeza que quer eliminar este registo?</p>
-                <div className="flex justify-end space-x-4">
-                  <button onClick={() => setMostrarModal(false)} className="bg-gray-300 px-4 py-2 rounded">
-                    Cancelar
-                  </button>
-                  <button onClick={eliminarRegisto} className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
-                    Confirmar
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-       </div>
-      );
-    }
+          </div>
+        </div>
+      )}
+   </div>
+  );
+}
