@@ -463,10 +463,15 @@ return (
     const novoExpandido = linhaExpandida === r.id ? null : r.id;
     setLinhaExpandida(novoExpandido);
 
-    if (novoExpandido !== null && linhaRefs.current[r.id]) {
-      setTimeout(() => {
-        linhaRefs.current[r.id].scrollIntoView({ behavior: "smooth", block: "start" });
-      }, 100);
+    if (novoExpandido !== null) {
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          const el = linhaRefs.current[r.id];
+          if (el) {
+            el.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+        }, 150); // ligeiro atraso para garantir que DOM já expandiu
+      });
     }
   }}
   className={`cursor-pointer ${
@@ -479,6 +484,7 @@ return (
       : ""
   } transition-colors duration-300`}
 >
+
 
                  <td className="p-2">
   {vendas.some(v => v.evento === r.evento && v.data_evento === r.data_evento) || compras.some(c => c.evento === r.evento && c.data_evento === r.data_evento) ? (
