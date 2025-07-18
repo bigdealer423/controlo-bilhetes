@@ -26,6 +26,8 @@ export default function ListagemVendas(props) {
   const [filtroEvento, setFiltroEvento] = useState("");
   const [filtroIdVenda, setFiltroIdVenda] = useState("");
   const [mostrarFormularioMobile, setMostrarFormularioMobile] = useState(false);
+  const [eventosChaveSet, setEventosChaveSet] = useState(new Set());
+
 
 
    const forcarAtualizacaoEmail = async () => {
@@ -149,9 +151,16 @@ function exportarParaExcel(registos) {
     .then(data => {
       const ordenados = ordenarEventosDropdown(data);
       setEventosDropdown(ordenados);
+
+      // 🔧 Cria um Set com as chaves únicas: evento + data_evento
+      const chaves = new Set(
+        data.map(e => `${e.nome}|${e.data_evento}`)
+      );
+      setEventosChaveSet(chaves);
     })
     .catch(err => console.error("Erro ao buscar eventos:", err));
 };
+
 
   const ordenarEventosDropdown = (data) => {
   return [...data].sort((a, b) => {
@@ -534,10 +543,16 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
   </span>
 </td>
 
-  <td className="p-2">
-    <button onClick={() => ativarEdicao(r.id, r)} className="text-blue-600 hover:underline mr-2">Editar</button>
-    <button onClick={() => pedirConfirmEliminar([r.id])} className="text-red-600 hover:underline">Eliminar</button>
-  </td>
+  <td className="p-2 flex items-center gap-2">
+  {
+    !eventosChaveSet.has(`${r.evento}|${r.data_evento}`) && (
+      <span title="Venda não associada a evento" className="text-yellow-500 text-lg">⚠️</span>
+    )
+  }
+  <button onClick={() => ativarEdicao(r.id, r)} className="text-blue-600 hover:underline mr-2">Editar</button>
+  <button onClick={() => pedirConfirmEliminar([r.id])} className="text-red-600 hover:underline">Eliminar</button>
+</td>
+
                   </>
                 )}
               </tr>
@@ -688,7 +703,12 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
                 </div>
 
                 
-                <div className="flex gap-4 text-xl">
+                <div className="flex gap-4 text-xl items-center">
+                  {
+                    !eventosChaveSet.has(`${r.evento}|${r.data_evento}`) && (
+                      <span title="Venda não associada a evento" className="text-yellow-400 text-lg">⚠️</span>
+                    )
+                  }
                   {emEdicao ? (
                     <button
                       onClick={atualizarRegisto}
