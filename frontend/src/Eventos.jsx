@@ -920,58 +920,85 @@ return (
                   {linhaExpandida === r.id && (
                     <div className="mt-4 space-y-3">
                   
+                      {/* ✅ Cabeçalho VENDAS */}
+                      <div className="text-sm font-semibold text-blue-300">
+                        Vendas (
+                        {
+                          vendas
+                            .filter(v => v.evento === r.evento && v.data_evento === r.data_evento)
+                            .reduce((acc, v) => {
+                              const texto = v.estadio?.trim();
+                              if (/^\\d+$/.test(texto)) return acc + parseInt(texto);
+                              const match = texto.match(/\\((\\d+)\\s*Bilhetes?\\)/i);
+                              return acc + (match ? parseInt(match[1]) : 0);
+                            }, 0)
+                        }
+                        )
+                      </div>
+                  
                       {/* VENDAS */}
-                      {vendas.filter(v => v.evento === r.evento && v.data_evento === r.data_evento).map((v) => (
-                        <div key={v.id} className="bg-blue-900 text-white p-3 rounded shadow">
-                          <div className="flex justify-between text-xs text-gray-300">
-                            <span>ID: {v.id_venda}</span>
-                            <span className="font-bold">{v.estado}</span>
+                      {vendas
+                        .filter(v => v.evento === r.evento && v.data_evento === r.data_evento)
+                        .map((v) => (
+                          <div key={v.id} className="bg-blue-900 text-white p-3 rounded shadow">
+                            <div className="flex justify-between text-xs text-gray-300">
+                              <span>ID: {v.id_venda}</span>
+                              <span className="font-bold">{v.estado}</span>
+                            </div>
+                            <div className="mt-1 text-sm">
+                              <div><span className="text-gray-400">Bilhetes:</span> {v.estadio}</div>
+                              <div><span className="text-gray-400">Ganho:</span> {v.ganho} €</div>
+                            </div>
+                            <div className="mt-2">
+                              <CirculoEstado
+                                tipo="listagem_vendas"
+                                id={v.id}
+                                texto_estado={v.circulo_estado_venda}
+                                nota_estado={v.nota_estado_venda}
+                                setVendas={setVendas}
+                              />
+                            </div>
                           </div>
-                          <div className="mt-1 text-sm">
-                            <div><span className="text-gray-400">Bilhetes:</span> {v.estadio}</div>
-                            <div><span className="text-gray-400">Ganho:</span> {v.ganho} €</div>
-                          </div>
-                          <div className="mt-2">
-                            <CirculoEstado
-                              tipo="listagem_vendas"
-                              id={v.id}
-                              texto_estado={v.circulo_estado_venda}
-                              nota_estado={v.nota_estado_venda}
-                              setVendas={setVendas}
-                            />
-                          </div>
-                        </div>
-                      ))}
+                        ))}
+                  
+                      {/* ✅ Cabeçalho COMPRAS */}
+                      <div className="text-sm font-semibold text-yellow-300 mt-4">
+                        Compras (
+                        {
+                          compras
+                            .filter(c => c.evento === r.evento && c.data_evento === r.data_evento)
+                            .reduce((acc, c) => acc + Number(c.quantidade || 0), 0)
+                        }
+                        )
+                      </div>
                   
                       {/* COMPRAS */}
-                      {compras.filter(c => c.evento === r.evento && c.data_evento === r.data_evento).map((c) => (
-                        <div key={c.id} className="bg-yellow-800 text-white p-3 rounded shadow">
-                          <div className="text-xs text-gray-300 mb-1">Compra #{c.id}</div>
-                          <div className="text-sm space-y-1">
-                            <div><span className="text-gray-400">Local:</span> {c.local_compras}</div>
-                            <div><span className="text-gray-400">Setor:</span> {c.setor}</div>
-                            <div><span className="text-gray-400">Fila:</span> {c.fila}</div>
-                            <div><span className="text-gray-400">Qtd:</span> {c.quantidade}</div>
-                            <div><span className="text-gray-400">Gasto:</span> {c.gasto} €</div>
+                      {compras
+                        .filter(c => c.evento === r.evento && c.data_evento === r.data_evento)
+                        .map((c) => (
+                          <div key={c.id} className="bg-yellow-800 text-white p-3 rounded shadow">
+                            <div className="text-xs text-gray-300 mb-1">Compra #{c.id}</div>
+                            <div className="text-sm space-y-1">
+                              <div><span className="text-gray-400">Local:</span> {c.local_compras}</div>
+                              <div><span className="text-gray-400">Setor:</span> {c.setor}</div>
+                              <div><span className="text-gray-400">Fila:</span> {c.fila}</div>
+                              <div><span className="text-gray-400">Qtd:</span> {c.quantidade}</div>
+                              <div><span className="text-gray-400">Gasto:</span> {c.gasto} €</div>
+                            </div>
+                            <div className="mt-2">
+                              <CirculoEstado
+                                tipo="compras"
+                                id={c.id}
+                                texto_estado={c.circulo_estado_compra}
+                                nota_estado={c.nota_estado_compra}
+                                setCompras={setCompras}
+                              />
+                            </div>
                           </div>
-                          <div className="mt-2">
-                            <CirculoEstado
-                              tipo="compras"
-                              id={c.id}
-                              texto_estado={c.circulo_estado_compra}
-                              nota_estado={c.nota_estado_compra}
-                              setCompras={setCompras}
-                            />
-                          </div>
-                        </div>
-                      ))}
+                        ))}
                   
                     </div>
                   )}
-                </div>
-              );
-            })}
-          </div>
 
 
           {hasMore && (
