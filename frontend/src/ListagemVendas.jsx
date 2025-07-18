@@ -544,8 +544,8 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
 </td>
 
   <td className="p-2 flex items-center gap-2">
-  {(r.evento === "" || !r.evento || r.data_evento === "" || !r.data_evento) && (
-    <span title="Venda não associada a evento" className="text-yellow-500 text-lg">⚠️</span>
+  {!eventosChaveSet.has(`${r.evento}|${r.data_evento}`) && (
+  <span title="Venda não associada a evento" className="text-yellow-500 text-lg">⚠️</span>
   )}
   <button onClick={() => ativarEdicao(r.id, r)} className="text-blue-600 hover:underline">Editar</button>
   <button onClick={() => pedirConfirmEliminar([r.id])} className="text-red-600 hover:underline">Eliminar</button>
