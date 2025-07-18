@@ -545,9 +545,12 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
 </td>
 
   <td className="p-2 flex items-center gap-2">
-  {!eventosChaveSet.has(`${r.evento}|${(r.data_evento || "").split("T")[0]}`) && (
-  <span title="Venda não associada a evento" className="text-yellow-500 text-lg">⚠️</span>
-  )}
+  {
+    (!r.evento || !r.data_evento || !eventosChaveSet.has(`${r.evento}|${r.data_evento.split("T")[0]}`)) && (
+      <span title="Venda não associada a evento" className="text-yellow-500 text-lg">⚠️</span>
+    )
+  }
+
   <button onClick={() => ativarEdicao(r.id, r)} className="text-blue-600 hover:underline">Editar</button>
   <button onClick={() => pedirConfirmEliminar([r.id])} className="text-red-600 hover:underline">Eliminar</button>
 </td>
@@ -704,11 +707,12 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
 
                 
                 <div className="flex gap-4 text-xl items-center">
-                  {
-                    !eventosChaveSet.has(`${r.evento}|${(r.data_evento || "").split("T")[0]}`) && (
-                      <span title="Venda não associada a evento" className="text-yellow-400 text-lg">⚠️</span>
-                    )
-                  }
+                 {
+                  (!r.evento || !r.data_evento || !eventosChaveSet.has(`${r.evento}|${r.data_evento.split("T")[0]}`)) && (
+                    <span title="Venda não associada a evento" className="text-yellow-500 text-lg">⚠️</span>
+                  )
+                }
+
 
                   {emEdicao ? (
                     <button
