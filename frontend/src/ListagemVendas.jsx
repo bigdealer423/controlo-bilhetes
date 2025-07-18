@@ -31,15 +31,16 @@ export default function ListagemVendas(props) {
 useEffect(() => {
   fetch("https://controlo-bilhetes.onrender.com/eventos_completos2?skip=0&limit=1000")
     .then((res) => res.json())
-    .then((data) => {
-      const setEventos = new Set(
-        data.map(e => `${(e.evento || "").trim()}|${(e.data_evento || "").split("T")[0]}`)
-      );
-      setEventosChaveSet(setEventos);
+    .then((dados) => {
+      // ⚠️ Normaliza as chaves: evento|aaaa-mm-dd
+      const chaves = dados.map((evento) => {
+        const eventoNome = (evento.evento || "").trim();
+        const dataFormatada = (evento.data_evento || "").split("T")[0]; // '2025-08-10'
+        return `${eventoNome}|${dataFormatada}`;
+      });
+      setEventosChaveSet(new Set(chaves));
     })
-    .catch((err) => {
-      console.error("❌ Erro ao carregar eventos:", err);
-    });
+    .catch((err) => console.error("❌ Erro ao carregar eventos:", err));
 }, []);
 
 
