@@ -159,15 +159,8 @@ def entregas_pendentes_proximos_15_dias(db: Session = Depends(get_db)):
 # ---------------- EVENTOS DROPDOWN ----------------
 @app.get("/eventos_dropdown")
 def listar_eventos_dropdown(db: Session = Depends(get_db)):
-    eventos = db.query(EventoDropdown).all()
-    return [
-        {
-            "id": e.id,
-            "nome": e.nome,
-            "data_evento": e.data_evento.isoformat() if e.data_evento else None
-        }
-        for e in eventos
-    ]
+    return db.query(EventoDropdown).all()
+
 
 
 @app.post("/eventos_dropdown")
