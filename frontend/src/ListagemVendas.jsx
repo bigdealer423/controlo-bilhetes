@@ -29,7 +29,7 @@ export default function ListagemVendas(props) {
   const [eventosChaveSet, setEventosChaveSet] = useState(new Set());
 
 useEffect(() => {
-  fetch("https://controlo-bilhetes-api.onrender.com/eventos_completos2?skip=0&limit=1000")
+  fetch("https://controlo-bilhetes.onrender.com/eventos_completos2?skip=0&limit=1000")
     .then((res) => res.json())
     .then((data) => {
       const setEventos = new Set(
@@ -41,6 +41,7 @@ useEffect(() => {
       console.error("❌ Erro ao carregar eventos:", err);
     });
 }, []);
+
 
 
    const forcarAtualizacaoEmail = async () => {
