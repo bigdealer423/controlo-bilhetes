@@ -29,19 +29,19 @@ export default function ListagemVendas(props) {
   const [eventosChaveSet, setEventosChaveSet] = useState(new Set());
 
 useEffect(() => {
-  fetch("https://controlo-bilhetes-api.onrender.com/eventos_completos2?limit=1000")
+  fetch("https://controlo-bilhetes-api.onrender.com/eventos_completos2?skip=0&limit=1000")
     .then((res) => res.json())
     .then((data) => {
-      const chaves = new Set(
-        data
-          .filter(e => e.nome && e.data_evento)
-          .map(e => `${e.nome.trim()}|${e.data_evento.split("T")[0]}`)
+      const setEventos = new Set(
+        data.map(e => `${(e.evento || "").trim()}|${(e.data_evento || "").split("T")[0]}`)
       );
-      setEventosChaveSet(chaves);
-      console.log("✅ Eventos carregados:", [...chaves]);
+      setEventosChaveSet(setEventos);
     })
-    .catch(err => console.error("❌ Erro ao carregar eventos:", err));
+    .catch((err) => {
+      console.error("❌ Erro ao carregar eventos:", err);
+    });
 }, []);
+
 
    const forcarAtualizacaoEmail = async () => {
   setMensagemModal("⏳ A processar leitura de e-mails...");
@@ -561,9 +561,10 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
   {
     eventosChaveSet.size > 0 &&
     !eventosChaveSet.has(`${(r.evento || "").trim()}|${(r.data_evento || "").split("T")[0]}`) && (
-      <span className="text-yellow-500 text-lg">⚠️</span>
+      <span className="text-yellow-500 text-lg" title="Não associado a evento">⚠️</span>
     )
   }
+
 
 
   <button onClick={() => ativarEdicao(r.id, r)} className="text-blue-600 hover:underline">Editar</button>
