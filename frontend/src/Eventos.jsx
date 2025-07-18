@@ -1006,7 +1006,7 @@ return (
               🔄 A carregar mais eventos...
             </div>
           )}
-       </div>   
+         
       
 
          {/* Modal de lucros por mês */}
