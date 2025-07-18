@@ -32,6 +32,29 @@ export default function Eventos() {
   const [mostrarResumoDetalhado, setMostrarResumoDetalhado] = useState(false);
   const [lucrosMensais, setLucrosMensais] = useState([]);
   const linhaRefs = useRef({});
+  const [vendasNaoAssociadasSet, setVendasNaoAssociadasSet] = useState(new Set());
+  const [comprasNaoAssociadasSet, setComprasNaoAssociadasSet] = useState(new Set());
+
+useEffect(() => {
+  if (!vendas.length || !compras.length || !registos.length) return;
+
+  const eventosChave = new Set(registos.map(e => `${e.evento}|${e.data_evento}`));
+
+  const vendasSemEvento = new Set(
+    vendas
+      .filter(v => !eventosChave.has(`${v.evento}|${v.data_evento}`))
+      .map(v => v.id)
+  );
+
+  const comprasSemEvento = new Set(
+    compras
+      .filter(c => !eventosChave.has(`${c.evento}|${c.data_evento}`))
+      .map(c => c.id)
+  );
+
+  setVendasNaoAssociadasSet(vendasSemEvento);
+  setComprasNaoAssociadasSet(comprasSemEvento);
+}, [vendas, compras, registos]);
 
 
 useEffect(() => {
@@ -660,6 +683,9 @@ return (
         />
       </td>
       <td className="p-2">
+        {vendasNaoAssociadasSet.has(v.id) && (
+          <span className="text-yellow-500 mr-2" title="Venda não associada a evento">⚠️</span>
+        )}
         <button
           onClick={() => {
             setModoEdicaoVenda(v.id);
@@ -669,6 +695,7 @@ return (
         >
           Editar
         </button>
+
       </td>
       <td className="p-2"></td> {/* coluna extra para preencher */}
     </tr>
@@ -740,9 +767,19 @@ return (
   />
 </td>
 <td className="p-2">
-  <button onClick={() => { setModoEdicaoCompra(c.id); setCompraEditada(c); }} className="text-blue-600 hover:underline">
+  {comprasNaoAssociadasSet.has(c.id) && (
+    <span className="text-yellow-500 mr-2" title="Compra não associada a evento">⚠️</span>
+  )}
+  <button
+    onClick={() => {
+      setModoEdicaoCompra(c.id);
+      setCompraEditada(c);
+    }}
+    className="text-blue-600 hover:underline"
+  >
     Editar
   </button>
+
 </td>
 <td></td>
 
