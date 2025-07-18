@@ -30,6 +30,8 @@ export default function Eventos() {
   const location = useLocation();
   const [mostrarResumoDetalhado, setMostrarResumoDetalhado] = useState(false);
   const [lucrosMensais, setLucrosMensais] = useState([]);
+  const linhaRefs = useRef({});
+
 
 
 useEffect(() => {
@@ -455,17 +457,25 @@ return (
                 .map(r => (
               <>
                 <tr
-  key={r.id}
-  className={`cursor-pointer ${
-    linhaExpandida === r.id
-      ? "bg-blue-100 dark:bg-blue-800 text-gray-900 dark:text-gray-100 font-semibold"
-      : r.estado === "Pago"
-      ? "bg-green-100 dark:bg-green-700"
-      : r.estado === "Entregue"
-      ? "bg-yellow-100 dark:bg-yellow-700" 
-      : ""
-  } transition-colors duration-300`}
->
+                  key={r.id}
+                  ref={(el) => (linhaRefs.current[r.id] = el)}
+                  onClick={() => {
+                    const novoExpandido = linhaExpandida === r.id ? null : r.id;
+                    setLinhaExpandida(novoExpandido);
+                
+                    if (novoExpandido !== null && linhaRefs.current[r.id]) {
+                      setTimeout(() => {
+                        linhaRefs.current[r.id].scrollIntoView({ behavior: "smooth", block: "start" });
+                      }, 100);
+                    }
+                  }}
+                  className={`cursor-pointer ${
+                    linhaExpandida === r.id
+                      ? "bg-blue-100 dark:bg-blue-800 ..."
+                      : ...
+                  } transition-colors duration-300`}
+                >
+
                  <td className="p-2">
   {vendas.some(v => v.evento === r.evento && v.data_evento === r.data_evento) || compras.some(c => c.evento === r.evento && c.data_evento === r.data_evento) ? (
     <button onClick={() => setLinhaExpandida(linhaExpandida === r.id ? null : r.id)}>
