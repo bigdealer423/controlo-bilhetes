@@ -920,6 +920,23 @@ return (
           
                   {linhaExpandida === r.id && (
                     <div className="mt-4 space-y-3">
+
+                      {/* ✅ Cabeçalho VENDAS (MOBILE) */}
+                      <div className="text-sm font-semibold text-blue-300">
+                        Vendas (
+                        {
+                          vendas
+                            .filter(v => v.evento === r.evento && v.data_evento === r.data_evento)
+                            .reduce((acc, v) => {
+                              const texto = v.estadio?.trim();
+                              if (/^\d+$/.test(texto)) return acc + parseInt(texto); // Ex: "2"
+                              const match = texto.match(/\((\d+)\s*Bilhetes?\)/i);   // Ex: "Piso 0 (4 Bilhetes)"
+                              return acc + (match ? parseInt(match[1]) : 0);
+                            }, 0)
+                        }
+                        )
+                      </div>
+
                   
                       {/* VENDAS */}
                       {vendas.filter(v => v.evento === r.evento && v.data_evento === r.data_evento).map((v) => (
@@ -943,7 +960,21 @@ return (
                           </div>
                         </div>
                       ))}
-                  
+
+
+                      {/* ✅ Cabeçalho COMPRAS (MOBILE) */}
+                      <div className="text-sm font-semibold text-yellow-300 mt-4">
+                        Compras (
+                        {
+                          compras
+                            .filter(c => c.evento === r.evento && c.data_evento === r.data_evento)
+                            .reduce((acc, c) => acc + Number(c.quantidade || 0), 0)
+                        }
+                        )
+                      </div>
+
+
+                      
                       {/* COMPRAS */}
                       {compras.filter(c => c.evento === r.evento && c.data_evento === r.data_evento).map((c) => (
                         <div key={c.id} className="bg-yellow-800 text-white p-3 rounded shadow">
