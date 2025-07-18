@@ -154,8 +154,9 @@ function exportarParaExcel(registos) {
 
       // 🔧 Cria um Set com as chaves únicas: evento + data_evento
       const chaves = new Set(
-        data.map(e => `${e.nome}|${e.data_evento}`)
+        data.map(e => `${e.nome}|${(e.data_evento || "").split("T")[0]}`)
       );
+
       setEventosChaveSet(chaves);
     })
     .catch(err => console.error("Erro ao buscar eventos:", err));
