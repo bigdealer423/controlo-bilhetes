@@ -751,26 +751,39 @@ const adicionarCompra = () => {
                 ))}
             </select>
 
-            <div className="mb-2">
+            <div className="flex flex-col mb-2">
               <input
                 type="date"
-                value={novaCompra.data_evento}
-                onChange={(e) => setNovaCompra({ ...novaCompra, data_evento: e.target.value })}
+                name="data_evento"
+                value={novaCompra.data_evento || ""}
+                onChange={handleChange}
                 className="w-full bg-gray-900 border border-gray-500 p-2 rounded text-white"
                 placeholder="Data Evento"
               />
-              {sugestaoDataEvento && (
-                <p className="text-xs text-gray-300 mt-1">
-                  Sugestão:{" "}
-                  <span
-                    onClick={() => setNovaCompra({ ...novaCompra, data_evento: sugestaoDataEvento })}
-                    className="underline text-amber-300 cursor-pointer"
-                  >
-                    {new Date(sugestaoDataEvento).toLocaleDateString("pt-PT")}
-                  </span>
-                </p>
+            
+              {datasEvento.length > 0 && (
+                <div className="mt-1 text-xs text-gray-300">
+                  Datas existentes (clique para preencher):
+                  <ul className="list-disc list-inside">
+                    {datasEvento.map((d, idx) => {
+                      const dataFormatada = new Date(d).toISOString().split("T")[0];
+                      return (
+                        <li
+                          key={idx}
+                          onClick={() =>
+                            setNovaCompra((prev) => ({ ...prev, data_evento: dataFormatada }))
+                          }
+                          className="cursor-pointer text-amber-300 hover:underline"
+                        >
+                          {new Date(d).toLocaleDateString("pt-PT")}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
               )}
             </div>
+
           </>
         ) : (
           <>
