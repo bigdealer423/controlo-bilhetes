@@ -564,19 +564,20 @@ export default function Compras() {
 
         {/* Gasto + ações */}
         <div className="flex justify-between items-center mt-3">
-          <span className="font-semibold text-green-500">
-            {emEdicao ? (
+          {emEdicao ? (
+            <span className="text-red-500 font-bold text-xl">
               <input
                 type="number"
                 value={novaCompra.gasto}
                 onChange={(e) => setNovaCompra({ ...novaCompra, gasto: e.target.value })}
-                className="w-24 bg-gray-900 border border-gray-500 p-1 rounded text-green-400 text-right"
+                className="w-24 bg-gray-900 border border-gray-500 p-1 rounded text-red-400 text-right"
               />
-            ) : (
-              `${c.gasto} €`
-            )}
-          </span>
-
+            </span>
+          ) : (
+            <span className="text-red-500 font-bold text-xl animate-pulse">
+              -{c.gasto} €
+            </span>
+          )}
           <div className="flex items-center gap-4 text-lg">
             {
               eventosChaveSet.size > 0 &&
