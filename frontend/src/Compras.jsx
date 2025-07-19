@@ -159,19 +159,21 @@ const adicionarCompra = () => {
 
 
   const handleChange = (e) => {
-  const { name, value } = e.target;
+    const { name, value } = e.target;
+  
+    setNovaCompra((prev) => ({ ...prev, [name]: value }));
+  
+    if (name === "evento") {
+      const eventoSelecionado = eventosDropdown.find(ev => ev.evento === value);
+  
+      if (eventoSelecionado && Array.isArray(eventoSelecionado.datas)) {
+        setDatasEvento(eventoSelecionado.datas);
+      } else {
+        setDatasEvento([]); // Limpa se não houver datas
+      }
+    }
+  };
 
-  if (name === "evento") {
-    // 👉 Substitui buscarDatasEvento por esta lógica direta
-    const datasEncontradas = eventosDropdown
-      .filter(ev => ev.evento === value && ev.datas)
-      .flatMap(ev => ev.datas);
-
-    setDatasEvento(datasEncontradas);
-  }
-
-  setNovaCompra((prev) => ({ ...prev, [name]: value }));
-};
 
 
 
