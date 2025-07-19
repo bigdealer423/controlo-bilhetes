@@ -522,6 +522,45 @@ export default function Compras() {
           </tbody>
         </table>
       </div>
+      <div className="space-y-5 md:hidden px-2">
+  {comprasFiltradas.map((c) => {
+    const emEdicao = modoEdicao === c.id;
+    return (
+      <div key={c.id} className="rounded-xl border border-gray-700 bg-gradient-to-br from-zinc-900 to-gray-800 p-4 shadow-xl text-white">
+        {/* Topo: Evento e data */}
+        <div className="text-sm text-gray-400 mb-2">
+          <div className="font-semibold">{c.evento}</div>
+          <div>{c.data_evento ? new Date(c.data_evento).toLocaleDateString("pt-PT") : "-"}</div>
+        </div>
+
+        {/* Detalhes */}
+        <div className="text-sm mb-2 space-y-1">
+          <div><span className="text-gray-400">Local:</span> {c.local_compras}</div>
+          <div><span className="text-gray-400">Bancada:</span> {c.bancada}</div>
+          <div><span className="text-gray-400">Setor:</span> {c.setor}</div>
+          <div><span className="text-gray-400">Fila:</span> {c.fila}</div>
+          <div><span className="text-gray-400">Quantidade:</span> {c.quantidade}</div>
+        </div>
+
+        {/* Gasto + Ações */}
+        <div className="flex justify-between items-center mt-3">
+          <span className="font-semibold text-green-500">{c.gasto} €</span>
+          <div className="flex items-center gap-4 text-lg">
+            {
+              eventosChaveSet.size > 0 &&
+              (!c.evento || !c.data_evento || !eventosChaveSet.has(`${(c.evento || "").trim()}|${(c.data_evento || "").split("T")[0]}`)) && (
+                <span className="text-yellow-500" title="Compra não associada a evento">⚠️</span>
+              )
+            }
+            <button onClick={() => editarCompra(c)} className="text-blue-400 hover:text-blue-300">✏️</button>
+            <button onClick={() => pedirConfirmEliminar(c.id)} className="text-red-400 hover:text-red-300">🗑️</button>
+          </div>
+        </div>
+      </div>
+    );
+  })}
+</div>
+
         {/* Modal de confirmação */}
         {confirmarEliminarId !== null && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
