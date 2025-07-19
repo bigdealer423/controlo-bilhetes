@@ -729,6 +729,13 @@ const adicionarCompra = () => {
       <div className="space-y-5 md:hidden px-2">
   {comprasFiltradas.map((c) => {
     const emEdicao = modoEdicao === c.id;
+
+    console.log("🔍 ID da linha:", c.id);
+    console.log("📝 Em edição?", emEdicao);
+    console.log("🎯 Evento selecionado:", novaCompra.evento);
+    console.log("📅 Data selecionada:", novaCompra.data_evento);
+    console.log("📦 Datas disponíveis:", datasEvento);
+    console.log("📦 Eventos no dropdown:", eventosDropdown);
     return (
       <div
         key={c.id}
@@ -738,29 +745,23 @@ const adicionarCompra = () => {
         {emEdicao ? (
           <>
             <select
+              name="evento"
               value={novaCompra.evento}
-              onChange={(e) => {
-                const eventoSelecionado = e.target.value;
-                setNovaCompra((prev) => ({ ...prev, evento: eventoSelecionado }));
-            
-                const datasEncontradas = eventosDropdown
-                  .filter(ev => ev.evento === eventoSelecionado)
-                  .map(ev => ev.data_evento);
-                console.log("📅 Datas encontradas para o evento:", datasEncontradas);
-
-                setDatasEvento(datasEncontradas);
-              }}
+              onChange={handleChange}
               className="w-full mb-2 bg-gray-900 border border-gray-500 p-2 rounded text-white"
             >
               <option value="">-- Selecionar Evento --</option>
               {eventosDropdown
                 .sort((a, b) => a.evento.localeCompare(b.evento))
-                .map((e) => (
-                  <option key={e.id} value={e.evento}>
-                    {e.evento}
-                  </option>
-                ))}
-            </select>
+                .map((e) => {
+                  console.log("🧩 Evento no dropdown:", e.evento);
+                  return (
+                    <option key={e.id} value={e.evento}>
+                      {e.evento}
+                    </option>
+                  );
+                })}
+
 
 
             <div className="flex flex-col mb-2">
@@ -779,6 +780,7 @@ const adicionarCompra = () => {
                   <ul className="list-disc list-inside">
                     {datasEvento.map((d, idx) => {
                       const dataFormatada = new Date(d).toISOString().split("T")[0];
+                      console.log(`📆 Data sugerida ${idx + 1}:`, dataFormatada);
                       return (
                         <li
                           key={idx}
