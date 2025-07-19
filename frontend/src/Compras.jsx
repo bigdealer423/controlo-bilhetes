@@ -53,6 +53,9 @@ export default function Compras() {
   const [filtros, setFiltros] = useState({ evento: "" });
   const [datasEvento, setDatasEvento] = useState([]);
   const [eventosChaveSet, setEventosChaveSet] = useState(new Set());
+  const [mostrarFormularioMobile, setMostrarFormularioMobile] = useState(false);
+
+
 
 
 
@@ -228,7 +231,7 @@ export default function Compras() {
       </div>
 
       {/* Form adicionar */}
-      <div className="bg-white dark:bg-gray-900 shadow-md rounded p-4 mb-6 transition-colors duration-300">
+      <div className="hidden md:block bg-white dark:bg-gray-900 shadow-md rounded p-4 mb-6 transition-colors duration-300">
         <h2 className="text-lg font-semibold mb-2">{modoEdicao ? "Editar Compra" : "Nova Compra"}</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 
@@ -523,6 +526,22 @@ export default function Compras() {
           </tbody>
         </table>
       </div>
+      {/* Botão + formulário apenas no mobile */}
+<div className="md:hidden">
+  <button
+    onClick={() => setMostrarFormularioMobile(!mostrarFormularioMobile)}
+    className="mb-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+  >
+    {mostrarFormularioMobile ? "Fechar" : "+ Adicionar Compra"}
+  </button>
+
+  {mostrarFormularioMobile && (
+    <div className="bg-white dark:bg-gray-900 shadow-md rounded p-4 mb-6 transition-colors duration-300">
+      {/* Copia aqui o conteúdo do formulário atual (todos os campos + botão guardar) */}
+    </div>
+  )}
+</div>
+
       <div className="space-y-5 md:hidden px-2">
   {comprasFiltradas.map((c) => {
     const emEdicao = modoEdicao === c.id;
