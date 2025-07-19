@@ -190,10 +190,20 @@ export default function Compras() {
 };
 
 
-  const editarCompra = compra => {
-    setModoEdicao(compra.id);
-    setNovaCompra({ ...compra });
-  };
+  const editarCompra = (compra) => {
+  setModoEdicao(compra.id);
+  setNovaCompra({
+    evento: compra.evento || "",
+    data_evento: compra.data_evento || "",
+    local_compras: compra.local_compras || "",
+    bancada: compra.bancada || "",
+    setor: compra.setor || "",
+    fila: compra.fila || "",
+    quantidade: compra.quantidade || "",
+    gasto: compra.gasto || ""
+  });
+};
+
 
   const atualizarCompra = async () => {
     await fetch(`https://controlo-bilhetes.onrender.com/compras/${modoEdicao}`, {
