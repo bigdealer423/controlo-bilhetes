@@ -728,6 +728,29 @@ const adicionarCompra = () => {
 
 
       <div className="space-y-5 md:hidden px-2">
+        {/* Mostrar datas sugeridas quando a compra é nova */}
+        {modoEdicao === null && datasEvento.length > 0 && novaCompra.evento && (
+          <div className="mt-2 text-xs text-gray-300 px-2">
+            Datas existentes (clique para preencher):
+            <ul className="list-disc list-inside">
+              {datasEvento.map((d, idx) => {
+                const dataFormatada = new Date(d).toISOString().split("T")[0];
+                return (
+                  <li
+                    key={idx}
+                    onClick={() =>
+                      setNovaCompra((prev) => ({ ...prev, data_evento: dataFormatada }))
+                    }
+                    className="cursor-pointer text-amber-300 hover:underline"
+                  >
+                    {new Date(d).toLocaleDateString("pt-PT")}
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        )}
+
   {comprasFiltradas.map((c) => {
     const emEdicao = modoEdicao === c.id;
 
