@@ -85,7 +85,7 @@ export default function Compras() {
   );
 
 
-  console.log("🔍 Set de eventos carregado:", chaves); // 👈 aqui
+  
   setEventosChaveSet(chaves);
 };
 
