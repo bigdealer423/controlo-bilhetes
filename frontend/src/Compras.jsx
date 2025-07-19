@@ -61,6 +61,39 @@ export default function Compras() {
   const [eventosChaveSet, setEventosChaveSet] = useState(new Set());
   const [mostrarFormularioMobile, setMostrarFormularioMobile] = useState(false);
 
+const adicionarCompra = () => {
+  if (!novaCompra.evento || !novaCompra.data_evento || !novaCompra.quantidade || !novaCompra.gasto) {
+    toast.error("Preenche os campos obrigatórios.");
+    return;
+  }
+
+  fetch("https://controlo-bilhetes.onrender.com/compras", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(novaCompra)
+  })
+    .then(res => res.json())
+    .then(dados => {
+      toast.success("Compra adicionada com sucesso.");
+      setCompras(prev => [...prev, dados]);
+      setComprasFiltradas(prev => [...prev, dados]);
+      setNovaCompra({
+        evento: "",
+        data_evento: "",
+        local_compras: "",
+        bancada: "",
+        setor: "",
+        fila: "",
+        quantidade: "",
+        gasto: ""
+      });
+      setMostrarFormularioMobile(false);
+    })
+    .catch(err => {
+      console.error("❌ Erro ao adicionar compra:", err);
+      toast.error("Erro ao adicionar compra.");
+    });
+};
 
 
 
