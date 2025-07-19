@@ -391,6 +391,7 @@ export default function Compras() {
           </thead>
           <tbody>
             {[...comprasFiltradas].sort((a, b) => a.evento.localeCompare(b.evento)).map(c => (
+            console.log("Compra:", `${(c.evento || "").trim()}|${(c.data_evento || "").split("T")[0]}`);
               <tr key={"c" + c.id} className="border-t">
                 {modoEdicao === c.id ? (
                   <>
