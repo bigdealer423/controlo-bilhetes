@@ -24,10 +24,10 @@ function exportarComprasParaExcel(registosCompras) {
 
 const ordenarEventosDropdown = (data) => {
   return [...data]
-    .filter(e => e && e.evento)  // ✅ corrige aqui
+    .filter(e => e && e.evento)
     .sort((a, b) => {
-      const nomeA = (eA.evento || "").toLowerCase();  // ✅ aqui
-      const nomeB = (eB.evento || "").toLowerCase();
+      const nomeA = (a.evento || "").toLowerCase();
+      const nomeB = (b.evento || "").toLowerCase();
 
       const prioridade = (nome) => {
         if (nome.startsWith("sl benfica")) return 0;
@@ -42,6 +42,7 @@ const ordenarEventosDropdown = (data) => {
       return nomeA.localeCompare(nomeB);
     });
 };
+
 
 
 
