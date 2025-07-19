@@ -745,7 +745,8 @@ const adicionarCompra = () => {
                 const datasEncontradas = eventosDropdown
                   .filter(ev => ev.evento === eventoSelecionado)
                   .map(ev => ev.data_evento);
-            
+                console.log("📅 Datas encontradas para o evento:", datasEncontradas);
+
                 setDatasEvento(datasEncontradas);
               }}
               className="w-full mb-2 bg-gray-900 border border-gray-500 p-2 rounded text-white"
