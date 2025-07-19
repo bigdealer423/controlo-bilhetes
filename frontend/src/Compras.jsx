@@ -728,38 +728,11 @@ const adicionarCompra = () => {
 
 
       <div className="space-y-5 md:hidden px-2">
-        {/* Mostrar datas sugeridas quando a compra é nova */}
-        {modoEdicao === null && datasEvento.length > 0 && novaCompra.evento && (
-          <div className="mt-2 text-xs text-gray-300 px-2">
-            Datas existentes (clique para preencher):
-            <ul className="list-disc list-inside">
-              {datasEvento.map((d, idx) => {
-                const dataFormatada = new Date(d).toISOString().split("T")[0];
-                return (
-                  <li
-                    key={idx}
-                    onClick={() =>
-                      setNovaCompra((prev) => ({ ...prev, data_evento: dataFormatada }))
-                    }
-                    className="cursor-pointer text-amber-300 hover:underline"
-                  >
-                    {new Date(d).toLocaleDateString("pt-PT")}
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        )}
+        
 
   {comprasFiltradas.map((c) => {
     const emEdicao = modoEdicao === c.id;
 
-    console.log("🔍 ID da linha:", c.id);
-    console.log("📝 Em edição?", emEdicao);
-    console.log("🎯 Evento selecionado:", novaCompra.evento);
-    console.log("📅 Data selecionada:", novaCompra.data_evento);
-    console.log("📦 Datas disponíveis:", datasEvento);
-    console.log("📦 Eventos no dropdown:", eventosDropdown);
     return (
       <div
         key={c.id}
@@ -780,7 +753,7 @@ const adicionarCompra = () => {
                   .filter(ev => ev.evento === eventoSelecionado)
                   .map(ev => ev.data_evento);
         
-                console.log("📅 Datas encontradas para o evento:", datasEncontradas);
+                
                 setDatasEvento(datasEncontradas);
               }}
               className="w-full mb-2 bg-gray-900 border border-gray-500 p-2 rounded text-white"
@@ -805,7 +778,28 @@ const adicionarCompra = () => {
                 className="w-full bg-gray-900 border border-gray-500 p-2 rounded text-white"
                 placeholder="Data Evento"
               />
-            
+              {/* Mostrar datas sugeridas quando a compra é nova */}
+              {modoEdicao === null && datasEvento.length > 0 && novaCompra.evento && (
+                <div className="mt-2 text-xs text-gray-300 px-2">
+                  Datas existentes (clique para preencher):
+                  <ul className="list-disc list-inside">
+                    {datasEvento.map((d, idx) => {
+                      const dataFormatada = new Date(d).toISOString().split("T")[0];
+                      return (
+                        <li
+                          key={idx}
+                          onClick={() =>
+                            setNovaCompra((prev) => ({ ...prev, data_evento: dataFormatada }))
+                          }
+                          className="cursor-pointer text-amber-300 hover:underline"
+                        >
+                          {new Date(d).toLocaleDateString("pt-PT")}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              )}
               {datasEvento.length > 0 && (
                 <div className="mt-1 text-xs text-gray-300">
                   Datas existentes (clique para preencher):
