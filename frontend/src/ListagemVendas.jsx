@@ -727,10 +727,12 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
                 
                 <div className="flex gap-4 text-xl items-center">
                  {
-                  (!r.evento || !r.data_evento || !eventosChaveSet.has(`${r.evento}|${r.data_evento.split("T")[0]}`)) && (
+                  eventosChaveSet.size > 0 && r.evento && r.data_evento &&
+                  !eventosChaveSet.has(`${r.evento}|${r.data_evento.split("T")[0]}`) && (
                     <span title="Venda não associada a evento" className="text-yellow-500 text-lg">⚠️</span>
                   )
                 }
+
 
 
                   {emEdicao ? (
