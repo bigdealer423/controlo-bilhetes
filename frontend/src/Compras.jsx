@@ -529,6 +529,39 @@ export default function Compras() {
       </div>
       {/* Botão + formulário apenas no mobile */}
 <div className="md:hidden">
+  {/* Filtro Mobile */}
+<div className="md:hidden bg-gray-50 dark:bg-gray-800 shadow-sm rounded p-4 mb-4">
+  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Filtrar por Evento</label>
+  <select
+    name="evento"
+    className="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded px-3 py-2 text-gray-900 dark:text-gray-100"
+    value={filtros.evento}
+    onChange={(e) => {
+      const eventoSelecionado = e.target.value;
+      setFiltros(prev => ({ ...prev, evento: eventoSelecionado }));
+      const resultado = eventoSelecionado
+        ? compras.filter(c => c.evento === eventoSelecionado)
+        : compras;
+      setComprasFiltradas(resultado);
+    }}
+  >
+    <option value="">-- Selecionar Evento --</option>
+    {eventosDropdown.map(e => (
+      <option key={e.id} value={e.nome}>{e.nome}</option>
+    ))}
+  </select>
+
+  <button
+    onClick={() => {
+      setFiltros({ evento: "" });
+      setComprasFiltradas(compras);
+    }}
+    className="mt-2 w-full bg-gray-500 text-white py-2 rounded hover:bg-gray-600"
+  >
+    Limpar
+  </button>
+</div>
+
   <button
     onClick={() => setMostrarFormularioMobile(!mostrarFormularioMobile)}
     className="mb-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
