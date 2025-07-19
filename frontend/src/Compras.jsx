@@ -24,10 +24,10 @@ function exportarComprasParaExcel(registosCompras) {
 
 const ordenarEventosDropdown = (data) => {
   return [...data]
-    .filter(e => e && e.nome && e.nome.trim() !== "")  // ✅ novo  // ⚠️ só mantém eventos com nome
+    .filter(e => e && e.evento)  // ✅ corrige aqui
     .sort((a, b) => {
-      const nomeA = a.nome.toLowerCase();
-      const nomeB = b.nome.toLowerCase();
+      const nomeA = (eA.evento || "").toLowerCase();  // ✅ aqui
+      const nomeB = (eB.evento || "").toLowerCase();
 
       const prioridade = (nome) => {
         if (nome.startsWith("sl benfica")) return 0;
@@ -42,6 +42,7 @@ const ordenarEventosDropdown = (data) => {
       return nomeA.localeCompare(nomeB);
     });
 };
+
 
 
 export default function Compras() {
@@ -227,7 +228,7 @@ export default function Compras() {
         <div className="flex gap-4 items-end">
           <select name="evento" className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" value={filtros.evento} onChange={handleFiltroChange}>
             <option value="">-- Filtrar por Evento --</option>
-            {eventosDropdown.map(e => <option key={e.id} value={e.nome}>{e.nome}</option>)}
+            {eventosDropdown.map(e => <option key={e.id} value={e.evento}>{e.evento}</option>)}
           </select>
           <button onClick={aplicarFiltros} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Aplicar Filtro</button>
           <button onClick={limparFiltros} className="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500">Limpar</button>
