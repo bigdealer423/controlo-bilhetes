@@ -741,9 +741,12 @@ const adicionarCompra = () => {
               onChange={(e) => {
                 const eventoSelecionado = e.target.value;
                 setNovaCompra((prev) => ({ ...prev, evento: eventoSelecionado }));
-                
-                const datasDoEvento = eventosDropdown.find(ev => ev.evento === eventoSelecionado)?.datas || [];
-                setDatasEvento(datasDoEvento);
+            
+                const datasEncontradas = eventosDropdown
+                  .filter(ev => ev.evento === eventoSelecionado)
+                  .map(ev => ev.data_evento);
+            
+                setDatasEvento(datasEncontradas);
               }}
               className="w-full mb-2 bg-gray-900 border border-gray-500 p-2 rounded text-white"
             >
@@ -756,6 +759,7 @@ const adicionarCompra = () => {
                   </option>
                 ))}
             </select>
+
 
             <div className="flex flex-col mb-2">
               <input
