@@ -272,15 +272,45 @@ const adicionarCompra = () => {
 
       {/* Filtro */}
       <div className="hidden md:block bg-gray-50 dark:bg-gray-800 shadow-sm rounded p-4 mb-4 transition-colors duration-300">
-        <div className="flex gap-4 items-end">
-          <select name="evento" className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" value={filtros.evento} onChange={handleFiltroChange}>
-            <option value="">-- Filtrar por Evento --</option>
-            {eventosDropdown.map(e => <option key={e.id} value={e.evento}>{e.evento}</option>)}
-          </select>
-          <button onClick={aplicarFiltros} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Aplicar Filtro</button>
-          <button onClick={limparFiltros} className="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500">Limpar</button>
+        <div className="flex justify-between items-end flex-wrap gap-4">
+          {/* Botão Exportar Excel à esquerda */}
+          <button
+            onClick={() => exportarComprasParaExcel(comprasFiltradas)}
+            className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-xl shadow-md transition"
+          >
+            <FaFileExcel size={18} />
+            Exportar Excel
+          </button>
+      
+          {/* Filtros à direita */}
+          <div className="flex gap-4 items-end">
+            <select
+              name="evento"
+              className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
+              value={filtros.evento}
+              onChange={handleFiltroChange}
+            >
+              <option value="">-- Filtrar por Evento --</option>
+              {eventosDropdown.map(e => (
+                <option key={e.id} value={e.evento}>{e.evento}</option>
+              ))}
+            </select>
+            <button
+              onClick={aplicarFiltros}
+              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            >
+              Aplicar Filtro
+            </button>
+            <button
+              onClick={limparFiltros}
+              className="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500"
+            >
+              Limpar
+            </button>
+          </div>
         </div>
       </div>
+
 
       {/* Form adicionar */}
       <div className="hidden md:block bg-white dark:bg-gray-900 shadow-md rounded p-4 mb-6 transition-colors duration-300">
