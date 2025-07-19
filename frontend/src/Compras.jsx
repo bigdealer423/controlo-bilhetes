@@ -730,6 +730,13 @@ const adicionarCompra = () => {
       <div className="space-y-5 md:hidden px-2">
   {comprasFiltradas.map((c) => {
     const emEdicao = modoEdicao === c.id;
+
+    console.log("🔍 ID da linha:", c.id);
+    console.log("📝 Em edição?", emEdicao);
+    console.log("🎯 Evento selecionado:", novaCompra.evento);
+    console.log("📅 Data selecionada:", novaCompra.data_evento);
+    console.log("📦 Datas disponíveis:", datasEvento);
+    console.log("📦 Eventos no dropdown:", eventosDropdown);
     return (
       <div
         key={c.id}
