@@ -561,14 +561,7 @@ export default function Compras() {
   >
     Limpar
   </button>
-</div>
 
-  <button
-    onClick={() => setMostrarFormularioMobile(!mostrarFormularioMobile)}
-    className="mb-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-  >
-    {mostrarFormularioMobile ? "Fechar" : "+ Adicionar Compra"}
-  </button>
 
   {mostrarFormularioMobile && (
     <div className="bg-white dark:bg-gray-900 shadow-md rounded p-4 mb-6 transition-colors duration-300">
