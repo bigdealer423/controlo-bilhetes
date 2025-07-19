@@ -800,27 +800,7 @@ const adicionarCompra = () => {
                   </ul>
                 </div>
               )}
-              {datasEvento.length > 0 && (
-                <div className="mt-1 text-xs text-gray-300">
-                  Datas existentes (clique para preencher):
-                  <ul className="list-disc list-inside">
-                    {datasEvento.map((d, idx) => {
-                      const dataFormatada = new Date(d).toISOString().split("T")[0];
-                      return (
-                        <li
-                          key={idx}
-                          onClick={() =>
-                            setNovaCompra((prev) => ({ ...prev, data_evento: dataFormatada }))
-                          }
-                          className="cursor-pointer text-amber-300 hover:underline"
-                        >
-                          {new Date(d).toLocaleDateString("pt-PT")}
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </div>
-              )}
+            
             </div>
           </>
         ) : (
