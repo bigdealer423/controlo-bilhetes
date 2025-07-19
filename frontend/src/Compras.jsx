@@ -610,12 +610,14 @@ export default function Compras() {
               value={novaCompra.evento}
               onChange={(e) => setNovaCompra({ ...novaCompra, evento: e.target.value })}
               className="w-full mb-2 bg-gray-900 border border-gray-500 p-2 rounded text-white"
+              placeholder="Evento"
             />
             <input
               type="date"
               value={novaCompra.data_evento}
               onChange={(e) => setNovaCompra({ ...novaCompra, data_evento: e.target.value })}
               className="w-full mb-2 bg-gray-900 border border-gray-500 p-2 rounded text-white"
+              placeholder="Data Evento"
             />
           </>
         ) : (
@@ -626,12 +628,60 @@ export default function Compras() {
         )}
 
         {/* Detalhes */}
-        <div className="text-sm mb-2 space-y-1">
-          <div><span className="text-gray-400">Local:</span> {c.local_compras}</div>
-          <div><span className="text-gray-400">Bancada:</span> {c.bancada}</div>
-          <div><span className="text-gray-400">Setor:</span> {c.setor}</div>
-          <div><span className="text-gray-400">Fila:</span> {c.fila}</div>
-          <div><span className="text-gray-400">Quantidade:</span> {c.quantidade}</div>
+        <div className="text-sm mb-2 space-y-2">
+          {emEdicao ? (
+            <>
+              <input
+                type="text"
+                value={novaCompra.local_compras}
+                onChange={(e) => setNovaCompra({ ...novaCompra, local_compras: e.target.value })}
+                className="w-full bg-gray-900 border border-gray-500 p-2 rounded text-white"
+                placeholder="Local da Compra"
+              />
+
+              <input
+                list="bancadas"
+                value={novaCompra.bancada}
+                onChange={(e) => setNovaCompra({ ...novaCompra, bancada: e.target.value })}
+                className="w-full bg-gray-900 border border-gray-500 p-2 rounded text-white"
+                placeholder="Bancada"
+              />
+              <datalist id="bancadas">{bancadas.map(b => <option key={b} value={b} />)}</datalist>
+
+              <input
+                list="setores"
+                value={novaCompra.setor}
+                onChange={(e) => setNovaCompra({ ...novaCompra, setor: e.target.value })}
+                className="w-full bg-gray-900 border border-gray-500 p-2 rounded text-white"
+                placeholder="Setor"
+              />
+              <datalist id="setores">{setores.map(s => <option key={s} value={s} />)}</datalist>
+
+              <input
+                type="text"
+                value={novaCompra.fila}
+                onChange={(e) => setNovaCompra({ ...novaCompra, fila: e.target.value })}
+                className="w-full bg-gray-900 border border-gray-500 p-2 rounded text-white"
+                placeholder="Fila"
+              />
+
+              <input
+                type="number"
+                value={novaCompra.quantidade}
+                onChange={(e) => setNovaCompra({ ...novaCompra, quantidade: e.target.value })}
+                className="w-full bg-gray-900 border border-gray-500 p-2 rounded text-white"
+                placeholder="Quantidade"
+              />
+            </>
+          ) : (
+            <>
+              <div><span className="text-gray-400">Local:</span> {c.local_compras}</div>
+              <div><span className="text-gray-400">Bancada:</span> {c.bancada}</div>
+              <div><span className="text-gray-400">Setor:</span> {c.setor}</div>
+              <div><span className="text-gray-400">Fila:</span> {c.fila}</div>
+              <div><span className="text-gray-400">Quantidade:</span> {c.quantidade}</div>
+            </>
+          )}
         </div>
 
         {/* Gasto + ações */}
@@ -643,6 +693,7 @@ export default function Compras() {
                 value={novaCompra.gasto}
                 onChange={(e) => setNovaCompra({ ...novaCompra, gasto: e.target.value })}
                 className="w-24 bg-gray-900 border border-gray-500 p-1 rounded text-red-400 text-right"
+                placeholder="Gasto (€)"
               />
             </span>
           ) : (
@@ -670,7 +721,6 @@ export default function Compras() {
                 <button onClick={() => pedirConfirmEliminar(c.id)} title="Eliminar">
                   <FaTrash className="text-red-400 hover:text-red-300" />
                 </button>
-
               </>
             )}
           </div>
@@ -679,6 +729,7 @@ export default function Compras() {
     );
   })}
 </div>
+
 
 
         {/* Modal de confirmação */}
