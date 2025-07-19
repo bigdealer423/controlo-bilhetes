@@ -605,13 +605,21 @@ export default function Compras() {
         {/* Evento e data */}
         {emEdicao ? (
           <>
-            <input
-              type="text"
+            <select
               value={novaCompra.evento}
               onChange={(e) => setNovaCompra({ ...novaCompra, evento: e.target.value })}
               className="w-full mb-2 bg-gray-900 border border-gray-500 p-2 rounded text-white"
-              placeholder="Evento"
-            />
+            >
+              <option value="">-- Selecionar Evento --</option>
+              {eventosDropdown
+                .sort((a, b) => a.evento.localeCompare(b.evento))
+                .map((e) => (
+                  <option key={e.id} value={e.evento}>
+                    {e.evento}
+                  </option>
+                ))}
+            </select>
+
             <input
               type="date"
               value={novaCompra.data_evento}
