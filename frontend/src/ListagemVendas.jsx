@@ -565,11 +565,12 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
 
   <td className="p-2 flex items-center gap-2">
   {
-    eventosChaveSet.size > 0 &&
-    !eventosChaveSet.has(`${(r.evento || "").trim()}|${(r.data_evento || "").split("T")[0]}`) && (
-      <span className="text-yellow-500 text-lg" title="Não associado a evento">⚠️</span>
+    eventosChaveCarregado &&
+    (!r.evento || !r.data_evento || !eventosChaveSet.has(`${(r.evento || "").trim()}|${(r.data_evento || "").split("T")[0]}`)) && (
+      <span className="text-yellow-500" title="Venda não associada a evento">⚠️</span>
     )
   }
+
 
 
 
