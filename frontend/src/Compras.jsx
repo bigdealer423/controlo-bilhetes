@@ -522,16 +522,36 @@ export default function Compras() {
           </tbody>
         </table>
       </div>
-      <div className="space-y-5 px-2">
+      <div className="space-y-5 md:hidden px-2">
   {comprasFiltradas.map((c) => {
     const emEdicao = modoEdicao === c.id;
     return (
-      <div key={c.id} className="rounded-xl border border-gray-700 bg-gradient-to-br from-zinc-900 to-gray-800 p-4 shadow-xl text-white">
-        {/* Topo: Evento e data */}
-        <div className="text-sm text-gray-400 mb-2">
-          <div className="font-semibold">{c.evento}</div>
-          <div>{c.data_evento ? new Date(c.data_evento).toLocaleDateString("pt-PT") : "-"}</div>
-        </div>
+      <div
+        key={c.id}
+        className="rounded-xl border border-gray-700 bg-gradient-to-br from-zinc-900 to-gray-800 p-4 shadow-xl text-white"
+      >
+        {/* Evento e data */}
+        {emEdicao ? (
+          <>
+            <input
+              type="text"
+              value={novaCompra.evento}
+              onChange={(e) => setNovaCompra({ ...novaCompra, evento: e.target.value })}
+              className="w-full mb-2 bg-gray-900 border border-gray-500 p-2 rounded text-white"
+            />
+            <input
+              type="date"
+              value={novaCompra.data_evento}
+              onChange={(e) => setNovaCompra({ ...novaCompra, data_evento: e.target.value })}
+              className="w-full mb-2 bg-gray-900 border border-gray-500 p-2 rounded text-white"
+            />
+          </>
+        ) : (
+          <>
+            <div className="text-lg font-bold mb-1 text-amber-400">{c.evento}</div>
+            <div className="text-sm italic text-gray-300">{c.data_evento ? new Date(c.data_evento).toLocaleDateString("pt-PT") : "-"}</div>
+          </>
+        )}
 
         {/* Detalhes */}
         <div className="text-sm mb-2 space-y-1">
@@ -542,9 +562,21 @@ export default function Compras() {
           <div><span className="text-gray-400">Quantidade:</span> {c.quantidade}</div>
         </div>
 
-        {/* Gasto + Ações */}
+        {/* Gasto + ações */}
         <div className="flex justify-between items-center mt-3">
-          <span className="font-semibold text-green-500">{c.gasto} €</span>
+          <span className="font-semibold text-green-500">
+            {emEdicao ? (
+              <input
+                type="number"
+                value={novaCompra.gasto}
+                onChange={(e) => setNovaCompra({ ...novaCompra, gasto: e.target.value })}
+                className="w-24 bg-gray-900 border border-gray-500 p-1 rounded text-green-400 text-right"
+              />
+            ) : (
+              `${c.gasto} €`
+            )}
+          </span>
+
           <div className="flex items-center gap-4 text-lg">
             {
               eventosChaveSet.size > 0 &&
@@ -552,14 +584,24 @@ export default function Compras() {
                 <span className="text-yellow-500" title="Compra não associada a evento">⚠️</span>
               )
             }
-            <button onClick={() => editarCompra(c)} className="text-blue-400 hover:text-blue-300">✏️</button>
-            <button onClick={() => pedirConfirmEliminar(c.id)} className="text-red-400 hover:text-red-300">🗑️</button>
+            {emEdicao ? (
+              <>
+                <button onClick={atualizarCompra} className="text-green-400 hover:text-green-300" title="Guardar">💾</button>
+                <button onClick={() => setModoEdicao(null)} className="text-gray-400 hover:text-gray-300" title="Cancelar">✖️</button>
+              </>
+            ) : (
+              <>
+                <button onClick={() => editarCompra(c)} className="text-blue-400 hover:text-blue-300" title="Editar">✏️</button>
+                <button onClick={() => pedirConfirmEliminar(c.id)} className="text-red-400 hover:text-red-300" title="Eliminar">🗑️</button>
+              </>
+            )}
           </div>
         </div>
       </div>
     );
   })}
 </div>
+
 
         {/* Modal de confirmação */}
         {confirmarEliminarId !== null && (
