@@ -28,6 +28,8 @@ export default function ListagemVendas(props) {
   const [filtroIdVenda, setFiltroIdVenda] = useState("");
   const [mostrarFormularioMobile, setMostrarFormularioMobile] = useState(false);
   const [eventosChaveSet, setEventosChaveSet] = useState(new Set());
+  const [eventosChaveCarregado, setEventosChaveCarregado] = useState(false);
+
 
 useEffect(() => {
   fetch("https://controlo-bilhetes.onrender.com/eventos_completos2?skip=0&limit=1000")
@@ -40,6 +42,7 @@ useEffect(() => {
         return `${eventoNome}|${dataFormatada}`;
       });
       setEventosChaveSet(new Set(chaves));
+      setEventosChaveCarregado(true); // ✅ Aqui marcamos como carregado
     })
     .catch((err) => console.error("❌ Erro ao carregar eventos:", err));
 }, []);
@@ -727,11 +730,13 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
                 
                 <div className="flex gap-4 text-xl items-center">
                  {
-                  eventosChaveSet.size > 0 && r.evento && r.data_evento &&
+                  eventosChaveCarregado &&
+                  r.evento && r.data_evento &&
                   !eventosChaveSet.has(`${r.evento}|${r.data_evento.split("T")[0]}`) && (
                     <span title="Venda não associada a evento" className="text-yellow-500 text-lg">⚠️</span>
                   )
                 }
+
 
 
 
