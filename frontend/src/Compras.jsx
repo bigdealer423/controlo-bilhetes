@@ -199,8 +199,8 @@ export default function Compras() {
     bancada: compra.bancada || "",
     setor: compra.setor || "",
     fila: compra.fila || "",
-    quantidade: compra.quantidade || "",
-    gasto: compra.gasto || ""
+    quantidade: compra.quantidade || 0,
+    gasto: compra.gasto || 0
   });
 };
 
