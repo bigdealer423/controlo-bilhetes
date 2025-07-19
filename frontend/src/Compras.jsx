@@ -24,7 +24,7 @@ function exportarComprasParaExcel(registosCompras) {
 
 const ordenarEventosDropdown = (data) => {
   return [...data]
-    .filter(e => e && e.nome)  // ⚠️ só mantém eventos com nome
+    .filter(e => e && e.nome && e.nome.trim() !== "")  // ✅ novo  // ⚠️ só mantém eventos com nome
     .sort((a, b) => {
       const nomeA = a.nome.toLowerCase();
       const nomeB = b.nome.toLowerCase();
