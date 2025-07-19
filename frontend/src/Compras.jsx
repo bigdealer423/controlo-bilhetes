@@ -416,7 +416,11 @@ export default function Compras() {
                         name="evento"
                         className="border p-1 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                         value={novaCompra.evento}
-                        onChange={handleChange}
+                        onChange={(e) => {
+                          const eventoSelecionado = e.target.value;
+                          const dataAssociada = eventosDropdown.find(ev => ev.evento === eventoSelecionado)?.data_evento?.split("T")[0] || "";
+                          setNovaCompra(prev => ({ ...prev, evento: eventoSelecionado, data_evento: dataAssociada }));
+                        }}
                       >
                         <option value="">-- Evento --</option>
                         {eventosDropdown.map(e => (
@@ -424,7 +428,7 @@ export default function Compras() {
                         ))}
                       </select>
                     </td>
-              
+            
                     {/* Data Evento */}
                     <td className="p-2">
                       <input
@@ -435,7 +439,7 @@ export default function Compras() {
                         onChange={handleChange}
                       />
                     </td>
-              
+            
                     {/* Local Compra */}
                     <td className="p-2">
                       <input
@@ -445,7 +449,7 @@ export default function Compras() {
                         onChange={handleChange}
                       />
                     </td>
-              
+            
                     {/* Bancada */}
                     <td className="p-2">
                       <input
@@ -455,7 +459,7 @@ export default function Compras() {
                         onChange={handleChange}
                       />
                     </td>
-              
+            
                     {/* Setor */}
                     <td className="p-2">
                       <input
@@ -465,7 +469,7 @@ export default function Compras() {
                         onChange={handleChange}
                       />
                     </td>
-              
+            
                     {/* Fila */}
                     <td className="p-2">
                       <input
@@ -475,7 +479,7 @@ export default function Compras() {
                         onChange={handleChange}
                       />
                     </td>
-              
+            
                     {/* Quantidade */}
                     <td className="p-2">
                       <input
@@ -486,7 +490,7 @@ export default function Compras() {
                         onChange={handleChange}
                       />
                     </td>
-              
+            
                     {/* Gasto */}
                     <td className="p-2">
                       <input
@@ -497,7 +501,7 @@ export default function Compras() {
                         onChange={handleChange}
                       />
                     </td>
-              
+            
                     {/* Ações */}
                     <td className="p-2 flex gap-2">
                       <button onClick={atualizarCompra} className="text-green-600 hover:underline">Guardar</button>
@@ -513,7 +517,7 @@ export default function Compras() {
                     <td className="p-2">{c.setor}</td>
                     <td className="p-2">{c.fila}</td>
                     <td className="p-2">{c.quantidade}</td>
-                    <td className="p-2">{c.gasto} €</td>
+                    <td className="p-2">-{c.gasto} €</td>
                     <td className="p-2 flex items-center gap-2">
                       {
                         eventosChaveSet.size > 0 &&
@@ -521,7 +525,7 @@ export default function Compras() {
                           <span className="text-yellow-500 text-lg" title="Compra não associada a evento">⚠️</span>
                         )
                       }
-                    
+            
                       <button onClick={() => editarCompra(c)} className="text-blue-600 hover:underline">Editar</button>
                       <button onClick={() => pedirConfirmEliminar(c.id)} className="text-red-600 hover:underline">Eliminar</button>
                     </td>
