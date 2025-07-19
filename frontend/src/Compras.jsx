@@ -77,8 +77,11 @@ export default function Compras() {
   setEventosDropdown(ordenarEventosDropdown(data));
 
   const chaves = new Set(
-    data.map(e => `${(e.nome || "").trim()}|${(e.data_evento || "").split("T")[0]}`)
+    data
+      .filter(e => e.nome && e.data_evento)  // ⚠️ só guarda se tiver nome e data
+      .map(e => `${(e.nome || "").trim()}|${(e.data_evento || "").split("T")[0]}`)
   );
+
   console.log("🔍 Set de eventos carregado:", chaves); // 👈 aqui
   setEventosChaveSet(chaves);
 };
