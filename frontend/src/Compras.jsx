@@ -78,9 +78,22 @@ export default function Compras() {
   };
 
   const buscarEventos = async () => {
-  const res = await fetch("https://controlo-bilhetes.onrender.com/eventos_completos2?skip=0&limit=1000");
-  const data = await res.json();
-  setEventosDropdown(ordenarEventosDropdown(data));
+  try {
+    const res = await fetch("https://controlo-bilhetes.onrender.com/eventos_dropdown");
+    const data = await res.json();
+
+    const ordenados = ordenarEventosDropdown(data);
+    setEventosDropdown(ordenados);
+
+    const chaves = new Set(
+      data.map(e => `${e.nome}|${(e.data_evento || "").split("T")[0]}`)
+    );
+    setEventosChaveSet(chaves);
+  } catch (err) {
+    console.error("Erro ao buscar eventos:", err);
+  }
+};
+
 
   const chaves = new Set(
     data
@@ -546,9 +559,12 @@ export default function Compras() {
   >
     <option value="">-- Selecionar Evento --</option>
     {eventosDropdown.map(e => (
-      <option key={e.id} value={e.nome}>{e.nome}</option>
+      <option key={e.id} value={e.nome}>
+        {e.nome}
+      </option>
     ))}
   </select>
+
 
   <button
     onClick={() => {
