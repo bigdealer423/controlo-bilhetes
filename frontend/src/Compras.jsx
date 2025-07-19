@@ -755,12 +755,7 @@ const adicionarCompra = () => {
   {comprasFiltradas.map((c) => {
     const emEdicao = modoEdicao === c.id;
 
-    console.log("🔍 ID da linha:", c.id);
-    console.log("📝 Em edição?", emEdicao);
-    console.log("🎯 Evento selecionado:", novaCompra.evento);
-    console.log("📅 Data selecionada:", novaCompra.data_evento);
-    console.log("📦 Datas disponíveis:", datasEvento);
-    console.log("📦 Eventos no dropdown:", eventosDropdown);
+    
     return (
       <div
         key={c.id}
@@ -781,7 +776,7 @@ const adicionarCompra = () => {
                   .filter(ev => ev.evento === eventoSelecionado)
                   .map(ev => ev.data_evento);
         
-                console.log("📅 Datas encontradas para o evento:", datasEncontradas);
+                
                 setDatasEvento(datasEncontradas);
               }}
               className="w-full mb-2 bg-gray-900 border border-gray-500 p-2 rounded text-white"
