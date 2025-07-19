@@ -76,12 +76,13 @@ export default function Compras() {
   const data = await res.json();
   setEventosDropdown(ordenarEventosDropdown(data));
 
-  // Construção do Set com chaves "evento|aaaa-mm-dd"
   const chaves = new Set(
     data.map(e => `${(e.nome || "").trim()}|${(e.data_evento || "").split("T")[0]}`)
   );
+  console.log("🔍 Set de eventos carregado:", chaves); // 👈 aqui
   setEventosChaveSet(chaves);
 };
+
 
 
   const buscarDatasEvento = async (nomeEvento) => {
