@@ -1,4 +1,5 @@
 
+
 import { useEffect, useState } from "react";
 import { FaFileExcel } from "react-icons/fa";
 import { FaEdit, FaTrash } from "react-icons/fa";
@@ -547,9 +548,7 @@ export default function Compras() {
   >
     <option value="">-- Selecionar Evento --</option>
     {eventosDropdown.map(e => (
-      <option key={e.id} value={e.nome}>
-        {e.nome}
-      </option>
+      <option key={e.id} value={e.nome}>{e.nome}</option>
     ))}
   </select>
 
