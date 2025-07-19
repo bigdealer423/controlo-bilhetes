@@ -756,11 +756,14 @@ const adicionarCompra = () => {
               <option value="">-- Selecionar Evento --</option>
               {eventosDropdown
                 .sort((a, b) => a.evento.localeCompare(b.evento))
-                .map((e) => (
-                  <option key={e.id} value={e.evento}>
-                    {e.evento}
-                  </option>
-                ))}
+                .map((e) => {
+                  console.log("🧩 Evento no dropdown:", e.evento);
+                  return (
+                    <option key={e.id} value={e.evento}>
+                      {e.evento}
+                    </option>
+                  );
+                })}
             </select>
 
 
