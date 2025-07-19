@@ -549,38 +549,39 @@ export default function Compras() {
       {/* Botão + formulário apenas no mobile */}
 <div className="md:hidden">
   {/* Filtro Mobile */}
-<div className="md:hidden bg-gray-50 dark:bg-gray-800 shadow-sm rounded p-4 mb-4">
-  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Filtrar por Evento</label>
-  <select
-    name="evento"
-    className="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded px-3 py-2 text-gray-900 dark:text-gray-100"
-    value={filtros.evento}
-    onChange={(e) => {
-      const eventoSelecionado = e.target.value;
-      setFiltros(prev => ({ ...prev, evento: eventoSelecionado }));
-      const resultado = eventoSelecionado
-        ? compras.filter(c => c.evento === eventoSelecionado)
-        : compras;
-      setComprasFiltradas(resultado);
-    }}
-  >
-    <option value="">-- Selecionar Evento --</option>
-    {eventosDropdown.map(e => (
-      <option key={e.id} value={e.evento}>{e.evento}</option>
-    ))}
-  </select>
+  <div className="bg-gray-50 dark:bg-gray-800 shadow-sm rounded p-4 mb-4">
+    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Filtrar por Evento</label>
+    <select
+      name="evento"
+      className="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded px-3 py-2 text-gray-900 dark:text-gray-100"
+      value={filtros.evento}
+      onChange={(e) => {
+        const eventoSelecionado = e.target.value;
+        setFiltros(prev => ({ ...prev, evento: eventoSelecionado }));
+        const resultado = eventoSelecionado
+          ? compras.filter(c => c.evento === eventoSelecionado)
+          : compras;
+        setComprasFiltradas(resultado);
+      }}
+    >
+      <option value="">-- Selecionar Evento --</option>
+      {eventosDropdown.map(e => (
+        <option key={e.id} value={e.evento}>{e.evento}</option>
+      ))}
+    </select>
 
-  <button
-    onClick={() => {
-      setFiltros({ evento: "" });
-      setComprasFiltradas(compras);
-    }}
-    className="mt-2 w-full bg-gray-500 text-white py-2 rounded hover:bg-gray-600"
-  >
-    Limpar
-  </button>
-</div>
+    <button
+      onClick={() => {
+        setFiltros({ evento: "" });
+        setComprasFiltradas(compras);
+      }}
+      className="mt-2 w-full bg-gray-500 text-white py-2 rounded hover:bg-gray-600"
+    >
+      Limpar
+    </button>
+  </div>
 
+  {/* Botão de Adicionar */}
   <button
     onClick={() => setMostrarFormularioMobile(!mostrarFormularioMobile)}
     className="mb-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
@@ -588,12 +589,108 @@ export default function Compras() {
     {mostrarFormularioMobile ? "Fechar" : "+ Adicionar Compra"}
   </button>
 
+  {/* Formulário Mobile */}
   {mostrarFormularioMobile && (
-    <div className="bg-white dark:bg-gray-900 shadow-md rounded p-4 mb-6 transition-colors duration-300">
-      {/* Copia aqui o conteúdo do formulário atual (todos os campos + botão guardar) */}
+    <div className="bg-white dark:bg-gray-900 shadow-md rounded p-4 mb-6 space-y-3 transition-colors duration-300 text-black dark:text-white">
+
+      {/* Evento dropdown */}
+      <select
+        name="evento"
+        className="w-full bg-gray-900 border border-gray-500 p-2 rounded text-white"
+        value={novaCompra.evento}
+        onChange={handleChange}
+      >
+        <option value="">-- Selecionar Evento --</option>
+        {eventosDropdown.map((e) => (
+          <option key={e.id} value={e.evento}>{e.evento}</option>
+        ))}
+      </select>
+
+      {/* Data do Evento */}
+      <input
+        type="date"
+        name="data_evento"
+        className="w-full bg-gray-900 border border-gray-500 p-2 rounded text-white"
+        value={novaCompra.data_evento}
+        onChange={handleChange}
+        placeholder="Data Evento"
+      />
+
+      {/* Local da Compra */}
+      <select
+        name="local_compras"
+        className="w-full bg-gray-900 border border-gray-500 p-2 rounded text-white"
+        value={novaCompra.local_compras}
+        onChange={handleChange}
+      >
+        <option value="">-- Local da Compra --</option>
+        {locaisCompra.map((local) => (
+          <option key={local} value={local}>{local}</option>
+        ))}
+      </select>
+
+      {/* Bancada */}
+      <input
+        list="bancadas"
+        name="bancada"
+        placeholder="Bancada"
+        className="w-full bg-gray-900 border border-gray-500 p-2 rounded text-white"
+        value={novaCompra.bancada}
+        onChange={handleChange}
+      />
+      <datalist id="bancadas">{bancadas.map(b => <option key={b} value={b} />)}</datalist>
+
+      {/* Setor */}
+      <input
+        list="setores"
+        name="setor"
+        placeholder="Setor"
+        className="w-full bg-gray-900 border border-gray-500 p-2 rounded text-white"
+        value={novaCompra.setor}
+        onChange={handleChange}
+      />
+      <datalist id="setores">{setores.map(s => <option key={s} value={s} />)}</datalist>
+
+      {/* Fila */}
+      <input
+        name="fila"
+        placeholder="Fila"
+        className="w-full bg-gray-900 border border-gray-500 p-2 rounded text-white"
+        value={novaCompra.fila}
+        onChange={handleChange}
+      />
+
+      {/* Quantidade */}
+      <input
+        name="quantidade"
+        type="number"
+        placeholder="Quantidade"
+        className="w-full bg-gray-900 border border-gray-500 p-2 rounded text-white"
+        value={novaCompra.quantidade}
+        onChange={handleChange}
+      />
+
+      {/* Gasto */}
+      <input
+        name="gasto"
+        type="number"
+        placeholder="Gasto (€)"
+        className="w-full bg-gray-900 border border-gray-500 p-2 rounded text-white"
+        value={novaCompra.gasto}
+        onChange={handleChange}
+      />
+
+      {/* Botão Guardar */}
+      <button
+        onClick={adicionarCompra}
+        className="w-full bg-green-600 hover:bg-green-500 text-white py-2 rounded-lg font-semibold"
+      >
+        Guardar Compra
+      </button>
     </div>
   )}
 </div>
+
 
       <div className="space-y-5 md:hidden px-2">
   {comprasFiltradas.map((c) => {
