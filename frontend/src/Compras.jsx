@@ -53,16 +53,8 @@ export default function Compras() {
   const [comprasFiltradas, setComprasFiltradas] = useState([]);
   const [eventosDropdown, setEventosDropdown] = useState([]);
   const [novaCompra, setNovaCompra] = useState({
-    evento: "",
-    data_evento: "", // ✅ Adicionado
-    local_compras: "",
-    bancada: "",
-    setor: "",
-    fila: "",
-    quantidade: "",
-    gasto: ""
+    evento: "", local_compras: "", bancada: "", setor: "", fila: "", quantidade: "", gasto: ""
   });
-
   const [modoEdicao, setModoEdicao] = useState(null);
   const [confirmarEliminarId, setConfirmarEliminarId] = useState(null);
   const [filtros, setFiltros] = useState({ evento: "" });
