@@ -745,17 +745,19 @@ const adicionarCompra = () => {
         {/* Evento e data */}
         {emEdicao ? (
           <>
+            {/* Dropdown de Evento */}
             <select
+              name="evento"
               value={novaCompra.evento}
               onChange={(e) => {
                 const eventoSelecionado = e.target.value;
                 setNovaCompra((prev) => ({ ...prev, evento: eventoSelecionado }));
-            
+        
                 const datasEncontradas = eventosDropdown
                   .filter(ev => ev.evento === eventoSelecionado)
                   .map(ev => ev.data_evento);
+        
                 console.log("📅 Datas encontradas para o evento:", datasEncontradas);
-
                 setDatasEvento(datasEncontradas);
               }}
               className="w-full mb-2 bg-gray-900 border border-gray-500 p-2 rounded text-white"
@@ -763,17 +765,14 @@ const adicionarCompra = () => {
               <option value="">-- Selecionar Evento --</option>
               {eventosDropdown
                 .sort((a, b) => a.evento.localeCompare(b.evento))
-                .map((e) => {
-                  console.log("🧩 Evento no dropdown:", e.evento);
-                  return (
-                    <option key={e.id} value={e.evento}>
-                      {e.evento}
-                    </option>
-                  );
-                })}
+                .map((e) => (
+                  <option key={e.id} value={e.evento}>
+                    {e.evento}
+                  </option>
+                ))}
             </select>
-
-
+        
+            {/* Campo de Data com sugestões */}
             <div className="flex flex-col mb-2">
               <input
                 type="date"
@@ -790,7 +789,6 @@ const adicionarCompra = () => {
                   <ul className="list-disc list-inside">
                     {datasEvento.map((d, idx) => {
                       const dataFormatada = new Date(d).toISOString().split("T")[0];
-                      console.log(`📆 Data sugerida ${idx + 1}:`, dataFormatada);
                       return (
                         <li
                           key={idx}
@@ -807,14 +805,16 @@ const adicionarCompra = () => {
                 </div>
               )}
             </div>
-
           </>
         ) : (
           <>
             <div className="text-lg font-bold mb-1 text-amber-400">{c.evento}</div>
-            <div className="text-sm italic text-gray-300">{c.data_evento ? new Date(c.data_evento).toLocaleDateString("pt-PT") : "-"}</div>
+            <div className="text-sm italic text-gray-300">
+              {c.data_evento ? new Date(c.data_evento).toLocaleDateString("pt-PT") : "-"}
+            </div>
           </>
         )}
+
 
         {/* Detalhes */}
         <div className="text-sm mb-2 space-y-2">
