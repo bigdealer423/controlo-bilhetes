@@ -529,7 +529,7 @@ export default function Compras() {
         </table>
       </div>
       {/* Botão + formulário apenas no mobile */}
-
+<div className="md:hidden">
   {/* Filtro Mobile */}
 <div className="md:hidden bg-gray-50 dark:bg-gray-800 shadow-sm rounded p-4 mb-4">
   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Filtrar por Evento</label>
