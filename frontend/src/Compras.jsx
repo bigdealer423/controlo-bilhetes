@@ -796,7 +796,7 @@ const adicionarCompra = () => {
                   </ul>
                 </div>
               )}
-            </div>
+            
 
           </>
         ) : (
