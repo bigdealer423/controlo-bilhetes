@@ -588,7 +588,7 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
       
 
       <div className="space-y-5 md:hidden px-2">
-        {registos.map((r) => {
+        {eventosChaveCarregado && registos.map((r) => {
           const emEdicao = modoEdicao === r.id;
           return (
             <div
