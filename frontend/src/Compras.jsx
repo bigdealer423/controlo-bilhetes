@@ -370,7 +370,6 @@ export default function Compras() {
         </button>
       </div>
         <div className="flex justify-between items-center mb-2">
-          <h2 className="text-lg font-semibold">Compras</h2>
           <div className="hidden md:flex gap-2">
             <button
               onClick={() => exportarComprasParaExcel(comprasFiltradas)}
