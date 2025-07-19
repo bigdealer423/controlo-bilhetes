@@ -568,7 +568,7 @@ export default function Compras() {
       {/* Copia aqui o conteúdo do formulário atual (todos os campos + botão guardar) */}
     </div>
   )}
-</div>
+
 
       <div className="space-y-5 md:hidden px-2">
   {comprasFiltradas.map((c) => {
