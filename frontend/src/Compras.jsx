@@ -72,15 +72,16 @@ export default function Compras() {
   };
 
   const buscarEventos = async () => {
-  const res = await fetch("https://controlo-bilhetes.onrender.com/eventos_dropdown");
+  const res = await fetch("https://controlo-bilhetes.onrender.com/eventos_completos2?skip=0&limit=1000");
   const data = await res.json();
   setEventosDropdown(ordenarEventosDropdown(data));
 
   const chaves = new Set(
     data
-      .filter(e => e.nome && e.data_evento)  // ⚠️ só guarda se tiver nome e data
-      .map(e => `${(e.nome || "").trim()}|${(e.data_evento || "").split("T")[0]}`)
+      .filter(e => e.evento && e.data_evento)
+      .map(e => `${(e.evento || "").trim()}|${(e.data_evento || "").split("T")[0]}`)
   );
+
 
   console.log("🔍 Set de eventos carregado:", chaves); // 👈 aqui
   setEventosChaveSet(chaves);
