@@ -522,7 +522,7 @@ export default function Compras() {
           </tbody>
         </table>
       </div>
-      <div className="space-y-5 md:hidden px-2">
+      <div className="space-y-5 px-2">
   {comprasFiltradas.map((c) => {
     const emEdicao = modoEdicao === c.id;
     return (
