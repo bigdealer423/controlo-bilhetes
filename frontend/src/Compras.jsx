@@ -251,7 +251,7 @@ export default function Compras() {
               onChange={handleChange}
             >
               <option value="">-- Evento --</option>
-              {eventosDropdown.map(e => <option key={e.id} value={e.nome}>{e.nome}</option>)}
+              {eventosDropdown.map(e => <option key={e.id} value={e.evento}>{e.evento}</option>)}
             </select>
           </div>
         
@@ -552,7 +552,7 @@ export default function Compras() {
   >
     <option value="">-- Selecionar Evento --</option>
     {eventosDropdown.map(e => (
-      <option key={e.id} value={e.nome}>{e.nome}</option>
+      <option key={e.id} value={e.evento}>{e.evento}</option>
     ))}
   </select>
 
