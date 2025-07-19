@@ -219,7 +219,7 @@ export default function Compras() {
       <h1 className="text-2xl font-bold mb-4">Compras</h1>
 
       {/* Filtro */}
-      <div className="bg-gray-50 dark:bg-gray-800 shadow-sm rounded p-4 mb-4 transition-colors duration-300">
+      <div className="hidden md:block bg-gray-50 dark:bg-gray-800 shadow-sm rounded p-4 mb-4 transition-colors duration-300">
         <div className="flex gap-4 items-end">
           <select name="evento" className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" value={filtros.evento} onChange={handleFiltroChange}>
             <option value="">-- Filtrar por Evento --</option>
