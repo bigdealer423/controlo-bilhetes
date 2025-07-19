@@ -738,7 +738,13 @@ const adicionarCompra = () => {
           <>
             <select
               value={novaCompra.evento}
-              onChange={(e) => setNovaCompra({ ...novaCompra, evento: e.target.value })}
+              onChange={(e) => {
+                const eventoSelecionado = e.target.value;
+                setNovaCompra((prev) => ({ ...prev, evento: eventoSelecionado }));
+                
+                const datasDoEvento = eventosDropdown.find(ev => ev.evento === eventoSelecionado)?.datas || [];
+                setDatasEvento(datasDoEvento);
+              }}
               className="w-full mb-2 bg-gray-900 border border-gray-500 p-2 rounded text-white"
             >
               <option value="">-- Selecionar Evento --</option>
