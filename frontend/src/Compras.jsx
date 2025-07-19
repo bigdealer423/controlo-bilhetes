@@ -158,16 +158,21 @@ const adicionarCompra = () => {
 };
 
 
-  const handleChange = e => {
-    const { name, value } = e.target;
+  const handleChange = (e) => {
+  const { name, value } = e.target;
 
-    
-    if (name === "evento") {
-        buscarDatasEvento(value);
-    }
+  if (name === "evento") {
+    // 👉 Substitui buscarDatasEvento por esta lógica direta
+    const datasEncontradas = eventosDropdown
+      .filter(ev => ev.evento === value && ev.datas)
+      .flatMap(ev => ev.datas);
 
-    setNovaCompra(prev => ({ ...prev, [name]: value }));
+    setDatasEvento(datasEncontradas);
+  }
+
+  setNovaCompra((prev) => ({ ...prev, [name]: value }));
 };
+
 
 
   const handleFiltroChange = e => {
