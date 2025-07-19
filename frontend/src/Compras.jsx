@@ -420,7 +420,7 @@ export default function Compras() {
                       >
                         <option value="">-- Evento --</option>
                         {eventosDropdown.map(e => (
-                          <option key={e.id} value={e.nome}>{e.nome}</option>
+                          <option key={e.id} value={e.evento}>{e.evento}</option>
                         ))}
                       </select>
                     </td>
