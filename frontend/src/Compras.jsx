@@ -49,6 +49,8 @@ export default function Compras() {
   const [confirmarEliminarId, setConfirmarEliminarId] = useState(null);
   const [filtros, setFiltros] = useState({ evento: "" });
   const [datasEvento, setDatasEvento] = useState([]);
+  const [eventosChaveSet, setEventosChaveSet] = useState(new Set());
+
 
 
   const locaisCompra = ["Benfica Viagens", "Site Benfica", "Odisseias", "Continente", "Site clube adversário", "Smartfans", "Outro"];
@@ -72,8 +74,15 @@ export default function Compras() {
   const buscarEventos = async () => {
   const res = await fetch("https://controlo-bilhetes.onrender.com/eventos_dropdown");
   const data = await res.json();
-  setEventosDropdown(ordenarEventosDropdown(data)); // aplica a ordenação
+  setEventosDropdown(ordenarEventosDropdown(data));
+
+  // Construção do Set com chaves "evento|aaaa-mm-dd"
+  const chaves = new Set(
+    data.map(e => `${(e.nome || "").trim()}|${(e.data_evento || "").split("T")[0]}`)
+  );
+  setEventosChaveSet(chaves);
 };
+
 
   const buscarDatasEvento = async (nomeEvento) => {
   if (!nomeEvento) {
@@ -488,7 +497,13 @@ export default function Compras() {
                     <td className="p-2">{c.fila}</td>
                     <td className="p-2">{c.quantidade}</td>
                     <td className="p-2">{c.gasto} €</td>
-                    <td className="p-2 flex gap-2">
+                    <td className="p-2 flex items-center gap-2">
+                      {
+                        eventosChaveSet.size > 0 && c.evento && c.data_evento &&
+                        !eventosChaveSet.has(`${c.evento}|${c.data_evento.split("T")[0]}`) && (
+                          <span className="text-yellow-500 text-lg" title="Compra não associada a evento">⚠️</span>
+                        )
+                      }
                       <button onClick={() => editarCompra(c)} className="text-blue-600 hover:underline">Editar</button>
                       <button onClick={() => pedirConfirmEliminar(c.id)} className="text-red-600 hover:underline">Eliminar</button>
                     </td>
