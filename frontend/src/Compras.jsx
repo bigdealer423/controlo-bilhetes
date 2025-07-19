@@ -2,6 +2,7 @@
 
 
 
+
 import { useEffect, useState } from "react";
 import { FaFileExcel } from "react-icons/fa";
 import { FaEdit, FaTrash } from "react-icons/fa";
@@ -159,21 +160,19 @@ const adicionarCompra = () => {
 
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-  
-    setNovaCompra((prev) => ({ ...prev, [name]: value }));
-  
-    if (name === "evento") {
-      const eventoSelecionado = eventosDropdown.find(ev => ev.evento === value);
-  
-      if (eventoSelecionado && Array.isArray(eventoSelecionado.datas)) {
-        setDatasEvento(eventoSelecionado.datas);
-      } else {
-        setDatasEvento([]); // Limpa se não houver datas
-      }
-    }
-  };
+  const { name, value } = e.target;
 
+  if (name === "evento") {
+    // 👉 Substitui buscarDatasEvento por esta lógica direta
+    const datasEncontradas = eventosDropdown
+      .filter(ev => ev.evento === value && ev.datas)
+      .flatMap(ev => ev.datas);
+
+    setDatasEvento(datasEncontradas);
+  }
+
+  setNovaCompra((prev) => ({ ...prev, [name]: value }));
+};
 
 
 
@@ -752,9 +751,18 @@ const adicionarCompra = () => {
         {emEdicao ? (
           <>
             <select
-              name="evento"
               value={novaCompra.evento}
-              onChange={handleChange}
+              onChange={(e) => {
+                const eventoSelecionado = e.target.value;
+                setNovaCompra((prev) => ({ ...prev, evento: eventoSelecionado }));
+            
+                const datasEncontradas = eventosDropdown
+                  .filter(ev => ev.evento === eventoSelecionado)
+                  .map(ev => ev.data_evento);
+                console.log("📅 Datas encontradas para o evento:", datasEncontradas);
+
+                setDatasEvento(datasEncontradas);
+              }}
               className="w-full mb-2 bg-gray-900 border border-gray-500 p-2 rounded text-white"
             >
               <option value="">-- Selecionar Evento --</option>
@@ -766,7 +774,6 @@ const adicionarCompra = () => {
                   </option>
                 ))}
             </select>
-
 
 
             <div className="flex flex-col mb-2">
