@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { FaFileExcel } from "react-icons/fa";
+import { FaEdit, FaTrash } from "react-icons/fa";
 import * as XLSX from "xlsx";
 import saveAs from "file-saver";
 import { toast, ToastContainer } from "react-toastify";
@@ -592,8 +593,13 @@ export default function Compras() {
               </>
             ) : (
               <>
-                <button onClick={() => editarCompra(c)} className="text-blue-400 hover:text-blue-300" title="Editar">✏️</button>
-                <button onClick={() => pedirConfirmEliminar(c.id)} className="text-red-400 hover:text-red-300" title="Eliminar">🗑️</button>
+                <button onClick={() => editarCompra(c)} title="Editar">
+                  <FaEdit className="text-blue-400 hover:text-blue-300" />
+                </button>
+                <button onClick={() => pedirConfirmEliminar(c.id)} title="Eliminar">
+                  <FaTrash className="text-red-400 hover:text-red-300" />
+                </button>
+
               </>
             )}
           </div>
