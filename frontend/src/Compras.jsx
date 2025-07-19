@@ -270,19 +270,10 @@ const adicionarCompra = () => {
      <div className="p-6 max-w-7xl mx-auto bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen transition-colors duration-300">
       <h1 className="text-2xl font-bold mb-4">Compras</h1>
 
-      {/* Filtro */}
       <div className="hidden md:block bg-gray-50 dark:bg-gray-800 shadow-sm rounded p-4 mb-4 transition-colors duration-300">
         <div className="flex justify-between items-end flex-wrap gap-4">
-          {/* Botão Exportar Excel à esquerda */}
-          <button
-            onClick={() => exportarComprasParaExcel(comprasFiltradas)}
-            className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-xl shadow-md transition"
-          >
-            <FaFileExcel size={18} />
-            Exportar Excel
-          </button>
-      
-          {/* Filtros à direita */}
+          
+          {/* Filtros à esquerda */}
           <div className="flex gap-4 items-end">
             <select
               name="evento"
@@ -308,8 +299,19 @@ const adicionarCompra = () => {
               Limpar
             </button>
           </div>
+      
+          {/* Botão Exportar Excel à direita */}
+          <button
+            onClick={() => exportarComprasParaExcel(comprasFiltradas)}
+            className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-xl shadow-md transition"
+          >
+            <FaFileExcel size={18} />
+            Exportar Excel
+          </button>
+          
         </div>
       </div>
+
 
 
       {/* Form adicionar */}
@@ -451,17 +453,7 @@ const adicionarCompra = () => {
           {modoEdicao ? "Atualizar" : "Guardar"}
         </button>
       </div>
-        <div className="flex justify-between items-center mb-2">
-          <div className="hidden md:flex gap-2">
-            <button
-              onClick={() => exportarComprasParaExcel(comprasFiltradas)}
-              className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-xl shadow-md transition"
-            >
-              <FaFileExcel size={18} />
-              Exportar Excel
-            </button>
-          </div>
-        </div>
+        
 
 
       {/* Tabela */}
