@@ -778,9 +778,8 @@ const adicionarCompra = () => {
                 className="w-full bg-gray-900 border border-gray-500 p-2 rounded text-white"
                 placeholder="Data Evento"
               />
-              {/* Mostrar datas sugeridas quando a compra é nova */}
-              {modoEdicao === null && datasEvento.length > 0 && novaCompra.evento && (
-                <div className="mt-2 text-xs text-gray-300 px-2">
+              {datasEvento.length > 0 && novaCompra.evento && (
+                <div className="mt-2 text-xs text-gray-300">
                   Datas existentes (clique para preencher):
                   <ul className="list-disc list-inside">
                     {datasEvento.map((d, idx) => {
@@ -800,6 +799,7 @@ const adicionarCompra = () => {
                   </ul>
                 </div>
               )}
+
             
             </div>
           </>
