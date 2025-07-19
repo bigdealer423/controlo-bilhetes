@@ -581,18 +581,111 @@ export default function Compras() {
 </div>
 
   <button
-    onClick={() => setMostrarFormularioMobile(!mostrarFormularioMobile)}
-    className="mb-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+    onClick={() => setMostrarFormulario((prev) => !prev)}
+    className="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-500"
   >
-    {mostrarFormularioMobile ? "Fechar" : "+ Adicionar Compra"}
+    {mostrarFormulario ? "Fechar" : "+ Adicionar Compra"}
   </button>
 
-  {mostrarFormularioMobile && (
-    <div className="bg-white dark:bg-gray-900 shadow-md rounded p-4 mb-6 transition-colors duration-300">
-      {/* Copia aqui o conteúdo do formulário atual (todos os campos + botão guardar) */}
-    </div>
-  )}
-</div>
+  {/* Formulário de nova compra - só visível em mobile e quando ativado */}
+{mostrarFormulario && (
+  <div className="md:hidden px-2 space-y-3 border border-gray-600 bg-zinc-900 text-white rounded-xl p-4 mt-2">
+    {/* Evento */}
+    <select
+      name="evento"
+      className="w-full bg-gray-900 border border-gray-500 p-2 rounded text-white"
+      value={novaCompra.evento}
+      onChange={handleChange}
+    >
+      <option value="">-- Selecionar Evento --</option>
+      {eventosDropdown.map((e) => (
+        <option key={e.id} value={e.evento}>{e.evento}</option>
+      ))}
+    </select>
+
+    {/* Data do Evento */}
+    <input
+      type="date"
+      name="data_evento"
+      className="w-full bg-gray-900 border border-gray-500 p-2 rounded text-white"
+      value={novaCompra.data_evento}
+      onChange={handleChange}
+      placeholder="Data Evento"
+    />
+
+    {/* Local da Compra */}
+    <select
+      name="local_compras"
+      className="w-full bg-gray-900 border border-gray-500 p-2 rounded text-white"
+      value={novaCompra.local_compras}
+      onChange={handleChange}
+    >
+      <option value="">-- Local da Compra --</option>
+      {locaisCompra.map((local) => (
+        <option key={local} value={local}>{local}</option>
+      ))}
+    </select>
+
+    {/* Bancada */}
+    <input
+      list="bancadas"
+      name="bancada"
+      placeholder="Bancada"
+      className="w-full bg-gray-900 border border-gray-500 p-2 rounded text-white"
+      value={novaCompra.bancada}
+      onChange={handleChange}
+    />
+    <datalist id="bancadas">{bancadas.map((b) => <option key={b} value={b} />)}</datalist>
+
+    {/* Setor */}
+    <input
+      list="setores"
+      name="setor"
+      placeholder="Setor"
+      className="w-full bg-gray-900 border border-gray-500 p-2 rounded text-white"
+      value={novaCompra.setor}
+      onChange={handleChange}
+    />
+    <datalist id="setores">{setores.map((s) => <option key={s} value={s} />)}</datalist>
+
+    {/* Fila */}
+    <input
+      name="fila"
+      placeholder="Fila"
+      className="w-full bg-gray-900 border border-gray-500 p-2 rounded text-white"
+      value={novaCompra.fila}
+      onChange={handleChange}
+    />
+
+    {/* Quantidade */}
+    <input
+      name="quantidade"
+      type="number"
+      placeholder="Quantidade"
+      className="w-full bg-gray-900 border border-gray-500 p-2 rounded text-white"
+      value={novaCompra.quantidade}
+      onChange={handleChange}
+    />
+
+    {/* Gasto */}
+    <input
+      name="gasto"
+      type="number"
+      placeholder="Gasto (€)"
+      className="w-full bg-gray-900 border border-gray-500 p-2 rounded text-white"
+      value={novaCompra.gasto}
+      onChange={handleChange}
+    />
+
+    {/* Botão Guardar */}
+    <button
+      onClick={adicionarCompra}
+      className="w-full bg-green-600 hover:bg-green-500 text-white py-2 rounded-lg font-semibold"
+    >
+      Guardar Compra
+    </button>
+  </div>
+)}
 
       <div className="space-y-5 md:hidden px-2">
   {comprasFiltradas.map((c) => {
