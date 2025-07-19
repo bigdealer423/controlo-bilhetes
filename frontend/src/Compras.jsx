@@ -790,6 +790,7 @@ const adicionarCompra = () => {
                   <ul className="list-disc list-inside">
                     {datasEvento.map((d, idx) => {
                       const dataFormatada = new Date(d).toISOString().split("T")[0];
+                      console.log(`📆 Data sugerida ${idx + 1}:`, dataFormatada);
                       return (
                         <li
                           key={idx}
