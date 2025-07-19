@@ -750,18 +750,9 @@ const adicionarCompra = () => {
         {emEdicao ? (
           <>
             <select
+              name="evento"
               value={novaCompra.evento}
-              onChange={(e) => {
-                const eventoSelecionado = e.target.value;
-                setNovaCompra((prev) => ({ ...prev, evento: eventoSelecionado }));
-            
-                const datasEncontradas = eventosDropdown
-                  .filter(ev => ev.evento === eventoSelecionado)
-                  .map(ev => ev.data_evento);
-                console.log("📅 Datas encontradas para o evento:", datasEncontradas);
-
-                setDatasEvento(datasEncontradas);
-              }}
+              onChange={handleChange}
               className="w-full mb-2 bg-gray-900 border border-gray-500 p-2 rounded text-white"
             >
               <option value="">-- Selecionar Evento --</option>
@@ -773,6 +764,7 @@ const adicionarCompra = () => {
                   </option>
                 ))}
             </select>
+
 
 
             <div className="flex flex-col mb-2">
