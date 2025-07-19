@@ -85,7 +85,6 @@ export default function Compras() {
   const buscarEventos = async () => {
   const res = await fetch("https://controlo-bilhetes.onrender.com/eventos_completos2?skip=0&limit=1000");
   const data = await res.json();
-  console.log("Dropdown final:", ordenarEventosDropdown(data));
   setEventosDropdown(ordenarEventosDropdown(data));
 
   const chaves = new Set(
