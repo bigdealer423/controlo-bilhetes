@@ -751,13 +751,26 @@ const adicionarCompra = () => {
                 ))}
             </select>
 
-            <input
-              type="date"
-              value={novaCompra.data_evento}
-              onChange={(e) => setNovaCompra({ ...novaCompra, data_evento: e.target.value })}
-              className="w-full mb-2 bg-gray-900 border border-gray-500 p-2 rounded text-white"
-              placeholder="Data Evento"
-            />
+            <div className="mb-2">
+              <input
+                type="date"
+                value={novaCompra.data_evento}
+                onChange={(e) => setNovaCompra({ ...novaCompra, data_evento: e.target.value })}
+                className="w-full bg-gray-900 border border-gray-500 p-2 rounded text-white"
+                placeholder="Data Evento"
+              />
+              {sugestaoDataEvento && (
+                <p className="text-xs text-gray-300 mt-1">
+                  Sugestão:{" "}
+                  <span
+                    onClick={() => setNovaCompra({ ...novaCompra, data_evento: sugestaoDataEvento })}
+                    className="underline text-amber-300 cursor-pointer"
+                  >
+                    {new Date(sugestaoDataEvento).toLocaleDateString("pt-PT")}
+                  </span>
+                </p>
+              )}
+            </div>
           </>
         ) : (
           <>
