@@ -499,11 +499,12 @@ export default function Compras() {
                     <td className="p-2">{c.gasto} €</td>
                     <td className="p-2 flex items-center gap-2">
                       {
-                        eventosChaveSet.size > 0 && c.evento && c.data_evento &&
-                        !eventosChaveSet.has(`${c.evento}|${c.data_evento.split("T")[0]}`) && (
+                        eventosChaveSet.size > 0 &&
+                        (!c.evento || !c.data_evento || !eventosChaveSet.has(`${c.evento}|${c.data_evento.split("T")[0]}`)) && (
                           <span className="text-yellow-500 text-lg" title="Compra não associada a evento">⚠️</span>
                         )
                       }
+                    
                       <button onClick={() => editarCompra(c)} className="text-blue-600 hover:underline">Editar</button>
                       <button onClick={() => pedirConfirmEliminar(c.id)} className="text-red-600 hover:underline">Eliminar</button>
                     </td>
