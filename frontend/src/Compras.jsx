@@ -371,7 +371,7 @@ export default function Compras() {
       </div>
         <div className="flex justify-between items-center mb-2">
           <h2 className="text-lg font-semibold">Compras</h2>
-          <div className="flex gap-2">
+          <div className="hidden md:flex gap-2">
             <button
               onClick={() => exportarComprasParaExcel(comprasFiltradas)}
               className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-xl shadow-md transition"
@@ -381,6 +381,7 @@ export default function Compras() {
             </button>
           </div>
         </div>
+
 
       {/* Tabela */}
     <div className="bg-white dark:bg-gray-900 shadow-md rounded p-4 relative transition-colors duration-300">
