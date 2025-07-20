@@ -29,6 +29,7 @@ export default function ListagemVendas(props) {
   const [mostrarFormularioMobile, setMostrarFormularioMobile] = useState(false);
   const [eventosChaveSet, setEventosChaveSet] = useState(new Set());
   const [eventosChaveCarregado, setEventosChaveCarregado] = useState(false);
+  
 
 
 useEffect(() => {
@@ -565,12 +566,18 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
 
   <td className="p-2 flex items-center gap-2">
   {
-    eventosChaveCarregado && (
-      (!r.evento || !r.data_evento) || !eventosChaveSet.has(`${(r.evento || "").trim()}|${(r.data_evento || "").split("T")[0]}`)
-    ) && (
-      <span className="text-yellow-500" title="Venda não associada a evento">⚠️</span>
-    )
+    dadosSincronizados && (() => {
+      const evento = r.evento?.trim() || "";
+      const dataEvento = r.data_evento?.split("T")[0] || "";
+      const chave = `${evento}|${dataEvento}`;
+      const invalido = !evento || !dataEvento || !eventosChaveSet.has(chave);
+  
+      return invalido && (
+        <span className="text-yellow-500" title="Venda não associada a evento">⚠️</span>
+      );
+    })()
   }
+
 
 
 
