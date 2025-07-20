@@ -235,26 +235,35 @@ useEffect(() => {
   };
 
   const buscarEventos = async () => {
-    if (isLoading) return; // evita duplicação
-    setIsLoading(true);
-    try {
-      const res = await fetch(`https://controlo-bilhetes.onrender.com/eventos_completos2?skip=${skip}&limit=${limit}`);
-      if (res.ok) {
-        const eventos = await res.json();
-  
-        if (eventos.length === 0) {
-          setHasMore(false);
+  if (isLoading) return;
+  setIsLoading(true);
+
+  try {
+    const totalLimit = isMobile ? 1000 : limit;  // ← força tudo no mobile
+
+    const res = await fetch(`https://controlo-bilhetes.onrender.com/eventos_completos2?skip=${skip}&limit=${totalLimit}`);
+    if (res.ok) {
+      const eventos = await res.json();
+
+      if (eventos.length === 0) {
+        setHasMore(false);
+      } else {
+        setRegistos(prev => [...prev, ...eventos]);
+
+        if (!isMobile) {
+          setSkip(prev => prev + limit); // só avança skip no desktop
         } else {
-          setRegistos(prev => [...prev, ...eventos]);
-          setSkip(prev => prev + limit);
+          setHasMore(false); // no mobile, fecha o ciclo
         }
       }
-    } catch (error) {
-      console.error("Erro ao carregar eventos:", error);
-    } finally {
-      setIsLoading(false);
     }
-  };
+  } catch (error) {
+    console.error("Erro ao carregar eventos:", error);
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
 
 
