@@ -57,7 +57,12 @@ useEffect(() => {
   buscarResumoDiario();
 }, []);
 
-
+useEffect(() => {
+  if (eventosChaveCarregado && registos.length > 0) {
+    console.log("✅ Dados sincronizados — eventos e registos carregados.");
+    setDadosSincronizados(true);
+  }
+}, [eventosChaveCarregado, registos]);
 
    const forcarAtualizacaoEmail = async () => {
   setMensagemModal("⏳ A processar leitura de e-mails...");
