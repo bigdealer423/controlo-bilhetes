@@ -187,7 +187,7 @@ function exportarParaExcel(registos) {
         data.map(e => `${e.nome}|${(e.data_evento || "").split("T")[0]}`)
       );
 
-      setEventosChaveSet(chaves);
+      
     })
     .catch(err => console.error("Erro ao buscar eventos:", err));
 };
