@@ -35,26 +35,28 @@ export default function ListagemVendas(props) {
 
 
 useEffect(() => {
+  setDadosSincronizados(false); // ⛔ Reset ao entrar na aba
+
+  // Carregar eventos
   fetch("https://controlo-bilhetes.onrender.com/eventos_completos2?skip=0&limit=1000")
     .then((res) => res.json())
     .then((dados) => {
-      // ⚠️ Normaliza as chaves: evento|aaaa-mm-dd
       const chaves = dados.map((evento) => {
         const eventoNome = (evento.evento || "").trim();
-        const dataFormatada = (evento.data_evento || "").split("T")[0]; // '2025-08-10'
+        const dataFormatada = (evento.data_evento || "").split("T")[0];
         return `${eventoNome}|${dataFormatada}`;
       });
       setEventosChaveSet(new Set(chaves));
-      setEventosChaveCarregado(true); // ✅ Aqui marcamos como carregado
+      setEventosChaveCarregado(true);
     })
     .catch((err) => console.error("❌ Erro ao carregar eventos:", err));
+
+  // Carregar registos e resumo
+  buscarRegistos();
+  buscarEventosDropdown();
+  buscarResumoDiario();
 }, []);
 
-useEffect(() => {
-  if (eventosChaveCarregado && registos.length > 0) {
-    setDadosSincronizados(true);
-  }
-}, [eventosChaveCarregado, registos]);
 
 
    const forcarAtualizacaoEmail = async () => {
@@ -143,11 +145,7 @@ function exportarParaExcel(registos) {
   const [registoEditado, setRegistoEditado] = useState({});
   const [resumoDiario, setResumoDiario] = useState({ total: 0, ganho: 0 });
 
-  useEffect(() => {
-    buscarRegistos();
-    buscarEventosDropdown();
-    buscarResumoDiario(); // ✅ adiciona isto
-  }, []);
+  
 
   useEffect(() => {
     if (props.atualizarEventos) {
