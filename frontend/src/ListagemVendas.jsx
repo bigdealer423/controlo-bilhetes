@@ -29,6 +29,8 @@ export default function ListagemVendas(props) {
   const [mostrarFormularioMobile, setMostrarFormularioMobile] = useState(false);
   const [eventosChaveSet, setEventosChaveSet] = useState(new Set());
   const [eventosChaveCarregado, setEventosChaveCarregado] = useState(false);
+  const [dadosSincronizados, setDadosSincronizados] = useState(false);
+
   
 
 
@@ -48,6 +50,11 @@ useEffect(() => {
     .catch((err) => console.error("❌ Erro ao carregar eventos:", err));
 }, []);
 
+useEffect(() => {
+  if (eventosChaveCarregado && registos.length > 0) {
+    setDadosSincronizados(true);
+  }
+}, [eventosChaveCarregado, registos]);
 
 
    const forcarAtualizacaoEmail = async () => {
