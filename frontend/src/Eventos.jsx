@@ -34,6 +34,7 @@ export default function Eventos() {
   const linhaRefs = useRef({});
   const [vendasNaoAssociadasSet, setVendasNaoAssociadasSet] = useState(new Set());
   const [comprasNaoAssociadasSet, setComprasNaoAssociadasSet] = useState(new Set());
+  const isMobile = window.innerWidth < 768; // md:768px
 
 useEffect(() => {
   if (!vendas.length || !compras.length || !registos.length) return;
