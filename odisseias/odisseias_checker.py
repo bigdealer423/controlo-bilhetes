@@ -53,6 +53,7 @@ def verificar_eventos():
 
             page.wait_for_load_state("networkidle", timeout=60000)
             print("✅ Login feito com sucesso.")
+            print("🌐 URL atual após login:", page.url)  # <--- AQUI
 
             # Esperar e clicar no botão "Reservar"
             print("🧭 A procurar botão 'Reservar'...")
