@@ -5,17 +5,18 @@ import time
 import os
 import subprocess
 
-# ⚙️ Instalação do browser
+# ⚙️ Instalação do Chromium (necessário em ambientes tipo Render)
 subprocess.run(["playwright", "install", "chromium"], check=True)
 
 # ---- CONFIGURAÇÕES ----
 EMAIL = "miguelitocosta423@gmail.com"
 PASSWORD = "Pedrosara18#"
-LOGIN_URL = "https://www.odisseias.com/Account/Login"
-PRODUTOS_URL = "https://www.odisseias.com/Book/ProductList"
 PALAVRAS_CHAVE = ["fenerbahçe", "benfica", "sporting", "porto"]
 
-# Email envio
+LOGIN_URL = "https://www.odisseias.com/Account/Login"
+PRODUTOS_URL = "https://www.odisseias.com/Book/ProductList"
+
+# Configuração de email (usa variáveis de ambiente)
 EMAIL_FROM = os.getenv("EMAIL_USERNAME")
 EMAIL_TO = os.getenv("EMAIL_USERNAME")
 EMAIL_PASS = os.getenv("EMAIL_PASSWORD")
@@ -35,36 +36,49 @@ def enviar_email_alerta(palavra_encontrada, url_produto):
         smtp.send_message(msg)
         print("✅ Email enviado com sucesso!")
 
-def verificar_sporting():
+def verificar_eventos():
     with sync_playwright() as p:
         print("🚀 A iniciar browser...")
         browser = p.chromium.launch(headless=True, args=["--disable-dev-shm-usage", "--no-sandbox"])
-        context = browser.new_context(user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36")
+        context = browser.new_context()
         page = context.new_page()
 
         try:
             print("🔐 A aceder à página de login...")
             page.goto(LOGIN_URL, timeout=60000, wait_until="domcontentloaded")
+
             page.fill('input[name="Email"]', EMAIL)
             page.fill('input[name="Password"]', PASSWORD)
             page.locator('button:has-text("Entrar")').click()
+
             page.wait_for_load_state("networkidle", timeout=60000)
             print("✅ Login feito com sucesso.")
 
-            print("📦 A aceder à lista de produtos...")
-            page.goto(PRODUTOS_URL, timeout=60000, wait_until="networkidle")
-            time.sleep(3)
+            # Esperar e clicar no botão "Reservar"
+            print("🧭 A procurar botão 'Reservar'...")
+            page.wait_for_selector("button.btn-orange.button-book", timeout=15000)
+            page.click("button.btn-orange.button-book")
+            print("✅ Botão 'Reservar' clicado.")
 
+            # Esperar que redirecione para a página de produtos
+            page.wait_for_url("**/Book/ProductList", timeout=10000)
+            page.wait_for_selector(".ProductSummaryDetailsWrapper h2", timeout=15000)
+            print("📦 Página de produtos carregada.")
+
+            # Extrair títulos
             titulos = page.locator(".ProductSummaryDetailsWrapper h2").all_text_contents()
-            titulos_baixo = [t.lower() for t in titulos]
-            print("🔍 A verificar palavras-chave...")
+            print(f"🔍 {len(titulos)} títulos encontrados.")
+            for t in titulos:
+                print("-", t)
 
+            # Verificar palavras-chave
+            titulos_baixo = [t.lower() for t in titulos]
             for palavra in PALAVRAS_CHAVE:
                 for titulo, titulo_original in zip(titulos_baixo, titulos):
                     if palavra.lower() in titulo:
                         print(f"✅ Palavra '{palavra}' encontrada no título: {titulo_original}")
                         enviar_email_alerta(palavra, PRODUTOS_URL)
-                        return  # Só envia 1 alerta por execução
+                        return  # Envia apenas um alerta por execução
 
             print("❌ Nenhuma palavra encontrada nos títulos.")
 
@@ -75,4 +89,4 @@ def verificar_sporting():
             browser.close()
 
 if __name__ == "__main__":
-    verificar_sporting()
+    verificar_eventos()
