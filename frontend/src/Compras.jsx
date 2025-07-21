@@ -486,16 +486,23 @@ const adicionarCompra = () => {
                         value={novaCompra.evento}
                         onChange={(e) => {
                           const eventoSelecionado = e.target.value;
-                          const dataAssociada = eventosDropdown.find(ev => ev.evento === eventoSelecionado)?.data_evento?.split("T")[0] || "";
-                          setNovaCompra(prev => ({ ...prev, evento: eventoSelecionado, data_evento: dataAssociada }));
+                          const eventoCompleto = eventosDropdown.find(ev => ev.evento === eventoSelecionado);
+                          setNovaCompra(prev => ({
+                            ...prev,
+                            evento: eventoCompleto?.evento || eventoSelecionado,
+                            data_evento: eventoCompleto?.data_evento?.split("T")[0] || ""
+                          }));
                         }}
                       >
                         <option value="">-- Evento --</option>
                         {eventosDropdown.map(e => (
-                          <option key={e.id} value={e.evento}>{e.evento}</option>
+                          <option key={e.id} value={e.evento}>
+                            {e.evento}
+                          </option>
                         ))}
                       </select>
                     </td>
+
             
                     {/* Data Evento */}
                     <td className="p-2">
