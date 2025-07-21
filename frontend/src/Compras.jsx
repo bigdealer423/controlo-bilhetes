@@ -460,7 +460,7 @@ const adicionarCompra = () => {
     <div className="bg-white dark:bg-gray-900 shadow-md rounded p-4 relative transition-colors duration-300">
       <div className="overflow-x-auto w-full"> 
         <table className="hidden md:table min-w-full border dark:border-gray-700 text-sm text-left text-gray-600 dark:text-gray-300 transition-colors duration-300">
-          <thead>
+          <thead className="sticky top-0 z-10 bg-gray-100 dark:bg-gray-700 shadow">
             <tr className="bg-gray-100 dark:bg-gray-700 transition-colors duration-300">
               <th className="p-2">Evento</th>
               <th className="p-2">Data Evento</th>
