@@ -14,7 +14,7 @@ EMAIL = "miguelitocosta423@gmail.com"
 PASSWORD = "Pedrosara18#"
 LOGIN_URL = "https://www.odisseias.com/Account/Login"
 PRODUTOS_URL = "https://www.odisseias.com/Book/ProductList"
-PALAVRA_CHAVE = "rio ave"
+PALAVRA_CHAVE = "fenerbahçe"
 
 # Email de envio
 EMAIL_FROM = os.getenv("EMAIL_USERNAME")
