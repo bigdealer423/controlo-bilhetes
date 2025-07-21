@@ -56,8 +56,11 @@ def verificar_eventos():
 
             # Esperar e clicar no botão "Reservar"
             print("🧭 A procurar botão 'Reservar'...")
-            page.wait_for_selector("button.btn-orange.button-book", timeout=15000)
-            page.click("button.btn-orange.button-book")
+            botao_reservar = page.locator("button.btn-orange.button-book")
+            botao_reservar.wait_for(state="visible", timeout=20000)
+            botao_reservar.first.click()
+            print("✅ Botão 'Reservar' clicado.")
+
             print("✅ Botão 'Reservar' clicado.")
 
             # Esperar que redirecione para a página de produtos
