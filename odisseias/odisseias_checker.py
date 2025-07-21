@@ -51,9 +51,14 @@ def verificar_eventos():
             page.fill('input[name="Password"]', PASSWORD)
             page.locator('button:has-text("Entrar")').click()
 
+            # Esperar login e redirecionamento para /Account/Packs
             page.wait_for_load_state("networkidle", timeout=60000)
-            print("✅ Login feito com sucesso.")
-            print("🌐 URL atual após login:", page.url)  # <--- AQUI
+            
+            # Esperar que a página correta apareça após login
+            page.wait_for_url("**/Account/Packs", timeout=10000)
+            print("✅ Login e redirecionamento concluído.")
+            print("🌐 URL atual após login:", page.url)
+
 
             # Esperar e clicar no botão "Reservar"
             print("🧭 A procurar botão 'Reservar'...")
