@@ -57,6 +57,8 @@ def verificar_eventos():
 
             # Esperar e clicar no botão "Reservar"
             print("🧭 A procurar botão 'Reservar'...")
+            page.screenshot(path="debug_login.png", full_page=True)
+            print("📸 Screenshot tirada para debug (debug_login.png)")
             botao_reservar = page.locator("button.btn-orange.button-book")
             botao_reservar.wait_for(state="visible", timeout=20000)
             botao_reservar.first.click()
