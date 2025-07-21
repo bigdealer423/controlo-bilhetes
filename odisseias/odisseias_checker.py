@@ -51,24 +51,24 @@ def verificar_eventos():
             page.fill('input[name="Password"]', PASSWORD)
             page.locator('button:has-text("Entrar")').click()
 
-            # Esperar login e redirecionamento para /Account/Packs
-            page.wait_for_load_state("networkidle", timeout=60000)
-            
-            # Esperar que a página correta apareça após login
-            page.wait_for_url("**/Account/Packs", timeout=10000)
+            # Esperar carregamento da nova página
+            print("⌛ A aguardar redirecionamento após login...")
+            page.wait_for_load_state("networkidle", timeout=20000)
+
+            # Esperar que URL contenha /Account/Packs (forma flexível)
+            page.wait_for_url("**/Account/Packs**", timeout=20000)
             print("✅ Login e redirecionamento concluído.")
-            print("🌐 URL atual após login:", page.url)
+            print("🌐 URL atual:", page.url)
 
-
-            # Esperar e clicar no botão "Reservar"
-            print("🧭 A procurar botão 'Reservar'...")
+            # Screenshot de debug
             page.screenshot(path="debug_login.png", full_page=True)
             print("📸 Screenshot tirada para debug (debug_login.png)")
+
+            # Procurar botão “Reservar”
+            print("🧭 A procurar botão 'Reservar'...")
             botao_reservar = page.locator("button.btn-orange.button-book")
             botao_reservar.wait_for(state="visible", timeout=20000)
             botao_reservar.first.click()
-            print("✅ Botão 'Reservar' clicado.")
-
             print("✅ Botão 'Reservar' clicado.")
 
             # Esperar que redirecione para a página de produtos
