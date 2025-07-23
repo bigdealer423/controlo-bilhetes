@@ -468,28 +468,22 @@ def get_email_body_stubhub(msg):
                 continue
     return ""
 
-def get_email_body_stubhub_pagamento(msg):
+def get_email_body_stubhub_pagamento_simples(msg):
     for part in msg.walk():
         content_type = part.get_content_type()
-        content_disposition = str(part.get("Content-Disposition"))
-
-        if "attachment" in content_disposition:
+        if "attachment" in str(part.get("Content-Disposition")):
             continue
 
         if content_type == "text/html":
             try:
                 html = part.get_payload(decode=True).decode("utf-8", errors="ignore")
                 soup = BeautifulSoup(html, "html.parser")
-
-                # Remove elementos inúteis
                 for tag in soup(["script", "style", "head", "meta", "title", "link"]):
                     tag.decompose()
-
                 texto = soup.get_text(separator="\n")
                 linhas_limpas = [linha.strip() for linha in texto.splitlines() if linha.strip()]
                 return "\n".join(linhas_limpas)
-            except Exception as e:
-                print(f"❌ Erro ao limpar HTML: {e}")
+            except:
                 continue
 
         elif content_type == "text/plain":
@@ -497,9 +491,7 @@ def get_email_body_stubhub_pagamento(msg):
                 return part.get_payload(decode=True).decode("utf-8", errors="ignore")
             except:
                 continue
-
     return ""
-
 
 
 def verificar_emails_entregues_stubhub(username, password, dias=PERIODO_DIAS):
@@ -683,8 +675,6 @@ def verificar_emails_pagamento_stubhub(username, password, dias=PERIODO_DIAS):
     mail.select("inbox")
 
     data_limite = (datetime.today() - timedelta(days=dias)).strftime("%d-%b-%Y")
-    
-    # Pesquisa apenas por remetente e data (sem SUBJECT com acentos)
     status, mensagens = mail.search(
         None,
         f'(FROM "order-update@orders.stubhubinternational.com" SINCE {data_limite})'
@@ -700,39 +690,21 @@ def verificar_emails_pagamento_stubhub(username, password, dias=PERIODO_DIAS):
         for response_part in msg_data:
             if isinstance(response_part, tuple):
                 msg = email.message_from_bytes(response_part[1])
-                corpo = get_email_body_stubhub_pagamento(msg)
+                corpo = get_email_body_stubhub_pagamento_simples(msg)
 
                 if not corpo:
+                    print("⚠️ Corpo vazio.")
                     continue
 
-                corpo_normalizado = unicodedata.normalize('NFKD', corpo).encode('ascii', 'ignore').decode('utf-8')
-                corpo_normalizado = re.sub(r'\s+', ' ', corpo_normalizado)
+                print("📨 Corpo do email analisado (1000 caracteres):")
+                print(corpo[:1000])
+                print("-" * 80)
 
-                # 🧠 Verifica se o email é mesmo sobre pagamento
-                # 🧠 Verifica se é mesmo sobre pagamento (flexível)
-                frases_chave = [
-                    "pagamento processado",
-                    "processamos os seus pagamentos",  # sem acento
-                    "pagamentos por paypal"
-                ]
-                
-                if not any(frase in corpo_normalizado.lower() for frase in frases_chave):
-                    print("⏭️ Ignorado (corpo sem frase de pagamento)")
-                    print("📨 Corpo do email analisado (1000 caracteres):")
-                    print(corpo_normalizado[:1000])
-                    print("-" * 80)
-                    continue
-                else:
-                    print("📨 Corpo do email ACEITE para processamento:")
-                    print(corpo_normalizado[:1000])
-                    print("-" * 80)
-
-
-                # 🔍 Extrai todos os blocos com ID + valor
+                # 🔍 Procura blocos com ID do pedido + valor
                 blocos = re.findall(
-                    r'N\.?o pedido\s*:\s*(\d{6,12}).*?O seu pagamento\s*€\s*([\d\.,]+)',
-                    corpo_normalizado,
-                    re.IGNORECASE
+                    r'N\.?\s*pedido\s*:\s*(\d{6,12}).*?O seu pagamento\s*€\s*([\d\.,]+)',
+                    corpo,
+                    re.IGNORECASE | re.DOTALL
                 )
 
                 print(f"🔍 Blocos encontrados: {blocos}")
@@ -774,18 +746,18 @@ def verificar_emails_pagamento_stubhub(username, password, dias=PERIODO_DIAS):
                                 else:
                                     print(f"❌ Erro ao atualizar estado: {update.status_code}")
                             else:
-                                print("ℹ️ Estado já estava atualizado.")
+                                print("ℹ️ Estado já estava correto.")
                         else:
-                            print(f"⚠️ ID {id_venda} não encontrado.")
+                            print(f"⚠️ ID {id_venda} não encontrado na base de dados.")
                     except Exception as e:
-                        print(f"❌ Erro na verificação do ID {id_venda}: {e}")
+                        print(f"❌ Erro ao verificar ID {id_venda}: {e}")
 
     print(f"✅ Pagos: {len(ids_pagamento_confirmado)} | ⚠️ Disputas: {len(ids_disputa)}")
-
     return {
         "pagos": len(ids_pagamento_confirmado),
         "disputas": ids_disputa
     }
+
 
 
 
