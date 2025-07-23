@@ -651,7 +651,7 @@ def verificar_emails_pagamento_stubhub(username, password, dias=PERIODO_DIAS):
 
     data_limite = (datetime.today() - timedelta(days=dias)).strftime("%d-%b-%Y")
     
-    # 🔒 Pesquisa segura sem acentos para evitar UnicodeEncodeError
+    # Pesquisa apenas por remetente e data (sem SUBJECT com acentos)
     status, mensagens = mail.search(
         None,
         f'(FROM "order-update@orders.stubhubinternational.com" SINCE {data_limite})'
@@ -667,13 +667,6 @@ def verificar_emails_pagamento_stubhub(username, password, dias=PERIODO_DIAS):
         for response_part in msg_data:
             if isinstance(response_part, tuple):
                 msg = email.message_from_bytes(response_part[1])
-                subject = msg["Subject"] or ""
-                
-                # 🔍 Verifica se o email tem assunto relacionado com pagamento
-                if "pagamento processado" not in subject.lower():
-                    print(f"⏭️ Ignorado (assunto não corresponde): {subject}")
-                    continue
-
                 corpo = get_email_body_stubhub(msg)
 
                 if not corpo:
@@ -682,6 +675,12 @@ def verificar_emails_pagamento_stubhub(username, password, dias=PERIODO_DIAS):
                 corpo_normalizado = unicodedata.normalize('NFKD', corpo).encode('ascii', 'ignore').decode('utf-8')
                 corpo_normalizado = re.sub(r'\s+', ' ', corpo_normalizado)
 
+                # 🧠 Verifica se o email é mesmo sobre pagamento
+                if "pagamento processado" not in corpo_normalizado.lower():
+                    print("⏭️ Ignorado (corpo sem 'pagamento processado')")
+                    continue
+
+                # 🔍 Extrai todos os blocos com ID + valor
                 blocos = re.findall(
                     r'N\.?o pedido\s*:\s*(\d{6,12}).*?O seu pagamento\s*€\s*([\d\.,]+)',
                     corpo_normalizado,
@@ -741,6 +740,7 @@ def verificar_emails_pagamento_stubhub(username, password, dias=PERIODO_DIAS):
     }
 
 
+
 # =============================
 # Execução principal do script
 # =============================
@@ -780,55 +780,36 @@ if __name__ == "__main__":
         "ids_entregues": list(set(entregues_stubhub.get("ids_entregues", []) + entregues_viagogo.get("ids_entregues", [])))
     }
 
-    # ✅ ADICIONAR AQUI:
-    resultado_pagamentos = verificar_emails_pagamento(username, password, dias=PERIODO_DIAS)
+    # ✅ Verificações de pagamento
+resultado_pagamentos = verificar_emails_pagamento(username, password, dias=PERIODO_DIAS)
+resultado_pagamentos_stubhub = verificar_emails_pagamento_stubhub(username, password, dias=PERIODO_DIAS)
 
-    # ✅ Pagamentos StubHub
-    resultado_pagamentos_stubhub = verificar_emails_pagamento_stubhub(username, password, dias=PERIODO_DIAS)
-    
-    # Atualiza o resumo com StubHub também
-    resumo["pagos"] += resultado_pagamentos_stubhub.get("pagos", 0)
-    resumo["disputas"].extend(resultado_pagamentos_stubhub.get("disputas", []))
+# ✅ Carregar resumo e atualizar
+try:
+    with open("resumo_leitura.json", "r+") as f:
+        resumo = json.load(f)
+        resumo["sucesso"] += sucesso_stubhub
+        resumo["total_lidos"] += sucesso_stubhub + falha_stubhub
+        resumo["entregues"] = entregues_resumo["alterados_para_entregue"]
+        resumo["ids_entregues"] = entregues_resumo["ids_entregues"]
+        resumo["pagos"] = resultado_pagamentos.get("pagos", 0) + resultado_pagamentos_stubhub.get("pagos", 0)
+        resumo["disputas"] = resultado_pagamentos.get("disputas", []) + resultado_pagamentos_stubhub.get("disputas", [])
+        f.seek(0)
+        json.dump(resumo, f, indent=2)
+        f.truncate()
+except Exception as e:
+    print(f"❌ Erro ao atualizar resumo com entregues: {e}")
+    resumo = {
+        "total_lidos": sucesso_stubhub + falha_stubhub,
+        "sucesso": sucesso_stubhub,
+        "falhas": 0,
+        "existentes": 0,
+        "entregues": entregues_resumo.get("alterados_para_entregue", 0),
+        "ids_entregues": entregues_resumo.get("ids_entregues", []),
+        "pagos": resultado_pagamentos.get("pagos", 0) + resultado_pagamentos_stubhub.get("pagos", 0),
+        "disputas": resultado_pagamentos.get("disputas", []) + resultado_pagamentos_stubhub.get("disputas", [])
+    }
 
-
-    # Atualiza o resumo com resultados
-    try:
-        with open("resumo_leitura.json", "r+") as f:
-            resumo = json.load(f)
-            resumo["sucesso"] += sucesso_stubhub
-            resumo["total_lidos"] += sucesso_stubhub + falha_stubhub
-            resumo["entregues"] = entregues_resumo["alterados_para_entregue"]
-            resumo["ids_entregues"] = entregues_resumo["ids_entregues"]
-            resumo["pagos"] = resultado_pagamentos["pagos"]
-            resumo["disputas"] = resultado_pagamentos["disputas"]
-            f.seek(0)
-            json.dump(resumo, f, indent=2)
-            f.truncate()
-    except Exception as e:
-        print(f"❌ Erro ao atualizar resumo com entregues: {e}")
-        resumo = {
-            "total_lidos": 0,
-            "sucesso": 0,
-            "falhas": 0,
-            "existentes": 0,
-            "entregues": entregues_resumo.get("alterados_para_entregue", 0),
-            "ids_entregues": entregues_resumo.get("ids_entregues", []),
-            "pagos": resultado_pagamentos.get("pagos", 0),
-            "disputas": resultado_pagamentos.get("disputas", [])
-        }
-
-    # Enviar resumo por email
-    enviar_resumo_email(
-        total_emails=resumo["total_lidos"],
-        sucesso=resumo["sucesso"],
-        falha=resumo["falhas"],
-        ja_existentes=resumo["existentes"],
-        ids_erro=resumo.get("ids_falhados", []),
-        entregues=resumo.get("entregues", 0),
-        ids_entregues=resumo.get("ids_entregues", []),
-        pagos=resumo.get("pagos", 0),
-        disputas=resumo.get("disputas", [])
-    )
 
     # Atualiza API
     try:
