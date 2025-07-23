@@ -718,12 +718,27 @@ def verificar_emails_pagamento_stubhub(username, password, dias=PERIODO_DIAS):
                 print(corpo[:1000])
                 print("-" * 80)
 
-                # 🔍 Procura blocos com ID do pedido + valor
-                blocos = re.findall(
-                    r'N\.?\s*pedido\s*:?\s*(\d{6,12})[\s\S]{0,300}?O\s+seu\s+pagamento\s*[\r\n\s]*€\s*([\d\.,]+)',
+                # 🔍 Extrai blocos individuais com "N.º pedido" + "O seu pagamento"
+                pagamentos_brutos = re.findall(
+                    r'N\.?\s*pedido\s*:?\s*\d{6,12}[\s\S]{0,500}?O\s+seu\s+pagamento\s*€\s*[\d\.,]+',
                     corpo,
                     re.IGNORECASE
                 )
+                
+                print(f"🔍 Pagamentos brutos detectados: {len(pagamentos_brutos)}")
+                
+                blocos = []
+                for bloco in pagamentos_brutos:
+                    id_match = re.search(r'N\.?\s*pedido\s*:?\s*(\d{6,12})', bloco, re.IGNORECASE)
+                    valor_match = re.search(r'O\s+seu\s+pagamento\s*€\s*([\d\.,]+)', bloco, re.IGNORECASE)
+                
+                    if id_match and valor_match:
+                        id_venda = id_match.group(1)
+                        valor_str = valor_match.group(1)
+                        blocos.append((id_venda, valor_str))
+                
+                print(f"🔍 Blocos extraídos corretamente: {blocos}")
+
 
 
 
