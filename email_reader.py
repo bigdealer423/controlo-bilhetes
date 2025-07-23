@@ -547,29 +547,45 @@ def verificar_emails_entregues_stubhub(username, password, dias=PERIODO_DIAS):
 
 
 def get_email_body_stubhub_pagamento_simples(msg):
+    html_parts = []
+
     for part in msg.walk():
         content_type = part.get_content_type()
-        if "attachment" in str(part.get("Content-Disposition")):
+        content_disposition = str(part.get("Content-Disposition") or "")
+
+        if "attachment" in content_disposition.lower():
             continue
 
         if content_type == "text/html":
             try:
                 html = part.get_payload(decode=True).decode("utf-8", errors="ignore")
-                soup = BeautifulSoup(html, "html.parser")
-                for tag in soup(["script", "style", "head", "meta", "title", "link"]):
-                    tag.decompose()
-                texto = soup.get_text(separator="\n")
-                linhas_limpas = [linha.strip() for linha in texto.splitlines() if linha.strip()]
-                return "\n".join(linhas_limpas)
-            except:
+                html_parts.append(html)
+            except Exception as e:
+                print(f"❌ Erro ao decodificar HTML: {e}")
                 continue
 
-        elif content_type == "text/plain":
-            try:
-                return part.get_payload(decode=True).decode("utf-8", errors="ignore")
-            except:
-                continue
-    return ""
+    if not html_parts:
+        print("⚠️ Nenhuma parte HTML encontrada no email.")
+        return ""
+
+    # Junta todas as partes HTML
+    html_final = "\n".join(html_parts)
+    soup = BeautifulSoup(html_final, "html.parser")
+
+    # Remove lixo visual
+    for tag in soup(["script", "style", "head", "meta", "title", "link"]):
+        tag.decompose()
+
+    texto = soup.get_text(separator="\n")
+    linhas_limpas = [linha.strip() for linha in texto.splitlines() if linha.strip()]
+    texto_final = "\n".join(linhas_limpas)
+
+    # ✅ MOSTRAR preview do conteúdo útil extraído
+    print("📨 Corpo REAL processado (preview):\n")
+    print(texto_final[:2000])
+    print("-" * 80)
+    return texto_final
+
 
 
 
