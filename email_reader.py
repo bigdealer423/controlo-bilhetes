@@ -676,8 +676,15 @@ def verificar_emails_pagamento_stubhub(username, password, dias=PERIODO_DIAS):
                 corpo_normalizado = re.sub(r'\s+', ' ', corpo_normalizado)
 
                 # 🧠 Verifica se o email é mesmo sobre pagamento
-                if "pagamento processado" not in corpo_normalizado.lower():
-                    print("⏭️ Ignorado (corpo sem 'pagamento processado')")
+                # 🧠 Verifica se é mesmo sobre pagamento (flexível)
+                frases_chave = [
+                    "pagamento processado",
+                    "processamos os seus pagamentos",  # sem acento
+                    "pagamentos por paypal"
+                ]
+                
+                if not any(frase in corpo_normalizado.lower() for frase in frases_chave):
+                    print("⏭️ Ignorado (corpo sem frase de pagamento)")
                     continue
 
                 # 🔍 Extrai todos os blocos com ID + valor
