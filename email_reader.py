@@ -650,9 +650,11 @@ def verificar_emails_pagamento_stubhub(username, password, dias=PERIODO_DIAS):
     mail.select("inbox")
 
     data_limite = (datetime.today() - timedelta(days=dias)).strftime("%d-%b-%Y")
+    
+    # 🔒 Pesquisa segura sem acentos para evitar UnicodeEncodeError
     status, mensagens = mail.search(
         None,
-        f'(FROM "order-update@orders.stubhubinternational.com" SUBJECT "processámos os seus pagamentos" SINCE {data_limite})'
+        f'(FROM "order-update@orders.stubhubinternational.com" SINCE {data_limite})'
     )
     ids = mensagens[0].split()
     print(f"📩 Emails StubHub a verificar para pagamentos: {len(ids)}")
@@ -665,6 +667,13 @@ def verificar_emails_pagamento_stubhub(username, password, dias=PERIODO_DIAS):
         for response_part in msg_data:
             if isinstance(response_part, tuple):
                 msg = email.message_from_bytes(response_part[1])
+                subject = msg["Subject"] or ""
+                
+                # 🔍 Verifica se o email tem assunto relacionado com pagamento
+                if "pagamento processado" not in subject.lower():
+                    print(f"⏭️ Ignorado (assunto não corresponde): {subject}")
+                    continue
+
                 corpo = get_email_body_stubhub(msg)
 
                 if not corpo:
@@ -673,7 +682,6 @@ def verificar_emails_pagamento_stubhub(username, password, dias=PERIODO_DIAS):
                 corpo_normalizado = unicodedata.normalize('NFKD', corpo).encode('ascii', 'ignore').decode('utf-8')
                 corpo_normalizado = re.sub(r'\s+', ' ', corpo_normalizado)
 
-                # Extrair todos os blocos de pagamento (ID + valor)
                 blocos = re.findall(
                     r'N\.?o pedido\s*:\s*(\d{6,12}).*?O seu pagamento\s*€\s*([\d\.,]+)',
                     corpo_normalizado,
@@ -691,7 +699,6 @@ def verificar_emails_pagamento_stubhub(username, password, dias=PERIODO_DIAS):
 
                     print(f"💳 ID: {id_venda} | Valor pago: {valor_pagamento:.2f}€")
 
-                    # Verificar e atualizar estado na API
                     try:
                         url = f"https://controlo-bilhetes.onrender.com/listagem_vendas/por_id_venda/{id_venda}"
                         res = requests.get(url)
@@ -712,7 +719,9 @@ def verificar_emails_pagamento_stubhub(username, password, dias=PERIODO_DIAS):
                             if dados["estado"] != novo_estado:
                                 dados["estado"] = novo_estado
                                 update = requests.put(
-                                    f"https://controlo-bilhetes.onrender.com/listagem_vendas/{dados['id']}", json=dados)
+                                    f"https://controlo-bilhetes.onrender.com/listagem_vendas/{dados['id']}",
+                                    json=dados
+                                )
                                 if update.status_code == 200:
                                     print(f"📤 Estado atualizado: {novo_estado}")
                                 else:
