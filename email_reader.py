@@ -468,6 +468,38 @@ def get_email_body_stubhub(msg):
                 continue
     return ""
 
+def get_email_body_stubhub_pagamento(msg):
+    for part in msg.walk():
+        content_type = part.get_content_type()
+        content_disposition = str(part.get("Content-Disposition"))
+
+        if "attachment" in content_disposition:
+            continue
+
+        if content_type == "text/html":
+            try:
+                html = part.get_payload(decode=True).decode("utf-8", errors="ignore")
+                soup = BeautifulSoup(html, "html.parser")
+
+                blocos = []
+                for tag in soup.find_all(["p", "td", "div"]):
+                    texto = tag.get_text(strip=True)
+                    if texto and len(texto) > 10 and not texto.lower().startswith("stubhub"):
+                        blocos.append(texto)
+
+                return "\n".join(blocos)
+            except Exception as e:
+                print(f"❌ Erro ao extrair corpo do email StubHub (pagamento): {e}")
+                continue
+
+        elif content_type == "text/plain":
+            try:
+                return part.get_payload(decode=True).decode("utf-8", errors="ignore")
+            except:
+                continue
+
+    return ""
+
 
 def verificar_emails_entregues_stubhub(username, password, dias=PERIODO_DIAS):
     import unicodedata
@@ -493,7 +525,7 @@ def verificar_emails_entregues_stubhub(username, password, dias=PERIODO_DIAS):
                 subject = msg["Subject"]
                 print(f"📧 Assunto do email: {subject}")
 
-                corpo = get_email_body_stubhub(msg)
+                corpo = get_email_body_stubhub_pagamento(msg)
                 print("🔍 Conteúdo do email:\n", corpo[:1000])
 
                 # Normalizar corpo
@@ -667,7 +699,7 @@ def verificar_emails_pagamento_stubhub(username, password, dias=PERIODO_DIAS):
         for response_part in msg_data:
             if isinstance(response_part, tuple):
                 msg = email.message_from_bytes(response_part[1])
-                corpo = get_email_body_stubhub(msg)
+                corpo = get_email_body_stubhub_pagamento(msg)
 
                 if not corpo:
                     continue
