@@ -645,6 +645,93 @@ def verificar_emails_pagamento(username, password, dias=PERIODO_DIAS):
     }
 
 
+def verificar_emails_pagamento_stubhub(username, password, dias=PERIODO_DIAS):
+    mail = connect_email(username, password)
+    mail.select("inbox")
+
+    data_limite = (datetime.today() - timedelta(days=dias)).strftime("%d-%b-%Y")
+    status, mensagens = mail.search(
+        None,
+        f'(FROM "order-update@orders.stubhubinternational.com" SUBJECT "processámos os seus pagamentos" SINCE {data_limite})'
+    )
+    ids = mensagens[0].split()
+    print(f"📩 Emails StubHub a verificar para pagamentos: {len(ids)}")
+
+    ids_pagamento_confirmado = []
+    ids_disputa = []
+
+    for msg_id in ids:
+        _, msg_data = mail.fetch(msg_id, "(RFC822)")
+        for response_part in msg_data:
+            if isinstance(response_part, tuple):
+                msg = email.message_from_bytes(response_part[1])
+                corpo = get_email_body_stubhub(msg)
+
+                if not corpo:
+                    continue
+
+                corpo_normalizado = unicodedata.normalize('NFKD', corpo).encode('ascii', 'ignore').decode('utf-8')
+                corpo_normalizado = re.sub(r'\s+', ' ', corpo_normalizado)
+
+                # Extrair todos os blocos de pagamento (ID + valor)
+                blocos = re.findall(
+                    r'N\.?o pedido\s*:\s*(\d{6,12}).*?O seu pagamento\s*€\s*([\d\.,]+)',
+                    corpo_normalizado,
+                    re.IGNORECASE
+                )
+
+                print(f"🔍 Blocos encontrados: {blocos}")
+
+                for id_venda, valor_str in blocos:
+                    try:
+                        valor_pagamento = float(valor_str.replace(".", "").replace(",", "."))
+                    except:
+                        print(f"❌ Erro ao converter valor: {valor_str}")
+                        continue
+
+                    print(f"💳 ID: {id_venda} | Valor pago: {valor_pagamento:.2f}€")
+
+                    # Verificar e atualizar estado na API
+                    try:
+                        url = f"https://controlo-bilhetes.onrender.com/listagem_vendas/por_id_venda/{id_venda}"
+                        res = requests.get(url)
+                        if res.status_code == 200:
+                            dados = res.json()
+                            valor_esperado = float(dados.get("ganho", 0))
+                            diferenca = abs(valor_pagamento - valor_esperado)
+
+                            if diferenca <= 1:
+                                novo_estado = "Pago"
+                                ids_pagamento_confirmado.append(id_venda)
+                            elif diferenca > 50 and valor_pagamento < 0:
+                                novo_estado = "Disputa"
+                                ids_disputa.append(id_venda)
+                            else:
+                                continue
+
+                            if dados["estado"] != novo_estado:
+                                dados["estado"] = novo_estado
+                                update = requests.put(
+                                    f"https://controlo-bilhetes.onrender.com/listagem_vendas/{dados['id']}", json=dados)
+                                if update.status_code == 200:
+                                    print(f"📤 Estado atualizado: {novo_estado}")
+                                else:
+                                    print(f"❌ Erro ao atualizar estado: {update.status_code}")
+                            else:
+                                print("ℹ️ Estado já estava atualizado.")
+                        else:
+                            print(f"⚠️ ID {id_venda} não encontrado.")
+                    except Exception as e:
+                        print(f"❌ Erro na verificação do ID {id_venda}: {e}")
+
+    print(f"✅ Pagos: {len(ids_pagamento_confirmado)} | ⚠️ Disputas: {len(ids_disputa)}")
+
+    return {
+        "pagos": len(ids_pagamento_confirmado),
+        "disputas": ids_disputa
+    }
+
+
 # =============================
 # Execução principal do script
 # =============================
@@ -686,6 +773,14 @@ if __name__ == "__main__":
 
     # ✅ ADICIONAR AQUI:
     resultado_pagamentos = verificar_emails_pagamento(username, password, dias=PERIODO_DIAS)
+
+    # ✅ Pagamentos StubHub
+    resultado_pagamentos_stubhub = verificar_emails_pagamento_stubhub(username, password, dias=PERIODO_DIAS)
+    
+    # Atualiza o resumo com StubHub também
+    resumo["pagos"] += resultado_pagamentos_stubhub.get("pagos", 0)
+    resumo["disputas"].extend(resultado_pagamentos_stubhub.get("disputas", []))
+
 
     # Atualiza o resumo com resultados
     try:
