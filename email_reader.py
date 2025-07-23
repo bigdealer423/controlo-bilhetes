@@ -481,15 +481,15 @@ def get_email_body_stubhub_pagamento(msg):
                 html = part.get_payload(decode=True).decode("utf-8", errors="ignore")
                 soup = BeautifulSoup(html, "html.parser")
 
-                blocos = []
-                for tag in soup.find_all(["p", "td", "div"]):
-                    texto = tag.get_text(strip=True)
-                    if texto and len(texto) > 10 and not texto.lower().startswith("stubhub"):
-                        blocos.append(texto)
+                # Remove elementos inúteis
+                for tag in soup(["script", "style", "head", "meta", "title", "link"]):
+                    tag.decompose()
 
-                return "\n".join(blocos)
+                texto = soup.get_text(separator="\n")
+                linhas_limpas = [linha.strip() for linha in texto.splitlines() if linha.strip()]
+                return "\n".join(linhas_limpas)
             except Exception as e:
-                print(f"❌ Erro ao extrair corpo do email StubHub (pagamento): {e}")
+                print(f"❌ Erro ao limpar HTML: {e}")
                 continue
 
         elif content_type == "text/plain":
@@ -499,6 +499,7 @@ def get_email_body_stubhub_pagamento(msg):
                 continue
 
     return ""
+
 
 
 def verificar_emails_entregues_stubhub(username, password, dias=PERIODO_DIAS):
