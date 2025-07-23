@@ -718,26 +718,23 @@ def verificar_emails_pagamento_stubhub(username, password, dias=PERIODO_DIAS):
                 print(corpo[:1000])
                 print("-" * 80)
 
-                # 🔍 Extrai blocos individuais com "N.º pedido" + "O seu pagamento"
-                pagamentos_brutos = re.findall(
-                    r'N\.?\s*pedido\s*:?\s*\d{6,12}[\s\S]{0,500}?O\s+seu\s+pagamento\s*€\s*[\d\.,]+',
-                    corpo,
-                    re.IGNORECASE
-                )
-                
-                print(f"🔍 Pagamentos brutos detectados: {len(pagamentos_brutos)}")
-                
+                ## 🔍 Novo método para encontrar blocos com ID do pedido e pagamento
                 blocos = []
-                for bloco in pagamentos_brutos:
-                    id_match = re.search(r'N\.?\s*pedido\s*:?\s*(\d{6,12})', bloco, re.IGNORECASE)
-                    valor_match = re.search(r'O\s+seu\s+pagamento\s*€\s*([\d\.,]+)', bloco, re.IGNORECASE)
                 
-                    if id_match and valor_match:
-                        id_venda = id_match.group(1)
-                        valor_str = valor_match.group(1)
-                        blocos.append((id_venda, valor_str))
+                # Divide o corpo em possíveis secções de pagamento
+                secções = corpo.split("N.º pedido")
+                for sec in secções[1:]:  # Ignora a primeira parte (antes do 1º pedido)
+                    try:
+                        id_match = re.search(r'[:\s]+(\d{6,12})', sec)
+                        valor_match = re.search(r'O\s+seu\s+pagamento\s*€\s*([\d\.,]+)', sec, re.IGNORECASE)
                 
-                print(f"🔍 Blocos extraídos corretamente: {blocos}")
+                        if id_match and valor_match:
+                            id_venda = id_match.group(1)
+                            valor_str = valor_match.group(1)
+                            blocos.append((id_venda, valor_str))
+                    except Exception as e:
+                        print(f"❌ Erro ao extrair bloco: {e}")
+
 
 
 
