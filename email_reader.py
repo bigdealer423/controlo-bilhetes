@@ -685,7 +685,15 @@ def verificar_emails_pagamento_stubhub(username, password, dias=PERIODO_DIAS):
                 
                 if not any(frase in corpo_normalizado.lower() for frase in frases_chave):
                     print("⏭️ Ignorado (corpo sem frase de pagamento)")
+                    print("📨 Corpo do email analisado (1000 caracteres):")
+                    print(corpo_normalizado[:1000])
+                    print("-" * 80)
                     continue
+                else:
+                    print("📨 Corpo do email ACEITE para processamento:")
+                    print(corpo_normalizado[:1000])
+                    print("-" * 80)
+
 
                 # 🔍 Extrai todos os blocos com ID + valor
                 blocos = re.findall(
