@@ -720,10 +720,11 @@ def verificar_emails_pagamento_stubhub(username, password, dias=PERIODO_DIAS):
 
                 # 🔍 Procura blocos com ID do pedido + valor
                 blocos = re.findall(
-                    r'N\.?\s*pedido\s*:?\s*(\d{6,12})[\s\S]{0,300}?O\s+seu\s+pagamento\s*€\s*([\d\.,]+)',
+                    r'N\.?\s*pedido\s*:?\s*(\d{6,12})[\s\S]{0,300}?O\s+seu\s+pagamento\s*[\r\n\s]*€\s*([\d\.,]+)',
                     corpo,
                     re.IGNORECASE
                 )
+
 
 
                 print(f"🔍 Blocos encontrados: {blocos}")
