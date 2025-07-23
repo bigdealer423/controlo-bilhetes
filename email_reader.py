@@ -1,3 +1,4 @@
+
 PERIODO_DIAS = 2
 
 from dateutil.parser import parse
@@ -468,30 +469,6 @@ def get_email_body_stubhub(msg):
                 continue
     return ""
 
-def get_email_body_stubhub_pagamento_simples(msg):
-    for part in msg.walk():
-        content_type = part.get_content_type()
-        if "attachment" in str(part.get("Content-Disposition")):
-            continue
-
-        if content_type == "text/html":
-            try:
-                html = part.get_payload(decode=True).decode("utf-8", errors="ignore")
-                soup = BeautifulSoup(html, "html.parser")
-                for tag in soup(["script", "style", "head", "meta", "title", "link"]):
-                    tag.decompose()
-                texto = soup.get_text(separator="\n")
-                linhas_limpas = [linha.strip() for linha in texto.splitlines() if linha.strip()]
-                return "\n".join(linhas_limpas)
-            except:
-                continue
-
-        elif content_type == "text/plain":
-            try:
-                return part.get_payload(decode=True).decode("utf-8", errors="ignore")
-            except:
-                continue
-    return ""
 
 
 def verificar_emails_entregues_stubhub(username, password, dias=PERIODO_DIAS):
@@ -518,7 +495,7 @@ def verificar_emails_entregues_stubhub(username, password, dias=PERIODO_DIAS):
                 subject = msg["Subject"]
                 print(f"📧 Assunto do email: {subject}")
 
-                corpo = get_email_body_stubhub_pagamento(msg)
+                corpo = get_email_body_stubhub(msg)
                 print("🔍 Conteúdo do email:\n", corpo[:1000])
 
                 # Normalizar corpo
@@ -568,6 +545,31 @@ def verificar_emails_entregues_stubhub(username, password, dias=PERIODO_DIAS):
     }
 
 
+
+def get_email_body_stubhub_pagamento_simples(msg):
+    for part in msg.walk():
+        content_type = part.get_content_type()
+        if "attachment" in str(part.get("Content-Disposition")):
+            continue
+
+        if content_type == "text/html":
+            try:
+                html = part.get_payload(decode=True).decode("utf-8", errors="ignore")
+                soup = BeautifulSoup(html, "html.parser")
+                for tag in soup(["script", "style", "head", "meta", "title", "link"]):
+                    tag.decompose()
+                texto = soup.get_text(separator="\n")
+                linhas_limpas = [linha.strip() for linha in texto.splitlines() if linha.strip()]
+                return "\n".join(linhas_limpas)
+            except:
+                continue
+
+        elif content_type == "text/plain":
+            try:
+                return part.get_payload(decode=True).decode("utf-8", errors="ignore")
+            except:
+                continue
+    return ""
 
 
 
@@ -837,5 +839,3 @@ except Exception as e:
         print("📡 Resumo enviado para a API FastAPI com sucesso.")
     except Exception as e:
         print(f"❌ Falha ao enviar resumo para API: {e}")
-
-
