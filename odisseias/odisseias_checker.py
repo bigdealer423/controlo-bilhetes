@@ -2,6 +2,9 @@ from playwright.sync_api import sync_playwright
 import smtplib
 from email.message import EmailMessage
 import os
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+STORAGE_STATE = os.path.join(BASE_DIR, "storage_state.json")
 import subprocess
 
 # ✅ Garante que o Chromium está instalado no ambiente Render
