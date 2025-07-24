@@ -51,14 +51,14 @@ def verificar_eventos():
             page.fill('input[name="Password"]', PASSWORD)
             page.locator('button:has-text("Entrar")').click()
 
-            # Esperar carregamento da nova página
-            print("⌛ A aguardar redirecionamento após login...")
-            page.wait_for_load_state("networkidle", timeout=20000)
+            # Esperar alguns segundos para permitir qualquer redirecionamento
+            page.wait_for_timeout(5000)
+            print("🌐 URL após 5 segundos:", page.url)
+            
+            # Screenshot para ver o que aconteceu após tentar login
+            page.screenshot(path="debug_after_login.png", full_page=True)
+            print("📸 Screenshot 'debug_after_login.png' capturada")
 
-            # Esperar que URL contenha /Account/Packs (forma flexível)
-            page.wait_for_url("**/Account/Packs**", timeout=20000)
-            print("✅ Login e redirecionamento concluído.")
-            print("🌐 URL atual:", page.url)
 
             # Screenshot de debug
             page.screenshot(path="debug_login.png", full_page=True)
