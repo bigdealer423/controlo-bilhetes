@@ -35,6 +35,8 @@ export default function Eventos() {
   const [vendasNaoAssociadasSet, setVendasNaoAssociadasSet] = useState(new Set());
   const [comprasNaoAssociadasSet, setComprasNaoAssociadasSet] = useState(new Set());
   const isMobile = window.innerWidth < 768; // md:768px
+  const [ocultarPagos, setOcultarPagos] = useState(false);
+
 
 useEffect(() => {
   if (!vendas.length || !compras.length || !registos.length) return;
@@ -454,6 +456,18 @@ return (
     className="p-2 border rounded w-full md:w-72 bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
   />
 
+  {/* ✅ Botão "Ocultar Pagos" apenas no mobile */}
+  <div className="md:hidden mt-2 flex justify-end">
+    <button
+      onClick={() => setOcultarPagos(!ocultarPagos)}
+      className={`px-3 py-2 rounded text-white text-sm font-semibold transition-colors ${
+        ocultarPagos ? "bg-gray-600 hover:bg-gray-700" : "bg-green-600 hover:bg-green-700"
+      }`}
+    >
+      {ocultarPagos ? "👁️ Mostrar Pagos" : "💰 Ocultar Pagos"}
+    </button>
+  </div>
+        
   <button
     onClick={() => exportarEventosParaExcel(registos)}
     className="hidden md:flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-xl shadow-md transition"
@@ -805,7 +819,7 @@ return (
         </table>       
           <div className="space-y-5 md:hidden mt-6 px-0 w-full max-w-full">
             {registos
-              .filter(r => r.evento.toLowerCase().includes(filtroPesquisa.toLowerCase()))
+              .filter(r =>r.evento.toLowerCase().includes(filtroPesquisa.toLowerCase()) &&(!ocultarPagos || r.estado !== "Pago") )
               .map((r) => {
               const emEdicao = modoEdicao === r.id;
               return (
