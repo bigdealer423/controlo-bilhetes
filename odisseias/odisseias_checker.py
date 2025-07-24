@@ -2,6 +2,10 @@ from playwright.sync_api import sync_playwright
 import smtplib
 from email.message import EmailMessage
 import os
+import subprocess
+
+# ✅ Garante que o Chromium está instalado no ambiente Render
+subprocess.run(["playwright", "install", "chromium"], check=True)
 
 # ---- CONFIGURAÇÕES ----
 PALAVRAS_CHAVE = ["fenerbahçe", "benfica", "sporting", "porto"]
