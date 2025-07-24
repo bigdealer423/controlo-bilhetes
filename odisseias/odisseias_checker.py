@@ -50,6 +50,14 @@ def verificar_eventos():
         try:
             print("🔐 A aceder à página de login...")
             page.goto(LOGIN_URL, timeout=60000, wait_until="domcontentloaded")
+
+            # Tentar aceitar os cookies, se o botão estiver visível
+            try:
+                page.locator("text='Aceitar todos os cookies'").click(timeout=5000)
+                print("🍪 Cookies aceites.")
+            except:
+                print("⚠️ Nenhum botão de cookies visível ou já aceites.")
+
             page.fill('input[name="Email"]', EMAIL)
             page.fill('input[name="Password"]', PASSWORD)
             page.locator('button:has-text("Entrar")').click()
