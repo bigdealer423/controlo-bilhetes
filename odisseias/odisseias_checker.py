@@ -2,11 +2,10 @@ from playwright.sync_api import sync_playwright
 import smtplib
 from email.message import EmailMessage
 import os
+import subprocess
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 STORAGE_STATE = "/opt/render/project/src/odisseias/storage_state.json"
-
-import subprocess
 
 # ✅ Garante que o Chromium está instalado no ambiente Render
 subprocess.run(["playwright", "install", "chromium"], check=True)
@@ -14,7 +13,6 @@ subprocess.run(["playwright", "install", "chromium"], check=True)
 # ---- CONFIGURAÇÕES ----
 PALAVRAS_CHAVE = ["fenerbahçe", "benfica", "sporting", "porto"]
 PRODUTOS_URL = "https://www.odisseias.com/Book/ProductList"
-STORAGE_STATE = "storage_state.json"
 
 # Email de alerta
 EMAIL_FROM = os.getenv("EMAIL_USERNAME")
