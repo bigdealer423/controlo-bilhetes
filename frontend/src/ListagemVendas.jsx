@@ -672,14 +672,19 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
               {/* Evento + Bilhete */}
               {emEdicao ? (
                 <>
-                  <input
-                    type="text"
+                  <select
                     value={registoEditado.evento}
-                    onChange={(e) =>
-                      setRegistoEditado({ ...registoEditado, evento: e.target.value })
-                    }
+                    onChange={(e) => setRegistoEditado({ ...registoEditado, evento: e.target.value })}
                     className="w-full mb-2 bg-gray-900 border border-gray-500 p-2 rounded text-white"
-                  />
+                  >
+                    <option value="">-- Selecionar Evento --</option>
+                    {eventosDropdown.map((ev) => (
+                      <option key={ev.id} value={ev.nome}>
+                        {ev.nome}
+                      </option>
+                    ))}
+                  </select>
+
                   <input
                     type="text"
                     value={registoEditado.estadio}
