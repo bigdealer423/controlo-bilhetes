@@ -89,29 +89,29 @@ def verificar_eventos():
 
             print("❌ Nenhuma palavra encontrada nos títulos.")
 
-               except Exception as e:
-                    print("❌ Erro durante a verificação:", str(e))
+        except Exception as e:
+            print("❌ Erro durante a verificação:", str(e))
         
-                    # Enviar email de erro com screenshots
-                    msg = EmailMessage()
-                    msg["Subject"] = f"❌ Erro na verificação Odisseias"
-                    msg["From"] = EMAIL_FROM
-                    msg["To"] = EMAIL_TO
-                    msg.set_content(f"Ocorreu um erro durante a execução:\n\n{str(e)}")
+            # Enviar email de erro com screenshots
+            msg = EmailMessage()
+            msg["Subject"] = f"❌ Erro na verificação Odisseias"
+            msg["From"] = EMAIL_FROM
+            msg["To"] = EMAIL_TO
+            msg.set_content(f"Ocorreu um erro durante a execução:\n\n{str(e)}")
         
-                    for screenshot in ["debug_after_login.png", "debug_login.png"]:
-                        if os.path.exists(screenshot):
-                            with open(screenshot, "rb") as f:
-                                msg.add_attachment(f.read(), maintype="image", subtype="png", filename=screenshot)
+            for screenshot in ["debug_after_login.png", "debug_login.png"]:
+                if os.path.exists(screenshot):
+                    with open(screenshot, "rb") as f:
+                        msg.add_attachment(f.read(), maintype="image", subtype="png", filename=screenshot)
         
-                    try:
-                        with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as smtp:
-                            smtp.starttls()
-                            smtp.login(EMAIL_FROM, EMAIL_PASS)
-                            smtp.send_message(msg)
-                            print("📧 Email de erro enviado com screenshots.")
-                    except Exception as email_err:
-                        print("⚠️ Falha ao enviar email de erro:", email_err)
+            try:
+                with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as smtp:
+                    smtp.starttls()
+                    smtp.login(EMAIL_FROM, EMAIL_PASS)
+                    smtp.send_message(msg)
+                    print("📧 Email de erro enviado com screenshots.")
+             except Exception as email_err:
+                 print("⚠️ Falha ao enviar email de erro:", email_err)
 
 
         finally:
