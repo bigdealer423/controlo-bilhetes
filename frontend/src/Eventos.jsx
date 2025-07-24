@@ -35,7 +35,8 @@ export default function Eventos() {
   const [vendasNaoAssociadasSet, setVendasNaoAssociadasSet] = useState(new Set());
   const [comprasNaoAssociadasSet, setComprasNaoAssociadasSet] = useState(new Set());
   const isMobile = window.innerWidth < 768; // md:768px
-  const [ocultarPagos, setOcultarPagos] = useState(false);
+  const [ocultarPagos, setOcultarPagos] = useState(true);
+
 
 
 useEffect(() => {
