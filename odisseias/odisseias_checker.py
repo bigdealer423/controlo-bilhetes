@@ -50,7 +50,7 @@ def verificar_eventos():
             print("🌐 Aceder à página de produtos...")
             page.goto(PRODUTOS_URL, timeout=60000)
 
-            page.wait_for_selector(".ProductSummaryDetailsWrapper h2", timeout=15000)
+            page.wait_for_selector(".ProductSummaryDetailsWrapper h2", timeout=30000)
             print("📦 Página de produtos carregada.")
             page.screenshot(path="debug_produtos.png", full_page=True)
 
