@@ -158,6 +158,22 @@ function exportarParaExcel(registos) {
     }
   }, [props.atualizarEventos]);
 
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        console.log("🔄 Voltou à aba Listagem Vendas, a atualizar...");
+        buscarRegistos();
+        buscarResumoDiario();
+      }
+    };
+  
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, []);
+
+
   const [erroIDExistente, setErroIDExistente] = useState(false);
   const buscarRegistos = () => {
   fetch("https://controlo-bilhetes.onrender.com/listagem_vendas")
