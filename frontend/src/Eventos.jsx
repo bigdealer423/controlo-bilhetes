@@ -34,7 +34,10 @@ export default function Eventos() {
   const linhaRefs = useRef({});
   const [vendasNaoAssociadasSet, setVendasNaoAssociadasSet] = useState(new Set());
   const [comprasNaoAssociadasSet, setComprasNaoAssociadasSet] = useState(new Set());
-  const isMobile = window.innerWidth < 1024; // md:768px
+  const largura = window.innerWidth;
+  const isMobile = largura < 768;
+  const isTablet = largura >= 768 && largura < 1024;
+  const isDesktop = largura >= 1024;
   const [ocultarPagos, setOcultarPagos] = useState(true);
 
 
@@ -818,7 +821,7 @@ return (
             ))}
           </tbody>
         </table>       
-          <div className="space-y-5 xl:hidden mt-6 px-0 w-full max-w-full">
+          <div className="space-y-5 lg:hidden mt-6 px-0 w-full max-w-full">
             {registos
               .filter(r =>r.evento.toLowerCase().includes(filtroPesquisa.toLowerCase()) &&(!ocultarPagos || r.estado !== "Pago") )
               .map((r) => {
