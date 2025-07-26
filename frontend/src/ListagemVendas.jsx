@@ -630,12 +630,14 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
         className="space-y-5 xl:hidden px-2"
         onTouchStart={(e) => setStartY(e.touches[0].clientY)}
         onTouchMove={(e) => {
-          if (startY !== null && e.touches[0].clientY - startY > 80) {
-            setStartY(null);
+          const deslocamento = e.touches[0].clientY - startY;
+          const noTopo = window.scrollY === 0;
+        
+          if (startY !== null && deslocamento > 50 && noTopo) {
+            setStartY(null); // impede múltiplas execuções
             toast.info("🔄 A atualizar dados...");
             buscarRegistos();
           }
-
         }}
         onTouchEnd={() => setStartY(null)}
       >
