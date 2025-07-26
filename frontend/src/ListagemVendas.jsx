@@ -31,6 +31,8 @@ export default function ListagemVendas(props) {
   const [eventosChaveSet, setEventosChaveSet] = useState(new Set());
   const [eventosChaveCarregado, setEventosChaveCarregado] = useState(false);
   const [dadosSincronizados, setDadosSincronizados] = useState(false);
+  const [startY, setStartY] = useState(null);
+
 
   
 
@@ -624,7 +626,17 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
       </div>
       
 
-      <div className="space-y-5 md:hidden px-2">
+      <div
+        className="space-y-5 md:hidden px-2"
+        onTouchStart={(e) => setStartY(e.touches[0].clientY)}
+        onTouchMove={(e) => {
+          if (startY !== null && e.touches[0].clientY - startY > 80) {
+            setStartY(null);
+            buscarRegistos();
+          }
+        }}
+        onTouchEnd={() => setStartY(null)}
+      >
         {eventosChaveCarregado && registos.map((r) => {
           const emEdicao = modoEdicao === r.id;
           return (
