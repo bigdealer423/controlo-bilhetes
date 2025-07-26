@@ -461,7 +461,7 @@ return (
   />
 
   {/* ✅ Botão "Ocultar Pagos" apenas no mobile */}
-  <div className="xl:hidden mt-2 flex justify-end">
+  <div className="lg:hidden mt-2 flex justify-end">
     <button
       onClick={() => setOcultarPagos(!ocultarPagos)}
       className={`px-3 py-2 rounded text-white text-sm font-semibold transition-colors ${
