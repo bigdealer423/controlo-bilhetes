@@ -627,7 +627,7 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
       
 
       <div
-        className="space-y-5 md:hidden px-2"
+        className="space-y-5 lg:hidden px-2"
         onTouchStart={(e) => setStartY(e.touches[0].clientY)}
         onTouchMove={(e) => {
           if (startY !== null && e.touches[0].clientY - startY > 80) {
