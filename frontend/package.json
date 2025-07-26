@@ -20,7 +20,8 @@
     "@radix-ui/react-popover": "^1.0.7",
     "react-calendar": "^4.0.0",
     "vite-plugin-pwa": "^0.16.4",
-    "papaparse": "^5.4.1"
+    "papaparse": "^5.4.1",
+    "react-pull-to-refresh": "^2.0.2"
 
   },
   "devDependencies": {
