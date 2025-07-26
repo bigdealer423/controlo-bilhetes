@@ -34,11 +34,17 @@ export default function Eventos() {
   const linhaRefs = useRef({});
   const [vendasNaoAssociadasSet, setVendasNaoAssociadasSet] = useState(new Set());
   const [comprasNaoAssociadasSet, setComprasNaoAssociadasSet] = useState(new Set());
-  const largura = window.innerWidth;
-  const isMobile = largura < 768;
-  const isTablet = largura >= 768 && largura < 1024;
-  const isDesktop = largura >= 1024;
   const [ocultarPagos, setOcultarPagos] = useState(true);
+  const [larguraEcrã, setLarguraEcrã] = useState(window.innerWidth);
+
+  useEffect(() => {
+    const handleResize = () => setLarguraEcrã(window.innerWidth);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+  
+  const isMobile = larguraEcrã < 1024;
+
 
 
 
