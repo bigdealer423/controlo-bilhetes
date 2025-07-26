@@ -5,7 +5,7 @@ import { FaFileExcel } from "react-icons/fa"
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import { FaEdit, FaTrash } from "react-icons/fa";
-import PullToRefresh from 'react-pull-to-refresh';
+import PullToRefresh from 'react-simple-pull-to-refresh';
 
 
 
