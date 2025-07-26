@@ -5,6 +5,7 @@ import { FaFileExcel } from "react-icons/fa"
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import { FaEdit, FaTrash } from "react-icons/fa";
+import PullToRefresh from 'react-pull-to-refresh';
 
 
 
@@ -623,7 +624,11 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
       </div>
       
 
-      <div className="space-y-5 md:hidden px-2">
+     <PullToRefresh
+        onRefresh={buscarRegistos}
+        className="space-y-5 md:hidden px-2"
+        style={{ touchAction: "pan-y" }} // evita conflitos com scroll
+      >
         {eventosChaveCarregado && registos.map((r) => {
           const emEdicao = modoEdicao === r.id;
           return (
@@ -811,7 +816,7 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
             </div>
           );
        })}
-    </div>
+    </PullToRefresh>
 
 
 
