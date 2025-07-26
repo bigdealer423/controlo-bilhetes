@@ -632,8 +632,10 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
         onTouchMove={(e) => {
           if (startY !== null && e.touches[0].clientY - startY > 80) {
             setStartY(null);
+            toast.info("🔄 A atualizar dados...");
             buscarRegistos();
           }
+
         }}
         onTouchEnd={() => setStartY(null)}
       >
