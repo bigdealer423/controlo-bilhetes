@@ -5,6 +5,7 @@
 
 
 
+
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useRef } from "react";
@@ -34,17 +35,8 @@ export default function Eventos() {
   const linhaRefs = useRef({});
   const [vendasNaoAssociadasSet, setVendasNaoAssociadasSet] = useState(new Set());
   const [comprasNaoAssociadasSet, setComprasNaoAssociadasSet] = useState(new Set());
+  const isMobile = window.innerWidth < 768; // md:768px
   const [ocultarPagos, setOcultarPagos] = useState(true);
-  const [larguraEcrã, setLarguraEcrã] = useState(window.innerWidth);
-
-  useEffect(() => {
-    const handleResize = () => setLarguraEcrã(window.innerWidth);
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-  
-  const isMobile = larguraEcrã < 1280;
-
 
 
 
@@ -467,7 +459,7 @@ return (
   />
 
   {/* ✅ Botão "Ocultar Pagos" apenas no mobile */}
-  <div className="lg:hidden mt-2 flex justify-end">
+  <div className="md:hidden mt-2 flex justify-end">
     <button
       onClick={() => setOcultarPagos(!ocultarPagos)}
       className={`px-3 py-2 rounded text-white text-sm font-semibold transition-colors ${
@@ -493,9 +485,9 @@ return (
 
 
       <div className="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-md rounded p-4 transition-colors duration-300">
-        <div className="w-full overflow-x-auto hidden lg:block">
-          <table className="hidden xl:table min-w-full border border-gray-300 dark:border-gray-600 text-sm transition-colors duration-300">
-            <thead className="hidden lg:table-header-group bg-gray-100 dark:bg-gray-800 transition-colors duration-300">
+        <div className="overflow-x-auto w-full">
+          <table className="hidden md:table min-w-full border border-gray-300 dark:border-gray-600 text-sm transition-colors duration-300">
+            <thead className="bg-gray-100 dark:bg-gray-800 transition-colors duration-300">
                <tr>
                 <th></th>
                 <th className="p-2">Data</th>
@@ -826,9 +818,8 @@ return (
               </>
             ))}
           </tbody>
-        </table>
-       {isMobile && (   
-          <div className="space-y-5 xl:hidden mt-6 px-0 w-full max-w-full">
+        </table>       
+          <div className="space-y-5 md:hidden mt-6 px-0 w-full max-w-full">
             {registos
               .filter(r =>r.evento.toLowerCase().includes(filtroPesquisa.toLowerCase()) &&(!ocultarPagos || r.estado !== "Pago") )
               .map((r) => {
@@ -1156,5 +1147,6 @@ return (
           </div>
         </div>
       )}
+   </div>
   );
 }
