@@ -43,7 +43,7 @@ export default function Eventos() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
   
-  const isMobile = larguraEcrã < 1024;
+  const isMobile = larguraEcrã < 1280;
 
 
 
