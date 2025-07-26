@@ -826,7 +826,8 @@ return (
               </>
             ))}
           </tbody>
-        </table>       
+        </table>
+       {isMobile && (   
           <div className="space-y-5 xl:hidden mt-6 px-0 w-full max-w-full">
             {registos
               .filter(r =>r.evento.toLowerCase().includes(filtroPesquisa.toLowerCase()) &&(!ocultarPagos || r.estado !== "Pago") )
@@ -1156,5 +1157,6 @@ return (
         </div>
       )}
    </div>
+  )}
   );
 }
