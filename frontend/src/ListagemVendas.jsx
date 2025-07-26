@@ -495,7 +495,7 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
 
       
   
-      <div className="hidden lg:block overflow-x-auto w-full">
+      <div className="hidden xl:block overflow-x-auto w-full">
         <table className="min-w-full border border-gray-300 dark:border-gray-600 text-sm text-left text-gray-900 dark:text-gray-100 transition-colors duration-300">
          <thead className="bg-gray-100 dark:bg-gray-800 transition-colors duration-300">
           <tr>
@@ -627,7 +627,7 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
       
 
       <div
-        className="space-y-5 lg:hidden px-2"
+        className="space-y-5 xl:hidden px-2"
         onTouchStart={(e) => setStartY(e.touches[0].clientY)}
         onTouchMove={(e) => {
           if (startY !== null && e.touches[0].clientY - startY > 80) {
