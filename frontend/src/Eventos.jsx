@@ -458,7 +458,7 @@ return (
   />
 
   {/* ✅ Botão "Ocultar Pagos" apenas no mobile */}
-  <div className="md:hidden mt-2 flex justify-end">
+  <div className="xl:hidden mt-2 flex justify-end">
     <button
       onClick={() => setOcultarPagos(!ocultarPagos)}
       className={`px-3 py-2 rounded text-white text-sm font-semibold transition-colors ${
@@ -818,7 +818,7 @@ return (
             ))}
           </tbody>
         </table>       
-          <div className="space-y-5 md:hidden mt-6 px-0 w-full max-w-full">
+          <div className="space-y-5 xl:hidden mt-6 px-0 w-full max-w-full">
             {registos
               .filter(r =>r.evento.toLowerCase().includes(filtroPesquisa.toLowerCase()) &&(!ocultarPagos || r.estado !== "Pago") )
               .map((r) => {
