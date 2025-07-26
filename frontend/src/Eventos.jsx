@@ -494,7 +494,7 @@ return (
 
       <div className="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-md rounded p-4 transition-colors duration-300">
         <div className="w-full overflow-x-auto hidden lg:block">
-          <table className="hidden lg:table min-w-full border border-gray-300 dark:border-gray-600 text-sm transition-colors duration-300">
+          <table className="hidden xl:table min-w-full border border-gray-300 dark:border-gray-600 text-sm transition-colors duration-300">
             <thead className="hidden lg:table-header-group bg-gray-100 dark:bg-gray-800 transition-colors duration-300">
                <tr>
                 <th></th>
@@ -827,7 +827,7 @@ return (
             ))}
           </tbody>
         </table>       
-          <div className="space-y-5 lg:hidden mt-6 px-0 w-full max-w-full">
+          <div className="space-y-5 xl:hidden mt-6 px-0 w-full max-w-full">
             {registos
               .filter(r =>r.evento.toLowerCase().includes(filtroPesquisa.toLowerCase()) &&(!ocultarPagos || r.estado !== "Pago") )
               .map((r) => {
