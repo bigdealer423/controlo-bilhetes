@@ -484,9 +484,9 @@ return (
 
 
       <div className="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-md rounded p-4 transition-colors duration-300">
-        <div className="overflow-x-auto w-full">
-          <table className="hidden md:table min-w-full border border-gray-300 dark:border-gray-600 text-sm transition-colors duration-300">
-            <thead className="bg-gray-100 dark:bg-gray-800 transition-colors duration-300">
+        <div className="w-full overflow-x-auto hidden lg:block">
+          <table className="hidden lg:table min-w-full border border-gray-300 dark:border-gray-600 text-sm transition-colors duration-300">
+            <thead className="hidden lg:table-header-group bg-gray-100 dark:bg-gray-800 transition-colors duration-300">
                <tr>
                 <th></th>
                 <th className="p-2">Data</th>
