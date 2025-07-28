@@ -862,7 +862,20 @@ except Exception as e:
         "disputas": resultado_pagamentos.get("disputas", []) + resultado_pagamentos_stubhub.get("disputas", [])
     }
 
+    print("📨 A enviar resumo por email...")
+    enviar_resumo_email(
+        total_emails=resumo["total_lidos"],
+        sucesso=resumo["sucesso"],
+        falha=resumo.get("falhas", 0),
+        ja_existentes=resumo.get("existentes", 0),
+        ids_erro=resumo.get("ids_falhados", []),
+        entregues=resumo.get("entregues", 0),
+        ids_entregues=resumo.get("ids_entregues", []),
+        pagos=resumo.get("pagos", 0),
+        disputas=resumo.get("disputas", [])
+    )
 
+    
     # Atualiza API
     try:
         requests.post("https://controlo-bilhetes.onrender.com/guardar_resumo", json=resumo)
