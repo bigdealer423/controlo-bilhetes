@@ -111,10 +111,18 @@ useEffect(() => {
                 });
             
                 if (eventosDoDia.length > 0) {
-                  const temEventoPago = eventosDoDia.some(e => e.estado === "Pago");
-                  return temEventoPago
-                    ? "bg-green-300 dark:bg-green-700 text-white font-semibold rounded-full hover:bg-green-400 dark:hover:bg-green-600 transition-colors duration-200"
-                    : "bg-blue-200 dark:bg-blue-700 text-blue-900 dark:text-blue-100 font-semibold rounded-full hover:bg-blue-300 dark:hover:bg-blue-600 transition-colors duration-200";
+                  const todosPagos = eventosDoDia.every(e => e.estado === "Pago");
+                  const algumEmDisputa = eventosDoDia.some(e => e.estado === "Disputa");
+            
+                  if (algumEmDisputa && !todosPagos) {
+                    return "bg-red-300 dark:bg-red-700 text-white font-semibold rounded-full hover:bg-red-400 dark:hover:bg-red-600 transition-colors duration-200";
+                  }
+            
+                  if (todosPagos) {
+                    return "bg-green-300 dark:bg-green-700 text-white font-semibold rounded-full hover:bg-green-400 dark:hover:bg-green-600 transition-colors duration-200";
+                  }
+            
+                  return "bg-blue-200 dark:bg-blue-700 text-blue-900 dark:text-blue-100 font-semibold rounded-full hover:bg-blue-300 dark:hover:bg-blue-600 transition-colors duration-200";
                 }
               }
               return null;
