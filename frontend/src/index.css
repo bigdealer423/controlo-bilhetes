@@ -46,22 +46,32 @@ html, body {
 }
 
 
-/* Tile ativo (mantém a cor original e adiciona brilho/borda) */
 .react-calendar__tile--active {
-  background-color: inherit !important;
-  color: inherit !important;
-  border: 2px solid white;
-  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
-  border-radius: 9999px;
-  animation: flashBorder 0.4s ease;
+  /* Remove qualquer cor imposta */
+  background: unset !important;
+  color: unset !important;
+
+  /* Aplica apenas o efeito visual */
+  position: relative;
+  z-index: 1;
 }
 
-/* Animação flash branca para realce ao clicar */
+.react-calendar__tile--active::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.6);
+  animation: flashBorder 0.4s ease;
+  z-index: -1;
+}
+
 @keyframes flashBorder {
-  0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4); }
-  50% { box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.6); }
+  0%   { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4); }
+  50%  { box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.6); }
   100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4); }
 }
+
 
 
 /* Tile hoje */
