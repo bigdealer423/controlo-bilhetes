@@ -21,7 +21,6 @@ URLS = [
     'https://viagens.slbenfica.pt/follow-my-team/futebol/supertaca-candido-de-oliveira',
     'https://viagens.slbenfica.pt/follow-my-team/futebol/eusebio-cup',
     'https://www.sporting.pt/pt/bilhetes-e-gamebox/bilhetes',
-    'https://2ticket.pt/casapiaac/lista-eventos',  # ✅ CASA PIA
     'https://blueticket.meo.pt/pt/search?q=desporto&page=2'
 ]
 
@@ -125,27 +124,7 @@ def buscar_links_novos():
                 else:
                     print("✅ Blueticket verificado, 'Benfica' não encontrado no momento.", flush=True)
 
-                    # 2Ticket.pt Casapia
-            elif '2ticket.pt/casapiaac/lista-eventos' in url:
-                try:
-                    scraper = cloudscraper.create_scraper()
-                    resp = scraper.get(url, timeout=15)
-            
-                    if resp.status_code != 200:
-                        print(f"⚠️ 2Ticket respondeu com status {resp.status_code}, ignorado.", flush=True)
-                        continue
-            
-                    soup = BeautifulSoup(resp.text, 'html.parser')
-                    texto_site = soup.get_text(separator=' ', strip=True).lower()
-                    if any(palavra in texto_site for palavra in PALAVRAS_CHAVE_2TICKET):
-                        links_encontrados.append(url)
-                        print(f"✅ Encontrada referência a {PALAVRAS_CHAVE_2TICKET} no 2Ticket Casapia.", flush=True)
-                    else:
-                        print("✅ 2Ticket verificado, 'comprar bilhetes' não encontrado no momento.", flush=True)
-                except Exception as e:
-                    print(f"⚠️ 2Ticket Casapia falhou: {e}", flush=True)
-                    continue
-
+                   
 
 
         except Exception as e:
