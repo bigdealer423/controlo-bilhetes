@@ -54,22 +54,32 @@ html, body {
   position: relative;
 }
 
-/* ✅ Adiciona brilho branco como overlay com pseudo-elemento */
+/* 💥 Flash mais forte e visível */
 .react-calendar__tile--active::after {
   content: "";
   position: absolute;
   inset: 0;
   border-radius: 9999px;
-  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.6);
-  animation: flashBorder 0.4s ease;
+  background-color: rgba(255, 255, 255, 0.35); /* camada branca visível */
+  animation: flashBorder 0.6s ease;
   z-index: 1;
+  pointer-events: none;
 }
 
-/* ✅ Efeito de flash */
+/* 🔁 Animação mais visível: fundo branco translúcido que expande */
 @keyframes flashBorder {
-  0%   { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4); }
-  50%  { box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.6); }
-  100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4); }
+  0% {
+    opacity: 0;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.12);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1);
+  }
 }
 
 
