@@ -451,13 +451,25 @@ return (
   </button>
 
   {/* Filtro de pesquisa ao meio */}
-  <input
-    type="text"
-    placeholder="🔍 Pesquisar equipa..."
-    value={filtroPesquisa}
-    onChange={(e) => setFiltroPesquisa(e.target.value)}
-    className="p-2 border rounded w-full md:w-72 bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
-  />
+  <div className="relative w-full md:w-72">
+    <input
+      type="text"
+      placeholder="🔍 Pesquisar equipa..."
+      value={filtroPesquisa}
+      onChange={(e) => setFiltroPesquisa(e.target.value)}
+      className="p-2 pr-8 border rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
+    />
+    {filtroPesquisa && (
+      <button
+        onClick={() => setFiltroPesquisa("")}
+        className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-red-500 text-sm"
+        title="Limpar"
+      >
+        ❌
+      </button>
+    )}
+  </div>
+
 
   {/* ✅ Botão "Ocultar Pagos" apenas no mobile */}
   <div className="md:hidden mt-2 flex justify-end">
