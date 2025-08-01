@@ -32,6 +32,8 @@ export default function ListagemVendas(props) {
   const [eventosChaveCarregado, setEventosChaveCarregado] = useState(false);
   const [dadosSincronizados, setDadosSincronizados] = useState(false);
   const [startY, setStartY] = useState(null);
+  const [filtroEquipa, setFiltroEquipa] = useState("");
+
 
 
   
@@ -468,11 +470,23 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
 
 
 
-      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-md rounded-xl px-4 py-3 mb-4 flex items-center justify-between transition-colors duration-300">
+      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-md rounded-xl px-4 py-3 mb-4 flex flex-wrap items-center justify-between gap-4 transition-colors duration-300">
+        {/* Esquerda: Título */}
         <h2 className="text-lg font-bold text-gray-900 dark:text-white">Vendas</h2>
-        <div className="flex gap-2 flex-wrap">
       
-          {/* Botão Verificar E-mails - responsivo */}
+        {/* Centro: Pesquisa por equipa */}
+        <div className="flex-1 flex justify-center">
+          <input
+            type="text"
+            placeholder="🔍 Procurar Equipa"
+            value={filtroEquipa}
+            onChange={(e) => setFiltroEquipa(e.target.value)}
+            className="w-64 max-w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-1 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+          />
+        </div>
+      
+        {/* Direita: Botões */}
+        <div className="flex gap-2 flex-wrap justify-end">
           <button
             onClick={forcarAtualizacaoEmail}
             className="bg-green-600 text-white px-2 py-1 text-sm md:px-3 md:py-1.5 md:text-base rounded hover:bg-green-700 transition"
@@ -480,7 +494,6 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
             🔄 Verificar E-mails
           </button>
       
-          {/* Botão Exportar Excel - só em desktop */}
           <button
             onClick={() => exportarParaExcel(registos)}
             className="hidden md:flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-xl shadow-md transition"
@@ -488,9 +501,9 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
             <FaFileExcel size={18} />
             Exportar Excel
           </button>
-      
         </div>
       </div>
+
 
 
       
