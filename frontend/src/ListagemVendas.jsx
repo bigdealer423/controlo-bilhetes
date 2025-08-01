@@ -541,7 +541,10 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
               .filter(v => {
                 const correspondeEvento = filtroEvento === "" || v.evento === filtroEvento;
                 const correspondeID = filtroIdVenda === "" || v.id_venda.toString().includes(filtroIdVenda);
-                return correspondeEvento && correspondeID;
+                const correspondeEquipa =
+                  filtroEquipa === "" ||
+                  (v.evento && v.evento.toLowerCase().includes(filtroEquipa.toLowerCase()));
+                return correspondeEvento && correspondeID && correspondeEquipa;
               })
               .map(r => (
 
