@@ -476,13 +476,24 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
       
         {/* Centro: Pesquisa por equipa */}
         <div className="flex-1 flex justify-center">
-          <input
-            type="text"
-            placeholder="🔍 Procurar Equipa"
-            value={filtroEquipa}
-            onChange={(e) => setFiltroEquipa(e.target.value)}
-            className="w-64 max-w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-1 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-          />
+          <div className="relative w-64 max-w-full">
+            <input
+              type="text"
+              placeholder="🔍 Procurar Equipa"
+              value={filtroEquipa}
+              onChange={(e) => setFiltroEquipa(e.target.value)}
+              className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-1 pr-8 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+            />
+            {filtroEquipa && (
+              <button
+                onClick={() => setFiltroEquipa("")}
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-red-500 text-sm"
+                title="Limpar"
+              >
+                ❌
+              </button>
+            )}
+          </div>
         </div>
       
         {/* Direita: Botões */}
