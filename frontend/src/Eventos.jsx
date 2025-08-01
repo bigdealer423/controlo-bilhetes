@@ -530,9 +530,11 @@ return (
       ? "bg-green-100 dark:bg-green-700"
       : r.estado === "Entregue"
       ? "bg-yellow-100 dark:bg-yellow-700"
+      : r.estado === "Disputa"
+      ? "bg-red-200 dark:bg-red-800"
       : ""
   } transition-colors duration-300`}
->
+
 
 
                  <td className="p-2">
