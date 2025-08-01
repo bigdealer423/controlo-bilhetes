@@ -21,7 +21,7 @@ URLS = [
     'https://viagens.slbenfica.pt/follow-my-team/futebol/supertaca-candido-de-oliveira',
     'https://viagens.slbenfica.pt/follow-my-team/futebol/eusebio-cup',
     'https://www.sporting.pt/pt/bilhetes-e-gamebox/bilhetes',
-    'https://2ticket.pt/casapiaac/lista-eventos'  # ✅ CASA PIA
+    'https://2ticket.pt/casapiaac/lista-eventos',  # ✅ CASA PIA
     'https://blueticket.meo.pt/pt/search?q=desporto&page=2'
 ]
 
