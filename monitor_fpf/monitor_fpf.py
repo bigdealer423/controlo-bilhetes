@@ -21,6 +21,7 @@ URLS = [
     'https://viagens.slbenfica.pt/follow-my-team/futebol/supertaca-candido-de-oliveira',
     'https://viagens.slbenfica.pt/follow-my-team/futebol/eusebio-cup',
     'https://www.sporting.pt/pt/bilhetes-e-gamebox/bilhetes',
+    'https://2ticket.pt/casapiaac/lista-eventos'  # ✅ CASA PIA
     'https://blueticket.meo.pt/pt/search?q=desporto&page=2'
 ]
 
@@ -35,6 +36,7 @@ PALAVRAS_CHAVE_FPF = ["Comprar", "Adquirir", "Bilhete", "Ingressos", "Buy", "IRL
 PALAVRAS_CHAVE_SLB = ["Carcavelos", "Fatima", "17ª Jornada", "18ª Jornada"]
 PALAVRAS_CHAVE_SPORTING = ["comprar bilhetes"]
 PALAVRAS_CHAVE_BLUETICKET = ["Benfica"]
+PALAVRAS_CHAVE_2TICKET = ["comprar bilhetes"]
 
 def carregar_historico():
     if os.path.exists(HIST_FILE):
@@ -122,6 +124,27 @@ def buscar_links_novos():
                     print(f"✅ Encontrada referência a {PALAVRAS_CHAVE_BLUETICKET} no Blueticket.", flush=True)
                 else:
                     print("✅ Blueticket verificado, 'Benfica' não encontrado no momento.", flush=True)
+
+                    # 2Ticket.pt Casapia
+            elif '2ticket.pt/casapiaac/lista-eventos' in url:
+                try:
+                    headers = {"User-Agent": "Mozilla/5.0"}
+                    resp = session.get(url, headers=headers, timeout=15)
+                    if resp.status_code != 200:
+                        print(f"⚠️ 2Ticket respondeu com status {resp.status_code}, ignorado.", flush=True)
+                        continue
+
+                    soup = BeautifulSoup(resp.text, 'html.parser')
+                    texto_site = soup.get_text(separator=' ', strip=True).lower()
+                    if any(palavra in texto_site for palavra in PALAVRAS_CHAVE_2TICKET):
+                        links_encontrados.append(url)
+                        print(f"✅ Encontrada referência a {PALAVRAS_CHAVE_2TICKET} no 2Ticket Casapia.", flush=True)
+                    else:
+                        print("✅ 2Ticket verificado, 'comprar bilhetes' não encontrado no momento.", flush=True)
+                except Exception as e:
+                    print(f"⚠️ 2Ticket Casapia falhou: {e}", flush=True)
+                    continue
+
 
         except Exception as e:
             print(f"❌ Erro ao processar {url}: {e}", flush=True)
