@@ -216,25 +216,42 @@ useEffect(() => {
   // ✅ Função auxiliar para saber se o mês já acabou
   function isMesPassado(mesStr) {
     try {
-      const [mesNome, anoStr] = mesStr.toLowerCase().trim().split(" ");
-      const meses = [
-        "janeiro", "fevereiro", "março", "abril", "maio", "junho",
-        "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"
+      const [mesNomeRaw, anoStr] = mesStr.trim().toLowerCase().split(" ");
+      const mesesIngles = [
+        "january", "february", "march", "april", "may", "june",
+        "july", "august", "september", "october", "november", "december"
       ];
-      const mesIndex = meses.indexOf(mesNome); // 0 a 11
+  
+      const mesIndex = mesesIngles.indexOf(mesNomeRaw);
       const ano = parseInt(anoStr, 10);
   
       if (mesIndex === -1 || isNaN(ano)) return false;
   
       const dataItem = new Date(ano, mesIndex + 1, 0); // último dia do mês
       const hoje = new Date();
-      hoje.setHours(0, 0, 0, 0); // zera horas para comparar só datas
+      hoje.setHours(0, 0, 0, 0);
   
       return dataItem < hoje;
     } catch {
       return false;
     }
   }
+
+  function traduzirMesParaPt(mesStr) {
+    const [mesNomeRaw, anoStr] = mesStr.trim().toLowerCase().split(" ");
+  
+    const meses = {
+      january: "Janeiro", february: "Fevereiro", march: "Março",
+      april: "Abril", may: "Maio", june: "Junho",
+      july: "Julho", august: "Agosto", september: "Setembro",
+      october: "Outubro", november: "Novembro", december: "Dezembro"
+    };
+  
+    const mesTraduzido = meses[mesNomeRaw] || mesNomeRaw;
+    return `${mesTraduzido} ${anoStr}`;
+  }
+
+
 
   
   const ordenarEventosDropdown = (data) => {
@@ -1144,7 +1161,7 @@ return (
             <ul className="mb-4 space-y-1 text-black dark:text-white">
               {Array.isArray(lucrosMensais) && lucrosMensais.map((item, idx) => (
                 <li key={idx} className="flex justify-between gap-8">
-                  <span>{item.mes}</span>
+                  <span>{traduzirMesParaPt(item.mes)}</span>
                   <span className={
                     isMesPassado(item.mes) && item.lucro >= 0
                       ? "text-green-600 font-semibold"
@@ -1154,8 +1171,6 @@ return (
                   }>
                     {item.lucro.toFixed(2)} €
                   </span>
-
-
                 </li>
 
               ))}
