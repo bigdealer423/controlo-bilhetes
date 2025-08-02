@@ -216,16 +216,21 @@ useEffect(() => {
   // ✅ Função auxiliar para saber se o mês já acabou
   function isMesPassado(mesStr) {
     try {
-      const [mesNome, anoStr] = mesStr.toLowerCase().split(" ");
-      const meses = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
-      const mesIndex = meses.indexOf(mesNome);
+      const [mesNome, anoStr] = mesStr.toLowerCase().trim().split(" ");
+      const meses = [
+        "janeiro", "fevereiro", "março", "abril", "maio", "junho",
+        "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"
+      ];
+      const mesIndex = meses.indexOf(mesNome); // 0 a 11
       const ano = parseInt(anoStr, 10);
   
-      const agora = new Date();
-      const mesAtual = agora.getMonth(); // 0 = janeiro
-      const anoAtual = agora.getFullYear();
+      if (mesIndex === -1 || isNaN(ano)) return false;
   
-      return ano < anoAtual || (ano === anoAtual && mesIndex < mesAtual);
+      const dataItem = new Date(ano, mesIndex + 1, 0); // último dia do mês
+      const hoje = new Date();
+      hoje.setHours(0, 0, 0, 0); // zera horas para comparar só datas
+  
+      return dataItem < hoje;
     } catch {
       return false;
     }
