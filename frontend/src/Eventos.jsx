@@ -202,16 +202,35 @@ useEffect(() => {
   };
 
   const buscarLucrosMensais = async () => {
-  try {
-    const res = await fetch("https://controlo-bilhetes.onrender.com/lucro_por_mes");
-    const data = await res.json();
-    console.log("📊 Dados recebidos:", data);
-    setLucrosMensais(data);
-    setMostrarResumoDetalhado(true); // 👈 abre o modal
-  } catch (err) {
-    console.error("Erro ao buscar lucros mensais:", err);
+    try {
+      const res = await fetch("https://controlo-bilhetes.onrender.com/lucro_por_mes");
+      const data = await res.json();
+      console.log("📊 Dados recebidos:", data);
+      setLucrosMensais(data);
+      setMostrarResumoDetalhado(true); // 👈 abre o modal
+    } catch (err) {
+      console.error("Erro ao buscar lucros mensais:", err);
+    }
+  };
+  
+  // ✅ Função auxiliar para saber se o mês já acabou
+  function isMesPassado(mesStr) {
+    try {
+      const [mesNome, anoStr] = mesStr.toLowerCase().split(" ");
+      const meses = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
+      const mesIndex = meses.indexOf(mesNome);
+      const ano = parseInt(anoStr, 10);
+  
+      const agora = new Date();
+      const mesAtual = agora.getMonth(); // 0 = janeiro
+      const anoAtual = agora.getFullYear();
+  
+      return ano < anoAtual || (ano === anoAtual && mesIndex < mesAtual);
+    } catch {
+      return false;
+    }
   }
-};
+
   
   const ordenarEventosDropdown = (data) => {
     return [...data].sort((a, b) => {
@@ -1121,9 +1140,16 @@ return (
               {Array.isArray(lucrosMensais) && lucrosMensais.map((item, idx) => (
                 <li key={idx} className="flex justify-between gap-8">
                   <span>{item.mes}</span>
-                  <span className={item.lucro < 0 ? "text-red-500" : ""}>
+                  <span className={
+                    item.lucro < 0
+                      ? "text-red-500"
+                      : isMesPassado(item.mes)
+                      ? "text-green-600 font-semibold"
+                      : ""
+                  }>
                     {item.lucro.toFixed(2)} €
                   </span>
+
                 </li>
 
               ))}
