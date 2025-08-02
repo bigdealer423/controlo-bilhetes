@@ -1141,14 +1141,15 @@ return (
                 <li key={idx} className="flex justify-between gap-8">
                   <span>{item.mes}</span>
                   <span className={
-                    item.lucro < 0
-                      ? "text-red-500"
-                      : isMesPassado(item.mes)
+                    isMesPassado(item.mes) && item.lucro >= 0
                       ? "text-green-600 font-semibold"
+                      : item.lucro < 0
+                      ? "text-red-500"
                       : ""
                   }>
                     {item.lucro.toFixed(2)} €
                   </span>
+
 
                 </li>
 
