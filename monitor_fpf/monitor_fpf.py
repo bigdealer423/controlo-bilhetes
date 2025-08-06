@@ -35,7 +35,7 @@ PALAVRAS_CHAVE_FPF = ["Comprar", "Adquirir", "Bilhete", "Ingressos", "Buy", "IRL
 PALAVRAS_CHAVE_SLB = ["Carcavelos", "Fatima", "17ª Jornada", "18ª Jornada"]
 PALAVRAS_CHAVE_SPORTING = ["comprar bilhetes"]
 PALAVRAS_CHAVE_BLUETICKET = ["Benfica"]
-PALAVRAS_CHAVE_2TICKET = ["comprar bilhetes"]
+PALAVRAS_CHAVE_2TICKET = ["Arouca"]
 
 def carregar_historico():
     if os.path.exists(HIST_FILE):
