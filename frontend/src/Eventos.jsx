@@ -253,18 +253,17 @@ useEffect(() => {
     return `${mesTraduzido} ${anoStr}`;
   }
 
-// === IMPRIMIR VENDAS COM NOTA VERDE (por evento) ===
-const isVerde = (val) => typeof val === "string" && /verde|green/i.test(val.trim());
-const imprimirVendasComNotaVerde = (vendasDoEvento, tituloEvento = "Vendas com Nota (verde)") => {
+// === IMPRIMIR VENDAS COM BOLA VERMELHA (por evento) ===
+const isVermelho = (val) => typeof val === "string" && /vermelho|red/i.test(val.trim());
+
+const imprimirVendasComNotaVermelha = (vendasDoEvento, tituloEvento = "Vendas com Nota (bola vermelha)") => {
   if (!Array.isArray(vendasDoEvento)) vendasDoEvento = [];
 
-  // filtra só as vendas com círculo verde e nota preenchida
-  // NOVO (só exige bola verde)
-const selecionadas = vendasDoEvento.filter(v => isVerde(v?.circulo_estado_venda));
-
+  // ⚠️ agora só filtra por bola vermelha (nota pode estar vazia)
+  const selecionadas = vendasDoEvento.filter(v => isVermelho(v?.circulo_estado_venda));
 
   if (selecionadas.length === 0) {
-    toast.info("Não há vendas com nota (bola verde) para imprimir.");
+    toast.info("Não há vendas com nota (bola vermelha) para imprimir.");
     return;
   }
 
@@ -291,9 +290,7 @@ const selecionadas = vendasDoEvento.filter(v => isVerde(v?.circulo_estado_venda)
           table { width: 100%; border-collapse: collapse; }
           th, td { border: 1px solid #ccc; padding: 8px; font-size: 12px; }
           th { background: #f3f3f3; text-align: left; }
-          @media print {
-            @page { margin: 12mm; }
-          }
+          @media print { @page { margin: 12mm; } }
         </style>
       </head>
       <body>
@@ -324,7 +321,7 @@ const selecionadas = vendasDoEvento.filter(v => isVerde(v?.circulo_estado_venda)
   w.document.close();
   w.focus();
   w.print();
-  // w.close(); // ← opcional
+  // w.close(); // opcional
 };
 
 
@@ -746,14 +743,15 @@ return (
                     </button>
                   
                     {/* Imprimir (ícone) — só DESKTOP */}
+                    {/* Imprimir (ícone) — só DESKTOP */}
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         const vendasDoEvento = vendas.filter(v => v.evento === r.evento && v.data_evento === r.data_evento);
-                        const titulo = `Vendas com Nota (verde) — ${r.evento} — ${new Date(r.data_evento).toLocaleDateString("pt-PT")}`;
-                        imprimirVendasComNotaVerde(vendasDoEvento, titulo);
+                        const titulo = `Vendas com Nota (bola vermelha) — ${r.evento} — ${new Date(r.data_evento).toLocaleDateString("pt-PT")}`;
+                        imprimirVendasComNotaVermelha(vendasDoEvento, titulo);
                       }}
-                      title="Imprimir vendas com Nota (bola verde) deste evento"
+                      title="Imprimir vendas com Nota (bola vermelha) deste evento"
                       className="hidden md:inline-flex items-center justify-center align-middle ml-2 px-2 py-1 rounded bg-emerald-600 hover:bg-emerald-700 text-white"
                     >
                       <FaPrint />
