@@ -8,6 +8,8 @@
 
 
 import { useEffect, useState } from "react";
+import { FaTrash, FaPrint } from "react-icons/fa"; // <- adicionar
+import { toast } from "react-toastify";            // se ainda não estiver
 import { useLocation } from "react-router-dom";
 import { useRef } from "react";
 import { FaFileExcel, FaEdit } from "react-icons/fa";
@@ -251,6 +253,79 @@ useEffect(() => {
     return `${mesTraduzido} ${anoStr}`;
   }
 
+// === IMPRIMIR VENDAS COM NOTA VERDE (por evento) ===
+const imprimirVendasComNotaVerde = (vendasDoEvento, tituloEvento = "Vendas com Nota (verde)") => {
+  if (!Array.isArray(vendasDoEvento)) vendasDoEvento = [];
+
+  // filtra só as vendas com círculo verde e nota preenchida
+  const selecionadas = vendasDoEvento.filter(v =>
+    (v?.circulo_estado_venda === "verde") &&
+    (String(v?.nota_estado_venda || "").trim() !== "")
+  );
+
+  if (selecionadas.length === 0) {
+    toast.info("Não há vendas com nota (bola verde) para imprimir.");
+    return;
+  }
+
+  const linhas = selecionadas.map(v => `
+    <tr>
+      <td>${v.id_venda ?? v.id ?? ""}</td>
+      <td>${(v.data_evento ?? "").toString().slice(0,10)}</td>
+      <td>${v.evento ?? ""}</td>
+      <td>${v.estadio ?? ""}</td>
+      <td>${v.ganho ?? ""}</td>
+      <td>${v.estado ?? ""}</td>
+      <td>${String(v.nota_estado_venda ?? "").replace(/</g,"&lt;")}</td>
+    </tr>
+  `).join("");
+
+  const html = `
+    <html>
+      <head>
+        <meta charset="utf-8" />
+        <title>${tituloEvento}</title>
+        <style>
+          body { font-family: Arial, sans-serif; padding: 16px; }
+          h1 { font-size: 18px; margin-bottom: 12px; }
+          table { width: 100%; border-collapse: collapse; }
+          th, td { border: 1px solid #ccc; padding: 8px; font-size: 12px; }
+          th { background: #f3f3f3; text-align: left; }
+          @media print {
+            @page { margin: 12mm; }
+          }
+        </style>
+      </head>
+      <body>
+        <h1>${tituloEvento}</h1>
+        <table>
+          <thead>
+            <tr>
+              <th>ID Venda</th>
+              <th>Data Evento</th>
+              <th>Evento</th>
+              <th>Bilhetes</th>
+              <th>Ganho (€)</th>
+              <th>Estado</th>
+              <th>Nota</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${linhas}
+          </tbody>
+        </table>
+      </body>
+    </html>
+  `;
+
+  const w = window.open("", "_blank", "width=900,height=700");
+  if (!w) { toast.error("Popup bloqueado. Permite popups para imprimir."); return; }
+  w.document.write(html);
+  w.document.close();
+  w.focus();
+  w.print();
+  // w.close(); // ← opcional
+};
 
 
   
@@ -648,6 +723,7 @@ return (
                       ) : r.estado}
                   </td>
                   <td className="p-2 space-x-2">
+                    {/* Editar (texto) */}
                     <button
                       onClick={() => {
                         if (modoEdicao === r.id) {
@@ -660,12 +736,27 @@ return (
                     >
                       {modoEdicao === r.id ? "Guardar" : "Editar"}
                     </button>
-
+                  
+                    {/* Eliminar (texto) */}
                     <button
                       onClick={() => confirmarEliminar(r.id)}
                       className="text-red-600 hover:underline"
                     >
                       Eliminar
+                    </button>
+                  
+                    {/* Imprimir (ícone) — só DESKTOP */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        const vendasDoEvento = vendas.filter(v => v.evento === r.evento && v.data_evento === r.data_evento);
+                        const titulo = `Vendas com Nota (verde) — ${r.evento} — ${new Date(r.data_evento).toLocaleDateString("pt-PT")}`;
+                        imprimirVendasComNotaVerde(vendasDoEvento, titulo);
+                      }}
+                      title="Imprimir vendas com Nota (bola verde) deste evento"
+                      className="hidden md:inline-flex items-center justify-center align-middle ml-2 px-2 py-1 rounded bg-emerald-600 hover:bg-emerald-700 text-white"
+                    >
+                      <FaPrint />
                     </button>
                   </td>
                 </tr>
