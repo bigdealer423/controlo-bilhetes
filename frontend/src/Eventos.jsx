@@ -254,14 +254,14 @@ useEffect(() => {
   }
 
 // === IMPRIMIR VENDAS COM NOTA VERDE (por evento) ===
+const isVerde = (val) => typeof val === "string" && /verde|green/i.test(val.trim());
 const imprimirVendasComNotaVerde = (vendasDoEvento, tituloEvento = "Vendas com Nota (verde)") => {
   if (!Array.isArray(vendasDoEvento)) vendasDoEvento = [];
 
   // filtra só as vendas com círculo verde e nota preenchida
-  const selecionadas = vendasDoEvento.filter(v =>
-    (v?.circulo_estado_venda === "verde") &&
-    (String(v?.nota_estado_venda || "").trim() !== "")
-  );
+  // NOVO (só exige bola verde)
+const selecionadas = vendasDoEvento.filter(v => isVerde(v?.circulo_estado_venda));
+
 
   if (selecionadas.length === 0) {
     toast.info("Não há vendas com nota (bola verde) para imprimir.");
