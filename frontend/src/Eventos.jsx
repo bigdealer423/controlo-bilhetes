@@ -720,7 +720,7 @@ return (
                       ) : r.estado}
                   </td>
                   <td className="p-2 space-x-2">
-                    {/* Editar (texto) */}
+                    {/* Editar (ícone) */}
                     <button
                       onClick={() => {
                         if (modoEdicao === r.id) {
@@ -729,18 +729,21 @@ return (
                           setModoEdicao(r.id);
                         }
                       }}
-                      className="text-blue-600 hover:underline"
+                      className="text-blue-600 hover:text-blue-800 p-2"
+                      title={modoEdicao === r.id ? "Guardar" : "Editar"}
                     >
-                      {modoEdicao === r.id ? "Guardar" : "Editar"}
+                      {modoEdicao === r.id ? "💾" : <FaEdit />}
                     </button>
-                  
-                    {/* Eliminar (texto) */}
+                    
+                    {/* Eliminar (ícone) */}
                     <button
                       onClick={() => confirmarEliminar(r.id)}
-                      className="text-red-600 hover:underline"
+                      className="text-red-600 hover:text-red-800 p-2"
+                      title="Eliminar"
                     >
-                      Eliminar
+                      <FaTrash />
                     </button>
+
                   
                     {/* Imprimir (ícone) — só DESKTOP */}
                     {/* Imprimir (ícone) — só DESKTOP */}
