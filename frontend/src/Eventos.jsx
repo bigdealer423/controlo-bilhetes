@@ -1017,28 +1017,26 @@ return (
                   <div className="flex justify-between items-center text-sm mb-2">
                     {/* Data (com edição) */}
                     {emEdicao ? (
-                      <input
-                        type="date"
-                        value={eventoEditado.data_evento}
-                        onClick={(e) => e.stopPropagation()}
-                        onChange={(e) =>
-                          setEventoEditado({ ...eventoEditado, data_evento: e.target.value })
-                        }
-                        className="bg-gray-900 border border-gray-500 text-white text-xs px-2 py-1 rounded"
-                      />
+                      <input type="date" ... />
                     ) : (
-                      <div className="bg-gray-800 text-white text-center px-3 py-1 rounded w-14 leading-tight">
-                        <div className="text-[10px] text-gray-300 uppercase">
-                          {new Date(r.data_evento).toLocaleDateString("pt-PT", { month: "short" })}
-                        </div>
-                        <div className="text-lg font-bold">
-                          {new Date(r.data_evento).getDate().toString().padStart(2, '0')}
-                        </div>
-                        <div className="text-[10px] text-gray-300 uppercase">
-                          {new Date(r.data_evento).toLocaleDateString("pt-PT", { weekday: "short" })}
-                        </div>
-                      </div>
+                      (() => {
+                        const d = parseDataPt(r.data_evento);   // 👈 aqui usas o helper
+                        return (
+                          <div className="bg-gray-800 text-white text-center px-3 py-1 rounded w-14 leading-tight">
+                            <div className="text-[10px] text-gray-300 uppercase">
+                              {d ? d.toLocaleDateString("pt-PT", { month: "short" }) : ""}
+                            </div>
+                            <div className="text-lg font-bold">
+                              {d ? String(d.getDate()).padStart(2, '0') : "--"}
+                            </div>
+                            <div className="text-[10px] text-gray-300 uppercase">
+                              {d ? d.toLocaleDateString("pt-PT", { weekday: "short" }) : ""}
+                            </div>
+                          </div>
+                        );
+                      })()
                     )}
+
 
 
           
