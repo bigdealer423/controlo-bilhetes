@@ -18,6 +18,24 @@ import * as XLSX from "xlsx";
 import saveAs from "file-saver";
 import CirculoEstado from "./CirculoEstado";
 
+function parseDataPt(ddmmyyyy) {
+  if (!ddmmyyyy) return null;
+  // aceita "dd-mm-aaaa" e "aaaa-mm-dd"
+  if (/^\d{4}-\d{2}-\d{2}$/.test(ddmmyyyy)) {
+    const [y, m, d] = ddmmyyyy.split("-").map(Number);
+    return new Date(y, m - 1, d);
+  }
+  const [dd, mm, yyyy] = ddmmyyyy.split("-").map(Number);
+  if (!dd || !mm || !yyyy) return null;
+  return new Date(yyyy, mm - 1, dd);
+}
+
+function formatarDataPt(dstr) {
+  const d = parseDataPt(dstr);
+  return d ? d.toLocaleDateString("pt-PT") : dstr || "";
+}
+
+
 export default function Eventos() {
   const [registos, setRegistos] = useState([]);
   const [eventosDropdown, setEventosDropdown] = useState([]);
@@ -41,6 +59,8 @@ export default function Eventos() {
   const [comprasNaoAssociadasSet, setComprasNaoAssociadasSet] = useState(new Set());
   const isMobile = window.innerWidth < 768; // md:768px
   const [ocultarPagos, setOcultarPagos] = useState(true);
+
+  
 
 
 
@@ -134,21 +154,23 @@ useEffect(() => {
   }, [compras, vendas]);
 
   useEffect(() => {
-  const observer = new IntersectionObserver(
-      entries => {
-        if (entries[0].isIntersecting && hasMore && !isLoading) {
-          setSkip(prev => prev + limit); // Avança skip primeiro
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const alvo = entries[0];
+        if (alvo.isIntersecting && hasMore && !isLoading) {
+          setSkip(prev => prev + limit);  // único local onde avançamos skip
         }
       },
-      { threshold: 1 }
+      {
+        threshold: 0.1,      // aciona um pouco antes
+        rootMargin: "200px", // carrega já antes de chegares ao fundo
+      }
     );
   
     if (observerRef.current) observer.observe(observerRef.current);
-  
-    return () => {
-      if (observerRef.current) observer.unobserve(observerRef.current);
-    };
-  }, [hasMore, isLoading]); // <-- tens de fechar assim
+    return () => observer.disconnect();
+  }, [hasMore, isLoading, limit]);
+
 
 
   useEffect(() => {
@@ -355,34 +377,37 @@ const imprimirVendasComNotaVermelha = (vendasDoEvento, tituloEvento = "Vendas co
   };
 
   const buscarEventos = async () => {
-  if (isLoading) return;
-  setIsLoading(true);
-
-  try {
-    const totalLimit = isMobile ? 1000 : limit;  // ← força tudo no mobile
-
-    const res = await fetch(`https://controlo-bilhetes.onrender.com/eventos_completos2?skip=${skip}&limit=${totalLimit}`);
-    if (res.ok) {
+    if (isLoading || !hasMore) return;        // 🔧 guarda adicional de segurança
+    setIsLoading(true);
+  
+    try {
+      const pageLimit = isMobile ? 1000 : limit;
+  
+      const res = await fetch(`https://controlo-bilhetes.onrender.com/eventos_completos2?skip=${skip}&limit=${pageLimit}`);
+      if (!res.ok) throw new Error("HTTP " + res.status);
+  
       const eventos = await res.json();
-
-      if (eventos.length === 0) {
+  
+      // 🔧 se veio menos do que o pedido, acabou a lista
+      if (eventos.length < pageLimit) {
         setHasMore(false);
-      } else {
-        setRegistos(prev => [...prev, ...eventos]);
-
-        if (!isMobile) {
-          setSkip(prev => prev + limit); // só avança skip no desktop
-        } else {
-          setHasMore(false); // no mobile, fecha o ciclo
-        }
       }
+  
+      // 🔧 evitar duplicados se houver chamadas em paralelo
+      setRegistos(prev => {
+        const vistos = new Set(prev.map(e => e.id));
+        const novos = eventos.filter(e => !vistos.has(e.id));
+        return [...prev, ...novos];
+      });
+  
+      // 🔧 NÃO avançar skip aqui! (fica só no IntersectionObserver)
+    } catch (error) {
+      console.error("Erro ao carregar eventos:", error);
+    } finally {
+      setIsLoading(false);
     }
-  } catch (error) {
-    console.error("Erro ao carregar eventos:", error);
-  } finally {
-    setIsLoading(false);
-  }
-};
+  };
+
 
 
 
@@ -673,18 +698,21 @@ return (
     <span className="text-red-600">🔻</span>
   )}
 </td>
-                  <td className="p-2">
-  {modoEdicao === r.id ? (
-    <input
-      type="date"
-      value={r.data_evento}
-      onChange={(e) => atualizarCampo(r.id, "data_evento", e.target.value)}
-      className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
-    />
-  ) : (
-    new Date(r.data_evento).toLocaleDateString("pt-PT")
-  )}
-</td>
+  <td className="p-2">
+    {modoEdicao === r.id ? (
+      <input
+        type="date"
+        value={(() => {
+          const d = parseDataPt(r.data_evento);
+          return d ? d.toISOString().slice(0,10) : r.data_evento;
+        })()}
+        onChange={(e) => atualizarCampo(r.id, "data_evento", e.target.value)}
+      />
+    ) : (
+      formatarDataPt(r.data_evento)
+    )}
+  </td>
+
                   <td className="p-2">
   {modoEdicao === r.id ? (
     <select
