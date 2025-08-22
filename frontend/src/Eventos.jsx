@@ -999,47 +999,53 @@ return (
         </table>       
           <div className="space-y-5 md:hidden mt-6 px-0 w-full max-w-full">
             {registos
-              .filter(r =>r.evento.toLowerCase().includes(filtroPesquisa.toLowerCase()) &&(!ocultarPagos || r.estado !== "Pago") )
+              .filter(
+                (r) =>
+                  r.evento.toLowerCase().includes(filtroPesquisa.toLowerCase()) &&
+                  (!ocultarPagos || r.estado !== "Pago")
+              )
               .map((r) => {
-              const emEdicao = modoEdicao === r.id;
-              return (
-                <div
-                  key={r.id}
-                  onClick={(e) => {
-                    if (!e.target.closest("button")) {
-                      setLinhaExpandida(linhaExpandida === r.id ? null : r.id);
-                    }
-                  }}
-                  className="w-full mx-0 rounded-xl border border-gray-700 bg-gradient-to-br from-zinc-900 to-gray-800 p-4 shadow-xl text-white cursor-pointer"
-                >
-
-                
-                  {/* Topo: Data + Estado */}
-                  <div className="flex justify-between items-center text-sm mb-2">
-                    {/* Data (com edição) */}
-                    {emEdicao ? (
-                      <input
-                        type="date"
-                        value={eventoEditado.data_evento}
-                        onClick={(e) => e.stopPropagation()}
-                        onChange={(e) =>
-                          setEventoEditado({ ...eventoEditado, data_evento: e.target.value })
-                        }
-                        className="bg-gray-900 border border-gray-500 text-white text-xs px-2 py-1 rounded"
-                      />
-                    ) : (
-                      <div className="bg-gray-800 text-white text-center px-3 py-1 rounded w-14 leading-tight">
-                        <div className="text-[10px] text-gray-300 uppercase">
-                          {new Date(r.data_evento).toLocaleDateString("pt-PT", { month: "short" })}
+                const emEdicao = modoEdicao === r.id;
+                const d = parseDataPt(r.data_evento); // ✅ usar helper para datas
+                return (
+                  <div
+                    key={r.id}
+                    onClick={(e) => {
+                      if (!e.target.closest("button")) {
+                        setLinhaExpandida(linhaExpandida === r.id ? null : r.id);
+                      }
+                    }}
+                    className="w-full mx-0 rounded-xl border border-gray-700 bg-gradient-to-br from-zinc-900 to-gray-800 p-4 shadow-xl text-white cursor-pointer"
+                  >
+                    {/* Topo: Data + Estado */}
+                    <div className="flex justify-between items-center text-sm mb-2">
+                      {/* Data (com edição) */}
+                      {emEdicao ? (
+                        <input
+                          type="date"
+                          value={eventoEditado.data_evento}
+                          onClick={(e) => e.stopPropagation()}
+                          onChange={(e) =>
+                            setEventoEditado({
+                              ...eventoEditado,
+                              data_evento: e.target.value,
+                            })
+                          }
+                          className="bg-gray-900 border border-gray-500 text-white text-xs px-2 py-1 rounded"
+                        />
+                      ) : (
+                        <div className="bg-gray-800 text-white text-center px-3 py-1 rounded w-14 leading-tight">
+                          <div className="text-[10px] text-gray-300 uppercase">
+                            {d ? d.toLocaleDateString("pt-PT", { month: "short" }) : ""}
+                          </div>
+                          <div className="text-lg font-bold">
+                            {d ? String(d.getDate()).padStart(2, "0") : "--"}
+                          </div>
+                          <div className="text-[10px] text-gray-300 uppercase">
+                            {d ? d.toLocaleDateString("pt-PT", { weekday: "short" }) : ""}
+                          </div>
                         </div>
-                        <div className="text-lg font-bold">
-                          {new Date(r.data_evento).getDate().toString().padStart(2, '0')}
-                        </div>
-                        <div className="text-[10px] text-gray-300 uppercase">
-                          {new Date(r.data_evento).toLocaleDateString("pt-PT", { weekday: "short" })}
-                        </div>
-                      </div>
-                    )}
+                      )}
 
 
           
