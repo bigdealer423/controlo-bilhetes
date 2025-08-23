@@ -714,7 +714,7 @@ return (
         type="date"
         value={toInputDate(r.data_evento)}   // ✅ agora usa o helper
         onChange={(e) => atualizarCampo(r.id, "data_evento", e.target.value)}
-        className="border border-gray-400 bg-white text-black rounded px-2 py-1 focus:ring-2 focus:ring-blue-500"
+        className="border p-2 rounded bg-blue-900 text-white placeholder-gray-300 focus:ring-2 focus:ring-yellow-400"
       />
     ) : (
       formatarDataPt(r.data_evento)
