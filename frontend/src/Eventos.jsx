@@ -712,16 +712,14 @@ return (
     {modoEdicao === r.id ? (
       <input
         type="date"
-        value={(() => {
-          const d = parseDataPt(r.data_evento);
-          return d ? d.toISOString().slice(0,10) : r.data_evento;
-        })()}
+        value={toInputDate(r.data_evento)}   // ✅ agora usa o helper
         onChange={(e) => atualizarCampo(r.id, "data_evento", e.target.value)}
       />
     ) : (
       formatarDataPt(r.data_evento)
     )}
   </td>
+
 
                   <td className="p-2">
   {modoEdicao === r.id ? (
