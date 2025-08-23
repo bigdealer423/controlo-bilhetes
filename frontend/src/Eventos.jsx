@@ -21,21 +21,30 @@ import CirculoEstado from "./CirculoEstado";
 
 function parseDataPt(ddmmyyyy) {
   if (!ddmmyyyy) return null;
-  // aceita "dd-mm-aaaa" e "aaaa-mm-dd"
-  if (/^\d{4}-\d{2}-\d{2}$/.test(ddmmyyyy)) {
-    const [y, m, d] = ddmmyyyy.split("-").map(Number);
+  const s = String(ddmmyyyy).trim().replaceAll("/", "-"); // 👈 aceita "/"
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) {
+    const [y, m, d] = s.split("-").map(Number);
     return new Date(y, m - 1, d);
   }
-  const [dd, mm, yyyy] = ddmmyyyy.split("-").map(Number);
+  const [dd, mm, yyyy] = s.split("-").map(Number);
   if (!dd || !mm || !yyyy) return null;
   return new Date(yyyy, mm - 1, dd);
 }
+
 
 function formatarDataPt(dstr) {
   const d = parseDataPt(dstr);
   return d ? d.toLocaleDateString("pt-PT") : dstr || "";
 }
 
+function toInputDate(dstr) {
+  const d = parseDataPt(dstr);
+  if (!d) return ""; // vazio para não quebrar o input
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}`;
+}
 
 export default function Eventos() {
   const [registos, setRegistos] = useState([]);
