@@ -251,7 +251,7 @@ useEffect(() => {
       const res = await fetch("https://controlo-bilhetes.onrender.com/lucro_por_mes");
       const data = await res.json();
       console.log("📊 Dados recebidos:", data);
-      setLucrosMensais(data);
+      setLucrosMensais(data.map(d => ({ ...d, lucro: Number(d.lucro) })));
       setMostrarResumoDetalhado(true); // 👈 abre o modal
     } catch (err) {
       console.error("Erro ao buscar lucros mensais:", err);
@@ -1315,7 +1315,7 @@ return (
                       ? "text-red-500"
                       : ""
                   }>
-                    {item.lucro.toFixed(2)} €
+                    {formatarNumero(Number(item.lucro))} €
                   </span>
                 </li>
 
@@ -1324,7 +1324,7 @@ return (
 
             {Array.isArray(lucrosMensais) && (
               <div className="text-right font-bold text-lg border-t pt-2 text-black dark:text-white">
-                Total: {lucrosMensais.reduce((acc, cur) => acc + cur.lucro, 0).toFixed(2)} €
+                Total: {formatarNumero(lucrosMensais.reduce((acc, cur) => acc + Number(cur.lucro || 0), 0))} €
               </div>
 
             )}
