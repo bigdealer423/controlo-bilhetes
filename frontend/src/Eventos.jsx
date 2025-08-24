@@ -592,8 +592,8 @@ return (
 >
   📊 Ver Lucros por Mês
 </button>
-  </div>
-  <p>📆 Lucro de ...: <strong>{formatarNumero(resumoMensal.lucro)} €</strong></p>
+  </div>    
+  <p>📆 Lucro de {new Date().toLocaleString("pt-PT", { month: "long", year: "numeric" })}: <strong>{formatarNumero(resumoMensal.lucro)} €</strong></p>
   <p>💸 A aguardar pagamento: <strong>{formatarNumero(resumoMensal.pagamento)} €</strong></p>
   <p>🎟️ Bilhetes vendidos esta época: <strong>{formatarNumero(resumoMensal.bilhetes_epoca)}</strong></p>
 </div>
