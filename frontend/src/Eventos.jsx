@@ -19,6 +19,16 @@ import * as XLSX from "xlsx";
 import saveAs from "file-saver";
 import CirculoEstado from "./CirculoEstado";
 
+const formatarNumero = (valor) => {
+  if (valor == null) return "";
+  return Number(valor).toLocaleString("pt-PT", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+    useGrouping: true
+  });
+};
+
+
 function parseDataPt(ddmmyyyy) {
   if (!ddmmyyyy) return null;
   const s = String(ddmmyyyy).trim().replaceAll("/", "-"); // 👈 aceita "/"
@@ -583,9 +593,9 @@ return (
   📊 Ver Lucros por Mês
 </button>
   </div>
-  <p>📆 Lucro de {new Date().toLocaleString("pt-PT", { month: "long", year: "numeric" })}: <strong>{resumoMensal.lucro} €</strong></p>
-  <p>💸 A aguardar pagamento: <strong>{resumoMensal.pagamento} €</strong></p>
-  <p>🎟️ Bilhetes vendidos esta época: <strong>{resumoMensal.bilhetes_epoca}</strong></p>
+  <p>📆 Lucro de ...: <strong>{formatarNumero(resumoMensal.lucro)} €</strong></p>
+  <p>💸 A aguardar pagamento: <strong>{formatarNumero(resumoMensal.pagamento)} €</strong></p>
+  <p>🎟️ Bilhetes vendidos esta época: <strong>{formatarNumero(resumoMensal.bilhetes_epoca)}</strong></p>
 </div>
 
 
