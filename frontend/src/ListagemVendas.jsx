@@ -86,6 +86,26 @@ export default function ListagemVendas(props) {
     return () => clearTimeout(t);
   }, [novoRegisto.id_venda, idsExistentes]);
 
+  // datas sugeridas para o evento selecionado (Adicionar Registo)
+  const [datasEventoVendas, setDatasEventoVendas] = useState([]);
+  
+  // carregar datas do endpoint (igual à aba Compras)
+  const buscarDatasEventoVendas = async (nomeEvento) => {
+    if (!nomeEvento) {
+      setDatasEventoVendas([]);
+      return;
+    }
+    try {
+      const res = await fetch(
+        `https://controlo-bilhetes.onrender.com/datas_evento/${encodeURIComponent(nomeEvento)}`
+      );
+      const data = await res.json(); // array de datas
+      setDatasEventoVendas(data || []);
+    } catch (e) {
+      console.error("Erro a carregar datas do evento (Vendas):", e);
+      setDatasEventoVendas([]);
+    }
+  };
 
   
 
@@ -458,6 +478,27 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
             value={novoRegisto.data_evento}
             onChange={handleChange}
           />
+          {datasEventoVendas.length > 0 && (
+            <div className="mt-1 text-xs text-gray-600 dark:text-gray-300">
+              Datas existentes (clique para preencher):
+              <ul className="list-disc list-inside">
+                {datasEventoVendas.map((d, idx) => {
+                  const yyyyMMdd = new Date(d).toISOString().split("T")[0]; // yyyy-mm-dd
+                  return (
+                    <li
+                      key={idx}
+                      onClick={() =>
+                        setNovoRegisto((prev) => ({ ...prev, data_evento: yyyyMMdd }))
+                      }
+                      className="cursor-pointer text-blue-600 hover:underline"
+                    >
+                      {new Date(d).toLocaleDateString("pt-PT")}
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          )}
         </div>
 
         {/* Evento */}
@@ -467,7 +508,13 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
             name="evento"
             className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
             value={novoRegisto.evento}
-            onChange={handleChange}
+            onChange={async (e) => {
+              const eventoSel = e.target.value;
+              // limpa data para forçar nova escolha coerente
+              setNovoRegisto(prev => ({ ...prev, evento: eventoSel, data_evento: "" }));
+              // carrega datas sugeridas
+              await buscarDatasEventoVendas(eventoSel);
+            }}
           >
             <option value="">-- Selecionar Evento --</option>
             {eventosDropdown.map(e => (
