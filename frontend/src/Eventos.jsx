@@ -78,7 +78,15 @@ export default function Eventos() {
   const [vendasNaoAssociadasSet, setVendasNaoAssociadasSet] = useState(new Set());
   const [comprasNaoAssociadasSet, setComprasNaoAssociadasSet] = useState(new Set());
   const isMobile = window.innerWidth < 768; // md:768px
-  const [ocultarPagos, setOcultarPagos] = useState(true);
+  const [ocultarPagos, setOcultarPagos] = useState(() => {
+  const v = localStorage.getItem("eventos_ocultar_pagos");
+    return v ? JSON.parse(v) : true; // ocultar por defeito
+  });
+  
+  useEffect(() => {
+    localStorage.setItem("eventos_ocultar_pagos", JSON.stringify(ocultarPagos));
+  }, [ocultarPagos]);
+
 
   
 
@@ -629,6 +637,17 @@ return (
     )}
   </div>
 
+ {/* ✅ Botão "Ocultar Pagos" — DESKTOP */}
+  <div className="hidden md:block">
+    <button
+      onClick={() => setOcultarPagos(v => !v)}
+      className={`ml-2 px-3 py-2 rounded text-white text-sm font-semibold transition-colors
+        ${ocultarPagos ? "bg-gray-600 hover:bg-gray-700" : "bg-green-600 hover:bg-green-700"}`}
+      title={ocultarPagos ? "A ocultar eventos pagos" : "A mostrar eventos pagos"}
+    >
+      {ocultarPagos ? "💰 Ocultar Pagos: ON" : "💰 Ocultar Pagos: OFF"}
+    </button>
+  </div>       
 
   {/* ✅ Botão "Ocultar Pagos" apenas no mobile */}
   <div className="md:hidden mt-2 flex justify-end">
@@ -674,8 +693,11 @@ return (
             </thead>
             <tbody>
             {registos
-                .filter(r => r.evento.toLowerCase().includes(filtroPesquisa.toLowerCase()))
-                .map(r => (
+              .filter(r =>
+                r.evento.toLowerCase().includes(filtroPesquisa.toLowerCase()) &&
+                (!ocultarPagos || r.estado !== "Pago")
+              )
+              .map(r => (
               <>
                 <tr
   key={r.id}
