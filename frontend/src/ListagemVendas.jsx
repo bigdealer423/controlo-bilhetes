@@ -6,7 +6,7 @@ import { FaFileExcel } from "react-icons/fa"
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import { FaEdit, FaTrash } from "react-icons/fa";
-
+import { useMemo } from "react";
 
 
 export default function ListagemVendas(props) {
@@ -64,6 +64,27 @@ export default function ListagemVendas(props) {
   };
 
 
+  const idsExistentes = useMemo(
+    () => new Set(registos.map(r => String(r.id_venda ?? ""))),
+    [registos]
+  );
+  const [idEmUso, setIdEmUso] = useState(false);
+  const [idEmVerificacao, setIdEmVerificacao] = useState(false);
+  
+  useEffect(() => {
+    const valor = String(novoRegisto.id_venda ?? "").trim();
+    if (!valor) {             // vazio: não valida
+      setIdEmUso(false);
+      setIdEmVerificacao(false);
+      return;
+    }
+    setIdEmVerificacao(true);
+    const t = setTimeout(() => {
+      setIdEmUso(idsExistentes.has(valor));
+      setIdEmVerificacao(false);
+    }, 300); // debounce 300ms
+    return () => clearTimeout(t);
+  }, [novoRegisto.id_venda, idsExistentes]);
 
 
   
@@ -388,16 +409,30 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
       <h2 className="text-lg font-semibold mb-2">Adicionar Registo</h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* ID Venda */}
-        <div className="flex flex-col">
-          <label className="text-sm font-medium text-gray-700 dark:text-gray-200">ID Venda</label>
-          <input
-            name="id_venda"
-            type="number"
-            placeholder="ID Venda"
-            className="h-10 w-full border rounded p-2 bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-gray-100"
-            value={novoRegisto.id_venda}
-            onChange={handleChange}
-          />
+          <div className="flex flex-col">
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-200">ID Venda</label>
+            <input
+              name="id_venda"
+              type="number"
+              inputMode="numeric"
+              placeholder="ID Venda"
+              className={`h-10 w-full border rounded p-2 bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-gray-100
+                ${idEmUso
+                  ? "border-red-500 focus:outline-none focus:ring-2 focus:ring-red-400"
+                  : "border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-400"}`}
+              value={novoRegisto.id_venda}
+              onChange={handleChange}
+              aria-invalid={idEmUso}
+              aria-describedby="id-venda-erro"
+            />
+            <div id="id-venda-erro" className="mt-1 text-xs min-h-5">
+              {idEmVerificacao && <span className="text-gray-500 dark:text-gray-400">A verificar…</span>}
+              {!idEmVerificacao && idEmUso && <span className="text-red-600">⚠️ Este ID já existe.</span>}
+              {!idEmVerificacao && !idEmUso && novoRegisto.id_venda && (
+                <span className="text-green-600">✅ ID disponível.</span>
+              )}
+            </div>
+          </div>
         </div>
 
         {/* Data Venda */}
@@ -484,7 +519,11 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
 
       <button
         onClick={adicionarRegisto}
-        className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors duration-300"
+        disabled={idEmUso || !novoRegisto.id_venda}
+        className={`mt-4 px-4 py-2 rounded transition-colors duration-300 text-white
+          ${idEmUso || !novoRegisto.id_venda
+            ? "bg-gray-400 cursor-not-allowed"
+            : "bg-blue-600 hover:bg-blue-700"}`}
       >
         Guardar Registo
       </button>
