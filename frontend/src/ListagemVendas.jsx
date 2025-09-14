@@ -86,26 +86,7 @@ export default function ListagemVendas(props) {
     return () => clearTimeout(t);
   }, [novoRegisto.id_venda, idsExistentes]);
 
-  // datas sugeridas para o evento selecionado (Adicionar Registo)
-  const [datasEventoVendas, setDatasEventoVendas] = useState([]);
-  
-  // carregar datas do endpoint (igual à aba Compras)
-  const buscarDatasEventoVendas = async (nomeEvento) => {
-    if (!nomeEvento) {
-      setDatasEventoVendas([]);
-      return;
-    }
-    try {
-      const res = await fetch(
-        `https://controlo-bilhetes.onrender.com/datas_evento/${encodeURIComponent(nomeEvento)}`
-      );
-      const data = await res.json(); // array de datas
-      setDatasEventoVendas(data || []);
-    } catch (e) {
-      console.error("Erro a carregar datas do evento (Vendas):", e);
-      setDatasEventoVendas([]);
-    }
-  };
+
 
   
 
