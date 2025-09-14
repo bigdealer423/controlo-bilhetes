@@ -23,6 +23,8 @@ export default function ListagemVendas(props) {
   });
 
   const [respostaAtualizacao, setRespostaAtualizacao] = useState(null);
+  const [mostrarFormulario, setMostrarFormulario] = useState(false);
+  const [datasEventoVendas, setDatasEventoVendas] = useState([]);
   const [mostrarModal, setMostrarModal] = useState(false);
   const [mensagemModal, setMensagemModal] = useState("");
   const [filtroEvento, setFiltroEvento] = useState("");
@@ -44,6 +46,21 @@ export default function ListagemVendas(props) {
     const dataEvento = r.data_evento?.split("T")[0] || "";
     const chave = `${evento}|${dataEvento}`;
     return !evento || !dataEvento || !eventosChaveSet.has(chave);
+  };
+
+  const buscarDatasEventoVendas = async (nomeEvento) => {
+    if (!nomeEvento) {
+      setDatasEventoVendas([]);
+      return;
+    }
+    try {
+      const res = await fetch(`https://controlo-bilhetes.onrender.com/datas_evento/${encodeURIComponent(nomeEvento)}`);
+      const data = await res.json();
+      setDatasEventoVendas(data || []);
+    } catch (error) {
+      console.error("Erro ao carregar datas do evento (Vendas):", error);
+      setDatasEventoVendas([]);
+    }
   };
 
 
@@ -374,113 +391,115 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
   </button>
 </div>
 
-{/* Formulário de adicionar registo */}
-<div className={`${mostrarFormularioMobile ? "block" : "hidden"} md:block bg-white dark:bg-gray-800 shadow-md rounded p-4 mb-6 transition-colors duration-300`}>
-  <h2 className="text-lg font-semibold mb-2">Adicionar Registo</h2>
-  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-    {/* ID Venda */}
-    <div className="flex flex-col">
-      <label className="text-sm font-medium text-gray-700 dark:text-gray-200">ID Venda</label>
-      <input
-        name="id_venda"
-        type="number"
-        placeholder="ID Venda"
-        className="h-10 w-full border rounded p-2 bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-gray-100"
-        value={novoRegisto.id_venda}
-        onChange={handleChange}
-      />
+      
+{mostrarFormulario && (
+  {/* Formulário de adicionar registo */}
+  <div className={`${mostrarFormularioMobile ? "block" : "hidden"} md:block bg-white dark:bg-gray-800 shadow-md rounded p-4 mb-6 transition-colors duration-300`}>
+    <h2 className="text-lg font-semibold mb-2">Adicionar Registo</h2>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {/* ID Venda */}
+      <div className="flex flex-col">
+        <label className="text-sm font-medium text-gray-700 dark:text-gray-200">ID Venda</label>
+        <input
+          name="id_venda"
+          type="number"
+          placeholder="ID Venda"
+          className="h-10 w-full border rounded p-2 bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-gray-100"
+          value={novoRegisto.id_venda}
+          onChange={handleChange}
+        />
+      </div>
+  
+      {/* Data Venda */}
+      <div className="flex flex-col">
+        <label className="text-sm font-medium text-gray-700 dark:text-gray-200">Data Venda</label>
+        <input
+          name="data_venda"
+          type="date"
+          className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 dark:[color-scheme:dark]"
+          value={novoRegisto.data_venda}
+          onChange={handleChange}
+        />
+      </div>
+  
+      {/* Data Evento */}
+      <div className="flex flex-col">
+        <label className="text-sm font-medium text-gray-700 dark:text-gray-200">Data Evento</label>
+        <input
+          name="data_evento"
+          type="date"
+          className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 dark:[color-scheme:dark]"
+          value={novoRegisto.data_evento}
+          onChange={handleChange}
+        />
+      </div>
+  
+      {/* Evento */}
+      <div className="flex flex-col">
+        <label className="text-sm font-medium text-gray-700 dark:text-gray-200">Evento</label>
+        <select
+          name="evento"
+          className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+          value={novoRegisto.evento}
+          onChange={handleChange}
+        >
+          <option value="">-- Selecionar Evento --</option>
+          {eventosDropdown.map(e => (
+            <option key={e.id} value={e.nome}>{e.nome}</option>
+          ))}
+        </select>
+      </div>
+  
+      {/* Bilhete */}
+      <div className="flex flex-col">
+        <label className="text-sm font-medium text-gray-700 dark:text-gray-200">Bilhete</label>
+        <input
+          name="estadio"
+          placeholder="Bilhete"
+          className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+          value={novoRegisto.estadio}
+          onChange={handleChange}
+        />
+      </div>
+  
+      {/* Ganho */}
+      <div className="flex flex-col">
+        <label className="text-sm font-medium text-gray-700 dark:text-gray-200">Ganho (€)</label>
+        <input
+          name="ganho"
+          type="number"
+          placeholder="Ganho (€)"
+          className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+          value={novoRegisto.ganho}
+          onChange={handleChange}
+        />
+      </div>
+  
+      {/* Estado */}
+      <div className="flex flex-col">
+        <label className="text-sm font-medium text-gray-700 dark:text-gray-200">Estado</label>
+        <select
+          name="estado"
+          className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+          value={novoRegisto.estado}
+          onChange={handleChange}
+        >
+          <option value="Entregue">Entregue</option>
+          <option value="Por entregar">Por entregar</option>
+          <option value="Disputa">Disputa</option>
+          <option value="Pago">Pago</option>
+        </select>
+      </div>
     </div>
-
-    {/* Data Venda */}
-    <div className="flex flex-col">
-      <label className="text-sm font-medium text-gray-700 dark:text-gray-200">Data Venda</label>
-      <input
-        name="data_venda"
-        type="date"
-        className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 dark:[color-scheme:dark]"
-        value={novoRegisto.data_venda}
-        onChange={handleChange}
-      />
-    </div>
-
-    {/* Data Evento */}
-    <div className="flex flex-col">
-      <label className="text-sm font-medium text-gray-700 dark:text-gray-200">Data Evento</label>
-      <input
-        name="data_evento"
-        type="date"
-        className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 dark:[color-scheme:dark]"
-        value={novoRegisto.data_evento}
-        onChange={handleChange}
-      />
-    </div>
-
-    {/* Evento */}
-    <div className="flex flex-col">
-      <label className="text-sm font-medium text-gray-700 dark:text-gray-200">Evento</label>
-      <select
-        name="evento"
-        className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-        value={novoRegisto.evento}
-        onChange={handleChange}
-      >
-        <option value="">-- Selecionar Evento --</option>
-        {eventosDropdown.map(e => (
-          <option key={e.id} value={e.nome}>{e.nome}</option>
-        ))}
-      </select>
-    </div>
-
-    {/* Bilhete */}
-    <div className="flex flex-col">
-      <label className="text-sm font-medium text-gray-700 dark:text-gray-200">Bilhete</label>
-      <input
-        name="estadio"
-        placeholder="Bilhete"
-        className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-        value={novoRegisto.estadio}
-        onChange={handleChange}
-      />
-    </div>
-
-    {/* Ganho */}
-    <div className="flex flex-col">
-      <label className="text-sm font-medium text-gray-700 dark:text-gray-200">Ganho (€)</label>
-      <input
-        name="ganho"
-        type="number"
-        placeholder="Ganho (€)"
-        className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-        value={novoRegisto.ganho}
-        onChange={handleChange}
-      />
-    </div>
-
-    {/* Estado */}
-    <div className="flex flex-col">
-      <label className="text-sm font-medium text-gray-700 dark:text-gray-200">Estado</label>
-      <select
-        name="estado"
-        className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-        value={novoRegisto.estado}
-        onChange={handleChange}
-      >
-        <option value="Entregue">Entregue</option>
-        <option value="Por entregar">Por entregar</option>
-        <option value="Disputa">Disputa</option>
-        <option value="Pago">Pago</option>
-      </select>
-    </div>
+  
+    <button
+      onClick={adicionarRegisto}
+      className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors duration-300"
+    >
+      Guardar Registo
+    </button>
   </div>
-
-  <button
-    onClick={adicionarRegisto}
-    className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors duration-300"
-  >
-    Guardar Registo
-  </button>
-</div>
-
+)}
 
 
       <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-md rounded-xl px-4 py-3 mb-4 flex flex-wrap items-center gap-4 transition-colors duration-300">
@@ -541,7 +560,14 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
             ⚠️
           </button>
         </div>
-      
+
+        <button
+          onClick={() => setMostrarFormulario(v => !v)}
+          className="bg-blue-600 text-white px-2 py-1 text-sm md:px-3 md:py-1.5 md:text-base rounded hover:bg-blue-700 transition"
+        >
+          {mostrarFormulario ? "✖ Fechar formulário" : "➕ Adicionar registo"}
+        </button>
+
         {/* Direita: Botões de ações */}
         <div className="flex gap-2 flex-wrap justify-end">
           <button
