@@ -34,6 +34,19 @@ export default function ListagemVendas(props) {
   const [startY, setStartY] = useState(null);
   const [filtroEquipa, setFiltroEquipa] = useState("");
 
+  // Novo estado: filtro de exclamação
+  const [filtroExclamacao, setFiltroExclamacao] = useState(false);
+  
+  // Helper: determina se a linha tem o aviso ⚠️ (a mesma lógica usada para renderizar o ícone)
+  const temAviso = (r) => {
+    if (!dadosSincronizados) return false;
+    const evento = r.evento?.trim() || "";
+    const dataEvento = r.data_evento?.split("T")[0] || "";
+    const chave = `${evento}|${dataEvento}`;
+    return !evento || !dataEvento || !eventosChaveSet.has(chave);
+  };
+
+
 
 
   
@@ -470,13 +483,14 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
 
 
 
-      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-md rounded-xl px-4 py-3 mb-4 flex flex-wrap items-center justify-between gap-4 transition-colors duration-300">
+      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-md rounded-xl px-4 py-3 mb-4 flex flex-wrap items-center gap-4 transition-colors duration-300">
         {/* Esquerda: Título */}
-        <h2 className="text-lg font-bold text-gray-900 dark:text-white">Vendas</h2>
+        <h2 className="text-lg font-bold text-gray-900 dark:text-white mr-auto">Vendas</h2>
       
-        {/* Centro: Pesquisa por equipa */}
-        <div className="flex-1 flex justify-center">
-          <div className="relative w-64 max-w-full">
+        {/* Centro: filtros */}
+        <div className="flex items-center gap-3 flex-1 justify-center">
+          {/* Procurar Equipa */}
+          <div className="relative w-56 max-w-full">
             <input
               type="text"
               placeholder="🔍 Procurar Equipa"
@@ -487,16 +501,48 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
             {filtroEquipa && (
               <button
                 onClick={() => setFiltroEquipa("")}
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-red-500 text-sm"
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-red-500 text-sm"
                 title="Limpar"
               >
                 ❌
               </button>
             )}
           </div>
+      
+          {/* NOVO: Procurar por ID Venda */}
+          <div className="relative w-40 max-w-full">
+            <input
+              type="text"
+              placeholder="🔢 ID venda"
+              value={filtroIdVenda}
+              onChange={(e) => setFiltroIdVenda(e.target.value)}
+              className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-1 pr-8 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+            />
+            {filtroIdVenda && (
+              <button
+                onClick={() => setFiltroIdVenda("")}
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-red-500 text-sm"
+                title="Limpar"
+              >
+                ❌
+              </button>
+            )}
+          </div>
+      
+          {/* NOVO: Botão ⚠️ para filtrar só linhas com aviso */}
+          <button
+            onClick={() => setFiltroExclamacao((v) => !v)}
+            className={`px-3 py-1 rounded border transition
+              ${filtroExclamacao
+                ? "bg-yellow-500 text-black border-yellow-600"
+                : "bg-white dark:bg-gray-800 text-yellow-600 border-yellow-600 hover:bg-yellow-100 dark:hover:bg-gray-700"}`}
+            title="Mostrar apenas linhas com ⚠️"
+          >
+            ⚠️
+          </button>
         </div>
       
-        {/* Direita: Botões */}
+        {/* Direita: Botões de ações */}
         <div className="flex gap-2 flex-wrap justify-end">
           <button
             onClick={forcarAtualizacaoEmail}
@@ -514,6 +560,7 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
           </button>
         </div>
       </div>
+
 
 
 
@@ -551,11 +598,12 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
             {registos
               .filter(v => {
                 const correspondeEvento = filtroEvento === "" || v.evento === filtroEvento;
-                const correspondeID = filtroIdVenda === "" || v.id_venda.toString().includes(filtroIdVenda);
+                const correspondeID = filtroIdVenda === "" || v.id_venda?.toString().includes(filtroIdVenda);
                 const correspondeEquipa =
                   filtroEquipa === "" ||
                   (v.evento && v.evento.toLowerCase().includes(filtroEquipa.toLowerCase()));
-                return correspondeEvento && correspondeID && correspondeEquipa;
+                const correspondeExclamacao = !filtroExclamacao || temAviso(v);
+                return correspondeEvento && correspondeID && correspondeEquipa && correspondeExclamacao;
               })
               .map(r => (
 
@@ -629,7 +677,12 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
       const invalido = !evento || !dataEvento || !eventosChaveSet.has(chave);
   
       return invalido && (
-        <span className="text-yellow-500" title="Venda não associada a evento">⚠️</span>
+        <span
+          className={`text-yellow-500 ${filtroExclamacao ? "animate-pulse" : ""}`}
+          title="Venda não associada a evento"
+        >
+          ⚠️
+        </span>
       );
     })()
   }
