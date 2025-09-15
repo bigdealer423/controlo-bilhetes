@@ -31,7 +31,7 @@ EMAIL_PASS = os.getenv("EMAIL_PASSWORD")
 SMTP_SERVER = 'smtp.gmail.com'
 SMTP_PORT = 587
 
-PALAVRAS_CHAVE_FPF = ["Comprar", "Adquirir", "Bilhete", "Ingressos", "Buy", "IRL", "HUN", "Irlanda", "Hungria"]
+PALAVRAS_CHAVE_FPF = ["Comprar", "Adquirir", "Bilhete", "Ingressos", "Buy", "IRL", "HUN", "Irlanda", "Hungria", "Saber Mais"]
 PALAVRAS_CHAVE_SLB = ["Carcavelos", "Fatima", "17ª Jornada", "18ª Jornada"]
 PALAVRAS_CHAVE_SPORTING = ["Arouca"]
 PALAVRAS_CHAVE_BLUETICKET = ["Benfica"]
