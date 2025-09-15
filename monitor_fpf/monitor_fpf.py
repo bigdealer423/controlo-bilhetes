@@ -44,6 +44,37 @@ PALAVRAS_CHAVE_2TICKET = [""]
 def _normalize_text(s: str) -> str:
     if not s:
         return ""
+    s = unicodedata.normalize("NFKC", s).replace("\xa0", " ")
+    s = re.sub(r"\s+", " ", s)
+    return s.strip().lower()
+
+# alias para manter compatibilidade com o que já escreveu
+_norm = _normalize_text
+
+def match_key(texto: str, keys: list[str]):
+    """Devolve (palavra, 'text') se encontrar; senão None."""
+    t = _norm(texto)
+    for k in keys:
+        kk = _norm(k)
+        if kk and kk in t:
+            return k, "text"
+    return None
+
+def match_key_attrs(tag, keys: list[str], attrs=("aria-label","title","data-ga-label","class")):
+    joined = _norm(" ".join([str(tag.get(a, "")) for a in attrs]))
+    for k in keys:
+        kk = _norm(k)
+        if kk and kk in joined:
+            return k, f"attrs[{','.join(attrs)}]"
+    return None
+
+def snippet(s: str, n=80) -> str:
+    s = _norm(s or "")
+    return (s[:n] + "…") if len(s) > n else s
+
+def _normalize_text(s: str) -> str:
+    if not s:
+        return ""
     # normaliza acentos + troca NBSP por espaço normal + colapsa espaços
     s = unicodedata.normalize("NFKC", s).replace("\xa0", " ")
     s = re.sub(r"\s+", " ", s)
