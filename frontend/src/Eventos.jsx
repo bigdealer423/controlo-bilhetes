@@ -693,10 +693,11 @@ return (
             </thead>
             <tbody>
             {registos
-              .filter(r =>
-                r.evento.toLowerCase().includes(filtroPesquisa.toLowerCase()) &&
-                (!ocultarPagos || r.estado !== "Pago")
-              )
+              .filter(r => {
+                const passaPesquisa = r.evento.toLowerCase().includes(filtroPesquisa.toLowerCase());
+                const esconderPago = ocultarPagos && r.estado === "Pago" && modoEdicao !== r.id;
+                return passaPesquisa && !esconderPago;
+              })
               .map(r => (
               <>
                 <tr
@@ -1039,11 +1040,11 @@ return (
         </table>       
           <div className="space-y-5 md:hidden mt-6 px-0 w-full max-w-full">
             {registos
-              .filter(
-                (r) =>
-                  r.evento.toLowerCase().includes(filtroPesquisa.toLowerCase()) &&
-                  (!ocultarPagos || r.estado !== "Pago")
-              )
+              .filter(r => {
+                const passaPesquisa = r.evento.toLowerCase().includes(filtroPesquisa.toLowerCase());
+                const esconderPago = ocultarPagos && r.estado === "Pago" && modoEdicao !== r.id;
+                return passaPesquisa && !esconderPago;
+              })
               .map((r) => {
                 const emEdicao = modoEdicao === r.id;
                 const d = parseDataPt(r.data_evento); // ✅ usar helper para datas
