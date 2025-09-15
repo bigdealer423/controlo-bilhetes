@@ -563,10 +563,10 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
 
 
       {/* Toolbar / Filtros (MOBILE-FIRST) */}
-      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-md rounded-xl p-3 mb-4 overflow-hidden transition-colors duration-300">
+      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-md rounded-xl p-3 mb-4 transition-colors duration-300">
       
         {/* Linha 1: Título + ações (desktop) */}
-        <div className="flex items-center justify-between gap-2 mb-3">
+        <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
           <h2 className="text-lg font-bold text-gray-900 dark:text-white">Vendas</h2>
       
           {/* Ações — só desktop/tablet */}
@@ -587,7 +587,7 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
       
             <button
               onClick={() => exportarParaExcel(registos)}
-              className="hidden md:inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-xl shadow-md transition"
+              className="md:inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-xl shadow-md transition"
             >
               <FaFileExcel size={18} />
               Exportar Excel
