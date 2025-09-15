@@ -73,69 +73,66 @@ def buscar_links_novos():
             print(f"🔍 A verificar {url}...", flush=True)
 
             # FPF
+            # FPF
             if 'bilheteira.fpf.pt' in url:
-                # usar cloudscraper para contornar cloudflare + headers reais
                 scraper = cloudscraper.create_scraper(
-                    browser={'custom': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
-                                       '(KHTML, like Gecko) Chrome/124.0 Safari/537.36'}
+                    browser={'custom': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/124 Safari/537.36'}
                 )
                 headers = {
-                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-                                  "(KHTML, like Gecko) Chrome/124.0 Safari/537.36",
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/124 Safari/537.36",
                     "Accept-Language": "pt-PT,pt;q=0.9,en;q=0.8"
                 }
                 resp = scraper.get(url, headers=headers, timeout=20, allow_redirects=True)
                 if resp.status_code != 200:
                     print(f"⚠️ FPF respondeu com status {resp.status_code}, ignorado.", flush=True)
                     continue
-
+            
                 soup = BeautifulSoup(resp.text, 'html.parser')
-                keys = [_normalize_text(k) for k in PALAVRAS_CHAVE_FPF]
-
+                keys_fpf = [k for k in PALAVRAS_CHAVE_FPF if _norm(k)]  # ignora vazios
+            
                 candidatos = []
-
-                # 1) âncoras com href (ex.: <a ...> Saber Mais </a>)
+                # 1) <a href=...>
                 for a in soup.find_all('a', href=True):
-                    txt = _normalize_text(a.get_text(" ", strip=True))
-                    attrs = _normalize_text(" ".join([
-                        str(a.get(attr, "")) for attr in ["aria-label", "title", "data-ga-label"]
-                    ]))
-                    if any(k in txt or k in attrs for k in keys):
+                    txt = a.get_text(" ", strip=True)
+                    m = match_key(txt, keys_fpf) or match_key_attrs(a, keys_fpf)
+                    if m:
+                        palavra, origem = m
                         href = a['href']
                         full = href if href.startswith('http') else urljoin(url, href)
                         candidatos.append(full)
-
-                # 2) botões/spans/divs com texto correspondente (fallback)
+                        print(f"✅ FPF match: palavra='{palavra}' | origem={origem} | href={full} | texto='{snippet(txt)}'", flush=True)
+            
+                # 2) <button>/<span>/<div> (fallback)
                 for tag in soup.find_all(['button', 'span', 'div']):
-                    txt = _normalize_text(tag.get_text(" ", strip=True))
-                    attrs = _normalize_text(" ".join([
-                        str(tag.get(attr, "")) for attr in ["aria-label", "title", "data-ga-label"]
-                    ]))
-                    if any(k in txt or k in attrs for k in keys):
+                    txt = tag.get_text(" ", strip=True)
+                    m = match_key(txt, keys_fpf) or match_key_attrs(tag, keys_fpf)
+                    if m:
+                        palavra, origem = m
                         parent_a = tag.find_parent('a', href=True) or tag.find('a', href=True)
-                        if parent_a and parent_a.get('href'):
-                            href = parent_a['href']
-                            full = href if href.startswith('http') else urljoin(url, href)
-                            candidatos.append(full)
-                        else:
-                            candidatos.append(url)  # sem href direto, mas há match na página
-
-                # deduplicar preservando ordem
-                vistos = set()
-                candidatos = [c for c in candidatos if not (c in vistos or vistos.add(c))]
-
-                if candidatos:
-                    links_encontrados.extend(candidatos)
-                    # debug útil para confirmar captação do "Saber Mais"
-                    print("✅ FPF: matches:", *candidatos, sep="\n  - ", flush=True)
-                else:
-                    # fallback por texto global (menos preciso)
-                    texto_site = _normalize_text(soup.get_text(" ", strip=True))
-                    if any(k in texto_site for k in keys):
-                        links_encontrados.append(url)
-                        print("✅ FPF: match por texto global (fallback).", flush=True)
+                        href = (parent_a.get('href') if parent_a else url)
+                        full = href if href.startswith('http') else urljoin(url, href)
+                        candidatos.append(full)
+                        print(f"✅ FPF match (sem <a> direto): palavra='{palavra}' | origem={origem} | href={full} | texto='{snippet(txt)}'", flush=True)
+            
+                # 3) Fallback por texto global (último recurso)
+                if not candidatos:
+                    texto_site = soup.get_text(" ", strip=True)
+                    m = match_key(texto_site, keys_fpf)
+                    if m:
+                        palavra, origem = m
+                        candidatos.append(url)
+                        print(f"✅ FPF match (global): palavra='{palavra}' | origem={origem} | url={url}", flush=True)
                     else:
                         print("✅ FPF verificado, nenhum match nas palavras-chave agora.", flush=True)
+            
+                # Deduplicar mantendo ordem
+                vistos = set()
+                candidatos = [c for c in candidatos if not (c in vistos or vistos.add(c))]
+            
+                if candidatos:
+                    links_encontrados.extend(candidatos)
+                    print("✅ FPF: links finais:", *[f"- {c}" for c in candidatos], sep="\n", flush=True)
+
 
             # SL Benfica Viagens
             elif 'viagens.slbenfica.pt' in url:
