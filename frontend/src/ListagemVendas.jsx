@@ -562,122 +562,91 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
 
 
 
-      {/* Toolbar / Filtros (MOBILE-FIRST) */}
-      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-md rounded-xl p-3 mb-4 transition-colors duration-300">
-      
-        {/* Linha 1: Título + ações (desktop) */}
-        <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
-          <h2 className="text-lg font-bold text-gray-900 dark:text-white">Vendas</h2>
-      
-          {/* Ações — só desktop/tablet */}
-          <div className="hidden md:flex gap-2">
-            <button
-              onClick={() => setMostrarFormulario(v => !v)}
-              className="bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700 transition"
-            >
-              {mostrarFormulario ? "✖ Fechar formulário" : "➕ Adicionar registo"}
-            </button>
-      
-            <button
-              onClick={forcarAtualizacaoEmail}
-              className="bg-green-600 text-white px-3 py-2 rounded hover:bg-green-700 transition"
-            >
-              🔄 Verificar E-mails
-            </button>
-      
-            <button
-              onClick={() => exportarParaExcel(registos)}
-              className="md:inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-xl shadow-md transition"
-            >
-              <FaFileExcel size={18} />
-              Exportar Excel
-            </button>
-          </div>
-        </div>
-      
-        {/* Linha 2: filtros — empilha no mobile */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-      
-          {/* Procurar Equipa */}
-          <div className="relative min-w-0">
-            <input
-              type="text"
-              placeholder="🔍 Procurar Equipa"
-              value={filtroEquipa}
-              onChange={(e) => setFiltroEquipa(e.target.value)}
-              className="block w-full min-w-0 pr-10 border border-gray-300 dark:border-gray-600 rounded px-3 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-            />
-            {filtroEquipa && (
-              <button
-                onClick={() => setFiltroEquipa("")}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-red-500 text-sm"
-                title="Limpar"
-              >
-                ❌
-              </button>
-            )}
-          </div>
-      
-          {/* Procurar ID Venda */}
-          <div className="relative min-w-0">
-            <input
-              type="text"
-              inputMode="numeric"
-              placeholder="🔢 ID venda"
-              value={filtroIdVenda}
-              onChange={(e) => setFiltroIdVenda(e.target.value)}
-              className="block w-full min-w-0 pr-10 border border-gray-300 dark:border-gray-600 rounded px-3 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-            />
-            {filtroIdVenda && (
-              <button
-                onClick={() => setFiltroIdVenda("")}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-red-500 text-sm"
-                title="Limpar"
-              >
-                ❌
-              </button>
-            )}
-          </div>
-      
-          {/* Botão ⚠️ (filtro só com aviso) */}
-          <div className="min-w-0">
-            <button
-              onClick={() => setFiltroExclamacao(v => !v)}
-              className={`w-full sm:w-auto px-3 py-2 rounded font-semibold border text-base leading-none transition
-                ${filtroExclamacao
-                  ? "bg-yellow-500 text-black border-yellow-600"
-                  : "bg-white dark:bg-gray-800 text-yellow-600 border-yellow-600 hover:bg-yellow-100 dark:hover:bg-gray-700"}`}
-              title="Mostrar apenas linhas com ⚠️"
-            >
-              ⚠️ {filtroExclamacao ? "Só com aviso" : "Filtrar"}
-            </button>
-          </div>
-        </div>
-      
-        {/* Linha 3: ações — só mobile (para não apertar os filtros) */}
-        <div className="mt-3 flex md:hidden gap-2">
-          <button
-            onClick={() => setMostrarFormulario(v => !v)}
-            className="flex-1 bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700 transition"
-          >
-            {mostrarFormulario ? "✖ Fechar formulário" : "➕ Adicionar registo"}
-          </button>
-          <button
-            onClick={forcarAtualizacaoEmail}
-            className="flex-1 bg-green-600 text-white px-3 py-2 rounded hover:bg-green-700 transition"
-          >
-            🔄 Verificar E-mails
-          </button>
-      
-          <button
-            onClick={() => exportarParaExcel(registos)}
-            className="hidden md:flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-xl shadow-md transition"
-          >
-            <FaFileExcel size={18} />
-            Exportar Excel
-          </button>
-        </div>
-      </div>
+  {/* Toolbar: tudo numa linha (scroll quando apertado) */}
+<div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-md rounded-xl p-2 md:p-3 mb-4 overflow-x-auto">
+  <div className="inline-flex items-center gap-2 md:gap-3 whitespace-nowrap w-full">
+
+    {/* Procurar Equipa */}
+    <div className="relative">
+      <input
+        type="text"
+        placeholder="🔍 Procurar Equipa"
+        value={filtroEquipa}
+        onChange={(e) => setFiltroEquipa(e.target.value)}
+        className="h-10 w-[16rem] max-w-full pr-10 border border-gray-300 dark:border-gray-600 rounded px-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+      />
+      {filtroEquipa && (
+        <button
+          onClick={() => setFiltroEquipa("")}
+          className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-red-500 text-sm"
+          title="Limpar"
+        >
+          ❌
+        </button>
+      )}
+    </div>
+
+    {/* Procurar ID Venda */}
+    <div className="relative">
+      <input
+        type="text"
+        inputMode="numeric"
+        placeholder="🔢 ID venda"
+        value={filtroIdVenda}
+        onChange={(e) => setFiltroIdVenda(e.target.value)}
+        className="h-10 w-[11rem] max-w-full pr-10 border border-gray-300 dark:border-gray-600 rounded px-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+      />
+      {filtroIdVenda && (
+        <button
+          onClick={() => setFiltroIdVenda("")}
+          className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-red-500 text-sm"
+          title="Limpar"
+        >
+          ❌
+        </button>
+      )}
+    </div>
+
+    {/* ⚠️ Filtrar só avisos */}
+    <button
+      onClick={() => setFiltroExclamacao((v) => !v)}
+      className={`h-10 px-3 rounded font-semibold border transition
+        ${filtroExclamacao
+          ? "bg-yellow-500 text-black border-yellow-600"
+          : "bg-white dark:bg-gray-800 text-yellow-600 border-yellow-600 hover:bg-yellow-100 dark:hover:bg-gray-700"}`}
+      title="Mostrar apenas linhas com ⚠️"
+    >
+      ⚠️ {filtroExclamacao ? "Só com aviso" : "Filtrar"}
+    </button>
+
+    {/* empurra os botões para a direita */}
+    <div className="grow" />
+
+    {/* Ações */}
+    <button
+      onClick={() => setMostrarFormulario((v) => !v)}
+      className="h-10 px-4 rounded bg-blue-600 text-white hover:bg-blue-700 transition"
+    >
+      {mostrarFormulario ? "✖ Fechar formulário" : "➕ Adicionar registo"}
+    </button>
+
+    <button
+      onClick={forcarAtualizacaoEmail}
+      className="h-10 px-4 rounded bg-green-600 text-white hover:bg-green-700 transition"
+    >
+      🔄 Verificar E-mails
+    </button>
+
+    <button
+      onClick={() => exportarParaExcel(registos)}
+      className="h-10 px-4 rounded bg-green-600 text-white hover:bg-green-700 transition inline-flex items-center gap-2"
+    >
+      <FaFileExcel size={18} />
+      Exportar Excel
+    </button>
+  </div>
+</div>
+
 
 
 
