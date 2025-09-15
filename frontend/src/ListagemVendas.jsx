@@ -846,7 +846,9 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
             const correspondeEquipa =
               filtroEquipa === "" ||
               (v.evento && v.evento.toLowerCase().includes(filtroEquipa.toLowerCase()));
-            return correspondeEvento && correspondeID && correspondeEquipa;
+            const correspondeExclamacao =
+              !filtroExclamacao || temAviso(v);
+            return correspondeEvento && correspondeID && correspondeEquipa && correspondeExclamacao;
           })
           .map((r) => {
           const emEdicao = modoEdicao === r.id;
