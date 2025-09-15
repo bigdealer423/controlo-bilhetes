@@ -7,6 +7,9 @@ import os
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 import cloudscraper
+from urllib.parse import urljoin
+import unicodedata
+import re
 
 # ----------------- CONFIGURAÇÕES -----------------
 URLS = [
@@ -37,6 +40,15 @@ PALAVRAS_CHAVE_SPORTING = ["Arouca"]
 PALAVRAS_CHAVE_BLUETICKET = ["Benfica"]
 PALAVRAS_CHAVE_2TICKET = [""]
 
+
+def _normalize_text(s: str) -> str:
+    if not s:
+        return ""
+    # normaliza acentos + troca NBSP por espaço normal + colapsa espaços
+    s = unicodedata.normalize("NFKC", s).replace("\xa0", " ")
+    s = re.sub(r"\s+", " ", s)
+    return s.strip().lower()
+    
 def carregar_historico():
     if os.path.exists(HIST_FILE):
         with open(HIST_FILE) as f:
@@ -62,16 +74,68 @@ def buscar_links_novos():
 
             # FPF
             if 'bilheteira.fpf.pt' in url:
-                resp = session.get(url, timeout=15)
+                # usar cloudscraper para contornar cloudflare + headers reais
+                scraper = cloudscraper.create_scraper(
+                    browser={'custom': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
+                                       '(KHTML, like Gecko) Chrome/124.0 Safari/537.36'}
+                )
+                headers = {
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+                                  "(KHTML, like Gecko) Chrome/124.0 Safari/537.36",
+                    "Accept-Language": "pt-PT,pt;q=0.9,en;q=0.8"
+                }
+                resp = scraper.get(url, headers=headers, timeout=20, allow_redirects=True)
+                if resp.status_code != 200:
+                    print(f"⚠️ FPF respondeu com status {resp.status_code}, ignorado.", flush=True)
+                    continue
+
                 soup = BeautifulSoup(resp.text, 'html.parser')
-                links = [
-                    a['href'] if a['href'].startswith('http') else url.rstrip('/') + '/' + a['href'].lstrip('/')
-                    for a in soup.find_all('a', href=True)
-                    if any(palavra.lower() in a.get_text().lower() for palavra in PALAVRAS_CHAVE_FPF)
-                ]
-                if links:
-                    links_encontrados.extend(links)
-                    print(f"✅ Encontrados {len(links)} novos links na FPF.", flush=True)
+                keys = [_normalize_text(k) for k in PALAVRAS_CHAVE_FPF]
+
+                candidatos = []
+
+                # 1) âncoras com href (ex.: <a ...> Saber Mais </a>)
+                for a in soup.find_all('a', href=True):
+                    txt = _normalize_text(a.get_text(" ", strip=True))
+                    attrs = _normalize_text(" ".join([
+                        str(a.get(attr, "")) for attr in ["aria-label", "title", "data-ga-label"]
+                    ]))
+                    if any(k in txt or k in attrs for k in keys):
+                        href = a['href']
+                        full = href if href.startswith('http') else urljoin(url, href)
+                        candidatos.append(full)
+
+                # 2) botões/spans/divs com texto correspondente (fallback)
+                for tag in soup.find_all(['button', 'span', 'div']):
+                    txt = _normalize_text(tag.get_text(" ", strip=True))
+                    attrs = _normalize_text(" ".join([
+                        str(tag.get(attr, "")) for attr in ["aria-label", "title", "data-ga-label"]
+                    ]))
+                    if any(k in txt or k in attrs for k in keys):
+                        parent_a = tag.find_parent('a', href=True) or tag.find('a', href=True)
+                        if parent_a and parent_a.get('href'):
+                            href = parent_a['href']
+                            full = href if href.startswith('http') else urljoin(url, href)
+                            candidatos.append(full)
+                        else:
+                            candidatos.append(url)  # sem href direto, mas há match na página
+
+                # deduplicar preservando ordem
+                vistos = set()
+                candidatos = [c for c in candidatos if not (c in vistos or vistos.add(c))]
+
+                if candidatos:
+                    links_encontrados.extend(candidatos)
+                    # debug útil para confirmar captação do "Saber Mais"
+                    print("✅ FPF: matches:", *candidatos, sep="\n  - ", flush=True)
+                else:
+                    # fallback por texto global (menos preciso)
+                    texto_site = _normalize_text(soup.get_text(" ", strip=True))
+                    if any(k in texto_site for k in keys):
+                        links_encontrados.append(url)
+                        print("✅ FPF: match por texto global (fallback).", flush=True)
+                    else:
+                        print("✅ FPF verificado, nenhum match nas palavras-chave agora.", flush=True)
 
             # SL Benfica Viagens
             elif 'viagens.slbenfica.pt' in url:
