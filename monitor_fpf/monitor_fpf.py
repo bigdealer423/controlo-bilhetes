@@ -41,14 +41,21 @@ PALAVRAS_CHAVE_BLUETICKET = ["Benfica"]
 PALAVRAS_CHAVE_2TICKET = [""]
 
 
+INVISIBLES_RE = re.compile(
+    r"[\u00ad\u034f\u061c\u115f\u1160\u17b4\u17b5\u180e\u200b-\u200f\u2028\u2029\u202a-\u202e\u2060-\u2064\u2066-\u206f\ufeff]"
+)
+
 def _normalize_text(s: str) -> str:
     if not s:
         return ""
-    s = unicodedata.normalize("NFKC", s).replace("\xa0", " ")
+    # NFKC para compatibilidade, remove NBSP e invisíveis (inclui soft-hyphen),
+    # colapsa espaços e faz casefold (mais robusto que lower)
+    s = unicodedata.normalize("NFKC", s)
+    s = s.replace("\xa0", " ")
+    s = INVISIBLES_RE.sub("", s)
     s = re.sub(r"\s+", " ", s)
-    return s.strip().lower()
+    return s.strip().casefold()
 
-# alias para manter compatibilidade com o que já escreveu
 _norm = _normalize_text
 
 def match_key(texto: str, keys: list[str]):
@@ -72,13 +79,7 @@ def snippet(s: str, n=80) -> str:
     s = _norm(s or "")
     return (s[:n] + "…") if len(s) > n else s
 
-def _normalize_text(s: str) -> str:
-    if not s:
-        return ""
-    # normaliza acentos + troca NBSP por espaço normal + colapsa espaços
-    s = unicodedata.normalize("NFKC", s).replace("\xa0", " ")
-    s = re.sub(r"\s+", " ", s)
-    return s.strip().lower()
+
     
 def carregar_historico():
     if os.path.exists(HIST_FILE):
