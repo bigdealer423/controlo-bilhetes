@@ -77,7 +77,7 @@ export default function Eventos() {
   const linhaRefs = useRef({});
   const [vendasNaoAssociadasSet, setVendasNaoAssociadasSet] = useState(new Set());
   const [comprasNaoAssociadasSet, setComprasNaoAssociadasSet] = useState(new Set());
-  const isMobile = window.innerWidth < 768; // md:768px
+  const isCompact = window.matchMedia("(max-width: 1024px)").matches;
   const [ocultarPagos, setOcultarPagos] = useState(() => {
   const v = localStorage.getItem("eventos_ocultar_pagos");
     return v ? JSON.parse(v) : true; // ocultar por defeito
@@ -409,7 +409,7 @@ const imprimirVendasComNotaVermelha = (vendasDoEvento, tituloEvento = "Vendas co
     setIsLoading(true);
   
     try {
-      const pageLimit = isMobile ? 1000 : limit;
+      const pageLimit = isCompact ? 1000 : limit;  // tablets também levam 1000
   
       const res = await fetch(`https://controlo-bilhetes.onrender.com/eventos_completos2?skip=${skip}&limit=${pageLimit}`);
       if (!res.ok) throw new Error("HTTP " + res.status);
