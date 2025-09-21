@@ -45,6 +45,17 @@ INVISIBLES_RE = re.compile(
     r"[\u00ad\u034f\u061c\u115f\u1160\u17b4\u17b5\u180e\u200b-\u200f\u2028\u2029\u202a-\u202e\u2060-\u2064\u2066-\u206f\ufeff]"
 )
 
+
+def encontrar_palavras_em_html(html: str, keys: list[str]) -> list[str]:
+    """Devolve a lista de keywords encontradas no HTML normalizado."""
+    t = _norm(html or "")
+    achadas = []
+    for k in keys:
+        kk = _norm(k)
+        if kk and kk in t:
+            achadas.append(k)
+    return achadas
+    
 def scan_scripts_for_keywords(soup, keys, base_url):
     hits = []
     for sc in soup.find_all("script"):
@@ -131,7 +142,7 @@ def buscar_links_novos():
                     browser={'custom': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/124 Safari/537.36'}
                 )
                 headers = {
-                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/124 Safari/537.36",
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win32; x64) Chrome/124 Safari/537.36",
                     "Accept-Language": "pt-PT,pt;q=0.9,en;q=0.8"
                 }
                 resp = scraper.get(url, headers=headers, timeout=20, allow_redirects=True)
@@ -139,74 +150,18 @@ def buscar_links_novos():
                     print(f"⚠️ FPF respondeu com status {resp.status_code}, ignorado.", flush=True)
                     continue
             
-                soup = BeautifulSoup(resp.text, 'html.parser')
-                keys_fpf = [k for k in PALAVRAS_CHAVE_FPF if _norm(k)]  # ignora vazios
+                # 👉 SIMPLIFICADO: procura diretamente no HTML bruto (apanha texto, alt e JSON em <script>)
+                encontrados = encontrar_palavras_em_html(resp.text, PALAVRAS_CHAVE_FPF)
             
-                candidatos = []
-                # 1) <a href=...>
-                for a in soup.find_all('a', href=True):
-                    txt = a.get_text(" ", strip=True)
-                    m = match_key(txt, keys_fpf) or match_key_attrs(a, keys_fpf)
-                    if m:
-                        palavra, origem = m
-                        href = a['href']
-                        full = href if href.startswith('http') else urljoin(url, href)
-                        candidatos.append(full)
-                        print(f"✅ FPF match: palavra='{palavra}' | origem={origem} | href={full} | texto='{snippet(txt)}'", flush=True)
+                if encontrados:
+                    print(f"✅ FPF match: {', '.join(encontrados)} | url={url}", flush=True)
+                    links_encontrados.append(url)  # mantém o teu comportamento de acrescentar o URL
+                else:
+                    print("✅ FPF verificado, nenhum match nas palavras-chave agora.", flush=True)
             
-                # 2) <button>/<span>/<div> (fallback)
-                for tag in soup.find_all(['button', 'span', 'div']):
-                    txt = tag.get_text(" ", strip=True)
-                    m = match_key(txt, keys_fpf) or match_key_attrs(tag, keys_fpf)
-                    if m:
-                        palavra, origem = m
-                        parent_a = tag.find_parent('a', href=True) or tag.find('a', href=True)
-                        href = (parent_a.get('href') if parent_a else url)
-                        full = href if href.startswith('http') else urljoin(url, href)
-                        candidatos.append(full)
-                        print(f"✅ FPF match (sem <a> direto): palavra='{palavra}' | origem={origem} | href={full} | texto='{snippet(txt)}'", flush=True)
+                # passa ao próximo URL (não precisa de BeautifulSoup/candidatos/deduplicação aqui)
+                continue
 
-
-                # 👉 2.5) Procurar em <img alt="Irlanda/Hungria">
-                for img in soup.find_all("img"):
-                    m = match_key_attrs(img, keys_fpf, attrs=("alt",))
-                    if m:
-                        palavra, origem = m
-                        parent_a = img.find_parent('a', href=True)
-                        href = (parent_a.get('href') if parent_a else url)
-                        full = href if href.startswith('http') else urljoin(url, href)
-                        candidatos.append(full)
-                        print(f"✅ FPF match (img alt): palavra='{palavra}' | origem={origem} | href={full} | alt='{img.get('alt','')}'", flush=True)
-                
-                # 👉 2.6) Procurar dentro de <script> (JSON do framework)
-                script_hits = scan_scripts_for_keywords(soup, keys_fpf, url)
-                for hit in script_hits:
-                    candidatos.append(hit["url"])
-                    print(f"✅ FPF match (script): palavra='{hit['palavra']}' | origem={hit['origem']} | url={hit['url']}", flush=True)
-                
-                # 3) Fallback por texto global (último recurso)
-                if not candidatos:
-
-                    # 👇 Guarda o HTML completo para inspeção manual
-                    with open("debug_fpf.html","w",encoding="utf-8") as f:
-                        f.write(resp.text)
-                        
-                    texto_site = soup.get_text(" ", strip=True)
-                    m = match_key(texto_site, keys_fpf)
-                    if m:
-                        palavra, origem = m
-                        candidatos.append(url)
-                        print(f"✅ FPF match (global): palavra='{palavra}' | origem={origem} | url={url}", flush=True)
-                    else:
-                        print("✅ FPF verificado, nenhum match nas palavras-chave agora.", flush=True)
-            
-                # Deduplicar mantendo ordem
-                vistos = set()
-                candidatos = [c for c in candidatos if not (c in vistos or vistos.add(c))]
-            
-                if candidatos:
-                    links_encontrados.extend(candidatos)
-                    print("✅ FPF: links finais:", *[f"- {c}" for c in candidatos], sep="\n", flush=True)
 
 
             # SL Benfica Viagens
