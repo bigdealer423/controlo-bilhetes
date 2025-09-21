@@ -186,6 +186,11 @@ def buscar_links_novos():
                 
                 # 3) Fallback por texto global (último recurso)
                 if not candidatos:
+
+                    # 👇 Guarda o HTML completo para inspeção manual
+                    with open("debug_fpf.html","w",encoding="utf-8") as f:
+                        f.write(resp.text)
+                        
                     texto_site = soup.get_text(" ", strip=True)
                     m = match_key(texto_site, keys_fpf)
                     if m:
