@@ -45,6 +45,26 @@ INVISIBLES_RE = re.compile(
     r"[\u00ad\u034f\u061c\u115f\u1160\u17b4\u17b5\u180e\u200b-\u200f\u2028\u2029\u202a-\u202e\u2060-\u2064\u2066-\u206f\ufeff]"
 )
 
+def scan_scripts_for_keywords(soup, keys, base_url):
+    hits = []
+    for sc in soup.find_all("script"):
+        raw = (sc.string or sc.get_text() or "")
+        if not raw:
+            continue
+        raw_n = _norm(raw)
+        for k in keys:
+            kk = _norm(k)
+            if kk and kk in raw_n:
+                hits.append({
+                    "site": "FPF",
+                    "palavra": k,
+                    "origem": "script",
+                    "url": base_url,
+                    "snippet": f"...{k}..."
+                })
+                break
+    return hits
+
 def _normalize_text(s: str) -> str:
     if not s:
         return ""
@@ -67,7 +87,7 @@ def match_key(texto: str, keys: list[str]):
             return k, "text"
     return None
 
-def match_key_attrs(tag, keys: list[str], attrs=("aria-label","title","data-ga-label","class")):
+def match_key_attrs(tag, keys: list[str], attrs=("aria-label","title","data-ga-label","class","alt","data-label","data-title")):
     joined = _norm(" ".join([str(tag.get(a, "")) for a in attrs]))
     for k in keys:
         kk = _norm(k)
@@ -145,7 +165,25 @@ def buscar_links_novos():
                         full = href if href.startswith('http') else urljoin(url, href)
                         candidatos.append(full)
                         print(f"✅ FPF match (sem <a> direto): palavra='{palavra}' | origem={origem} | href={full} | texto='{snippet(txt)}'", flush=True)
-            
+
+
+                # 👉 2.5) Procurar em <img alt="Irlanda/Hungria">
+                for img in soup.find_all("img"):
+                    m = match_key_attrs(img, keys_fpf, attrs=("alt",))
+                    if m:
+                        palavra, origem = m
+                        parent_a = img.find_parent('a', href=True)
+                        href = (parent_a.get('href') if parent_a else url)
+                        full = href if href.startswith('http') else urljoin(url, href)
+                        candidatos.append(full)
+                        print(f"✅ FPF match (img alt): palavra='{palavra}' | origem={origem} | href={full} | alt='{img.get('alt','')}'", flush=True)
+                
+                # 👉 2.6) Procurar dentro de <script> (JSON do framework)
+                script_hits = scan_scripts_for_keywords(soup, keys_fpf, url)
+                for hit in script_hits:
+                    candidatos.append(hit["url"])
+                    print(f"✅ FPF match (script): palavra='{hit['palavra']}' | origem={hit['origem']} | url={hit['url']}", flush=True)
+                
                 # 3) Fallback por texto global (último recurso)
                 if not candidatos:
                     texto_site = soup.get_text(" ", strip=True)
