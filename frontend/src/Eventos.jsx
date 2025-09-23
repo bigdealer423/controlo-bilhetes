@@ -795,8 +795,11 @@ return (
                       {/* Editar */}
                       <button
                         onClick={() => {
-                          if (modoEdicao === r.id) guardarEvento(r);
-                          else setModoEdicao(r.id);
+                          if (modoEdicao === r.id) {
+                            guardarEvento(r);
+                          } else {
+                            setModoEdicao(r.id);
+                          }
                         }}
                         className="flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded leading-none"
                         title={modoEdicao === r.id ? "Guardar" : "Editar"}
@@ -817,14 +820,36 @@ return (
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          const vendasDoEvento = vendas.filter(v => v.evento === r.evento && v.data_evento === r.data_evento);
-                          const titulo = `Vendas com Nota (bola vermelha) — ${r.evento} — ${new Date(r.data_evento).toLocaleDateString("pt-PT")}`;
+                          const vendasDoEvento = vendas.filter(
+                            (v) => v.evento === r.evento && v.data_evento === r.data_evento
+                          );
+                          const titulo = `Vendas com Nota (bola vermelha) — ${r.evento} — ${new Date(
+                            r.data_evento
+                          ).toLocaleDateString("pt-PT")}`;
                           imprimirVendasComNotaVermelha(vendasDoEvento, titulo);
                         }}
                         title="Imprimir vendas com Nota (bola vermelha) deste evento"
                         className="hidden md:flex items-center justify-center px-2 py-1 rounded bg-emerald-600 hover:bg-emerald-700 text-white leading-none"
                       >
                         <FaPrint size={14} />
+                      </button>
+                  
+                      {/* Notas */}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setMostrarNotaEventoId(r.id);
+                          setNotaEventoTmp(r.nota_evento || "");
+                        }}
+                        className={`flex items-center justify-center px-2 py-1 rounded leading-none
+                          ${
+                            r.nota_evento
+                              ? "bg-purple-600 text-white neon-glow"
+                              : "bg-gray-500 text-white hover:bg-gray-600"
+                          }`}
+                        title="Notas do evento"
+                      >
+                        📝
                       </button>
                     </div>
                   </td>
