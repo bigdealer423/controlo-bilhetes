@@ -461,11 +461,18 @@ def resumo_mensal_eventos(db: Session = Depends(get_db)):
         if estado == "pago" or ganho > 0:
             lucro += ganho - gasto
 
-    # Pagamentos pendentes (exclui "Pago" e também "Disputa")
+    # Pagamentos pendentes (exclui "Pago" e "Disputa")
     pagamento_query = db.query(func.sum(ListagemVendas.ganho)).filter(
         ListagemVendas.estado.notin_(["Pago", "Disputa"])
     ).scalar()
     pagamento = round(pagamento_query or 0)
+
+    # Disputas (soma apenas os ganhos das linhas em disputa)
+    disputas_query = db.query(func.sum(ListagemVendas.ganho)).filter(
+        ListagemVendas.estado == "Disputa"
+    ).scalar()
+    disputas = round(disputas_query or 0)
+
 
 
     # -------------------------
@@ -490,6 +497,7 @@ def resumo_mensal_eventos(db: Session = Depends(get_db)):
     return {
         "lucro": round(lucro),
         "pagamento": pagamento,
+        "disputas": disputas,
         "bilhetes_epoca": total_bilhetes
     }
 
