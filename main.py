@@ -461,11 +461,12 @@ def resumo_mensal_eventos(db: Session = Depends(get_db)):
         if estado == "pago" or ganho > 0:
             lucro += ganho - gasto
 
-    # Pagamentos pendentes (ganhos com estado != Pago)
+    # Pagamentos pendentes (exclui "Pago" e também "Disputa")
     pagamento_query = db.query(func.sum(ListagemVendas.ganho)).filter(
-        ListagemVendas.estado != "Pago"
+        ListagemVendas.estado.notin_(["Pago", "Disputa"])
     ).scalar()
     pagamento = round(pagamento_query or 0)
+
 
     # -------------------------
     # Cálculo dos bilhetes vendidos esta época
