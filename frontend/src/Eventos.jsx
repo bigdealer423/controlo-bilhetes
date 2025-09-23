@@ -609,7 +609,7 @@ return (
   <strong>{formatarNumero(resumoMensal.pagamento)} €</strong>
   {resumoMensal.disputas > 0 && (
     <span className="ml-2 text-xs font-semibold text-red-600 dark:text-red-400">
-      (Disputas {formatarNumero(resumoMensal.disputas)} €)
+      (+Disputas {formatarNumero(resumoMensal.disputas)} €)
     </span>
   )}
 </p>
