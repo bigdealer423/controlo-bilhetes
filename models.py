@@ -136,7 +136,9 @@ class EventoCompletoBase(BaseModel):
     gasto: float
     ganho: float
     estado: str
-
+     # 👇 ADICIONAR
+    nota_evento: Optional[str] = None
+    
 class EventoCompletoCreate(EventoCompletoBase):
     pass
 
