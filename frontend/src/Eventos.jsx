@@ -790,46 +790,43 @@ return (
                         </select>
                       ) : r.estado}
                   </td>
-                  <td className="p-2 space-x-2">
-                    {/* Editar (ícone com fundo azul) */}
-                    <button
-                      onClick={() => {
-                        if (modoEdicao === r.id) {
-                          guardarEvento(r);
-                        } else {
-                          setModoEdicao(r.id);
-                        }
-                      }}
-                      className="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded"
-                      title={modoEdicao === r.id ? "Guardar" : "Editar"}
-                    >
-                      {modoEdicao === r.id ? "💾" : <FaEdit />}
-                    </button>
-                    
-                    {/* Eliminar (ícone com fundo vermelho) */}
-                    <button
-                      onClick={() => confirmarEliminar(r.id)}
-                      className="inline-flex items-center justify-center bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded"
-                      title="Eliminar"
-                    >
-                      <FaTrash />
-                    </button>
-
+                  <td className="p-2 align-middle">
+                    <div className="flex items-center gap-2">
+                      {/* Editar */}
+                      <button
+                        onClick={() => {
+                          if (modoEdicao === r.id) guardarEvento(r);
+                          else setModoEdicao(r.id);
+                        }}
+                        className="flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded leading-none"
+                        title={modoEdicao === r.id ? "Guardar" : "Editar"}
+                      >
+                        {modoEdicao === r.id ? "💾" : <FaEdit size={14} />}
+                      </button>
                   
-                    {/* Imprimir (ícone) — só DESKTOP */}
-                    {/* Imprimir (ícone) — só DESKTOP */}
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        const vendasDoEvento = vendas.filter(v => v.evento === r.evento && v.data_evento === r.data_evento);
-                        const titulo = `Vendas com Nota (bola vermelha) — ${r.evento} — ${new Date(r.data_evento).toLocaleDateString("pt-PT")}`;
-                        imprimirVendasComNotaVermelha(vendasDoEvento, titulo);
-                      }}
-                      title="Imprimir vendas com Nota (bola vermelha) deste evento"
-                      className="hidden md:inline-flex items-center justify-center align-middle ml-2 px-2 py-1 rounded bg-emerald-600 hover:bg-emerald-700 text-white"
-                    >
-                      <FaPrint />
-                    </button>
+                      {/* Eliminar */}
+                      <button
+                        onClick={() => confirmarEliminar(r.id)}
+                        className="flex items-center justify-center bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded leading-none"
+                        title="Eliminar"
+                      >
+                        <FaTrash size={14} />
+                      </button>
+                  
+                      {/* Imprimir (só desktop) */}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const vendasDoEvento = vendas.filter(v => v.evento === r.evento && v.data_evento === r.data_evento);
+                          const titulo = `Vendas com Nota (bola vermelha) — ${r.evento} — ${new Date(r.data_evento).toLocaleDateString("pt-PT")}`;
+                          imprimirVendasComNotaVermelha(vendasDoEvento, titulo);
+                        }}
+                        title="Imprimir vendas com Nota (bola vermelha) deste evento"
+                        className="hidden md:flex items-center justify-center px-2 py-1 rounded bg-emerald-600 hover:bg-emerald-700 text-white leading-none"
+                      >
+                        <FaPrint size={14} />
+                      </button>
+                    </div>
                   </td>
                 </tr>
 
