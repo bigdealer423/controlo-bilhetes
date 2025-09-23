@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, Date, Enum, Boolean
+from sqlalchemy import Column, Integer, String, Float, Date, Enum, Boolean, Text
 from sqlalchemy.ext.declarative import declarative_base
 from pydantic import BaseModel
 from datetime import date
@@ -53,6 +53,9 @@ class EventoCompleto(Base):
     gasto = Column(Float, nullable=False)
     ganho = Column(Float, nullable=False)
     estado = Column(String, nullable=False)
+
+# 👇 NOVO
+    nota_evento = Column(Text, nullable=True, default=None)
 
 class Compra(Base):
     __tablename__ = "compras"
