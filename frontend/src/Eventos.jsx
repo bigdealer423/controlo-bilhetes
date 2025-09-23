@@ -604,7 +604,15 @@ return (
 </button>
   </div>    
   <p>📆 Lucro de {new Date().toLocaleString("pt-PT", { month: "long", year: "numeric" })}: <strong>{formatarNumero(resumoMensal.lucro)} €</strong></p>
-  <p>💸 A aguardar pagamento: <strong>{formatarNumero(resumoMensal.pagamento)} €</strong></p>
+  <p>
+  💸 A aguardar pagamento:{" "}
+  <strong>{formatarNumero(resumoMensal.pagamento)} €</strong>
+  {resumoMensal.disputas > 0 && (
+    <span className="ml-2 text-xs font-semibold text-red-600 dark:text-red-400">
+      (Disputas {formatarNumero(resumoMensal.disputas)} €)
+    </span>
+  )}
+</p>
   <p>🎟️ Bilhetes vendidos esta época: <strong>{formatarNumero(resumoMensal.bilhetes_epoca)}</strong></p>
 </div>
 
