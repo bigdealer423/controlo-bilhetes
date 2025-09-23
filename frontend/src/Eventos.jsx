@@ -58,6 +58,8 @@ function toInputDate(dstr) {
 
 export default function Eventos() {
   const [registos, setRegistos] = useState([]);
+  const [mostrarNotaEventoId, setMostrarNotaEventoId] = useState(null);
+  const [notaEventoTmp, setNotaEventoTmp] = useState("");
   const [eventosDropdown, setEventosDropdown] = useState([]);
   const [modoEdicao, setModoEdicao] = useState(null);
   const [eventoEditado, setEventoEditado] = useState({});
@@ -768,7 +770,14 @@ return (
   ))}
 </select>
   ) : (
-    renderEventoComSimbolos(r.evento)
+    <div className="flex items-center gap-2">
+      <span className="flex flex-wrap items-center gap-1">
+        {renderEventoComSimbolos(r.evento)}
+      </span>
+      {r.nota_evento && (
+        <span className="text-yellow-400 animate-pulse" title={r.nota_evento}>📝</span>
+      )}
+    </div>
   )}
 </td>
                   <td className="p-2">
@@ -835,6 +844,7 @@ return (
                       </button>
                   
                       {/* Notas */}
+                      {/* Notas (por evento) */}
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
@@ -842,12 +852,8 @@ return (
                           setNotaEventoTmp(r.nota_evento || "");
                         }}
                         className={`flex items-center justify-center px-2 py-1 rounded leading-none
-                          ${
-                            r.nota_evento
-                              ? "bg-purple-600 text-white neon-glow"
-                              : "bg-gray-500 text-white hover:bg-gray-600"
-                          }`}
-                        title="Notas do evento"
+                          ${r.nota_evento ? "bg-purple-600 text-white neon-glow" : "bg-gray-500 text-white hover:bg-gray-600"}`}
+                        title={r.nota_evento ? "Editar notas do evento" : "Adicionar nota ao evento"}
                       >
                         📝
                       </button>
@@ -1383,7 +1389,68 @@ return (
           </div>
         </div>
       )}
-  
+
+      {/* Modal de Nota do Evento */}
+      {mostrarNotaEventoId && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
+          <div className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 w-full max-w-lg rounded-xl shadow-lg p-4">
+            <h3 className="text-lg font-semibold mb-3">Notas do evento</h3>
+      
+            <textarea
+              value={notaEventoTmp}
+              onChange={(e) => setNotaEventoTmp(e.target.value)}
+              rows={6}
+              className="w-full border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-900"
+              placeholder="Escreve aqui as tuas notas…"
+            />
+      
+            <div className="mt-4 flex justify-between items-center">
+              {/* Indicador simples do estado */}
+              <span className="text-xs text-gray-500">
+                {notaEventoTmp?.length ? `${notaEventoTmp.length} caracteres` : "Sem nota"}
+              </span>
+      
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setMostrarNotaEventoId(null)}
+                  className="px-3 py-2 rounded bg-gray-300 dark:bg-gray-700 hover:opacity-90"
+                >
+                  Cancelar
+                </button>
+      
+                <button
+                  onClick={async () => {
+                    const id = mostrarNotaEventoId;
+                    const eventoAtual = registos.find(x => x.id === id) || {};
+                    const payload = { ...eventoAtual, nota_evento: notaEventoTmp };
+      
+                    try {
+                      const res = await fetch(`https://controlo-bilhetes.onrender.com/eventos_completos2/${id}`, {
+                        method: "PUT",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(payload),
+                      });
+                      if (!res.ok) throw new Error("Falha ao gravar nota");
+      
+                      // atualiza localmente e fecha modal
+                      setRegistos(prev => prev.map(x => x.id === id ? { ...x, nota_evento: notaEventoTmp } : x));
+                      setMostrarNotaEventoId(null);
+                    } catch (e) {
+                      toast.error("Não foi possível guardar a nota do evento.");
+                      console.error(e);
+                    }
+                  }}
+                  className="px-3 py-2 rounded bg-purple-600 hover:bg-purple-700 text-white"
+                >
+                  Guardar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+     
       {/* Modal de confirmação */}
       {mostrarModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
