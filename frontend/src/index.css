@@ -122,3 +122,15 @@ html, body {
   animation: flash-green 0.6s ease-in-out infinite;
   text-shadow: 0 0 6px #22c55e;
 }
+
+@keyframes neon {
+  0%, 100% {
+    text-shadow: 0 0 5px #c084fc, 0 0 20px #c084fc;
+  }
+  50% {
+    text-shadow: 0 0 20px #c084fc, 0 0 40px #c084fc;
+  }
+}
+.neon-glow {
+  animation: neon 1.5s infinite;
+}
