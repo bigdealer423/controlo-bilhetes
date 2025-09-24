@@ -76,9 +76,14 @@ const setorExato = (txt = "") => {
 
 // ——— Nº de bilhetes (fallback 1) ———
 const qtdBilhetes = (txt = "") => {
-  const m = String(txt).match(/(\d+)\s*Bilhete/i);
-  return m ? Number(m[1]) : 1;
+  const s = String(txt).trim();
+  // caso "2"
+  if (/^\d+$/.test(s)) return Number(s);
+  // caso "... (4 bilhetes)" / "(1 Bilhete)"
+  const m = s.match(/\((\d+)\s*Bilhetes?\)/i);
+  return m ? Number(m[1]) : 0;   // fallback 0 (não inventa 1)
 };
+
 
 
 const formatarNumero = (valor) => {
@@ -302,7 +307,7 @@ const getResumoTituloVendas = (evento, data_evento) => {
   return [...mapa.entries()]
     .sort((a, b) => a[0].localeCompare(b[0], "pt", { sensitivity: "base", numeric: true }))
     // mostra nº de linhas; troca para vals.bilhetes se quiseres total de bilhetes
-    .map(([setor, vals]) => `${setor} (${vals.linhas})`)
+    .map(([setor, vals]) => `${setor} (${vals.bilhetes})`)
     .join(" • ");
 };
 
