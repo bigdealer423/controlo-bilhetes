@@ -270,6 +270,64 @@ useEffect(() => {
     buscarEventos();
   }, [skip]);
 
+  // ===================== Resumo + Ordenação de VENDAS por evento =====================
+
+// Índice: (evento|data_evento) -> array de vendas
+const idxVendasPorEvento = useMemo(() => {
+  const map = new Map();
+  for (const v of vendas ?? []) {
+    const k = `${v.evento}|${v.data_evento}`;
+    const arr = map.get(k) || [];
+    arr.push(v);
+    map.set(k, arr);
+  }
+  return map;
+}, [vendas]);
+
+// Título-resumo: "Setor X (N) • Lower 32 (M) ..."
+const getResumoTituloVendas = (evento, data_evento) => {
+  const arr = idxVendasPorEvento.get(`${evento}|${data_evento}`) || [];
+  if (!arr.length) return "";
+
+  const mapa = new Map();
+  for (const v of arr) {
+    const chave = setorExato(v.estadio);      // 👈 usa v.estadio
+    const qtd = qtdBilhetes(v.estadio);       // 👈 idem
+    const cur = mapa.get(chave) || { linhas: 0, bilhetes: 0 };
+    cur.linhas += 1;
+    cur.bilhetes += qtd;
+    mapa.set(chave, cur);
+  }
+
+  return [...mapa.entries()]
+    .sort((a, b) => a[0].localeCompare(b[0], "pt", { sensitivity: "base", numeric: true }))
+    // mostra nº de linhas; troca para vals.bilhetes se quiseres total de bilhetes
+    .map(([setor, vals]) => `${setor} (${vals.linhas})`)
+    .join(" • ");
+};
+
+// Lista ordenada de vendas do evento (por setor exato; depois pelo texto completo)
+const getVendasOrdenadas = (evento, data_evento) => {
+  const arr = [...(idxVendasPorEvento.get(`${evento}|${data_evento}`) || [])];
+  return arr.sort((a, b) => {
+    const ka = setorExato(a.estadio);
+    const kb = setorExato(b.estadio);
+    const p = ka.localeCompare(kb, "pt", { sensitivity: "base", numeric: true });
+    if (p !== 0) return p;
+    return (limpar(a.estadio)).localeCompare(limpar(b.estadio), "pt", {
+      sensitivity: "base",
+      numeric: true,
+    });
+  });
+};
+
+// Total de bilhetes desse evento (lê de v.estadio "(X Bilhetes)" ou número isolado)
+const getTotalBilhetesVendas = (evento, data_evento) => {
+  const arr = idxVendasPorEvento.get(`${evento}|${data_evento}`) || [];
+  return arr.reduce((acc, v) => acc + (qtdBilhetes(v.estadio) || 0), 0);
+};
+
+
 const resumoSetores = useMemo(() => {
   const mapa = new Map();
   (vendas ?? []).forEach(v => {
