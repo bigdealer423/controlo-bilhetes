@@ -17,6 +17,42 @@ import * as XLSX from "xlsx";
 import saveAs from "file-saver";
 import CirculoEstado from "./CirculoEstado";
 
+
+// ====== Regras base por estádio (fallback) ======
+const STADIUM_RULES = {
+  default: {
+    // Bancadas "genéricas" que tratamos como buckets (podem existir ou não por estádio)
+    genericBancadas: ["Nascente", "Poente", "Norte", "Sul"],
+    // Mapeamentos conhecidos de letra -> bancada (vêm vazios por defeito; vamos aprendendo)
+    lettersToBancada: {}
+  }
+};
+
+// ====== Parse genérico de local/setor ======
+function parseLocal(txt = "") {
+  const s = limpar(txt);
+  if (!s) return { bancada: null, letra: null, familia: null };
+
+  // deteta bancada
+  const bancadaMatch = s.match(/\b(Nascente|Poente|Norte|Sul)\b/i);
+  const bancada = bancadaMatch ? canonFamilia(bancadaMatch[1]) : null;
+
+  // deteta letra de setor: um token com 1-2 letras A-Z (evita "SC" de "SCP" porque exige palavra isolada)
+  const letraMatch = s.match(/(?:^|\s)([A-ZÇ]{1,2})(?:\s|$)/i);
+  let letra = letraMatch ? letraMatch[1].toUpperCase() : null;
+
+  // família (Lower/Middle/Upper/Setor/Block/etc.) só para referência
+  const familiaMatch = s.match(/^(Lower|Middle|Upper|Setor|Block|Stand|Tribuna|Ring|Level|Nascente|Poente|Norte|Sul)\b/i);
+  const familia = familiaMatch ? canonFamilia(familiaMatch[1]) : null;
+
+  // higiene: ignora letras claramente não-setor (ex.: "SC", "FC", "CP", etc.) se tiver bancada já presente
+  if (bancada && letra && /^(SC|FC|CP|SL|UD|GD|CD|CF)$/i.test(letra)) letra = null;
+
+  return { bancada, letra, familia };
+}
+
+
+
 // ——— Normalização leve (acentos, espaços, invisíveis) ———
 const limpar = (s = "") =>
   String(s)
@@ -55,6 +91,80 @@ const canonFamilia = (w = "") => {
   return w; // mantém se não reconhecido
 };
 
+// Junta letra->bancada se ainda não existir (evita flapping)
+const addMapSafe = (dict, letra, bancada) => {
+  if (!letra || !bancada) return;
+  if (dict[letra] && dict[letra] !== bancada) return;
+  dict[letra] = bancada;
+};
+
+// Aprende a partir de um evento específico
+const inferRulesFromEvent = (evento, data_evento) => {
+  const lettersToBancada = {};
+
+  // compras
+  for (const c of compras) {
+    if (c.evento !== evento || c.data_evento !== data_evento) continue;
+    const loc = parseLocal([c.bancada, c.setor].filter(Boolean).join(" "));
+    if (loc.letra && loc.bancada) addMapSafe(lettersToBancada, loc.letra, loc.bancada);
+  }
+  // vendas
+  const arr = idxVendasPorEvento.get(`${evento}|${data_evento}`) || [];
+  for (const v of arr) {
+    const loc = parseLocal(v.estadio);
+    if (loc.letra && loc.bancada) addMapSafe(lettersToBancada, loc.letra, loc.bancada);
+  }
+
+  return { lettersToBancada };
+};
+
+// Aprende de todos os eventos carregados (varre registos)
+const inferRulesFromAll = () => {
+  const byStadium = {}; // nomeEstadio -> { lettersToBancada: {} }
+  for (const r of registos) {
+    const estadioNome = (r.estadio || "").trim();
+    if (!estadioNome) continue;
+    const learned = inferRulesFromEvent(r.evento, r.data_evento);
+    if (!byStadium[estadioNome]) byStadium[estadioNome] = { lettersToBancada: {} };
+    Object.entries(learned.lettersToBancada).forEach(([L, B]) => addMapSafe(byStadium[estadioNome].lettersToBancada, L, B));
+  }
+  return byStadium;
+};
+
+// Sempre que compras/vendas/registos mudam, funde o que foi aprendido
+useEffect(() => {
+  if (!registos.length) return;
+  const learned = inferRulesFromAll();
+  setStadiumRules(prev => {
+    const next = { ...prev };
+    for (const [est, obj] of Object.entries(learned)) {
+      if (!next[est]) next[est] = { lettersToBancada: {} };
+      for (const [L, B] of Object.entries(obj.lettersToBancada || {})) {
+        if (!next[est].lettersToBancada[L]) next[est].lettersToBancada[L] = B;
+      }
+    }
+    return next;
+  });
+}, [compras, vendas, registos]);
+
+const getRulesForStadium = (estadioTxt = "", evento = "", data_evento = "") => {
+  const base = STADIUM_RULES.default;
+  const nome = (estadioTxt || "").trim();
+
+  // Persistido
+  const persisted = stadiumRules[nome] || { lettersToBancada: {} };
+  // Inferido “on the fly” só com dados daquele evento
+  const inferred = inferRulesFromEvent(evento, data_evento);
+
+  return {
+    genericBancadas: base.genericBancadas,
+    lettersToBancada: {
+      ...base.lettersToBancada,
+      ...(persisted.lettersToBancada || {}),
+      ...(inferred.lettersToBancada || {}),
+    },
+  };
+};
 
 // ——— Extrai o “setor exato” (NÃO agrupa números) ———
 // Regras: pega só a parte principal antes de vírgula/parênteses/“Fila/Row/Gate/Porta/Entrada”.
@@ -317,6 +427,19 @@ useEffect(() => {
     buscarEventos();
   }, [skip]);
 
+
+// Regras aprendidas/persistidas por estádio
+const [stadiumRules, setStadiumRules] = useState(() => {
+  try {
+    return JSON.parse(localStorage.getItem("stadium_rules_v1") || "{}");
+  } catch { return {}; }
+});
+
+// Persistir sempre que mudar
+useEffect(() => {
+  localStorage.setItem("stadium_rules_v1", JSON.stringify(stadiumRules));
+}, [stadiumRules]);
+  
   // ===================== Resumo + Ordenação de VENDAS por evento =====================
 
 // Índice: (evento|data_evento) -> array de vendas
@@ -431,6 +554,98 @@ const getTotalBilhetesVendas = (evento, data_evento) => {
   }, 0);
 };
 
+// Constrói pools de compras por bancada e por letra
+function buildCompraPools(evento, data_evento) {
+  const pools = {}; // { [bancada]: { total: number, byLetter: { [L]: number } } }
+  for (const c of compras) {
+    if (c.evento !== evento || c.data_evento !== data_evento) continue;
+    const qtd = Number(c.quantidade || 0);
+    if (!qtd) continue;
+
+    const loc = parseLocal([c.bancada, c.setor].filter(Boolean).join(" "));
+    const b = loc.bancada || "Outros";
+    if (!pools[b]) pools[b] = { total: 0, byLetter: {} };
+
+    // se veio letra, guarda também por letra
+    if (loc.letra) {
+      pools[b].byLetter[loc.letra] = (pools[b].byLetter[loc.letra] || 0) + qtd;
+    }
+    // em qualquer dos casos, entra para o total dessa bancada
+    pools[b].total += qtd;
+  }
+  return pools;
+}
+
+// Consome pools com vendas, respeitando letra->bancada (via regras)
+function calcularSaldos(evento, data_evento, estadioNome) {
+  const rules = getRulesForStadium(estadioNome, evento, data_evento);
+  const pools = buildCompraPools(evento, data_evento);
+
+  // Acumuladores de défices (por comprar) e sobras (por vender)
+  const deficits = {}; // { [bancadaOuChave]: number }
+  const sobras   = {}; // { [bancadaOuChave]: number }
+
+  // 1) consome pelas VENDAS
+  const vendasArr = idxVendasPorEvento.get(`${evento}|${data_evento}`) || [];
+  for (const v of vendasArr) {
+    const q = qtdBilhetes(v.estadio) || 0;
+    if (!q) continue;
+    const loc = parseLocal(v.estadio);
+
+    // Determina a bancada alvo
+    let targetB = loc.bancada;
+    if (!targetB && loc.letra) {
+      targetB = rules.lettersToBancada[loc.letra] || null;
+    }
+
+    // Se nem letra nem bancada reconhecida, ignora para consumo (não sabemos onde encaixa)
+    if (!targetB) continue;
+
+    // Tenta consumir: primeiro por letra (se existir esse stock), depois total da bancada
+    let rest = q;
+    if (loc.letra && pools[targetB]?.byLetter?.[loc.letra] > 0) {
+      const take = Math.min(rest, pools[targetB].byLetter[loc.letra]);
+      pools[targetB].byLetter[loc.letra] -= take;
+      pools[targetB].total -= take;
+      rest -= take;
+    }
+    if (rest > 0 && pools[targetB]?.total > 0) {
+      const take = Math.min(rest, pools[targetB].total);
+      pools[targetB].total -= take;
+      rest -= take;
+    }
+    if (rest > 0) {
+      // faltou stock para esta venda → é "por comprar"
+      deficits[targetB] = (deficits[targetB] || 0) + rest;
+    }
+  }
+
+  // 2) o que sobrou nos pools é “por vender”
+  for (const [b, obj] of Object.entries(pools)) {
+    if (obj.total > 0) {
+      sobras[b] = (sobras[b] || 0) + obj.total;
+    }
+  }
+
+  return { deficits, sobras };
+}
+
+// Helpers de resumo (strings) usando a lógica acima
+function resumoPorVender(evento, data_evento, estadioNome) {
+  const { sobras } = calcularSaldos(evento, data_evento, estadioNome);
+  return Object.entries(sobras)
+    .sort((a,b)=>a[0].localeCompare(b[0],"pt",{numeric:true,sensitivity:"base"}))
+    .map(([k,v]) => `${k} (${v})`)
+    .join(" • ");
+}
+
+function resumoPorComprar(evento, data_evento, estadioNome) {
+  const { deficits } = calcularSaldos(evento, data_evento, estadioNome);
+  return Object.entries(deficits)
+    .sort((a,b)=>a[0].localeCompare(b[0],"pt",{numeric:true,sensitivity:"base"}))
+    .map(([k,v]) => `${k} (${v})`)
+    .join(" • ");
+}
 
 
 
@@ -1106,14 +1321,15 @@ return (
     return resumo ? <> — {resumo}</> : null;
   })()}
   {(() => {
-    const pv = getResumoPorVender(r.evento, r.data_evento);
+    const pv = resumoPorVender(r.evento, r.data_evento, r.estadio);   // 👈 NOVO
     return pv ? <span className="text-red-500"> — Por vender: {pv}</span> : null;
   })()}
   {(() => {
-    const pc = getResumoPorComprar(r.evento, r.data_evento);
+    const pc = resumoPorComprar(r.evento, r.data_evento, r.estadio); // 👈 NOVO
     return pc ? <span className="text-orange-500"> — Por comprar: {pc}</span> : null;
   })()}
 </td>
+
 
 </tr>
 
