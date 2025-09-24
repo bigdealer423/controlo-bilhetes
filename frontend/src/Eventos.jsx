@@ -584,15 +584,14 @@ function calcularSaldos(evento, data_evento, estadioNome) {
   const rules = getRulesForStadium(estadioNome, evento, data_evento);
   const pools = buildCompraPools(evento, data_evento);
 
-  // Acumuladores de défices (por comprar) e sobras (por vender)
-  const deficits = {}; // { [bancadaOuChave]: number }
-  const sobras   = {}; // { [bancadaOuChave]: number }
+  const deficits = {};
+  const sobras   = {};
 
-  // 1) consome pelas VENDAS
   const vendasArr = idxVendasPorEvento.get(`${evento}|${data_evento}`) || [];
   for (const v of vendasArr) {
     const q = qtdBilhetes(v.estadio) || 0;
     if (!q) continue;
+
     const loc = parseLocal(v.estadio);
 
     // Determina a bancada alvo
@@ -601,10 +600,18 @@ function calcularSaldos(evento, data_evento, estadioNome) {
       targetB = rules.lettersToBancada[loc.letra] || null;
     }
 
-    // Se nem letra nem bancada reconhecida, ignora para consumo (não sabemos onde encaixa)
+    // 🔽🔽 Fallback: se não reconheceu, e só existe UMA bancada genérica com stock, usa essa
+    if (!targetB) {
+      const candidatos = Object.keys(pools)
+        .filter(b => STADIUM_RULES.default.genericBancadas.includes(b) && pools[b]?.total > 0);
+      if (candidatos.length === 1) targetB = candidatos[0];
+    }
+    // 🔼🔼
+
+    // Se nem letra nem bancada reconhecida, ignora para consumo
     if (!targetB) continue;
 
-    // Tenta consumir: primeiro por letra (se existir esse stock), depois total da bancada
+    // Consome primeiro por letra (se existir), depois pelo total da bancada
     let rest = q;
     if (loc.letra && pools[targetB]?.byLetter?.[loc.letra] > 0) {
       const take = Math.min(rest, pools[targetB].byLetter[loc.letra]);
@@ -618,20 +625,18 @@ function calcularSaldos(evento, data_evento, estadioNome) {
       rest -= take;
     }
     if (rest > 0) {
-      // faltou stock para esta venda → é "por comprar"
       deficits[targetB] = (deficits[targetB] || 0) + rest;
     }
   }
 
-  // 2) o que sobrou nos pools é “por vender”
+  // Sobra por vender
   for (const [b, obj] of Object.entries(pools)) {
-    if (obj.total > 0) {
-      sobras[b] = (sobras[b] || 0) + obj.total;
-    }
+    if (obj.total > 0) sobras[b] = (sobras[b] || 0) + obj.total;
   }
 
   return { deficits, sobras };
 }
+
 
 // Helpers de resumo (strings) usando a lógica acima
 function resumoPorVender(evento, data_evento, estadioNome) {
