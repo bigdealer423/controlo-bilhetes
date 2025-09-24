@@ -8,12 +8,10 @@
 
 
 
-import { useMemo } from "react";
-import { useEffect, useState } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { FaTrash, FaPrint } from "react-icons/fa"; // <- adicionar
 import { toast } from "react-toastify";            // se ainda não estiver
 import { useLocation } from "react-router-dom";
-import { useRef } from "react";
 import { FaFileExcel, FaEdit } from "react-icons/fa";
 import * as XLSX from "xlsx";
 import saveAs from "file-saver";
@@ -28,64 +26,7 @@ const limpar = (s = "") =>
     .replace(/\s+/g, " ")
     .trim();
 
-// Normaliza chave de VENDAS por setor (sem "Setor ")
-const mapVendasPorSetor = (evento, data_evento) => {
-  const arr = idxVendasPorEvento.get(`${evento}|${data_evento}`) || [];
-  const map = new Map();
-  for (const v of arr) {
-    const setor = setorExato(v.estadio);
-    if (setor === "Devolução") continue;
-    const key = setor.replace(/^Setor\s+/i, "").trim();
-    const qtd = qtdBilhetes(v.estadio) || 0;
-    map.set(key, (map.get(key) || 0) + qtd);
-  }
-  return map;
-};
 
-// Normaliza chave de COMPRAS por setor (usa a mesma lógica)
-const compraChave = (c = {}) => {
-  const partes = [c.local_compras, c.bancada, c.setor, c.fila].filter(Boolean).join(" ");
-  let key = setorExato(partes);
-  return key.replace(/^Setor\s+/i, "").trim() || "Outro";
-};
-
-const mapComprasPorSetor = (evento, data_evento) => {
-  const arr = compras.filter(c => c.evento === evento && c.data_evento === data_evento);
-  const map = new Map();
-  for (const c of arr) {
-    const key = compraChave(c);
-    const qtd = Number(c.quantidade || 0);
-    if (!qtd) continue;
-    map.set(key, (map.get(key) || 0) + qtd);
-  }
-  return map;
-};
-
-// Por vender = comprado - vendido (>0)
-const getResumoPorVender = (evento, data_evento) => {
-  const mv = mapVendasPorSetor(evento, data_evento);
-  const mc = mapComprasPorSetor(evento, data_evento);
-  const faltas = [];
-  for (const [k, qC] of mc.entries()) {
-    const qV = mv.get(k) || 0;
-    const diff = qC - qV;
-    if (diff > 0) faltas.push(`${k} (${diff})`);
-  }
-  return faltas.sort((a,b)=>a.localeCompare(b,"pt",{numeric:true,sensitivity:"base"})).join(" • ");
-};
-
-// Por comprar = vendido - comprado (>0)
-const getResumoPorComprar = (evento, data_evento) => {
-  const mv = mapVendasPorSetor(evento, data_evento);
-  const mc = mapComprasPorSetor(evento, data_evento);
-  const faltas = [];
-  for (const [k, qV] of mv.entries()) {
-    const qC = mc.get(k) || 0;
-    const diff = qV - qC;
-    if (diff > 0) faltas.push(`${k} (${diff})`);
-  }
-  return faltas.sort((a,b)=>a.localeCompare(b,"pt",{numeric:true,sensitivity:"base"})).join(" • ");
-};
 
 // ——— Canonicaliza família/prefixo (PT ↔ EN) ———
 const canonFamilia = (w = "") => {
@@ -374,6 +315,7 @@ useEffect(() => {
 
 // Índice: (evento|data_evento) -> array de vendas
 const idxVendasPorEvento = useMemo(() => {
+  
   const map = new Map();
   for (const v of vendas ?? []) {
     const k = `${v.evento}|${v.data_evento}`;
@@ -383,6 +325,58 @@ const idxVendasPorEvento = useMemo(() => {
   }
   return map;
 }, [vendas]);
+
+// --- mapas por setor, usando o state atual ---
+const mapVendasPorSetor = (evento, data_evento) => {
+  const arr = idxVendasPorEvento.get(`${evento}|${data_evento}`) || [];
+  const map = new Map();
+  for (const v of arr) {
+    const setor = setorExato(v.estadio);
+    if (setor === "Devolução") continue;
+    const key = setor.replace(/^Setor\s+/i, "").trim();
+    const qtd = qtdBilhetes(v.estadio) || 0;
+    map.set(key, (map.get(key) || 0) + qtd);
+  }
+  return map;
+};
+
+const mapComprasPorSetor = (evento, data_evento) => {
+  const arr = compras.filter(c => c.evento === evento && c.data_evento === data_evento);
+  const map = new Map();
+  for (const c of arr) {
+    const key = compraChave(c);
+    const qtd = Number(c.quantidade || 0);
+    if (!qtd) continue;
+    map.set(key, (map.get(key) || 0) + qtd);
+  }
+  return map;
+};
+
+// --- resumos para o título ---
+const getResumoPorVender = (evento, data_evento) => {
+  const mv = mapVendasPorSetor(evento, data_evento);
+  const mc = mapComprasPorSetor(evento, data_evento);
+  const faltas = [];
+  for (const [k, qC] of mc.entries()) {
+    const qV = mv.get(k) || 0;
+    const diff = qC - qV;
+    if (diff > 0) faltas.push(`${k} (${diff})`);
+  }
+  return faltas.sort((a,b)=>a.localeCompare(b,"pt",{numeric:true,sensitivity:"base"})).join(" • ");
+};
+
+const getResumoPorComprar = (evento, data_evento) => {
+  const mv = mapVendasPorSetor(evento, data_evento);
+  const mc = mapComprasPorSetor(evento, data_evento);
+  const faltas = [];
+  for (const [k, qV] of mv.entries()) {
+    const qC = mc.get(k) || 0;
+    const diff = qV - qC;
+    if (diff > 0) faltas.push(`${k} (${diff})`);
+  }
+  return faltas.sort((a,b)=>a.localeCompare(b,"pt",{numeric:true,sensitivity:"base"})).join(" • ");
+};
+
 
 // Título-resumo: "Setor X (N) • Lower 32 (M) ..."
 const getResumoTituloVendas = (evento, data_evento) => {
