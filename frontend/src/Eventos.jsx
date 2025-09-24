@@ -1806,6 +1806,13 @@ return (
                               nota_estado={v.nota_estado_venda}
                               setVendas={setVendas}
                             />
+                          
+                            {/* ⬇️ NOTA DA VENDA (MOBILE) */}
+                            {v.nota_estado_venda?.trim() && (
+                              <div className="mt-2 text-xs bg-white/10 rounded px-2 py-1 whitespace-pre-wrap">
+                                <span className="font-semibold">Nota:</span> {v.nota_estado_venda}
+                              </div>
+                            )}
                           </div>
                         </div>
                       ))}
@@ -1843,6 +1850,13 @@ return (
                               nota_estado={c.nota_estado_compra}
                               setCompras={setCompras}
                             />
+                          
+                            {/* ⬇️ NOTA DA COMPRA (MOBILE) */}
+                            {c.nota_estado_compra?.trim() && (
+                              <div className="mt-2 text-xs bg-white/10 rounded px-2 py-1 whitespace-pre-wrap">
+                                <span className="font-semibold">Nota:</span> {c.nota_estado_compra}
+                              </div>
+                            )}
                           </div>
                         </div>
                       ))}
