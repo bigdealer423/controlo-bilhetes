@@ -28,44 +28,61 @@ const limpar = (s = "") =>
     .replace(/\s+/g, " ")
     .trim();
 
-// ——— Canonicaliza palavras-chave (sector→Setor, section→Section, etc.) ———
+// ——— Canonicaliza família/prefixo (PT ↔ EN) ———
 const canonFamilia = (w = "") => {
-  const x = w.toLowerCase();
-  if (["sector", "setor"].includes(x)) return "Setor";
-  if (["lower"].includes(x)) return "Lower";
-  if (["upper"].includes(x)) return "Upper";
-  if (["block", "bloco"].includes(x)) return "Block";
-  if (["stand", "bancada"].includes(x)) return "Stand";
-  if (["tribuna"].includes(x)) return "Tribuna";
-  if (["ring", "anel"].includes(x)) return "Ring";
-  if (["tier", "nivel", "nível", "level"].includes(x)) return "Level";
-  if (["section", "secao", "seção", "secção"].includes(x)) return "Section";
-  if (["nascente"].includes(x)) return "Nascente";
-  if (["poente"].includes(x)) return "Poente";
-  if (["norte"].includes(x)) return "Norte";
-  if (["sul"].includes(x)) return "Sul";
+  const x = String(w).toLowerCase().normalize("NFKC").trim();
+
+  // pisos / níveis
+  if (x === "lower" || x === "piso 0" || x === "piso zero" || x === "p0") return "Lower";
+  if (x === "middle" || x === "piso 1" || x === "piso um" || x === "piso primeiro" || x === "p1") return "Middle";
+  if (x === "upper" || x === "piso 3" || x === "piso tres" || x === "piso três" || x === "p3") return "Upper";
+
+  // setores/seções
+  if (x === "sector" || x === "setor" || x === "section" || x === "secao" || x === "seção" || x === "secção")
+    return "Setor";
+
+  // restantes
+  if (x === "block" || x === "bloco") return "Block";
+  if (x === "stand" || x === "bancada") return "Stand";
+  if (x === "tribuna") return "Tribuna";
+  if (x === "ring" || x === "anel") return "Ring";
+  if (x === "tier" || x === "nivel" || x === "nível" || x === "level") return "Level";
+  if (x === "nascente") return "Nascente";
+  if (x === "poente")   return "Poente";
+  if (x === "norte")    return "Norte";
+  if (x === "sul")      return "Sul";
+
   return w; // mantém se não reconhecido
 };
+
 
 // ——— Extrai o “setor exato” (NÃO agrupa números) ———
 // Regras: pega só a parte principal antes de vírgula/parênteses/“Fila/Row/Gate/Porta/Entrada”.
 // Mantém pares tipo "Lower 32", "Block 112A", "Setor L", "Setor Nascente".
+// ——— Normaliza texto PT/EN e extrai "família + resto" sem juntar números/letras ———
 const setorExato = (txt = "") => {
   let s = limpar(txt);
 
-  // remove sufixo entre parênteses (ex.: "(3 Bilhetes)")
+  // remove sufixos e separadores comuns
   s = s.replace(/\([^)]*\)\s*$/g, "").trim();
-
-  // corta em separadores comuns
   s = s.split(",")[0].split(" - ")[0].split(";")[0].trim();
 
-  // corta antes de termos que não fazem parte do setor
+  // remove partes que não pertencem ao identificador
   s = s.replace(/\b(Fila|Row|Gate|Porta|Entrada|Door|Seat|Lugar)\b.*$/i, "").trim();
 
-  // normaliza palavra-chave inicial (se existir)
-  const m = s.match(/^([A-Za-zÀ-ÿ]+)(\s+.+)?$/);
+  // ——— PRÉ-NORMALIZAÇÕES (sobre a string toda) ———
+  // pisos → palavras canónicas
+  s = s.replace(/\b(piso\s*zero|piso\s*0|p0)\b/gi, "Lower");
+  s = s.replace(/\b(middle|piso\s*1|piso\s*um|piso\s*primeiro|p1)\b/gi, "Middle");
+  s = s.replace(/\b(upper|piso\s*3|piso\s*tr[eê]s|p3)\b/gi, "Upper");
+
+  // section/sector/… → Setor
+  s = s.replace(/\b(section|sect(?:ion)?|sec(?:ção|cao|cç?ao)?|sector|setor)\b/gi, "Setor");
+
+  // família + resto
+  const m = s.match(/^([A-Za-zÀ-ÿ]+)(?:\s+(.*))?$/);
   if (m) {
-    const fam = canonFamilia(m[1]);
+    const fam = canonFamilia(m[1]);            // usa o mapa acima
     const resto = (m[2] || "").trim();
     s = resto ? `${fam} ${resto}` : fam;
   }
@@ -73,6 +90,16 @@ const setorExato = (txt = "") => {
   if (/^devolu/i.test(s)) return "Devolução";
   return s || "Outros";
 };
+
+// ——— Chave canónica para COMPRAS (mesmo parser das vendas) ———
+const compraChave = (c = {}) => {
+  // junta campos úteis numa frase e normaliza com o mesmo parser
+  const partes = [c.local_compras, c.bancada, c.setor, c.fila].filter(Boolean).join(" ");
+  let key = setorExato(partes);
+  key = key.replace(/^Setor\s+/i, "").trim();  // se quiseres sem o prefixo "Setor" no comparador
+  return key || "Outro";
+};
+
 
 // ——— Nº de bilhetes (fallback 1) ———
 const qtdBilhetes = (txt = "") => {
