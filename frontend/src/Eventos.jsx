@@ -328,37 +328,7 @@ const getTotalBilhetesVendas = (evento, data_evento) => {
 };
 
 
-const resumoSetores = useMemo(() => {
-  const mapa = new Map();
-  (vendas ?? []).forEach(v => {
-    const chave = setorExato(v.bilhetes);
-    const qtd = qtdBilhetes(v.bilhetes);
-    const cur = mapa.get(chave) || { linhas: 0, bilhetes: 0 };
-    cur.linhas += 1;
-    cur.bilhetes += qtd;
-    mapa.set(chave, cur);
-  });
-  return [...mapa.entries()]
-    .sort((a,b)=> a[0].localeCompare(b[0], "pt", {sensitivity:"base", numeric:true}))
-    .map(([setor, vals]) => ({ setor, ...vals }));
-}, [vendas]);
 
-// Mostra nº de linhas; troca para r.bilhetes se preferires o somatório de bilhetes
-const resumoTitulo = useMemo(
-  () => resumoSetores.map(r => `${r.setor} (${r.linhas})`).join(" • "),
-  [resumoSetores]
-);
-
-// Ordena linhas pelo setor exato e, dentro do mesmo setor, pelo texto base (natural/numeric)
-const vendasOrdenadas = useMemo(() => {
-  return [...(vendas ?? [])].sort((a, b) => {
-    const ka = setorExato(a.bilhetes);
-    const kb = setorExato(b.bilhetes);
-    const p = ka.localeCompare(kb, "pt", {sensitivity:"base", numeric:true});
-    if (p !== 0) return p;
-    return limpar(a.bilhetes).localeCompare(limpar(b.bilhetes), "pt", {sensitivity:"base", numeric:true});
-  });
-}, [vendas]);
 
   function exportarEventosParaExcel(eventos) {
     const worksheet = XLSX.utils.json_to_sheet(eventos);
