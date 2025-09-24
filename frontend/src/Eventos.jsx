@@ -83,6 +83,11 @@ const setorExato = (txt = "") => {
   // colapsa "Setor Lower/Middle/Upper ..." → "Lower/Middle/Upper ..."
   s = s.replace(/\bSetor\s+(Lower|Middle|Upper)\b/gi, "$1");
 
+  // 🔽🔽🔽 ADICIONA AQUI (limpa ruído de compras/traços/duplos espaços)
+  s = s.replace(/\b(continente|worten|fnac|loja|online|site)\b/gi, "").trim();
+  s = s.replace(/\s*-+\s*$/g, "").trim();   // remove " - " no fim
+  s = s.replace(/\s{2,}/g, " ");            // colapsa espaços repetidos
+  // 🔼🔼🔼
   // família + resto
   const m = s.match(/^([A-Za-zÀ-ÿ]+)(?:\s+(.*))?$/);
   if (m) {
@@ -101,13 +106,14 @@ const setorExato = (txt = "") => {
 
 
 // ——— Chave canónica para COMPRAS (mesmo parser das vendas) ———
+// 👉 SUBSTITUI a tua compraChave por esta
 const compraChave = (c = {}) => {
-  // junta campos úteis numa frase e normaliza com o mesmo parser
-  const partes = [c.local_compras, c.bancada, c.setor, c.fila].filter(Boolean).join(" ");
-  let key = setorExato(partes);
-  key = key.replace(/^Setor\s+/i, "").trim();  // se quiseres sem o prefixo "Setor" no comparador
+  // só o que identifica o setor/andar
+  const partes = [c.bancada, c.setor].filter(Boolean).join(" ");
+  const key = setorExato(partes).replace(/^Setor\s+/i, "").trim();
   return key || "Outro";
 };
+
 
 
 // ——— Nº de bilhetes (fallback 1) ———
