@@ -91,80 +91,7 @@ const canonFamilia = (w = "") => {
   return w; // mantém se não reconhecido
 };
 
-// Junta letra->bancada se ainda não existir (evita flapping)
-const addMapSafe = (dict, letra, bancada) => {
-  if (!letra || !bancada) return;
-  if (dict[letra] && dict[letra] !== bancada) return;
-  dict[letra] = bancada;
-};
 
-// Aprende a partir de um evento específico
-const inferRulesFromEvent = (evento, data_evento) => {
-  const lettersToBancada = {};
-
-  // compras
-  for (const c of compras) {
-    if (c.evento !== evento || c.data_evento !== data_evento) continue;
-    const loc = parseLocal([c.bancada, c.setor].filter(Boolean).join(" "));
-    if (loc.letra && loc.bancada) addMapSafe(lettersToBancada, loc.letra, loc.bancada);
-  }
-  // vendas
-  const arr = idxVendasPorEvento.get(`${evento}|${data_evento}`) || [];
-  for (const v of arr) {
-    const loc = parseLocal(v.estadio);
-    if (loc.letra && loc.bancada) addMapSafe(lettersToBancada, loc.letra, loc.bancada);
-  }
-
-  return { lettersToBancada };
-};
-
-// Aprende de todos os eventos carregados (varre registos)
-const inferRulesFromAll = () => {
-  const byStadium = {}; // nomeEstadio -> { lettersToBancada: {} }
-  for (const r of registos) {
-    const estadioNome = (r.estadio || "").trim();
-    if (!estadioNome) continue;
-    const learned = inferRulesFromEvent(r.evento, r.data_evento);
-    if (!byStadium[estadioNome]) byStadium[estadioNome] = { lettersToBancada: {} };
-    Object.entries(learned.lettersToBancada).forEach(([L, B]) => addMapSafe(byStadium[estadioNome].lettersToBancada, L, B));
-  }
-  return byStadium;
-};
-
-// Sempre que compras/vendas/registos mudam, funde o que foi aprendido
-useEffect(() => {
-  if (!registos.length) return;
-  const learned = inferRulesFromAll();
-  setStadiumRules(prev => {
-    const next = { ...prev };
-    for (const [est, obj] of Object.entries(learned)) {
-      if (!next[est]) next[est] = { lettersToBancada: {} };
-      for (const [L, B] of Object.entries(obj.lettersToBancada || {})) {
-        if (!next[est].lettersToBancada[L]) next[est].lettersToBancada[L] = B;
-      }
-    }
-    return next;
-  });
-}, [compras, vendas, registos]);
-
-const getRulesForStadium = (estadioTxt = "", evento = "", data_evento = "") => {
-  const base = STADIUM_RULES.default;
-  const nome = (estadioTxt || "").trim();
-
-  // Persistido
-  const persisted = stadiumRules[nome] || { lettersToBancada: {} };
-  // Inferido “on the fly” só com dados daquele evento
-  const inferred = inferRulesFromEvent(evento, data_evento);
-
-  return {
-    genericBancadas: base.genericBancadas,
-    lettersToBancada: {
-      ...base.lettersToBancada,
-      ...(persisted.lettersToBancada || {}),
-      ...(inferred.lettersToBancada || {}),
-    },
-  };
-};
 
 // ——— Extrai o “setor exato” (NÃO agrupa números) ———
 // Regras: pega só a parte principal antes de vírgula/parênteses/“Fila/Row/Gate/Porta/Entrada”.
@@ -455,6 +382,82 @@ const idxVendasPorEvento = useMemo(() => {
   return map;
 }, [vendas]);
 
+
+// Junta letra->bancada se ainda não existir (evita flapping)
+const addMapSafe = (dict, letra, bancada) => {
+  if (!letra || !bancada) return;
+  if (dict[letra] && dict[letra] !== bancada) return;
+  dict[letra] = bancada;
+};
+
+// Aprende a partir de um evento específico
+const inferRulesFromEvent = (evento, data_evento) => {
+  const lettersToBancada = {};
+
+  // compras
+  for (const c of compras) {
+    if (c.evento !== evento || c.data_evento !== data_evento) continue;
+    const loc = parseLocal([c.bancada, c.setor].filter(Boolean).join(" "));
+    if (loc.letra && loc.bancada) addMapSafe(lettersToBancada, loc.letra, loc.bancada);
+  }
+  // vendas
+  const arr = idxVendasPorEvento.get(`${evento}|${data_evento}`) || [];
+  for (const v of arr) {
+    const loc = parseLocal(v.estadio);
+    if (loc.letra && loc.bancada) addMapSafe(lettersToBancada, loc.letra, loc.bancada);
+  }
+
+  return { lettersToBancada };
+};
+
+// Aprende de todos os eventos carregados (varre registos)
+const inferRulesFromAll = () => {
+  const byStadium = {}; // nomeEstadio -> { lettersToBancada: {} }
+  for (const r of registos) {
+    const estadioNome = (r.estadio || "").trim();
+    if (!estadioNome) continue;
+    const learned = inferRulesFromEvent(r.evento, r.data_evento);
+    if (!byStadium[estadioNome]) byStadium[estadioNome] = { lettersToBancada: {} };
+    Object.entries(learned.lettersToBancada).forEach(([L, B]) => addMapSafe(byStadium[estadioNome].lettersToBancada, L, B));
+  }
+  return byStadium;
+};
+
+// Sempre que compras/vendas/registos mudam, funde o que foi aprendido
+useEffect(() => {
+  if (!registos.length) return;
+  const learned = inferRulesFromAll();
+  setStadiumRules(prev => {
+    const next = { ...prev };
+    for (const [est, obj] of Object.entries(learned)) {
+      if (!next[est]) next[est] = { lettersToBancada: {} };
+      for (const [L, B] of Object.entries(obj.lettersToBancada || {})) {
+        if (!next[est].lettersToBancada[L]) next[est].lettersToBancada[L] = B;
+      }
+    }
+    return next;
+  });
+}, [compras, vendas, registos]);
+
+const getRulesForStadium = (estadioTxt = "", evento = "", data_evento = "") => {
+  const base = STADIUM_RULES.default;
+  const nome = (estadioTxt || "").trim();
+
+  // Persistido
+  const persisted = stadiumRules[nome] || { lettersToBancada: {} };
+  // Inferido “on the fly” só com dados daquele evento
+  const inferred = inferRulesFromEvent(evento, data_evento);
+
+  return {
+    genericBancadas: base.genericBancadas,
+    lettersToBancada: {
+      ...base.lettersToBancada,
+      ...(persisted.lettersToBancada || {}),
+      ...(inferred.lettersToBancada || {}),
+    },
+  };
+};
+  
 // --- mapas por setor, usando o state atual ---
 const mapVendasPorSetor = (evento, data_evento) => {
   const arr = idxVendasPorEvento.get(`${evento}|${data_evento}`) || [];
