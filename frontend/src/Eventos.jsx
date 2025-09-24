@@ -18,38 +18,7 @@ import saveAs from "file-saver";
 import CirculoEstado from "./CirculoEstado";
 
 
-// ====== Regras base por estádio (fallback) ======
-const STADIUM_RULES = {
-  default: {
-    // Bancadas "genéricas" que tratamos como buckets (podem existir ou não por estádio)
-    genericBancadas: ["Nascente", "Poente", "Norte", "Sul"],
-    // Mapeamentos conhecidos de letra -> bancada (vêm vazios por defeito; vamos aprendendo)
-    lettersToBancada: {}
-  }
-};
 
-// ====== Parse genérico de local/setor ======
-function parseLocal(txt = "") {
-  const s = limpar(txt);
-  if (!s) return { bancada: null, letra: null, familia: null };
-
-  // deteta bancada
-  const bancadaMatch = s.match(/\b(Nascente|Poente|Norte|Sul)\b/i);
-  const bancada = bancadaMatch ? canonFamilia(bancadaMatch[1]) : null;
-
-  // deteta letra de setor: um token com 1-2 letras A-Z (evita "SC" de "SCP" porque exige palavra isolada)
-  const letraMatch = s.match(/(?:^|\s)([A-ZÇ]{1,2})(?:\s|$)/i);
-  let letra = letraMatch ? letraMatch[1].toUpperCase() : null;
-
-  // família (Lower/Middle/Upper/Setor/Block/etc.) só para referência
-  const familiaMatch = s.match(/^(Lower|Middle|Upper|Setor|Block|Stand|Tribuna|Ring|Level|Nascente|Poente|Norte|Sul)\b/i);
-  const familia = familiaMatch ? canonFamilia(familiaMatch[1]) : null;
-
-  // higiene: ignora letras claramente não-setor (ex.: "SC", "FC", "CP", etc.) se tiver bancada já presente
-  if (bancada && letra && /^(SC|FC|CP|SL|UD|GD|CD|CF)$/i.test(letra)) letra = null;
-
-  return { bancada, letra, familia };
-}
 
 
 
@@ -366,7 +335,39 @@ const [stadiumRules, setStadiumRules] = useState(() => {
 useEffect(() => {
   localStorage.setItem("stadium_rules_v1", JSON.stringify(stadiumRules));
 }, [stadiumRules]);
-  
+
+// ====== Regras base por estádio (fallback) ======
+const STADIUM_RULES = {
+  default: {
+    // Bancadas "genéricas" que tratamos como buckets (podem existir ou não por estádio)
+    genericBancadas: ["Nascente", "Poente", "Norte", "Sul"],
+    // Mapeamentos conhecidos de letra -> bancada (vêm vazios por defeito; vamos aprendendo)
+    lettersToBancada: {}
+  }
+};
+
+// ====== Parse genérico de local/setor ======
+function parseLocal(txt = "") {
+  const s = limpar(txt);
+  if (!s) return { bancada: null, letra: null, familia: null };
+
+  // deteta bancada
+  const bancadaMatch = s.match(/\b(Nascente|Poente|Norte|Sul)\b/i);
+  const bancada = bancadaMatch ? canonFamilia(bancadaMatch[1]) : null;
+
+  // deteta letra de setor: um token com 1-2 letras A-Z (evita "SC" de "SCP" porque exige palavra isolada)
+  const letraMatch = s.match(/(?:^|\s)([A-ZÇ]{1,2})(?:\s|$)/i);
+  let letra = letraMatch ? letraMatch[1].toUpperCase() : null;
+
+  // família (Lower/Middle/Upper/Setor/Block/etc.) só para referência
+  const familiaMatch = s.match(/^(Lower|Middle|Upper|Setor|Block|Stand|Tribuna|Ring|Level|Nascente|Poente|Norte|Sul)\b/i);
+  const familia = familiaMatch ? canonFamilia(familiaMatch[1]) : null;
+
+  // higiene: ignora letras claramente não-setor (ex.: "SC", "FC", "CP", etc.) se tiver bancada já presente
+  if (bancada && letra && /^(SC|FC|CP|SL|UD|GD|CD|CF)$/i.test(letra)) letra = null;
+
+  return { bancada, letra, familia };
+}  
   // ===================== Resumo + Ordenação de VENDAS por evento =====================
 
 // Índice: (evento|data_evento) -> array de vendas
