@@ -8,7 +8,7 @@
 
 
 
-
+import { useMemo } from "react";
 import { useEffect, useState } from "react";
 import { FaTrash, FaPrint } from "react-icons/fa"; // <- adicionar
 import { toast } from "react-toastify";            // se ainda não estiver
@@ -18,6 +18,68 @@ import { FaFileExcel, FaEdit } from "react-icons/fa";
 import * as XLSX from "xlsx";
 import saveAs from "file-saver";
 import CirculoEstado from "./CirculoEstado";
+
+// ——— Normalização leve (acentos, espaços, invisíveis) ———
+const limpar = (s = "") =>
+  String(s)
+    .normalize("NFKC")
+    .replace(/\u00A0/g, " ")
+    .replace(/[\u200B-\u200D\uFEFF]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+
+// ——— Canonicaliza palavras-chave (sector→Setor, section→Section, etc.) ———
+const canonFamilia = (w = "") => {
+  const x = w.toLowerCase();
+  if (["sector", "setor"].includes(x)) return "Setor";
+  if (["lower"].includes(x)) return "Lower";
+  if (["upper"].includes(x)) return "Upper";
+  if (["block", "bloco"].includes(x)) return "Block";
+  if (["stand", "bancada"].includes(x)) return "Stand";
+  if (["tribuna"].includes(x)) return "Tribuna";
+  if (["ring", "anel"].includes(x)) return "Ring";
+  if (["tier", "nivel", "nível", "level"].includes(x)) return "Level";
+  if (["section", "secao", "seção", "secção"].includes(x)) return "Section";
+  if (["nascente"].includes(x)) return "Nascente";
+  if (["poente"].includes(x)) return "Poente";
+  if (["norte"].includes(x)) return "Norte";
+  if (["sul"].includes(x)) return "Sul";
+  return w; // mantém se não reconhecido
+};
+
+// ——— Extrai o “setor exato” (NÃO agrupa números) ———
+// Regras: pega só a parte principal antes de vírgula/parênteses/“Fila/Row/Gate/Porta/Entrada”.
+// Mantém pares tipo "Lower 32", "Block 112A", "Setor L", "Setor Nascente".
+const setorExato = (txt = "") => {
+  let s = limpar(txt);
+
+  // remove sufixo entre parênteses (ex.: "(3 Bilhetes)")
+  s = s.replace(/\([^)]*\)\s*$/g, "").trim();
+
+  // corta em separadores comuns
+  s = s.split(",")[0].split(" - ")[0].split(";")[0].trim();
+
+  // corta antes de termos que não fazem parte do setor
+  s = s.replace(/\b(Fila|Row|Gate|Porta|Entrada|Door|Seat|Lugar)\b.*$/i, "").trim();
+
+  // normaliza palavra-chave inicial (se existir)
+  const m = s.match(/^([A-Za-zÀ-ÿ]+)(\s+.+)?$/);
+  if (m) {
+    const fam = canonFamilia(m[1]);
+    const resto = (m[2] || "").trim();
+    s = resto ? `${fam} ${resto}` : fam;
+  }
+
+  if (/^devolu/i.test(s)) return "Devolução";
+  return s || "Outros";
+};
+
+// ——— Nº de bilhetes (fallback 1) ———
+const qtdBilhetes = (txt = "") => {
+  const m = String(txt).match(/(\d+)\s*Bilhete/i);
+  return m ? Number(m[1]) : 1;
+};
+
 
 const formatarNumero = (valor) => {
   if (valor == null) return "";
@@ -208,7 +270,37 @@ useEffect(() => {
     buscarEventos();
   }, [skip]);
 
+const resumoSetores = useMemo(() => {
+  const mapa = new Map();
+  (vendas ?? []).forEach(v => {
+    const chave = setorExato(v.bilhetes);
+    const qtd = qtdBilhetes(v.bilhetes);
+    const cur = mapa.get(chave) || { linhas: 0, bilhetes: 0 };
+    cur.linhas += 1;
+    cur.bilhetes += qtd;
+    mapa.set(chave, cur);
+  });
+  return [...mapa.entries()]
+    .sort((a,b)=> a[0].localeCompare(b[0], "pt", {sensitivity:"base", numeric:true}))
+    .map(([setor, vals]) => ({ setor, ...vals }));
+}, [vendas]);
 
+// Mostra nº de linhas; troca para r.bilhetes se preferires o somatório de bilhetes
+const resumoTitulo = useMemo(
+  () => resumoSetores.map(r => `${r.setor} (${r.linhas})`).join(" • "),
+  [resumoSetores]
+);
+
+// Ordena linhas pelo setor exato e, dentro do mesmo setor, pelo texto base (natural/numeric)
+const vendasOrdenadas = useMemo(() => {
+  return [...(vendas ?? [])].sort((a, b) => {
+    const ka = setorExato(a.bilhetes);
+    const kb = setorExato(b.bilhetes);
+    const p = ka.localeCompare(kb, "pt", {sensitivity:"base", numeric:true});
+    if (p !== 0) return p;
+    return limpar(a.bilhetes).localeCompare(limpar(b.bilhetes), "pt", {sensitivity:"base", numeric:true});
+  });
+}, [vendas]);
 
   function exportarEventosParaExcel(eventos) {
     const worksheet = XLSX.utils.json_to_sheet(eventos);
@@ -875,22 +967,16 @@ return (
                     
                    <tr className="bg-indigo-50 dark:bg-gray-800 text-sm border-t border-l-4 border-blue-600 transition-colors duration-300">
   <td colSpan="9" className="p-2 font-semibold">
-    Vendas ({
-      vendas
-        .filter(v => v.evento === r.evento && v.data_evento === r.data_evento)
-        .reduce((acc, v) => {
-          const texto = v.estadio.trim();
-          if (/^\d+$/.test(texto)) {
-            // Só números → usar como quantidade
-            return acc + parseInt(texto);
-          }
-          // Caso contrário, extrair número entre parêntesis
-          const match = texto.match(/\((\d+)\s*Bilhetes?\)/i);
-          return acc + (match ? parseInt(match[1]) : 0);
-        }, 0)
-    })
+    Vendas ({getTotalBilhetesVendas(r.evento, r.data_evento)})
+    {
+      (() => {
+        const resumo = getResumoTituloVendas(r.evento, r.data_evento);
+        return resumo ? <> — {resumo}</> : null;
+      })()
+    }
   </td>
 </tr>
+
 <tr className="border-l-4 border-blue-600 bg-blue-100 dark:bg-blue-800 text-xs font-semibold">
   <td className="p-2">ID Venda</td>
   <td className="p-2" colSpan="3">Bilhetes</td>
@@ -904,7 +990,7 @@ return (
 
 
 
-{vendas.filter(v => v.evento === r.evento && v.data_evento === r.data_evento).map(v =>
+{getVendasOrdenadas(r.evento, r.data_evento).map(v =>
   modoEdicaoVenda === v.id ? (
     <tr key={"v" + v.id} className="border-l-4 border-blue-600 bg-blue-50 dark:bg-blue-900 text-xs border-t">
       <td className="p-2">
