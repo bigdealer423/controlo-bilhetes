@@ -1667,8 +1667,18 @@ return (
                           </option>
                         ))}
                       </select>
-                    ) : (
-                      <div className="flex flex-wrap items-center gap-1">{renderEventoComSimbolos(r.evento)}</div>
+                   ) : (
+                    <>
+                      <div className="flex flex-wrap items-center gap-1">
+                        {renderEventoComSimbolos(r.evento)}
+                      </div>
+                
+                      {r.nota_evento && (
+                        <div className="mt-1 text-xs text-amber-300/90 bg-amber-900/30 rounded px-2 py-1 whitespace-pre-wrap">
+                          📝 {r.nota_evento}
+                        </div>
+                      )}
+                    </>
                     )}
                   </div>
           
