@@ -308,7 +308,7 @@ const getResumoTituloVendas = (evento, data_evento) => {
   return [...mapa.entries()]
     .sort((a, b) => a[0].localeCompare(b[0], "pt", { sensitivity: "base", numeric: true }))
     // mostra nº de linhas; troca para vals.bilhetes se quiseres total de bilhetes
-    .map(([setor, vals]) => `${setor} (${vals.bilhetes})`)
+    .map(([setor, vals]) => `${setor.replace(/^Setor\s+/i, "")} (${vals.bilhetes})`)
     .join(" • ");
 };
 
