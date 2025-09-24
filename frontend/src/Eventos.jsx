@@ -28,6 +28,65 @@ const limpar = (s = "") =>
     .replace(/\s+/g, " ")
     .trim();
 
+// Normaliza chave de VENDAS por setor (sem "Setor ")
+const mapVendasPorSetor = (evento, data_evento) => {
+  const arr = idxVendasPorEvento.get(`${evento}|${data_evento}`) || [];
+  const map = new Map();
+  for (const v of arr) {
+    const setor = setorExato(v.estadio);
+    if (setor === "Devolução") continue;
+    const key = setor.replace(/^Setor\s+/i, "").trim();
+    const qtd = qtdBilhetes(v.estadio) || 0;
+    map.set(key, (map.get(key) || 0) + qtd);
+  }
+  return map;
+};
+
+// Normaliza chave de COMPRAS por setor (usa a mesma lógica)
+const compraChave = (c = {}) => {
+  const partes = [c.local_compras, c.bancada, c.setor, c.fila].filter(Boolean).join(" ");
+  let key = setorExato(partes);
+  return key.replace(/^Setor\s+/i, "").trim() || "Outro";
+};
+
+const mapComprasPorSetor = (evento, data_evento) => {
+  const arr = compras.filter(c => c.evento === evento && c.data_evento === data_evento);
+  const map = new Map();
+  for (const c of arr) {
+    const key = compraChave(c);
+    const qtd = Number(c.quantidade || 0);
+    if (!qtd) continue;
+    map.set(key, (map.get(key) || 0) + qtd);
+  }
+  return map;
+};
+
+// Por vender = comprado - vendido (>0)
+const getResumoPorVender = (evento, data_evento) => {
+  const mv = mapVendasPorSetor(evento, data_evento);
+  const mc = mapComprasPorSetor(evento, data_evento);
+  const faltas = [];
+  for (const [k, qC] of mc.entries()) {
+    const qV = mv.get(k) || 0;
+    const diff = qC - qV;
+    if (diff > 0) faltas.push(`${k} (${diff})`);
+  }
+  return faltas.sort((a,b)=>a.localeCompare(b,"pt",{numeric:true,sensitivity:"base"})).join(" • ");
+};
+
+// Por comprar = vendido - comprado (>0)
+const getResumoPorComprar = (evento, data_evento) => {
+  const mv = mapVendasPorSetor(evento, data_evento);
+  const mc = mapComprasPorSetor(evento, data_evento);
+  const faltas = [];
+  for (const [k, qV] of mv.entries()) {
+    const qC = mc.get(k) || 0;
+    const diff = qV - qC;
+    if (diff > 0) faltas.push(`${k} (${diff})`);
+  }
+  return faltas.sort((a,b)=>a.localeCompare(b,"pt",{numeric:true,sensitivity:"base"})).join(" • ");
+};
+
 // ——— Canonicaliza família/prefixo (PT ↔ EN) ———
 const canonFamilia = (w = "") => {
   const x = String(w).toLowerCase().normalize("NFKC").trim();
@@ -1041,14 +1100,21 @@ return (
                     
                    <tr className="bg-indigo-50 dark:bg-gray-800 text-sm border-t border-l-4 border-blue-600 transition-colors duration-300">
   <td colSpan="9" className="p-2 font-semibold">
-    Vendas ({getTotalBilhetesVendas(r.evento, r.data_evento)})
-    {
-      (() => {
-        const resumo = getResumoTituloVendas(r.evento, r.data_evento);
-        return resumo ? <> — {resumo}</> : null;
-      })()
-    }
-  </td>
+  Vendas ({getTotalBilhetesVendas(r.evento, r.data_evento)})
+  {(() => {
+    const resumo = getResumoTituloVendas(r.evento, r.data_evento);
+    return resumo ? <> — {resumo}</> : null;
+  })()}
+  {(() => {
+    const pv = getResumoPorVender(r.evento, r.data_evento);
+    return pv ? <span className="text-red-500"> — Por vender: {pv}</span> : null;
+  })()}
+  {(() => {
+    const pc = getResumoPorComprar(r.evento, r.data_evento);
+    return pc ? <span className="text-orange-500"> — Por comprar: {pc}</span> : null;
+  })()}
+</td>
+
 </tr>
 
 <tr className="border-l-4 border-blue-600 bg-blue-100 dark:bg-blue-800 text-xs font-semibold">
