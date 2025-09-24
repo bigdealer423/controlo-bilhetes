@@ -60,14 +60,15 @@ const canonFamilia = (w = "") => {
 // Regras: pega só a parte principal antes de vírgula/parênteses/“Fila/Row/Gate/Porta/Entrada”.
 // Mantém pares tipo "Lower 32", "Block 112A", "Setor L", "Setor Nascente".
 // ——— Normaliza texto PT/EN e extrai "família + resto" sem juntar números/letras ———
+// ——— Normaliza PT/EN e extrai "família + resto" sem juntar números/letras ———
 const setorExato = (txt = "") => {
   let s = limpar(txt);
 
-  // remove sufixos e separadores comuns
+  // remove sufixos tipo "(3 Bilhetes)" e corta em separadores comuns
   s = s.replace(/\([^)]*\)\s*$/g, "").trim();
   s = s.split(",")[0].split(" - ")[0].split(";")[0].trim();
 
-  // remove partes que não pertencem ao identificador
+  // remove partes não pertencentes ao identificador
   s = s.replace(/\b(Fila|Row|Gate|Porta|Entrada|Door|Seat|Lugar)\b.*$/i, "").trim();
 
   // ——— PRÉ-NORMALIZAÇÕES (sobre a string toda) ———
@@ -76,20 +77,28 @@ const setorExato = (txt = "") => {
   s = s.replace(/\b(middle|piso\s*1|piso\s*um|piso\s*primeiro|p1)\b/gi, "Middle");
   s = s.replace(/\b(upper|piso\s*3|piso\s*tr[eê]s|p3)\b/gi, "Upper");
 
-  // section/sector/… → Setor
+  // section/sector/etc → Setor
   s = s.replace(/\b(section|sect(?:ion)?|sec(?:ção|cao|cç?ao)?|sector|setor)\b/gi, "Setor");
+
+  // colapsa "Setor Lower/Middle/Upper ..." → "Lower/Middle/Upper ..."
+  s = s.replace(/\bSetor\s+(Lower|Middle|Upper)\b/gi, "$1");
 
   // família + resto
   const m = s.match(/^([A-Za-zÀ-ÿ]+)(?:\s+(.*))?$/);
   if (m) {
-    const fam = canonFamilia(m[1]);            // usa o mapa acima
-    const resto = (m[2] || "").trim();
+    const fam = canonFamilia(m[1]);            // usa o teu canonFamilia atualizado
+    let resto = (m[2] || "").trim();
+
+    // normaliza números com zeros à esquerda: "01" → "1"
+    resto = resto.replace(/\b0+(\d+)\b/g, "$1");
+
     s = resto ? `${fam} ${resto}` : fam;
   }
 
   if (/^devolu/i.test(s)) return "Devolução";
   return s || "Outros";
 };
+
 
 // ——— Chave canónica para COMPRAS (mesmo parser das vendas) ———
 const compraChave = (c = {}) => {
