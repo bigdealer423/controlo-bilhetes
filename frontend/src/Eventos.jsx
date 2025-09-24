@@ -297,6 +297,7 @@ const getResumoTituloVendas = (evento, data_evento) => {
   const mapa = new Map();
   for (const v of arr) {
     const chave = setorExato(v.estadio);      // 👈 usa v.estadio
+    if (chave === "Devolução") continue;
     const qtd = qtdBilhetes(v.estadio);       // 👈 idem
     const cur = mapa.get(chave) || { linhas: 0, bilhetes: 0 };
     cur.linhas += 1;
@@ -329,8 +330,12 @@ const getVendasOrdenadas = (evento, data_evento) => {
 // Total de bilhetes desse evento (lê de v.estadio "(X Bilhetes)" ou número isolado)
 const getTotalBilhetesVendas = (evento, data_evento) => {
   const arr = idxVendasPorEvento.get(`${evento}|${data_evento}`) || [];
-  return arr.reduce((acc, v) => acc + (qtdBilhetes(v.estadio) || 0), 0);
+  return arr.reduce((acc, v) => {
+    if (setorExato(v.estadio) === "Devolução") return acc; // opcional: ignora devoluções
+    return acc + (qtdBilhetes(v.estadio) || 0);
+  }, 0);
 };
+
 
 
 
