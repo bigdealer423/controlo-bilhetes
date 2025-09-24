@@ -1329,15 +1329,8 @@ return (
     const resumo = getResumoTituloVendas(r.evento, r.data_evento);
     return resumo ? <> — {resumo}</> : null;
   })()}
-  {(() => {
-    const pv = resumoPorVender(r.evento, r.data_evento, r.estadio);   // 👈 NOVO
-    return pv ? <span className="text-red-500"> — Por vender: {pv}</span> : null;
-  })()}
-  {(() => {
-    const pc = resumoPorComprar(r.evento, r.data_evento, r.estadio); // 👈 NOVO
-    return pc ? <span className="text-orange-500"> — Por comprar: {pc}</span> : null;
-  })()}
 </td>
+
 
 
 </tr>
