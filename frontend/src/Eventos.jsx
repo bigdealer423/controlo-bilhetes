@@ -1772,23 +1772,17 @@ return (
 
                       {/* ✅ Cabeçalho VENDAS (MOBILE) */}
                       <div className="text-sm font-semibold text-blue-300">
-                        Vendas (
-                        {
-                          vendas
-                            .filter(v => v.evento === r.evento && v.data_evento === r.data_evento)
-                            .reduce((acc, v) => {
-                              const texto = v.estadio?.trim();
-                              if (/^\d+$/.test(texto)) return acc + parseInt(texto); // Ex: "2"
-                              const match = texto.match(/\((\d+)\s*Bilhetes?\)/i);   // Ex: "Piso 0 (4 Bilhetes)"
-                              return acc + (match ? parseInt(match[1]) : 0);
-                            }, 0)
-                        }
-                        )
+                        Vendas ({getTotalBilhetesVendas(r.evento, r.data_evento)})
+                        {(() => {
+                          const resumo = getResumoTituloVendas(r.evento, r.data_evento);
+                          return resumo ? <> — {resumo}</> : null;
+                        })()}
                       </div>
+
 
                   
                       {/* VENDAS */}
-                      {vendas.filter(v => v.evento === r.evento && v.data_evento === r.data_evento).map((v) => (
+                      {getVendasOrdenadas(r.evento, r.data_evento).map((v) => (
                         <div key={v.id} className="bg-blue-900 text-white p-3 rounded shadow">
                           <div className="flex justify-between text-xs text-gray-300">
                             <span>ID: {v.id_venda}</span>
