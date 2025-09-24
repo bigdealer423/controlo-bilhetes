@@ -1028,84 +1028,135 @@ return (
 
 
 
-{getVendasOrdenadas(r.evento, r.data_evento).map(v =>
-  modoEdicaoVenda === v.id ? (
-    <tr key={"v" + v.id} className="border-l-4 border-blue-600 bg-blue-50 dark:bg-blue-900 text-xs border-t">
-      <td className="p-2">
-        <input
-          type="number"
-          className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
-          value={vendaEditada.id_venda}
-          onChange={e => setVendaEditada({ ...vendaEditada, id_venda: e.target.value })}
-        />
-      </td>
-      <td className="p-2" colSpan="2">
-        <input
-          className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
-          value={vendaEditada.estadio}
-          onChange={e => setVendaEditada({ ...vendaEditada, estadio: e.target.value })}
-        />
-      </td>
-      <td className="p-2">
-        <input
-          type="number"
-          className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
-          value={vendaEditada.ganho}
-          onChange={e => setVendaEditada({ ...vendaEditada, ganho: e.target.value })}
-        />
-      </td>
-      <td className="p-2">
-        <select
-          className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
-          value={vendaEditada.estado}
-          onChange={e => setVendaEditada({ ...vendaEditada, estado: e.target.value })}
-        >
-          <option value="Entregue">Entregue</option>
-          <option value="Por entregar">Por entregar</option>
-          <option value="Disputa">Disputa</option>
-          <option value="Pago">Pago</option>
-        </select>
-      </td>
-      <td colSpan="4" className="p-2">
-        <button className="text-green-600 mr-2" onClick={() => guardarVenda(vendaEditada)}>Guardar</button>
-        <button className="text-gray-500" onClick={() => setModoEdicaoVenda(null)}>Cancelar</button>
-      </td>
-    </tr>
-  ) : (
-    <tr key={"v" + v.id} className="border-l-4 border-blue-600 bg-blue-50 dark:bg-blue-900 text-xs border-t">
-      <td className="p-2">{v.id_venda}</td>
-      {/* colSpan=3 para bater certo */}
-      <td className="p-2" colSpan="3">{v.estadio}</td>
-      <td className="p-2">{v.ganho} €</td>
-      <td className="p-2 whitespace-nowrap">{v.estado}</td>
-      <td className="p-2">
-        <CirculoEstado
-          tipo="listagem_vendas"
-          id={v.id}
-          texto_estado={v.circulo_estado_venda}
-          nota_estado={v.nota_estado_venda}
-          setVendas={setVendas}
-        />
-      </td>
-      <td className="p-2">
-        {vendasNaoAssociadasSet.has(v.id) && (
-          <span className="text-yellow-500 mr-2" title="Venda não associada a evento">⚠️</span>
-        )}
-        <button
-          onClick={() => {
-            setModoEdicaoVenda(v.id);
-            setVendaEditada(v);
-          }}
-          className="text-blue-600 hover:underline"
-        >
-          Editar
-        </button>
+{(() => {
+  let lastSetor = null;
+  let toggle = false;
 
-      </td>
-      <td className="p-2"></td> {/* coluna extra para preencher */}
-    </tr>
-  )
-)}
+  return getVendasOrdenadas(r.evento, r.data_evento).map((v) => {
+    const setorAtual = setorExato(v.estadio);
+
+    // Se mudou de setor → alterna cor
+    if (setorAtual !== lastSetor) {
+      toggle = !toggle;
+      lastSetor = setorAtual;
+    }
+
+    const bgClass = toggle
+      ? "bg-blue-50 dark:bg-blue-900"   // azul clarinho
+      : "bg-blue-100 dark:bg-blue-800"; // azul normal
+
+    if (modoEdicaoVenda === v.id) {
+      return (
+        <tr
+          key={"v" + v.id}
+          className={`border-l-4 border-blue-600 text-xs border-t ${bgClass}`}
+        >
+          <td className="p-2">
+            <input
+              type="number"
+              className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
+              value={vendaEditada.id_venda}
+              onChange={(e) =>
+                setVendaEditada({ ...vendaEditada, id_venda: e.target.value })
+              }
+            />
+          </td>
+          <td className="p-2" colSpan="2">
+            <input
+              className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
+              value={vendaEditada.estadio}
+              onChange={(e) =>
+                setVendaEditada({ ...vendaEditada, estadio: e.target.value })
+              }
+            />
+          </td>
+          <td className="p-2">
+            <input
+              type="number"
+              className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
+              value={vendaEditada.ganho}
+              onChange={(e) =>
+                setVendaEditada({ ...vendaEditada, ganho: e.target.value })
+              }
+            />
+          </td>
+          <td className="p-2">
+            <select
+              className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
+              value={vendaEditada.estado}
+              onChange={(e) =>
+                setVendaEditada({ ...vendaEditada, estado: e.target.value })
+              }
+            >
+              <option value="Entregue">Entregue</option>
+              <option value="Por entregar">Por entregar</option>
+              <option value="Disputa">Disputa</option>
+              <option value="Pago">Pago</option>
+            </select>
+          </td>
+          <td colSpan="4" className="p-2">
+            <button
+              className="text-green-600 mr-2"
+              onClick={() => guardarVenda(vendaEditada)}
+            >
+              Guardar
+            </button>
+            <button
+              className="text-gray-500"
+              onClick={() => setModoEdicaoVenda(null)}
+            >
+              Cancelar
+            </button>
+          </td>
+        </tr>
+      );
+    } else {
+      return (
+        <tr
+          key={"v" + v.id}
+          className={`border-l-4 border-blue-600 text-xs border-t ${bgClass}`}
+        >
+          <td className="p-2">{v.id_venda}</td>
+          <td className="p-2" colSpan="3">
+            {v.estadio}
+          </td>
+          <td className="p-2">{v.ganho} €</td>
+          <td className="p-2 whitespace-nowrap">{v.estado}</td>
+          <td className="p-2">
+            <CirculoEstado
+              tipo="listagem_vendas"
+              id={v.id}
+              texto_estado={v.circulo_estado_venda}
+              nota_estado={v.nota_estado_venda}
+              setVendas={setVendas}
+            />
+          </td>
+          <td className="p-2">
+            {vendasNaoAssociadasSet.has(v.id) && (
+              <span
+                className="text-yellow-500 mr-2"
+                title="Venda não associada a evento"
+              >
+                ⚠️
+              </span>
+            )}
+            <button
+              onClick={() => {
+                setModoEdicaoVenda(v.id);
+                setVendaEditada(v);
+              }}
+              className="text-blue-600 hover:underline"
+            >
+              Editar
+            </button>
+          </td>
+          <td className="p-2"></td>
+        </tr>
+      );
+    }
+  });
+})()}
+
 
 
    <tr className="bg-yellow-50 dark:bg-yellow-900 text-sm border-t border-l-4 border-yellow-600">
