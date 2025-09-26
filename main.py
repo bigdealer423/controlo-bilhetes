@@ -1,4 +1,5 @@
 from collections import defaultdict
+from routers.monitor_router import router as monitor_router
 import calendar
 from sqlalchemy import extract
 from fastapi import File, UploadFile
@@ -47,6 +48,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(monitor_router)
 
     
 @app.get("/")
