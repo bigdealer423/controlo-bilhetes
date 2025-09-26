@@ -1,33 +1,24 @@
+
 services:
   - type: cron
     name: benfica-ticket-checker
     schedule: "@hourly"  # corre de hora a hora (podes ajustar)
     runtime: python
     plan: free
-    # 👇 mantém, mas garante pip + playwright com target consistente
-    buildCommand: |
-      pip install --upgrade pip
-      pip install -r requirements.txt
-      python -m playwright install chromium --target=/opt/render/project/.playwright
+    buildCommand: "playwright install chromium"
     startCommand: "python check_benfica_tickets.py"
-    envVars:
-      - key: PLAYWRIGHT_BROWSERS_PATH
-        value: /opt/render/project/.playwright
 
   - type: cron
     name: odisseias-ticket-checker
     schedule: "@hourly"
     runtime: python
     plan: free
-    # 👇 mantém, mas uniformiza com o mesmo target
     buildCommand: |
       pip install --upgrade pip
-      pip install -r requirements.txt
-      python -m playwright install chromium --target=/opt/render/project/.playwright
+      pip install playwright
+      playwright install chromium
     startCommand: python odisseias/odisseias_checker.py
     envVars:
-      - key: PLAYWRIGHT_BROWSERS_PATH
-        value: /opt/render/project/.playwright
       - key: EMAIL_PASSWORD
         sync: false
       - key: EMAIL_FROM
@@ -35,12 +26,15 @@ services:
       - key: EMAIL_TO
         sync: false
 
+
+
+
+  
   - type: web
     name: controlo-bilhetes-api
     env: python
     plan: free
     runtime: python-3.10
-    # 👇 mantém como já tinhas
     buildCommand: |
       pip install -r requirements.txt
       python -m playwright install chromium --target=/opt/render/project/.playwright
