@@ -62,8 +62,8 @@ ALLOWED_ORIGIN_REGEX = r"^https://controlo-bilhetes(?:-[\w-]+)*\.vercel\.app$
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=ALLOWED_ORIGINS,          # é ignorado se usares allow_origin_regex
-    allow_origin_regex=ALLOWED_ORIGIN_REGEX, # aceita o domínio principal e os previews do Vercel
+    allow_origins=["http://localhost:5173", "https://controlo-bilhetes.vercel.app"],
+    allow_origin_regex=r"^https://.*\.vercel\.app$",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
