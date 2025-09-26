@@ -1,7 +1,6 @@
+
 {
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "https://controlo-bilhetes.onrender.com/api/$1" },
-    { "source": "/monitor-out/(.*)", "destination": "https://controlo-bilhetes.onrender.com/monitor-out/$1" },
     { "source": "/(.*)", "destination": "/" }
   ]
 }
