@@ -52,17 +52,21 @@ resumo_mais_recente = {}
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
-# CORS
+# Domínios permitidos (prod + localhost + previews)
+ALLOWED_ORIGINS = [
+    "https://controlo-bilhetes.vercel.app",
+    "http://localhost:5173",
+]
+# Se tens previews do Vercel, usa regex:
+ALLOWED_ORIGIN_REGEX = r"^https://controlo-bilhetes(-[a-z0-9-]+)?\.vercel\.app$"
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "https://controlo-bilhetes.vercel.app",   # domínio principal
-    ],
-    # cobre domínios de preview do Vercel (branch deploys)
-    allow_origin_regex=r"https://.*\.vercel\.app$",
+    allow_origins=ALLOWED_ORIGINS,          # é ignorado se usares allow_origin_regex
+    allow_origin_regex=ALLOWED_ORIGIN_REGEX, # aceita o domínio principal e os previews do Vercel
     allow_credentials=True,
-    allow_methods=["GET", "POST", "OPTIONS"],     # podes pôr ["*"] também
-    allow_headers=["Content-Type", "Authorization", "X-Requested-With"],
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 
