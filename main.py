@@ -48,6 +48,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# 🔹 garantir que a pasta existe
+os.makedirs("out", exist_ok=True)
+
+# 🔹 montar rota estática para aceder às imagens do monitor
+app.mount("/monitor-out", StaticFiles(directory="out"), name="monitor-out")
+
+# incluir routers
 app.include_router(monitor_router)
 
     
