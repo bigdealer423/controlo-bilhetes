@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-const API_BASE = import.meta.env.VITE_API_BASE || "https://controlo-bilhetes.onrender.com";
+const API_BASE = ""; // passa a chamar /api/... no próprio vercel
 
 export default function MonitorWidget() {
   const [url, setUrl] = useState("");
