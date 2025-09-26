@@ -1,3 +1,4 @@
+
 import { useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import EventoModal from "./EventoModal";
@@ -27,7 +28,7 @@ export default function Dashboard({ onAtualizarEventos }) {
     { nome: "Info Clubes", rota: "/info-clubes" },
     { nome: "Disputas", rota: "/disputas" },
     { nome: "Compras", rota: "/compras" },
-    { nome: "Monitor", rota: "/monitor" }
+    { nome: "Outro Menu", rota: "/outro" }
   ];
 
   // Função de clique nos menus
