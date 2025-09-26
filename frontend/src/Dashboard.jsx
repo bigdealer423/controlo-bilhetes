@@ -27,7 +27,7 @@ export default function Dashboard({ onAtualizarEventos }) {
     { nome: "Info Clubes", rota: "/info-clubes" },
     { nome: "Disputas", rota: "/disputas" },
     { nome: "Compras", rota: "/compras" },
-    { nome: "Outro Menu", rota: "/outro" }
+    { nome: "Monitor", rota: "/monitor" }
   ];
 
   // Função de clique nos menus
