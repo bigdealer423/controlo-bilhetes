@@ -1,3 +1,16 @@
+import subprocess
+
+try:
+    # tenta instalar o chromium se ainda não existir
+    subprocess.run(
+        ["python", "-m", "playwright", "install", "chromium"],
+        check=True
+    )
+except Exception as e:
+    print("Aviso: não foi possível correr 'playwright install chromium' no arranque:", e)
+
+
+
 from collections import defaultdict
 from routers.monitor_router import router as monitor_router
 import calendar
