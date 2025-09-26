@@ -144,7 +144,7 @@ export default function App() {
                 )
               }
             />
-          
+              <Route path="/monitor" element={<Monitor />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </ErrorBoundary>
