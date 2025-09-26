@@ -58,7 +58,7 @@ ALLOWED_ORIGINS = [
     "http://localhost:5173",
 ]
 # Se tens previews do Vercel, usa regex:
-ALLOWED_ORIGIN_REGEX = r"^https://controlo-bilhetes(-[a-z0-9-]+)?\.vercel\.app$"
+ALLOWED_ORIGIN_REGEX = r"^https://controlo-bilhetes(?:-[\w-]+)*\.vercel\.app$
 
 app.add_middleware(
     CORSMiddleware,
