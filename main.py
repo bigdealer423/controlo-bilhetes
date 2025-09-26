@@ -55,12 +55,16 @@ app = FastAPI()
 # CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://controlo-bilhetes.vercel.app"],
+    allow_origins=[
+        "https://controlo-bilhetes.vercel.app",   # domínio principal
+    ],
+    # cobre domínios de preview do Vercel (branch deploys)
     allow_origin_regex=r"https://.*\.vercel\.app$",
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "OPTIONS"],     # podes pôr ["*"] também
+    allow_headers=["Content-Type", "Authorization", "X-Requested-With"],
 )
+
 
 # 🔹 garantir que a pasta existe
 os.makedirs("out", exist_ok=True)
