@@ -8,6 +8,7 @@ import InfoClubes from "./InfoClubes";
 import Disputas from "./Disputas";
 import Compras from "./Compras";
 import Outro from "./Outro";
+import Monitor from "./pages/Monitor";
 import DashboardPrincipal from "./DashboardPrincipal";
 import { useAuth } from "./AuthContext";
 import { TooltipProvider } from "@radix-ui/react-tooltip";
