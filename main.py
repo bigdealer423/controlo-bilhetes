@@ -1,18 +1,4 @@
-import subprocess
-
-try:
-    # tenta instalar o chromium se ainda não existir
-    subprocess.run(
-        ["python", "-m", "playwright", "install", "chromium"],
-        check=True
-    )
-except Exception as e:
-    print("Aviso: não foi possível correr 'playwright install chromium' no arranque:", e)
-
-
-
 from collections import defaultdict
-from routers.monitor_router import router as monitor_router
 import calendar
 from sqlalchemy import extract
 from fastapi import File, UploadFile
@@ -52,31 +38,15 @@ resumo_mais_recente = {}
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
-# Domínios permitidos (prod + localhost + previews)
-ALLOWED_ORIGINS = [
-    "https://controlo-bilhetes.vercel.app",
-    "http://localhost:5173",
-]
-# Se tens previews do Vercel, usa regex:
-ALLOWED_ORIGIN_REGEX = r"^https://controlo-bilhetes(?:-[\w-]+)*\.vercel\.app$
-
+# CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],          # <- permitir qualquer origem (teste)
-    allow_credentials=False,      # <- tem de ser False com "*"
+    allow_origins=["https://controlo-bilhetes.vercel.app"],
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-
-# 🔹 garantir que a pasta existe
-os.makedirs("out", exist_ok=True)
-
-# 🔹 montar rota estática para aceder às imagens do monitor
-app.mount("/monitor-out", StaticFiles(directory="out"), name="monitor-out")
-
-# incluir routers
-app.include_router(monitor_router)
 
     
 @app.get("/")
@@ -707,7 +677,3 @@ def resumo_dashboard(db: Session = Depends(get_db)):
 
 from routes.comparar import comparar_router  # <- caminho correto para o ficheiro onde definiste a rota
 app.include_router(comparar_router, prefix="/api")  # <- isto cria o /api/comparar_listagens
-
-
-
-
