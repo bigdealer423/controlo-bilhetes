@@ -1158,7 +1158,7 @@ return (
                 return passaPesquisa && !esconderPago;
               })
               .map(r => (
-              <>
+              <React.Fragment key={r.id}>
                 <tr
   key={r.id}
   ref={(el) => (linhaRefs.current[r.id] = el)}
@@ -1561,7 +1561,7 @@ return (
 
       </>
     )}
-  </tr>
+  </React.Fragment>
   ))}
                   </>
                 )}
