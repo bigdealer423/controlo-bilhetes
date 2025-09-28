@@ -860,7 +860,7 @@ const imprimirVendasComNotaVermelha = (vendasDoEvento, tituloEvento = "Vendas co
     setIsLoading(true);
   
     try {
-      const pageLimit = isCompact ? 1000 : limit;  // tablets também levam 1000
+      const pageLimit = limit;  // tablets também levam 1000
   
       const res = await fetch(`https://controlo-bilhetes.onrender.com/eventos_completos2?skip=${skip}&limit=${pageLimit}`);
       if (!res.ok) throw new Error("HTTP " + res.status);
