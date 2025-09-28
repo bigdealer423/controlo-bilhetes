@@ -1559,9 +1559,9 @@ return (
 </td>
 <td></td>
 
-      </>
+      </React.Fragment>
     )}
-  </React.Fragment>
+  </tr>
   ))}
                   </>
                 )}
