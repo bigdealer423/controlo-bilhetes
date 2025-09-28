@@ -8,6 +8,7 @@
 
 
 
+
 import { useState, useEffect, useMemo, useRef } from "react";
 import { FaTrash, FaPrint } from "react-icons/fa"; // <- adicionar
 import { toast } from "react-toastify";            // se ainda não estiver
@@ -1158,7 +1159,7 @@ return (
                 return passaPesquisa && !esconderPago;
               })
               .map(r => (
-              <React.Fragment key={r.id}>
+              <>
                 <tr
   key={r.id}
   ref={(el) => (linhaRefs.current[r.id] = el)}
@@ -1559,7 +1560,7 @@ return (
 </td>
 <td></td>
 
-      </React.Fragment>
+      </>
     )}
   </tr>
   ))}
@@ -1991,4 +1992,3 @@ return (
    </div>
   );
 }
-
