@@ -1160,9 +1160,9 @@ return (
                 return passaPesquisa && !esconderPago;
               })
               .map(r => (
-              <>
+              <Fragment key={r.id}>
                 <tr
-  key={r.id}
+  
   ref={(el) => (linhaRefs.current[r.id] = el)}
   onClick={() => {
     const novoExpandido = linhaExpandida === r.id ? null : r.id;
@@ -1567,7 +1567,7 @@ return (
   ))}
                   </>
                 )}
-              </>
+              </Fragment>
             ))}
           </tbody>
         </table>       
