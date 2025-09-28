@@ -194,6 +194,7 @@ export default function Eventos() {
   const [mostrarResumoDetalhado, setMostrarResumoDetalhado] = useState(false);
   const [lucrosMensais, setLucrosMensais] = useState([]);
   const linhaRefs = useRef({});
+  const ready = vendas.length > 0 && compras.length > 0;
   const [vendasNaoAssociadasSet, setVendasNaoAssociadasSet] = useState(new Set());
   const [comprasNaoAssociadasSet, setComprasNaoAssociadasSet] = useState(new Set());
   const isCompact = window.matchMedia("(max-width: 1024px)").matches;
@@ -281,10 +282,11 @@ useEffect(() => {
   }, []);
 
   useEffect(() => {
-    if (vendas.length && compras.length) {
-      buscarEventos();
-    }
-  }, [vendas, compras]);
+  if (!ready) return;
+  setRegistos([]);
+  setSkip(0);
+  setHasMore(true);
+}, [ready]);
 
   useEffect(() => {
     buscarDropdown();
@@ -320,10 +322,11 @@ useEffect(() => {
 
 
 
-  useEffect(() => {
-    if (skip === 0 && registos.length > 0) return; // Evita recarregar no load inicial
-    buscarEventos();
-  }, [skip]);
+  // este é o ÚNICO que chama buscarEventos
+useEffect(() => {
+  if (!ready) return;
+  buscarEventos();
+}, [skip, ready]);
 
 
 // Regras aprendidas/persistidas por estádio
