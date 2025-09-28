@@ -9,6 +9,7 @@
 
 
 
+
 import { useState, useEffect, useMemo, useRef, Fragment } from "react";
 import { FaTrash, FaPrint } from "react-icons/fa"; // <- adicionar
 import { toast } from "react-toastify";            // se ainda não estiver
@@ -1159,8 +1160,9 @@ return (
                 return passaPesquisa && !esconderPago;
               })
               .map(r => (
-              <Fragment key={r.id}>
+              <>
                 <tr
+  key={r.id}
   ref={(el) => (linhaRefs.current[r.id] = el)}
   onClick={() => {
     const novoExpandido = linhaExpandida === r.id ? null : r.id;
@@ -1561,7 +1563,7 @@ return (
 
       </>
     )}
-  </Fragment>
+  </tr>
   ))}
                   </>
                 )}
