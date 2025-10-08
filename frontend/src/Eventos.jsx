@@ -322,14 +322,27 @@ useEffect(() => {
     localStorage.setItem("eventos_epoca", epocaSelecionada);
   }, [epocaSelecionada]);
   
-// Lista de épocas a partir dos registos carregados
+// 👉 substitui o teu useMemo de opcoesEpoca por este
 const opcoesEpoca = useMemo(() => {
-  const set = new Set(["Todas"]);
+  const anosBase = new Set(["Todas"]);
+
+  // base estável: últimas 6 épocas + próxima
+  const anoAtual = new Date().getMonth() >= 6
+    ? new Date().getFullYear()      // época vira em julho
+    : new Date().getFullYear() - 1;
+
+  for (let y = anoAtual + 1; y >= anoAtual - 5; y--) {
+    anosBase.add(`${y}/${y + 1}`);
+  }
+
+  // adiciona todas as que existirem nos registos carregados
   for (const r of registos || []) {
     const e = epocaDoRegisto(r);
-    if (e) set.add(e);
+    if (e) anosBase.add(e);
   }
-  return Array.from(set).sort((a, b) => {
+
+  // ordena desc, mantendo "Todas" no topo
+  return Array.from(anosBase).sort((a, b) => {
     if (a === "Todas") return -1;
     if (b === "Todas") return 1;
     const ay = parseInt(String(a).slice(0, 4), 10);
@@ -337,6 +350,7 @@ const opcoesEpoca = useMemo(() => {
     return by - ay;
   });
 }, [registos]);
+
 
 // Helper local para filtrar pela época selecionada
 const matchesEpoca = (r) => {
@@ -1001,18 +1015,27 @@ const imprimirVendasComNotaVermelha = (vendasDoEvento, tituloEvento = "Vendas co
     );
   };
 
-  const guardarEvento = async (evento) => {
-    const res = await fetch(`https://controlo-bilhetes.onrender.com/eventos_completos2/${evento.id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(evento)
-    });
-    if (res.ok) {
-      await buscarEventos();
-      await buscarResumoMensal();
-      setModoEdicao(null);
-    }
-  };
+  // helper para “recarregar de raiz”
+const hardReloadEventos = () => {
+  setRegistos([]);
+  setSkip(0);
+  setHasMore(true);
+};
+
+// usa o hard reload quando guardas
+const guardarEvento = async (evento) => {
+  const res = await fetch(`https://controlo-bilhetes.onrender.com/eventos_completos2/${evento.id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(evento)
+  });
+  if (res.ok) {
+    hardReloadEventos();         // 👈 força a lista a recomeçar do início
+    await buscarResumoMensal();
+    setModoEdicao(null);
+  }
+};
+
 
   const ativarEdicao = (id, registo) => {
     setModoEdicao(id);
