@@ -969,38 +969,41 @@ const imprimirVendasComNotaVermelha = (vendasDoEvento, tituloEvento = "Vendas co
     }
   };
 
-  const buscarEventos = async () => {
-    if (isLoading || !hasMore) return;        // 🔧 guarda adicional de segurança
-    setIsLoading(true);
-  
-    try {
-      const pageLimit = limit;  // tablets também levam 1000
-  
-      const res = await fetch(`https://controlo-bilhetes.onrender.com/eventos_completos2?skip=${skip}&limit=${pageLimit}`);
-      if (!res.ok) throw new Error("HTTP " + res.status);
-  
-      const eventos = await res.json();
-  
-      // 🔧 se veio menos do que o pedido, acabou a lista
-      if (eventos.length < pageLimit) {
-        setHasMore(false);
-      }
-  
-      // 🔧 evitar duplicados se houver chamadas em paralelo
-      setRegistos(prev => {
-        const vistos = new Set(prev.map(e => e.id));
-        const novos = eventos.filter(e => !vistos.has(e.id));
-        return [...prev, ...novos];
-      });
-  
-      // 🔧 NÃO avançar skip aqui! (fica só no IntersectionObserver)
-    } catch (error) {
-      console.error("Erro ao carregar eventos:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+ const buscarEventos = async () => {
+  if (isLoading || !hasMore) return;
+  setIsLoading(true);
 
+  try {
+    const pageLimit = limit;
+    const res = await fetch(`https://controlo-bilhetes.onrender.com/eventos_completos2?skip=${skip}&limit=${pageLimit}`);
+    if (!res.ok) throw new Error("HTTP " + res.status);
+
+    const eventos = await res.json();
+
+    if (eventos.length < pageLimit) setHasMore(false);
+
+    setRegistos(prev => {
+      const vistos = new Set(prev.map(e => e.id));
+      const novos = eventos.filter(e => !vistos.has(e.id));
+      const merged = [...prev, ...novos];
+
+      // 🔽 Ordenar por data desc (YYYY-MM-DD ou DD-MM-YYYY) e depois por id desc
+      merged.sort((a, b) => {
+        const da = parseDataPt(a.data_evento);
+        const db = parseDataPt(b.data_evento);
+        const diff = (db?.getTime() || 0) - (da?.getTime() || 0);
+        if (diff !== 0) return diff;
+        return (b.id || 0) - (a.id || 0);
+      });
+
+      return merged;
+    });
+  } catch (e) {
+    console.error("Erro ao carregar eventos:", e);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
 
 
