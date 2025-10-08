@@ -39,7 +39,8 @@ const BTN_VARIANTS = {
     "dark:border-gray-600 dark:text-gray-100 dark:hover:bg-gray-800 focus:ring-gray-400",
 };
 
-
+const reqIdRef = useRef(0);
+const abortRef = useRef(null);
 
 
 
@@ -973,37 +974,79 @@ const imprimirVendasComNotaVermelha = (vendasDoEvento, tituloEvento = "Vendas co
   if (isLoading || !hasMore) return;
   setIsLoading(true);
 
+  // nova “geração” de pedido
+  const myReqId = ++reqIdRef.current;
+  if (abortRef.current) abortRef.current.abort();
+  const controller = new AbortController();
+  abortRef.current = controller;
+
   try {
     const pageLimit = limit;
-    const res = await fetch(`https://controlo-bilhetes.onrender.com/eventos_completos2?skip=${skip}&limit=${pageLimit}`);
-    if (!res.ok) throw new Error("HTTP " + res.status);
 
-    const eventos = await res.json();
+    const fetchPage = async (s) => {
+      const res = await fetch(
+        `https://controlo-bilhetes.onrender.com/eventos_completos2?skip=${s}&limit=${pageLimit}`,
+        { signal: controller.signal }
+      );
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      return res.json();
+    };
 
-    if (eventos.length < pageLimit) setHasMore(false);
+    let acumulados = [];
+    let s = skip;
+    let acabou = false;
+
+    if (epocaSelecionada === "Todas") {
+      const pagina = await fetchPage(s);
+      if (controller.signal.aborted || myReqId !== reqIdRef.current) return; // ← ignora se ficou velho
+      if (pagina.length < pageLimit) setHasMore(false);
+      acumulados = pagina;
+      s += pageLimit;
+    } else {
+      while (acumulados.length < pageLimit && !acabou) {
+        const pagina = await fetchPage(s);
+        if (controller.signal.aborted || myReqId !== reqIdRef.current) return; // ← ignora se ficou velho
+        if (!pagina.length) { setHasMore(false); break; }
+
+        const filtrados = pagina.filter(matchesEpoca);
+        acumulados = acumulados.concat(filtrados);
+
+        s += pageLimit;
+        if (pagina.length < pageLimit) { setHasMore(false); acabou = true; }
+      }
+    }
+
+    // se entretanto ficou desatualizado, sai
+    if (controller.signal.aborted || myReqId !== reqIdRef.current) return;
 
     setRegistos(prev => {
       const vistos = new Set(prev.map(e => e.id));
-      const novos = eventos.filter(e => !vistos.has(e.id));
+      const novos = acumulados.filter(e => !vistos.has(e.id));
       const merged = [...prev, ...novos];
 
-      // 🔽 Ordenar por data desc (YYYY-MM-DD ou DD-MM-YYYY) e depois por id desc
-      merged.sort((a, b) => {
+      // (extra segurança) se não é “Todas”, mantém só da época visível
+      const visiveis = epocaSelecionada === "Todas"
+        ? merged
+        : merged.filter(matchesEpoca);
+
+      visiveis.sort((a, b) => {
         const da = parseDataPt(a.data_evento);
         const db = parseDataPt(b.data_evento);
         const diff = (db?.getTime() || 0) - (da?.getTime() || 0);
-        if (diff !== 0) return diff;
-        return (b.id || 0) - (a.id || 0);
+        return diff !== 0 ? diff : (b.id || 0) - (a.id || 0);
       });
 
-      return merged;
+      return visiveis;
     });
+
+    if (s !== skip) setSkip(s);
   } catch (e) {
-    console.error("Erro ao carregar eventos:", e);
+    if (e.name !== "AbortError") console.error("Erro ao carregar eventos:", e);
   } finally {
-    setIsLoading(false);
+    if (myReqId === reqIdRef.current) setIsLoading(false);
   }
 };
+
 
 
 
