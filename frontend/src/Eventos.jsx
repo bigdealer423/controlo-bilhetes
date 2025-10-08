@@ -1016,7 +1016,6 @@ const imprimirVendasComNotaVermelha = (vendasDoEvento, tituloEvento = "Vendas co
   if (isLoading || !hasMore) return;
   setIsLoading(true);
 
-  // nova “geração” de pedido
   const myReqId = ++reqIdRef.current;
   if (abortRef.current) abortRef.current.abort();
   const controller = new AbortController();
@@ -1039,21 +1038,16 @@ const imprimirVendasComNotaVermelha = (vendasDoEvento, tituloEvento = "Vendas co
     let acabou = false;
 
     if (epocaSelecionada === "Todas") {
-      const paginaNormalizada = pagina.map(e => ({
-        ...e,
-        data_evento: String(e.data_evento || "").slice(0, 10),
-      }));
-      if (controller.signal.aborted || myReqId !== reqIdRef.current) return; // ← ignora se ficou velho
-      if (pagina.length < pageLimit) setHasMore(false);
-      acumulados = pagina;
-      
+      const pagina0 = await fetchPage(s); // ← declara aqui
+      if (controller.signal.aborted || myReqId !== reqIdRef.current) return;
+      if (pagina0.length < pageLimit) setHasMore(false);
+      acumulados = pagina0;
+      // NÃO alterar skip aqui; o IntersectionObserver trata disso
     } else {
+      // carrega páginas até compor uma página “limpa” da época selecionada
       while (acumulados.length < pageLimit && !acabou) {
-        const paginaNormalizada = pagina.map(e => ({
-          ...e,
-          data_evento: String(e.data_evento || "").slice(0, 10),
-        }));
-        if (controller.signal.aborted || myReqId !== reqIdRef.current) return; // ← ignora se ficou velho
+        const pagina = await fetchPage(s);
+        if (controller.signal.aborted || myReqId !== reqIdRef.current) return;
         if (!pagina.length) { setHasMore(false); break; }
 
         const filtrados = pagina.filter(matchesEpoca);
@@ -1064,7 +1058,6 @@ const imprimirVendasComNotaVermelha = (vendasDoEvento, tituloEvento = "Vendas co
       }
     }
 
-    // se entretanto ficou desatualizado, sai
     if (controller.signal.aborted || myReqId !== reqIdRef.current) return;
 
     setRegistos(prev => {
@@ -1072,7 +1065,6 @@ const imprimirVendasComNotaVermelha = (vendasDoEvento, tituloEvento = "Vendas co
       const novos = acumulados.filter(e => !vistos.has(e.id));
       const merged = [...prev, ...novos];
 
-      // (extra segurança) se não é “Todas”, mantém só da época visível
       const visiveis = epocaSelecionada === "Todas"
         ? merged
         : merged.filter(matchesEpoca);
@@ -1080,21 +1072,21 @@ const imprimirVendasComNotaVermelha = (vendasDoEvento, tituloEvento = "Vendas co
       visiveis.sort((a, b) => {
         const da = parseDataPt(a.data_evento);
         const db = parseDataPt(b.data_evento);
-        const diff = (da?.getTime() || 0) - (db?.getTime() || 0); // ASC: mais antigo primeiro
-        return diff !== 0 ? diff : (a.id || 0) - (b.id || 0);     // desempate por id ASC
+        const diff = (da?.getTime() || 0) - (db?.getTime() || 0); // ASC
+        return diff !== 0 ? diff : (a.id || 0) - (b.id || 0);
       });
-
 
       return visiveis;
     });
 
-    
+    // ⚠️ Não faças setSkip(s) aqui
   } catch (e) {
     if (e.name !== "AbortError") console.error("Erro ao carregar eventos:", e);
   } finally {
     if (myReqId === reqIdRef.current) setIsLoading(false);
   }
 };
+
 
 
 
