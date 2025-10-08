@@ -420,7 +420,7 @@ const matchesEpoca = (r) => {
   if (epocaSelecionada === "Todas") return;
   if (registos.some(matchesEpoca)) return; // já tens algo dessa época visível
   if (!isLoading && hasMore) setSkip(s => s + limit); // puxa mais páginas
-}, [ready, registos, epocaSelecionada, isLoading, hasMore, limit]);
+}, [registos, epocaSelecionada, isLoading, hasMore, limit]);
 
 
   
@@ -477,7 +477,7 @@ const matchesEpoca = (r) => {
  useEffect(() => {
   if (!ready) return;
   buscarEventos();
-}, [skip, ready, epocaSelecionada]); // 👈 adiciona aqui
+}, [skip, epocaSelecionada]); // 👈 adiciona aqui
 
 
 
@@ -1046,7 +1046,7 @@ const imprimirVendasComNotaVermelha = (vendasDoEvento, tituloEvento = "Vendas co
       if (controller.signal.aborted || myReqId !== reqIdRef.current) return; // ← ignora se ficou velho
       if (pagina.length < pageLimit) setHasMore(false);
       acumulados = pagina;
-      s += pageLimit;
+      
     } else {
       while (acumulados.length < pageLimit && !acabou) {
         const paginaNormalizada = pagina.map(e => ({
@@ -1088,7 +1088,7 @@ const imprimirVendasComNotaVermelha = (vendasDoEvento, tituloEvento = "Vendas co
       return visiveis;
     });
 
-    if (s !== skip) setSkip(s);
+    
   } catch (e) {
     if (e.name !== "AbortError") console.error("Erro ao carregar eventos:", e);
   } finally {
