@@ -284,9 +284,7 @@ useEffect(() => {
     }
 }, [location.search, registos]);
 
-useEffect(() => {
-  return () => { if (abortRef.current) abortRef.current.abort(); };
-}, [epocaSelecionada]);
+
 
   
 
@@ -321,20 +319,32 @@ useEffect(() => {
   };
 }, []);
   
-  // Filtro por Época
+ // Filtro por Época
 const [epocaSelecionada, setEpocaSelecionada] = useState(() => {
   return localStorage.getItem("eventos_epoca") || epocaAtualHoje();
 });
+
 useEffect(() => {
   localStorage.setItem("eventos_epoca", epocaSelecionada);
 }, [epocaSelecionada]);
 
-// 👉 quando muda a época, reinicia paginação
+// 👉 reinicia paginação quando muda a época
 useEffect(() => {
   setRegistos([]);
   setSkip(0);
   setHasMore(true);
 }, [epocaSelecionada]);
+
+// ✅ aborta pedidos pendentes quando muda a época (e também no unmount)
+useEffect(() => {
+  return () => {
+    if (abortRef.current) {
+      abortRef.current.abort();
+      abortRef.current = null; // opcional
+    }
+  };
+}, [epocaSelecionada]);
+
 
 
 // garante formato AAAA/BBBB (ex.: 2023/2024)
