@@ -21,6 +21,26 @@ import CirculoEstado from "./CirculoEstado";
 import { epocaAtualHoje, epocaDeData } from "@/utils/epocas";
 
 
+// ---- estilos base para botões (pílula) ----
+const BTN_BASE =
+  "inline-flex items-center gap-2 px-4 py-2 rounded-xl font-semibold shadow-md " +
+  "transition focus:outline-none focus:ring-2 focus:ring-offset-2 " +
+  "active:translate-y-[1px] " +
+  "ring-offset-white dark:ring-offset-gray-900";
+
+const BTN_VARIANTS = {
+  blue:   "bg-blue-600 hover:bg-blue-700 text-white focus:ring-blue-400",
+  green:  "bg-green-600 hover:bg-green-700 text-white focus:ring-green-400",
+  gray:   "bg-gray-600 hover:bg-gray-700 text-white focus:ring-gray-400",
+  slate:  // neutro para summaries (Época)
+    "bg-slate-600 hover:bg-slate-700 text-white focus:ring-slate-400",
+  outline:
+    "bg-transparent border border-gray-300 text-gray-800 hover:bg-gray-50 " +
+    "dark:border-gray-600 dark:text-gray-100 dark:hover:bg-gray-800 focus:ring-gray-400",
+};
+
+
+
 
 
 
@@ -1119,7 +1139,7 @@ return (
   {/* Adicionar */}
   <button
     onClick={adicionarLinha}
-    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
+    className={`${BTN_BASE} ${BTN_VARIANTS.blue}`}
   >
     Adicionar Evento
   </button>
@@ -1131,15 +1151,15 @@ return (
       placeholder="🔍 Pesquisar equipa..."
       value={filtroPesquisa}
       onChange={(e) => setFiltroPesquisa(e.target.value)}
-      className="p-2 pr-8 border rounded w-full
-                 bg-white text-gray-900 border-gray-300
+      className="p-2 pr-8 w-full rounded-xl
+                 bg-white text-gray-900 border border-gray-300
                  dark:bg-gray-900 dark:text-gray-100 dark:border-gray-700
                  placeholder-gray-500 dark:placeholder-gray-400"
     />
     {filtroPesquisa && (
       <button
         onClick={() => setFiltroPesquisa("")}
-        className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-red-500 text-sm"
+        className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-red-500"
         title="Limpar"
       >
         ❌
@@ -1147,65 +1167,60 @@ return (
     )}
   </div>
 
-  {/* Época (agora aqui na mesma linha) */}
-  {/* Época (agora aqui na mesma linha) */}
-<details className="relative group">  {/* 👈 ADICIONADO group */}
-  <summary
-    className="cursor-pointer inline-flex items-center gap-2 rounded px-3 py-2 text-sm
-               border shadow-sm
-               bg-white text-gray-800 border-gray-300 hover:bg-gray-50
-               dark:bg-gray-900 dark:text-gray-100 dark:border-gray-700 dark:hover:bg-gray-800"
-  >
-    <span className="font-medium">Época</span>
-    <span className="opacity-80">{epocaSelecionada}</span>
-    <svg className="h-4 w-4 opacity-70 group-open:rotate-180 transition-transform" viewBox="0 0 20 20" fill="currentColor">
-      <path d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 011.08 1.04l-4.25 4.25a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z"/>
-    </svg>
-  </summary>
+  {/* Época (summary com cara de botão) */}
+  <details className="relative">
+    <summary
+      className={`cursor-pointer select-none ${BTN_BASE} ${BTN_VARIANTS.slate}`}
+    >
+      <span className="font-medium">Época</span>
+      <span className="opacity-90">{epocaSelecionada}</span>
+      <svg className="h-4 w-4 opacity-90 group-open:rotate-180 transition-transform" viewBox="0 0 20 20" fill="currentColor">
+        <path d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 011.08 1.04l-4.25 4.25a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z"/>
+      </svg>
+    </summary>
 
-  {/* 👇 MENU: z-50 + cores visíveis em dark */}
-  <div
-    className="absolute right-0 z-50 mt-2 w-56 rounded-xl p-1 shadow-lg
-               border border-gray-200 bg-white text-gray-900
-               dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100
-               ring-1 ring-black/5 dark:ring-white/10"
-  >
-    <div className="max-h-64 overflow-y-auto">
-      {opcoesEpoca.map((opt) => (
-        <button
-          key={opt}
-          onClick={() => setEpocaSelecionada(opt)}
-          className={`w-full text-left rounded-lg px-3 py-2 text-sm
-                      hover:bg-gray-100 dark:hover:bg-gray-700
-                      ${epocaSelecionada === opt ? "bg-gray-100 dark:bg-gray-700 font-semibold" : ""}`}
-        >
-          {opt}
-        </button>
-      ))}
+    {/* dropdown com contraste no dark mode */}
+    <div className="absolute right-0 z-20 mt-2 w-56 rounded-xl border p-1 shadow-lg
+                    bg-white border-gray-200
+                    dark:bg-gray-800 dark:border-gray-700">
+      <div className="max-h-64 overflow-y-auto">
+        {opcoesEpoca.map((opt) => (
+          <button
+            key={opt}
+            onClick={() => setEpocaSelecionada(opt)}
+            className={`w-full text-left rounded-lg px-3 py-2 text-sm
+                        hover:bg-gray-100 dark:hover:bg-gray-700
+                        text-gray-900 dark:text-gray-100
+                        ${epocaSelecionada === opt
+                          ? "bg-gray-100 dark:bg-gray-700 font-semibold"
+                          : ""}`}
+          >
+            {opt}
+          </button>
+        ))}
+      </div>
     </div>
-  </div>
-</details>
+  </details>
 
-
-  {/* Ocultar Pagos */}
+  {/* Ocultar Pagos (mesmo shape; cor muda ON/OFF) */}
   <button
     onClick={() => setOcultarPagos(v => !v)}
-    className={`px-3 py-2 rounded text-white text-sm font-semibold transition-colors
-      ${ocultarPagos ? "bg-gray-600 hover:bg-gray-700" : "bg-green-600 hover:bg-green-700"}`}
+    className={`${BTN_BASE} ${ocultarPagos ? BTN_VARIANTS.gray : BTN_VARIANTS.green}`}
     title={ocultarPagos ? "A ocultar eventos pagos" : "A mostrar eventos pagos"}
   >
-    {ocultarPagos ? "💰 Ocultar Pagos: ON" : "💰 Ocultar Pagos: OFF"}
+    💰 Ocultar Pagos: {ocultarPagos ? "ON" : "OFF"}
   </button>
 
-  {/* Exportar */}
+  {/* Exportar (igual ao 'Exportar Excel' que já gostas) */}
   <button
     onClick={() => exportarEventosParaExcel(registos)}
-    className="items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-xl shadow-md transition hidden md:flex"
+    className={`${BTN_BASE} ${BTN_VARIANTS.green} hidden md:inline-flex`}
   >
-    <FaFileExcel size={18} />
+    <FaFileExcel className="h-4 w-4" />
     Exportar Excel
   </button>
 </div>
+
 
 
     
