@@ -284,6 +284,11 @@ useEffect(() => {
     }
 }, [location.search, registos]);
 
+useEffect(() => {
+  return () => { if (abortRef.current) abortRef.current.abort(); };
+}, [epocaSelecionada]);
+
+  
 
   const [resumoMensal, setResumoMensal] = useState({ lucro: 0, pagamento: 0, bilhetes_epoca: 0 });
   const [modoEdicaoCompra, setModoEdicaoCompra] = useState(null);
