@@ -18,6 +18,7 @@ import { FaFileExcel, FaEdit } from "react-icons/fa";
 import * as XLSX from "xlsx";
 import saveAs from "file-saver";
 import CirculoEstado from "./CirculoEstado";
+import { epocaAtualHoje, epocaDeData } from "@/utils/epocas";
 
 
 
@@ -173,6 +174,33 @@ function toInputDate(dstr) {
   return `${yyyy}-${mm}-${dd}`;
 }
 
+function epocaDoRegisto(r) {
+  const d = parseDataPt(r?.data_evento);
+  if (!d || isNaN(d.getTime())) return null;
+  return epocaDeData(d);
+}
+
+function matchesEpoca(r) {
+  if (epocaSelecionada === "Todas") return true;
+  return epocaDoRegisto(r) === epocaSelecionada;
+}
+
+const opcoesEpoca = useMemo(() => {
+  const set = new Set(["Todas"]);
+  for (const r of registos || []) {
+    const e = epocaDoRegisto(r);
+    if (e) set.add(e);
+  }
+  // ordenar por ano inicial desc (ex.: 2025/2026 primeiro)
+  return Array.from(set).sort((a, b) => {
+    if (a === "Todas") return -1;
+    if (b === "Todas") return 1;
+    const ay = parseInt(String(a).slice(0, 4), 10);
+    const by = parseInt(String(b).slice(0, 4), 10);
+    return by - ay;
+  });
+}, [registos]);
+
 export default function Eventos() {
   const [registos, setRegistos] = useState([]);
   const [mostrarNotaEventoId, setMostrarNotaEventoId] = useState(null);
@@ -255,6 +283,14 @@ useEffect(() => {
   const [tooltips, setTooltips] = useState({});
   const [clubesInfo, setClubesInfo] = useState([]);
   const [filtroPesquisa, setFiltroPesquisa] = useState("");
+
+  // Filtro por Época
+  const [epocaSelecionada, setEpocaSelecionada] = useState(() => {
+    return localStorage.getItem("eventos_epoca") || epocaAtualHoje();
+  });
+  useEffect(() => {
+    localStorage.setItem("eventos_epoca", epocaSelecionada);
+  }, [epocaSelecionada]);
   
 
 
@@ -1136,6 +1172,59 @@ return (
 
 </div>
 
+     {/* ✅ Botão Época — DESKTOP */}
+<div className="hidden md:block">
+  <details className="relative inline-block">
+    <summary className="cursor-pointer inline-flex items-center gap-2 rounded px-3 py-2 border shadow-sm text-sm hover:bg-gray-50">
+      <span className="font-medium">Época</span>
+      <span className="text-gray-600">{epocaSelecionada}</span>
+      <svg className="h-4 w-4 opacity-70 group-open:rotate-180 transition-transform" viewBox="0 0 20 20" fill="currentColor">
+        <path d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 011.08 1.04l-4.25 4.25a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z"/>
+      </svg>
+    </summary>
+    <div className="absolute right-0 z-20 mt-2 w-56 rounded-xl border bg-white p-1 shadow-lg">
+      <div className="max-h-64 overflow-y-auto">
+        {opcoesEpoca.map((opt) => (
+          <button
+            key={opt}
+            onClick={() => setEpocaSelecionada(opt)}
+            className={`w-full text-left rounded-lg px-3 py-2 text-sm hover:bg-gray-100 ${
+              epocaSelecionada === opt ? "bg-gray-100 font-semibold" : ""
+            }`}
+          >
+            {opt}
+          </button>
+        ))}
+      </div>
+    </div>
+  </details>
+</div>
+
+     {/* ✅ Botão Época — MOBILE */}
+<div className="md:hidden mt-2 flex justify-end">
+  <details className="relative">
+    <summary className="cursor-pointer inline-flex items-center gap-2 rounded px-3 py-2 border shadow-sm text-sm bg-white/10">
+      <span className="font-medium">Época</span>
+      <span className="opacity-80">{epocaSelecionada}</span>
+    </summary>
+    <div className="absolute right-0 z-20 mt-2 w-56 rounded-xl border bg-white p-1 shadow-lg">
+      <div className="max-h-64 overflow-y-auto">
+        {opcoesEpoca.map((opt) => (
+          <button
+            key={opt}
+            onClick={() => setEpocaSelecionada(opt)}
+            className={`w-full text-left rounded-lg px-3 py-2 text-sm hover:bg-gray-100 ${
+              epocaSelecionada === opt ? "bg-gray-100 font-semibold" : ""
+            }`}
+          >
+            {opt}
+          </button>
+        ))}
+      </div>
+    </div>
+  </details>
+</div>
+
 
 
 
@@ -1160,7 +1249,8 @@ return (
               .filter(r => {
                 const passaPesquisa = r.evento.toLowerCase().includes(filtroPesquisa.toLowerCase());
                 const esconderPago = ocultarPagos && r.estado === "Pago" && modoEdicao !== r.id;
-                return passaPesquisa && !esconderPago;
+                const passaEpoca = matchesEpoca(r);
+                return passaPesquisa && !esconderPago && passaEpoca;
               })
               .map(r => (
               <Fragment key={r.id}>
@@ -1579,7 +1669,8 @@ return (
               .filter(r => {
                 const passaPesquisa = r.evento.toLowerCase().includes(filtroPesquisa.toLowerCase());
                 const esconderPago = ocultarPagos && r.estado === "Pago" && modoEdicao !== r.id;
-                return passaPesquisa && !esconderPago;
+                const passaEpoca = matchesEpoca(r);
+                return passaPesquisa && !esconderPago && passaEpoca;
               })
               .map((r) => {
                 const emEdicao = modoEdicao === r.id;
