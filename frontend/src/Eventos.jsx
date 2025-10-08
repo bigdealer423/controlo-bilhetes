@@ -1148,41 +1148,44 @@ return (
   </div>
 
   {/* Época (agora aqui na mesma linha) */}
-  <details className="relative">
-    <summary
-      className="cursor-pointer inline-flex items-center gap-2 rounded px-3 py-2 text-sm
-                 border shadow-sm
-                 bg-white text-gray-800 border-gray-300 hover:bg-gray-50
-                 dark:bg-gray-900 dark:text-gray-100 dark:border-gray-700 dark:hover:bg-gray-800"
-    >
-      <span className="font-medium">Época</span>
-      <span className="opacity-80">{epocaSelecionada}</span>
-      <svg className="h-4 w-4 opacity-70 group-open:rotate-180 transition-transform" viewBox="0 0 20 20" fill="currentColor">
-        <path d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 011.08 1.04l-4.25 4.25a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z"/>
-      </svg>
-    </summary>
-    <div
-      className="absolute right-0 z-20 mt-2 w-56 rounded-xl
-                 border bg-white p-1 shadow-lg
-                 dark:bg-gray-900 dark:border-gray-700"
-    >
-      <div className="max-h-64 overflow-y-auto">
-        {opcoesEpoca.map((opt) => (
-          <button
-            key={opt}
-            onClick={() => setEpocaSelecionada(opt)}
-            className={`w-full text-left rounded-lg px-3 py-2 text-sm
-                        hover:bg-gray-100 dark:hover:bg-gray-800
-                        ${epocaSelecionada === opt
-                          ? "bg-gray-100 dark:bg-gray-800 font-semibold"
-                          : ""}`}
-          >
-            {opt}
-          </button>
-        ))}
-      </div>
+  {/* Época (agora aqui na mesma linha) */}
+<details className="relative group">  {/* 👈 ADICIONADO group */}
+  <summary
+    className="cursor-pointer inline-flex items-center gap-2 rounded px-3 py-2 text-sm
+               border shadow-sm
+               bg-white text-gray-800 border-gray-300 hover:bg-gray-50
+               dark:bg-gray-900 dark:text-gray-100 dark:border-gray-700 dark:hover:bg-gray-800"
+  >
+    <span className="font-medium">Época</span>
+    <span className="opacity-80">{epocaSelecionada}</span>
+    <svg className="h-4 w-4 opacity-70 group-open:rotate-180 transition-transform" viewBox="0 0 20 20" fill="currentColor">
+      <path d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 011.08 1.04l-4.25 4.25a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z"/>
+    </svg>
+  </summary>
+
+  {/* 👇 MENU: z-50 + cores visíveis em dark */}
+  <div
+    className="absolute right-0 z-50 mt-2 w-56 rounded-xl p-1 shadow-lg
+               border border-gray-200 bg-white text-gray-900
+               dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100
+               ring-1 ring-black/5 dark:ring-white/10"
+  >
+    <div className="max-h-64 overflow-y-auto">
+      {opcoesEpoca.map((opt) => (
+        <button
+          key={opt}
+          onClick={() => setEpocaSelecionada(opt)}
+          className={`w-full text-left rounded-lg px-3 py-2 text-sm
+                      hover:bg-gray-100 dark:hover:bg-gray-700
+                      ${epocaSelecionada === opt ? "bg-gray-100 dark:bg-gray-700 font-semibold" : ""}`}
+        >
+          {opt}
+        </button>
+      ))}
     </div>
-  </details>
+  </div>
+</details>
+
 
   {/* Ocultar Pagos */}
   <button
