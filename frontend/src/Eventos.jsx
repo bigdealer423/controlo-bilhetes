@@ -169,17 +169,32 @@ const formatarNumero = (valor) => {
 };
 
 
-function parseDataPt(ddmmyyyy) {
-  if (!ddmmyyyy) return null;
-  const s = String(ddmmyyyy).trim().replaceAll("/", "-"); // 👈 aceita "/"
-  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) {
-    const [y, m, d] = s.split("-").map(Number);
+function parseDataPt(input) {
+  if (!input) return null;
+  const s = String(input).trim();
+
+  // bate certo mesmo que venha "YYYY-MM-DDTHH:mm:ss..."
+  const mIso = s.match(/^(\d{4}-\d{2}-\d{2})/);
+  if (mIso) {
+    const [y, m, d] = mIso[1].split("-").map(Number);
     return new Date(y, m - 1, d);
   }
-  const [dd, mm, yyyy] = s.split("-").map(Number);
-  if (!dd || !mm || !yyyy) return null;
-  return new Date(yyyy, mm - 1, dd);
+
+  const s2 = s.replaceAll("/", "-");
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s2)) {
+    const [y, m, d] = s2.split("-").map(Number);
+    return new Date(y, m - 1, d);
+  }
+
+  const mPt = s2.match(/^(\d{2})-(\d{2})-(\d{4})$/);
+  if (mPt) {
+    const [_, dd, mm, yyyy] = mPt.map(Number);
+    return new Date(yyyy, mm - 1, dd);
+  }
+
+  return null;
 }
+
 
 
 function formatarDataPt(dstr) {
@@ -1024,14 +1039,20 @@ const imprimirVendasComNotaVermelha = (vendasDoEvento, tituloEvento = "Vendas co
     let acabou = false;
 
     if (epocaSelecionada === "Todas") {
-      const pagina = await fetchPage(s);
+      const paginaNormalizada = pagina.map(e => ({
+        ...e,
+        data_evento: String(e.data_evento || "").slice(0, 10),
+      }));
       if (controller.signal.aborted || myReqId !== reqIdRef.current) return; // ← ignora se ficou velho
       if (pagina.length < pageLimit) setHasMore(false);
       acumulados = pagina;
       s += pageLimit;
     } else {
       while (acumulados.length < pageLimit && !acabou) {
-        const pagina = await fetchPage(s);
+        const paginaNormalizada = pagina.map(e => ({
+          ...e,
+          data_evento: String(e.data_evento || "").slice(0, 10),
+        }));
         if (controller.signal.aborted || myReqId !== reqIdRef.current) return; // ← ignora se ficou velho
         if (!pagina.length) { setHasMore(false); break; }
 
@@ -1080,14 +1101,32 @@ const imprimirVendasComNotaVermelha = (vendasDoEvento, tituloEvento = "Vendas co
 
 
   const buscarVendas = async () => {
-    const res = await fetch("https://controlo-bilhetes.onrender.com/listagem_vendas");
-    if (res.ok) setVendas(await res.json());
-  };
+  const res = await fetch("https://controlo-bilhetes.onrender.com/listagem_vendas");
+  if (res.ok) {
+    const data = await res.json();
+    setVendas(
+      data.map(v => ({
+        ...v,
+        data_evento: String(v.data_evento || "").slice(0, 10),
+      }))
+    );
+  }
+};
+
 
   const buscarCompras = async () => {
-    const res = await fetch("https://controlo-bilhetes.onrender.com/compras");
-    if (res.ok) setCompras(await res.json());
-  };
+  const res = await fetch("https://controlo-bilhetes.onrender.com/compras");
+  if (res.ok) {
+    const data = await res.json();
+    setCompras(
+      data.map(c => ({
+        ...c,
+        data_evento: String(c.data_evento || "").slice(0, 10),
+      }))
+    );
+  }
+};
+
 
   const atualizarCampo = (id, campo, valor) => {
     setRegistos(registos =>
