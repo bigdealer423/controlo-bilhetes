@@ -180,26 +180,8 @@ function epocaDoRegisto(r) {
   return epocaDeData(d);
 }
 
-function matchesEpoca(r) {
-  if (epocaSelecionada === "Todas") return true;
-  return epocaDoRegisto(r) === epocaSelecionada;
-}
 
-const opcoesEpoca = useMemo(() => {
-  const set = new Set(["Todas"]);
-  for (const r of registos || []) {
-    const e = epocaDoRegisto(r);
-    if (e) set.add(e);
-  }
-  // ordenar por ano inicial desc (ex.: 2025/2026 primeiro)
-  return Array.from(set).sort((a, b) => {
-    if (a === "Todas") return -1;
-    if (b === "Todas") return 1;
-    const ay = parseInt(String(a).slice(0, 4), 10);
-    const by = parseInt(String(b).slice(0, 4), 10);
-    return by - ay;
-  });
-}, [registos]);
+  
 
 export default function Eventos() {
   const [registos, setRegistos] = useState([]);
@@ -225,7 +207,11 @@ export default function Eventos() {
   const ready = vendas.length > 0 && compras.length > 0;
   const [vendasNaoAssociadasSet, setVendasNaoAssociadasSet] = useState(new Set());
   const [comprasNaoAssociadasSet, setComprasNaoAssociadasSet] = useState(new Set());
-  const isCompact = window.matchMedia("(max-width: 1024px)").matches;
+  const isCompact = typeof window !== "undefined"
+    ? window.matchMedia("(max-width: 1024px)").matches
+    : false;
+
+
   const [ocultarPagos, setOcultarPagos] = useState(() => {
   const v = localStorage.getItem("eventos_ocultar_pagos");
     return v ? JSON.parse(v) : true; // ocultar por defeito
@@ -292,6 +278,27 @@ useEffect(() => {
     localStorage.setItem("eventos_epoca", epocaSelecionada);
   }, [epocaSelecionada]);
   
+// Lista de épocas a partir dos registos carregados
+const opcoesEpoca = useMemo(() => {
+  const set = new Set(["Todas"]);
+  for (const r of registos || []) {
+    const e = epocaDoRegisto(r);
+    if (e) set.add(e);
+  }
+  return Array.from(set).sort((a, b) => {
+    if (a === "Todas") return -1;
+    if (b === "Todas") return 1;
+    const ay = parseInt(String(a).slice(0, 4), 10);
+    const by = parseInt(String(b).slice(0, 4), 10);
+    return by - ay;
+  });
+}, [registos]);
+
+// Helper local para filtrar pela época selecionada
+const matchesEpoca = (r) => {
+  if (epocaSelecionada === "Todas") return true;
+  return epocaDoRegisto(r) === epocaSelecionada;
+};
 
 
   useEffect(() => {
@@ -1247,7 +1254,7 @@ return (
             <tbody>
             {registos
               .filter(r => {
-                const passaPesquisa = r.evento.toLowerCase().includes(filtroPesquisa.toLowerCase());
+                const passaPesquisa = (r.evento || "").toLowerCase().includes(filtroPesquisa.toLowerCase());
                 const esconderPago = ocultarPagos && r.estado === "Pago" && modoEdicao !== r.id;
                 const passaEpoca = matchesEpoca(r);
                 return passaPesquisa && !esconderPago && passaEpoca;
@@ -1667,7 +1674,7 @@ return (
           <div className="space-y-5 md:hidden mt-6 px-0 w-full max-w-full">
             {registos
               .filter(r => {
-                const passaPesquisa = r.evento.toLowerCase().includes(filtroPesquisa.toLowerCase());
+                const passaPesquisa = (r.evento || "").toLowerCase().includes(filtroPesquisa.toLowerCase());
                 const esconderPago = ocultarPagos && r.estado === "Pago" && modoEdicao !== r.id;
                 const passaEpoca = matchesEpoca(r);
                 return passaPesquisa && !esconderPago && passaEpoca;
@@ -1691,7 +1698,7 @@ return (
                       {emEdicao ? (
                         <input
                           type="date"
-                          value={eventoEditado.data_evento}
+                          value={toInputDate(eventoEditado.data_evento)}
                           onClick={(e) => e.stopPropagation()}
                           onChange={(e) =>
                             setEventoEditado({
