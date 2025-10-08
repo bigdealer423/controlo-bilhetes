@@ -45,6 +45,8 @@ const BTN_VARIANTS = {
 
 
 
+
+
 // ——— Normalização leve (acentos, espaços, invisíveis) ———
 const limpar = (s = "") =>
   String(s)
@@ -290,6 +292,28 @@ useEffect(() => {
   const [clubesInfo, setClubesInfo] = useState([]);
   const [filtroPesquisa, setFiltroPesquisa] = useState("");
 
+// estado + refs (no topo do componente)
+const [epocaAberta, setEpocaAberta] = useState(false);
+const epocaRef = useRef(null);
+
+// fecha ao clicar fora e ao carregar Esc
+useEffect(() => {
+  const onDown = (e) => {
+    if (epocaRef.current && !epocaRef.current.contains(e.target)) {
+      setEpocaAberta(false);
+    }
+  };
+  const onKey = (e) => {
+    if (e.key === "Escape") setEpocaAberta(false);
+  };
+  document.addEventListener("mousedown", onDown);
+  document.addEventListener("keydown", onKey);
+  return () => {
+    document.removeEventListener("mousedown", onDown);
+    document.removeEventListener("keydown", onKey);
+  };
+}, []);
+  
   // Filtro por Época
   const [epocaSelecionada, setEpocaSelecionada] = useState(() => {
     return localStorage.getItem("eventos_epoca") || epocaAtualHoje();
@@ -1167,40 +1191,54 @@ return (
     )}
   </div>
 
-  {/* Época (summary com cara de botão) */}
-  <details className="relative">
-    <summary
-      className={`cursor-pointer select-none ${BTN_BASE} ${BTN_VARIANTS.slate}`}
-    >
-      <span className="font-medium">Época</span>
-      <span className="opacity-90">{epocaSelecionada}</span>
-      <svg className="h-4 w-4 opacity-90 group-open:rotate-180 transition-transform" viewBox="0 0 20 20" fill="currentColor">
-        <path d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 011.08 1.04l-4.25 4.25a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z"/>
-      </svg>
-    </summary>
+  {/* Época (popover controlado) */}
+<div ref={epocaRef} className="relative">
+  <button
+    type="button"
+    onClick={() => setEpocaAberta(v => !v)}
+    className={`${BTN_BASE} bg-slate-600 hover:bg-slate-700 text-white focus:ring-slate-400`}
+    aria-expanded={epocaAberta}
+    aria-haspopup="listbox"
+  >
+    <span className="font-medium">Época</span>
+    <span className="opacity-90">{epocaSelecionada}</span>
+    <svg className={`h-4 w-4 transition-transform ${epocaAberta ? "rotate-180" : ""}`} viewBox="0 0 20 20" fill="currentColor">
+      <path d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 011.08 1.04l-4.25 4.25a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z"/>
+    </svg>
+  </button>
 
-    {/* dropdown com contraste no dark mode */}
-    <div className="absolute right-0 z-20 mt-2 w-56 rounded-xl border p-1 shadow-lg
-                    bg-white border-gray-200
-                    dark:bg-gray-800 dark:border-gray-700">
+  {epocaAberta && (
+    <div
+      role="listbox"
+      className="absolute right-0 mt-2 w-56 z-50 rounded-xl border p-1 shadow-lg
+                 bg-white text-gray-900 border-gray-200
+                 dark:bg-gray-900 dark:text-gray-100 dark:border-gray-700"
+    >
       <div className="max-h-64 overflow-y-auto">
-        {opcoesEpoca.map((opt) => (
-          <button
-            key={opt}
-            onClick={() => setEpocaSelecionada(opt)}
-            className={`w-full text-left rounded-lg px-3 py-2 text-sm
-                        hover:bg-gray-100 dark:hover:bg-gray-700
-                        text-gray-900 dark:text-gray-100
-                        ${epocaSelecionada === opt
-                          ? "bg-gray-100 dark:bg-gray-700 font-semibold"
-                          : ""}`}
-          >
-            {opt}
-          </button>
-        ))}
+        {opcoesEpoca.map((opt) => {
+          const ativo = epocaSelecionada === opt;
+          return (
+            <button
+              key={opt}
+              role="option"
+              aria-selected={ativo}
+              onClick={() => {
+                setEpocaSelecionada(opt);
+                setEpocaAberta(false);   // fecha ao selecionar
+              }}
+              className={`w-full text-left rounded-lg px-3 py-2 text-sm
+                          hover:bg-gray-100 dark:hover:bg-gray-800
+                          ${ativo ? "bg-gray-100 dark:bg-gray-800 font-semibold" : ""}`}
+            >
+              {opt}
+            </button>
+          );
+        })}
       </div>
     </div>
-  </details>
+  )}
+</div>
+
 
   {/* Ocultar Pagos (mesmo shape; cor muda ON/OFF) */}
   <button
