@@ -21,6 +21,8 @@ import CirculoEstado from "./CirculoEstado";
 import { epocaAtualHoje, epocaDeData } from "@/utils/epocas";
 
 
+
+
 // ---- estilos base para botões (pílula) ----
 const BTN_BASE =
   "inline-flex items-center gap-2 px-4 py-2 rounded-xl font-semibold shadow-md " +
@@ -217,7 +219,17 @@ function epocaDoRegisto(r) {
   return epocaDeData(d);
 }
 
+// 🔼 logo após os imports/utilitários
 
+function normalizarEpoca(s = "") {
+  const m1 = String(s).match(/^(\d{4})\/(\d{4})$/);      // 2023/2024
+  if (m1) return `${m1[1]}/${m1[2]}`;
+
+  const m2 = String(s).match(/^(\d{4})\/(\d{2})$/);      // 2023/24 -> 2023/2024
+  if (m2) return `${m2[1]}/${Number(m2[1]) + 1}`;
+
+  return s;
+}
   
 
 export default function Eventos() {
@@ -334,7 +346,9 @@ useEffect(() => {
   };
 }, []);
   
- // Filtro por Época
+
+
+  // Filtro por Época
 // ▼ SUBSTITUI APENAS ESTA PARTE
 const [epocaSelecionada, setEpocaSelecionada] = useState(() => {
   const saved = localStorage.getItem("eventos_epoca");
@@ -376,16 +390,7 @@ useEffect(() => {
 
 
 
-// garante formato AAAA/BBBB (ex.: 2023/2024)
-const normalizarEpoca = (s = "") => {
-  const m1 = String(s).match(/^(\d{4})\/(\d{4})$/);      // 2023/2024
-  if (m1) return `${m1[1]}/${m1[2]}`;
 
-  const m2 = String(s).match(/^(\d{4})\/(\d{2})$/);      // 2023/24  -> 2023/2024
-  if (m2) return `${m2[1]}/${Number(m2[1]) + 1}`;
-
-  return s;
-};
   
   
 // Só épocas que realmente existem nos registos (e "Todas" no topo)
