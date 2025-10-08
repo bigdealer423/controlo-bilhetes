@@ -230,7 +230,17 @@ function normalizarEpoca(s = "") {
 
   return s;
 }
-  
+
+function listarEpocasFixas({ inicio = 2020, incluirProxima = true } = {}) {
+  const yAtual = parseInt(String(epocaAtualHoje()).slice(0, 4), 10);
+  const yFim = incluirProxima ? yAtual + 1 : yAtual; // inclui a próxima época também
+  const arr = [];
+  for (let y = inicio; y <= yFim; y++) {
+    arr.push(`${y}/${y + 1}`);
+  }
+  return arr.reverse(); // mais recentes primeiro
+}
+
 
 export default function Eventos() {
   const [registos, setRegistos] = useState([]);
@@ -393,21 +403,30 @@ useEffect(() => {
 
   
   
-// Só épocas que realmente existem nos registos (e "Todas" no topo)
 const opcoesEpoca = useMemo(() => {
-  const set = new Set(["Todas", epocaAtualHoje()]); // garante presença da atual
-  for (const r of registos || []) {
-    const e = normalizarEpoca(epocaDoRegisto(r));
-    if (e) set.add(e);
-  }
+  // base fixa (garante 2023/2024, 2024/2025, 2025/2026, …)
+  const baseFixas = listarEpocasFixas({ inicio: 2023, incluirProxima: true });
+
+  // acrescenta épocas que existam nos registos (se houver)
+  const deDados = Array.from(new Set(
+    (registos || [])
+      .map(r => normalizarEpoca(epocaDoRegisto(r)))
+      .filter(Boolean)
+  ));
+
+  // junta tudo, com "Todas" no topo
+  const set = new Set(["Todas", ...baseFixas, ...deDados]);
+
+  // ordena: "Todas" primeiro, restante desc por ano inicial
   return Array.from(set).sort((a, b) => {
     if (a === "Todas") return -1;
     if (b === "Todas") return 1;
     const ay = parseInt(String(a).slice(0, 4), 10);
     const by = parseInt(String(b).slice(0, 4), 10);
-    return by - ay; // desc
+    return by - ay;
   });
 }, [registos]);
+
 
 
 
