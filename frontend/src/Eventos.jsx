@@ -397,6 +397,14 @@ const matchesEpoca = (r) => {
       fetchClubes();
   }, []);
 
+  useEffect(() => {
+  if (!ready) return;                     // 👈 só depois de compras+vendas carregarem
+  if (epocaSelecionada === "Todas") return;
+  if (registos.some(matchesEpoca)) return; // já tens algo dessa época visível
+  if (!isLoading && hasMore) setSkip(s => s + limit); // puxa mais páginas
+}, [ready, registos, epocaSelecionada, isLoading, hasMore, limit]);
+
+
   
 
   useEffect(() => {
