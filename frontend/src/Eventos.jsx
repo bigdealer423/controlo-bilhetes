@@ -431,11 +431,11 @@ const matchesEpoca = (r) => {
 
 
 
-  // este é o ÚNICO que chama buscarEventos
-useEffect(() => {
+ useEffect(() => {
   if (!ready) return;
   buscarEventos();
-}, [skip, ready]);
+}, [skip, ready, epocaSelecionada]); // 👈 adiciona aqui
+
 
 
 // Regras aprendidas/persistidas por estádio
