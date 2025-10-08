@@ -184,17 +184,17 @@ function parseDataPt(ddmmyyyy) {
 
 function formatarDataPt(dstr) {
   const d = parseDataPt(dstr);
-  return d ? d.toLocaleDateString("pt-PT") : dstr || "";
+  return d ? d.toLocaleDateString("pt-PT") : (dstr || "");
 }
-
 function toInputDate(dstr) {
   const d = parseDataPt(dstr);
-  if (!d) return ""; // vazio para não quebrar o input
+  if (!d) return "";
   const yyyy = d.getFullYear();
   const mm = String(d.getMonth() + 1).padStart(2, "0");
   const dd = String(d.getDate()).padStart(2, "0");
   return `${yyyy}-${mm}-${dd}`;
 }
+
 
 function epocaDoRegisto(r) {
   const d = parseDataPt(r?.data_evento);
