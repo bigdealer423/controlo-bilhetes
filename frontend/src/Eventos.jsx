@@ -380,8 +380,11 @@ const opcoesEpoca = useMemo(() => {
 // Helper local para filtrar pela época selecionada
 const matchesEpoca = (r) => {
   if (epocaSelecionada === "Todas") return true;
-  return epocaDoRegisto(r) === epocaSelecionada;
+  const eR = normalizarEpoca(epocaDoRegisto(r));
+  const eSel = normalizarEpoca(epocaSelecionada);
+  return eR === eSel;
 };
+
 
 
   useEffect(() => {
