@@ -1048,9 +1048,10 @@ const imprimirVendasComNotaVermelha = (vendasDoEvento, tituloEvento = "Vendas co
       visiveis.sort((a, b) => {
         const da = parseDataPt(a.data_evento);
         const db = parseDataPt(b.data_evento);
-        const diff = (db?.getTime() || 0) - (da?.getTime() || 0);
-        return diff !== 0 ? diff : (b.id || 0) - (a.id || 0);
+        const diff = (da?.getTime() || 0) - (db?.getTime() || 0); // ASC: mais antigo primeiro
+        return diff !== 0 ? diff : (a.id || 0) - (b.id || 0);     // desempate por id ASC
       });
+
 
       return visiveis;
     });
