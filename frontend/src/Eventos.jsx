@@ -315,12 +315,20 @@ useEffect(() => {
 }, []);
   
   // Filtro por Época
-  const [epocaSelecionada, setEpocaSelecionada] = useState(() => {
-    return localStorage.getItem("eventos_epoca") || epocaAtualHoje();
-  });
-  useEffect(() => {
-    localStorage.setItem("eventos_epoca", epocaSelecionada);
-  }, [epocaSelecionada]);
+const [epocaSelecionada, setEpocaSelecionada] = useState(() => {
+  return localStorage.getItem("eventos_epoca") || epocaAtualHoje();
+});
+useEffect(() => {
+  localStorage.setItem("eventos_epoca", epocaSelecionada);
+}, [epocaSelecionada]);
+
+// 👉 quando muda a época, reinicia paginação
+useEffect(() => {
+  setRegistos([]);
+  setSkip(0);
+  setHasMore(true);
+}, [epocaSelecionada]);
+
 
 // garante formato AAAA/BBBB (ex.: 2023/2024)
 const normalizarEpoca = (s = "") => {
