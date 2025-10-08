@@ -335,9 +335,23 @@ useEffect(() => {
 }, []);
   
  // Filtro por Época
+// ▼ SUBSTITUI APENAS ESTA PARTE
 const [epocaSelecionada, setEpocaSelecionada] = useState(() => {
-  return localStorage.getItem("eventos_epoca") || epocaAtualHoje();
+  const saved = localStorage.getItem("eventos_epoca");
+  const atual = epocaAtualHoje();
+
+  if (!saved) return atual;
+  const norm = normalizarEpoca(saved);
+
+  // se estava “Todas” ou inválido, usa a atual
+  if (!norm || norm === "Todas") return atual;
+
+  // se a época guardada é mais antiga do que a atual, avança para a atual
+  const ySaved = parseInt(norm.slice(0, 4), 10);
+  const yAtual = parseInt(atual.slice(0, 4), 10);
+  return ySaved < yAtual ? atual : norm;
 });
+
 
 useEffect(() => {
   localStorage.setItem("eventos_epoca", epocaSelecionada);
@@ -376,7 +390,7 @@ const normalizarEpoca = (s = "") => {
   
 // Só épocas que realmente existem nos registos (e "Todas" no topo)
 const opcoesEpoca = useMemo(() => {
-  const set = new Set(["Todas"]);
+  const set = new Set(["Todas", epocaAtualHoje()]); // garante presença da atual
   for (const r of registos || []) {
     const e = normalizarEpoca(epocaDoRegisto(r));
     if (e) set.add(e);
@@ -389,6 +403,7 @@ const opcoesEpoca = useMemo(() => {
     return by - ay; // desc
   });
 }, [registos]);
+
 
 
 
