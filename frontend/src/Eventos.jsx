@@ -39,8 +39,7 @@ const BTN_VARIANTS = {
     "dark:border-gray-600 dark:text-gray-100 dark:hover:bg-gray-800 focus:ring-gray-400",
 };
 
-const reqIdRef = useRef(0);
-const abortRef = useRef(null);
+
 
 
 
@@ -230,6 +229,8 @@ export default function Eventos() {
   const ready = vendas.length > 0 && compras.length > 0;
   const [vendasNaoAssociadasSet, setVendasNaoAssociadasSet] = useState(new Set());
   const [comprasNaoAssociadasSet, setComprasNaoAssociadasSet] = useState(new Set());
+  const reqIdRef = useRef(0);
+  const abortRef = useRef(null);
   const isCompact = typeof window !== "undefined"
     ? window.matchMedia("(max-width: 1024px)").matches
     : false;
