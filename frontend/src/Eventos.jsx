@@ -321,35 +321,35 @@ useEffect(() => {
   useEffect(() => {
     localStorage.setItem("eventos_epoca", epocaSelecionada);
   }, [epocaSelecionada]);
+
+// garante formato AAAA/BBBB (ex.: 2023/2024)
+const normalizarEpoca = (s = "") => {
+  const m1 = String(s).match(/^(\d{4})\/(\d{4})$/);      // 2023/2024
+  if (m1) return `${m1[1]}/${m1[2]}`;
+
+  const m2 = String(s).match(/^(\d{4})\/(\d{2})$/);      // 2023/24  -> 2023/2024
+  if (m2) return `${m2[1]}/${Number(m2[1]) + 1}`;
+
+  return s;
+};
   
-// 👉 substitui o teu useMemo de opcoesEpoca por este
+  
+// Só épocas que realmente existem nos registos (e "Todas" no topo)
 const opcoesEpoca = useMemo(() => {
-  const anosBase = new Set(["Todas"]);
-
-  // base estável: últimas 6 épocas + próxima
-  const anoAtual = new Date().getMonth() >= 6
-    ? new Date().getFullYear()      // época vira em julho
-    : new Date().getFullYear() - 1;
-
-  for (let y = anoAtual + 1; y >= anoAtual - 5; y--) {
-    anosBase.add(`${y}/${y + 1}`);
-  }
-
-  // adiciona todas as que existirem nos registos carregados
+  const set = new Set(["Todas"]);
   for (const r of registos || []) {
-    const e = epocaDoRegisto(r);
-    if (e) anosBase.add(e);
+    const e = normalizarEpoca(epocaDoRegisto(r));
+    if (e) set.add(e);
   }
-
-  // ordena desc, mantendo "Todas" no topo
-  return Array.from(anosBase).sort((a, b) => {
+  return Array.from(set).sort((a, b) => {
     if (a === "Todas") return -1;
     if (b === "Todas") return 1;
     const ay = parseInt(String(a).slice(0, 4), 10);
     const by = parseInt(String(b).slice(0, 4), 10);
-    return by - ay;
+    return by - ay; // desc
   });
 }, [registos]);
+
 
 
 // Helper local para filtrar pela época selecionada
