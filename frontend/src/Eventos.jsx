@@ -2286,15 +2286,16 @@ return (
                 <button
                   onClick={async () => {
                     const id = mostrarNotaEventoId;
+                    const eventoAtual = registos.find(x => x.id === id) || {};
                   
-                    // normaliza o valor
                     const urlNorm = urlEventoTmp?.trim() ? normalizeUrl(urlEventoTmp) : null;
                   
-                    // ⚠️ Envia só os campos que quer alterar e em DUPLICADO (url_evento e url)
+                    // 👇 Envia o OBJETO COMPLETO + os novos campos
                     const payload = {
+                      ...eventoAtual,
                       nota_evento: notaEventoTmp,
                       url_evento: urlNorm,
-                      url: urlNorm,
+                      url: urlNorm, // cobre o caso do backend usar 'url'
                     };
                   
                     try {
@@ -2303,21 +2304,27 @@ return (
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify(payload),
                       });
-                      if (!res.ok) throw new Error("Falha ao gravar nota/URL");
                   
-                      // Atualiza no estado local
+                      if (!res.ok) {
+                        // ajuda a diagnosticar caso volte a falhar
+                        const txt = await res.text().catch(() => "");
+                        console.error("Falha no PUT:", res.status, txt);
+                        throw new Error("Falha ao gravar nota/URL");
+                      }
+                  
+                      // Atualiza no estado local para refletir de imediato
                       setRegistos(prev =>
                         prev.map(x =>
-                          x.id === id ? { ...x, ...payload } : x
+                          x.id === id ? { ...x, nota_evento: payload.nota_evento, url_evento: payload.url_evento } : x
                         )
                       );
-                  
                       setMostrarNotaEventoId(null);
                     } catch (e) {
                       toast.error("Não foi possível guardar a nota/URL do evento.");
                       console.error(e);
                     }
                   }}
+
 
 
                   className="px-3 py-2 rounded bg-purple-600 hover:bg-purple-700 text-white"
