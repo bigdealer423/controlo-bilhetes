@@ -18,7 +18,7 @@ import * as XLSX from "xlsx";
 import saveAs from "file-saver";
 import CirculoEstado from "./CirculoEstado";
 import { epocaAtualHoje, epocaDeData } from "@/utils/epocas";
-import viagogoLogo from "./assets/viagogo.png";
+import viagogoLogo from "./assets/viagogo.svg";
 
 
 
