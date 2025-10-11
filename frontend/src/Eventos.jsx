@@ -12,6 +12,7 @@
 
 import { useState, useEffect, useMemo, useRef, Fragment } from "react";
 import { FaTrash, FaPrint } from "react-icons/fa"; // <- adicionar
+import { FaExternalLinkAlt } from "react-icons/fa";
 import { toast } from "react-toastify";            // se ainda não estiver
 import { useLocation } from "react-router-dom";
 import { FaFileExcel, FaEdit } from "react-icons/fa";
@@ -198,6 +199,14 @@ function parseDataPt(input) {
 }
 
 
+// ——— Normaliza URL para garantir https:// ———
+function normalizeUrl(s) {
+  const v = String(s || "").trim();
+  if (!v) return "";
+  if (/^https?:\/\//i.test(v)) return v;
+  return "https://" + v;
+}
+
 
 function formatarDataPt(dstr) {
   const d = parseDataPt(dstr);
@@ -244,6 +253,7 @@ function listarEpocasFixas({ inicio = 2020, incluirProxima = true } = {}) {
 
 export default function Eventos() {
   const [registos, setRegistos] = useState([]);
+  const [urlEventoTmp, setUrlEventoTmp] = useState("");
   const [mostrarNotaEventoId, setMostrarNotaEventoId] = useState(null);
   const [notaEventoTmp, setNotaEventoTmp] = useState("");
   const [eventosDropdown, setEventosDropdown] = useState([]);
@@ -1537,9 +1547,25 @@ return (
       <span className="flex flex-wrap items-center gap-1">
         {renderEventoComSimbolos(r.evento)}
       </span>
+    
+      {/* Ícone da nota, se existir */}
       {r.nota_evento && (
         <span className="text-yellow-400 animate-pulse" title={r.nota_evento}>📝</span>
       )}
+    
+      {/* Ícone/link do URL, se existir */}
+      {r.url_evento ? (
+        <a
+          href={normalizeUrl(r.url_evento)}
+          target="_blank"
+          rel="noopener noreferrer"
+          title="Abrir link do evento"
+          className="inline-flex items-center hover:opacity-80"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <FaExternalLinkAlt className="inline-block align-[-2px]" />
+        </a>
+      ) : null}
     </div>
   )}
 </td>
@@ -1613,6 +1639,7 @@ return (
                           e.stopPropagation();
                           setMostrarNotaEventoId(r.id);
                           setNotaEventoTmp(r.nota_evento || "");
+                          setUrlEventoTmp(r.url_evento || "");
                         }}
                         className={`flex items-center justify-center px-2 py-1 rounded leading-none
                           ${r.nota_evento ? "bg-purple-600 text-white neon-glow" : "bg-gray-500 text-white hover:bg-gray-600"}`}
@@ -2231,6 +2258,18 @@ return (
               className="w-full border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-900"
               placeholder="Escreve aqui as tuas notas…"
             />
+
+            <label className="block text-sm font-medium mt-3 mb-1">
+              URL ou VIAGOGO:
+            </label>
+            <input
+              type="url"
+              inputMode="url"
+              value={urlEventoTmp}
+              onChange={(e) => setUrlEventoTmp(e.target.value)}
+              className="w-full border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-900"
+              placeholder="ex.: https://www.viagogo.pt/... ou viagogo.pt/..."
+            />
       
             <div className="mt-4 flex justify-between items-center">
               {/* Indicador simples do estado */}
@@ -2250,24 +2289,35 @@ return (
                   onClick={async () => {
                     const id = mostrarNotaEventoId;
                     const eventoAtual = registos.find(x => x.id === id) || {};
-                    const payload = { ...eventoAtual, nota_evento: notaEventoTmp };
-      
+                  
+                    const payload = {
+                      ...eventoAtual,
+                      nota_evento: notaEventoTmp,
+                      url_evento: urlEventoTmp?.trim() ? normalizeUrl(urlEventoTmp) : null,
+                    };
+                  
                     try {
                       const res = await fetch(`https://controlo-bilhetes.onrender.com/eventos_completos2/${id}`, {
                         method: "PUT",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify(payload),
                       });
-                      if (!res.ok) throw new Error("Falha ao gravar nota");
-      
-                      // atualiza localmente e fecha modal
-                      setRegistos(prev => prev.map(x => x.id === id ? { ...x, nota_evento: notaEventoTmp } : x));
+                      if (!res.ok) throw new Error("Falha ao gravar nota/URL");
+                  
+                      setRegistos(prev =>
+                        prev.map(x =>
+                          x.id === id
+                            ? { ...x, nota_evento: payload.nota_evento, url_evento: payload.url_evento }
+                            : x
+                        )
+                      );
                       setMostrarNotaEventoId(null);
                     } catch (e) {
-                      toast.error("Não foi possível guardar a nota do evento.");
+                      toast.error("Não foi possível guardar a nota/URL do evento.");
                       console.error(e);
                     }
                   }}
+
                   className="px-3 py-2 rounded bg-purple-600 hover:bg-purple-700 text-white"
                 >
                   Guardar
