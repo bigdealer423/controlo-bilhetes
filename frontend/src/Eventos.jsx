@@ -2265,7 +2265,7 @@ return (
             />
 
             <label className="block text-sm font-medium mt-3 mb-1">
-              URL ou VIAGOGO:
+              VIAGOGO:
             </label>
             <input
               type="url"
