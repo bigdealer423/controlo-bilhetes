@@ -1566,7 +1566,7 @@ return (
           <img
             src={viagogoLogo}
             alt="Viagogo"
-            className="w-8 h-5 inline-block align-[-2px] ml-1"
+            className="w-5 h-5 inline-block align-[-2px]"
             loading="lazy"
           />
         </a>
