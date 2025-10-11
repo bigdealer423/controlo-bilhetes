@@ -10,6 +10,7 @@
 
 
 
+
 import { useState, useEffect, useMemo, useRef, Fragment } from "react";
 import { FaTrash, FaPrint, FaFileExcel, FaEdit, FaExternalLinkAlt } from "react-icons/fa";
 import { toast } from "react-toastify";            // se ainda não estiver
@@ -249,33 +250,6 @@ function listarEpocasFixas({ inicio = 2020, incluirProxima = true } = {}) {
   }
   return arr.reverse(); // mais recentes primeiro
 }
-
-// ——— Normaliza texto para query (remove acentos, troca espaços por '+') ———
-function toQuery(s = "") {
-  return String(s || "")
-    .normalize("NFKD")
-    .replace(/[\u0300-\u036f]/g, "") // sem acentos
-    .trim()
-    .replace(/\s+/g, "+");
-}
-
-// ——— Constrói o link de pesquisa my.viagogo ———
-function buildViagogoListingsSearch(eventName = "") {
-  const q = toQuery(eventName);
-  return `https://my.viagogo.pt/listings?activeTab=ACTIVE&search=${q}`;
-}
-
-// ——— Abre o link do evento e, em seguida, a pesquisa my.viagogo ———
-function openViagogoAndSearch(e, urlEvento, nomeEvento) {
-  if (e) { e.preventDefault?.(); e.stopPropagation?.(); }
-  const main = normalizeUrl(urlEvento);
-  const search = buildViagogoListingsSearch(nomeEvento);
-
-  // duas janelas/tabs a partir de um gesto do utilizador
-  window.open(main, "_blank", "noopener,noreferrer");
-  window.open(search, "_blank", "noopener,noreferrer");
-}
-
 
 
 export default function Eventos() {
@@ -1581,12 +1555,14 @@ return (
       )}
     
       {/* Ícone/link do URL, se existir */}
-      {r.url_evento && (
+      {r.url_evento ? (
         <a
           href={normalizeUrl(r.url_evento)}
-          title="Abrir Viagogo + Pesquisa (my.viagogo)"
+          target="_blank"
+          rel="noopener noreferrer"
+          title="Abrir link do evento"
           className="inline-flex items-center hover:opacity-80"
-          onClick={(e) => openViagogoAndSearch(e, r.url_evento, r.evento)}
+          onClick={(e) => e.stopPropagation()}
         >
           <img
             src={viagogoLogo}
@@ -1595,7 +1571,6 @@ return (
             loading="lazy"
           />
         </a>
-      )}
       ) : null}
     </div>
   )}
