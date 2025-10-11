@@ -56,6 +56,7 @@ class EventoCompleto(Base):
 
 # 👇 NOVO
     nota_evento = Column(Text, nullable=True, default=None)
+    url_evento = Column(Text, nullable=True, default=None)
 
 class Compra(Base):
     __tablename__ = "compras"
@@ -73,7 +74,7 @@ class Compra(Base):
     # Novos campos
     circulo_estado_compra = Column(String, default="cinzento")
     nota_estado_compra = Column(String, default="")
-    url_evento = Column(Text, nullable=True, default=None)
+    
     
 
 # -------------------- SCHEMAS Pydantic --------------------
