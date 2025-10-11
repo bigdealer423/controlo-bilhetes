@@ -18,6 +18,7 @@ import * as XLSX from "xlsx";
 import saveAs from "file-saver";
 import CirculoEstado from "./CirculoEstado";
 import { epocaAtualHoje, epocaDeData } from "@/utils/epocas";
+import viagogoLogo from "@/assets/viagogo.png";
 
 
 
@@ -1561,7 +1562,12 @@ return (
           className="inline-flex items-center hover:opacity-80"
           onClick={(e) => e.stopPropagation()}
         >
-          <FaExternalLinkAlt className="inline-block align-[-2px]" />
+          <img
+            src="/viagogo.png"
+            alt="Viagogo"
+            className="w-5 h-5 inline-block align-[-2px]"
+            loading="lazy"
+          />
         </a>
       ) : null}
     </div>
