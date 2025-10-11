@@ -11,10 +11,9 @@
 
 
 import { useState, useEffect, useMemo, useRef, Fragment } from "react";
-import { FaTrash, FaPrint } from "react-icons/fa"; // <- adicionar
+import { FaTrash, FaPrint, FaFileExcel, FaEdit, FaExternalLinkAlt } from "react-icons/fa";
 import { toast } from "react-toastify";            // se ainda não estiver
 import { useLocation } from "react-router-dom";
-import { FaFileExcel, FaEdit } from "react-icons/fa";
 import * as XLSX from "xlsx";
 import saveAs from "file-saver";
 import CirculoEstado from "./CirculoEstado";
