@@ -73,6 +73,8 @@ class Compra(Base):
     # Novos campos
     circulo_estado_compra = Column(String, default="cinzento")
     nota_estado_compra = Column(String, default="")
+    url_evento = Column(Text, nullable=True, default=None)
+    
 
 # -------------------- SCHEMAS Pydantic --------------------
 
@@ -138,6 +140,10 @@ class EventoCompletoBase(BaseModel):
     estado: str
      # 👇 ADICIONAR
     nota_evento: Optional[str] = None
+    url_evento: Optional[str] = None
+
+   
+
     
 class EventoCompletoCreate(EventoCompletoBase):
     pass
