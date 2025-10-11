@@ -12,7 +12,6 @@
 
 import { useState, useEffect, useMemo, useRef, Fragment } from "react";
 import { FaTrash, FaPrint } from "react-icons/fa"; // <- adicionar
-import { FaExternalLinkAlt } from "react-icons/fa";
 import { toast } from "react-toastify";            // se ainda não estiver
 import { useLocation } from "react-router-dom";
 import { FaFileExcel, FaEdit } from "react-icons/fa";
