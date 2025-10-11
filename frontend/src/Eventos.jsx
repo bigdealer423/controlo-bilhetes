@@ -2286,12 +2286,15 @@ return (
                 <button
                   onClick={async () => {
                     const id = mostrarNotaEventoId;
-                    const eventoAtual = registos.find(x => x.id === id) || {};
                   
+                    // normaliza o valor
+                    const urlNorm = urlEventoTmp?.trim() ? normalizeUrl(urlEventoTmp) : null;
+                  
+                    // ⚠️ Envia só os campos que quer alterar e em DUPLICADO (url_evento e url)
                     const payload = {
-                      ...eventoAtual,
                       nota_evento: notaEventoTmp,
-                      url_evento: urlEventoTmp?.trim() ? normalizeUrl(urlEventoTmp) : null,
+                      url_evento: urlNorm,
+                      url: urlNorm,
                     };
                   
                     try {
@@ -2302,19 +2305,20 @@ return (
                       });
                       if (!res.ok) throw new Error("Falha ao gravar nota/URL");
                   
+                      // Atualiza no estado local
                       setRegistos(prev =>
                         prev.map(x =>
-                          x.id === id
-                            ? { ...x, nota_evento: payload.nota_evento, url_evento: payload.url_evento }
-                            : x
+                          x.id === id ? { ...x, ...payload } : x
                         )
                       );
+                  
                       setMostrarNotaEventoId(null);
                     } catch (e) {
                       toast.error("Não foi possível guardar a nota/URL do evento.");
                       console.error(e);
                     }
                   }}
+
 
                   className="px-3 py-2 rounded bg-purple-600 hover:bg-purple-700 text-white"
                 >
