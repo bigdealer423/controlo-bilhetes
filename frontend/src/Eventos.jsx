@@ -1470,7 +1470,8 @@ return (
             {registos
               .filter(r => {
                 const passaPesquisa = (r.evento || "").toLowerCase().includes(filtroPesquisa.toLowerCase());
-                const esconderPago = ocultarPagos && r.estado === "Pago" && modoEdicao !== r.id;
+                const filtroAtivo = !!filtroPesquisa.trim();
+                const esconderPago = !filtroAtivo && ocultarPagos && r.estado === "Pago" && modoEdicao !== r.id;
                 const passaEpoca = matchesEpoca(r);
                 return passaPesquisa && !esconderPago && passaEpoca;
               })
@@ -1912,7 +1913,8 @@ return (
             {registos
               .filter(r => {
                 const passaPesquisa = (r.evento || "").toLowerCase().includes(filtroPesquisa.toLowerCase());
-                const esconderPago = ocultarPagos && r.estado === "Pago" && modoEdicao !== r.id;
+                const filtroAtivo = !!filtroPesquisa.trim();
+                const esconderPago = !filtroAtivo && ocultarPagos && r.estado === "Pago" && modoEdicao !== r.id;
                 const passaEpoca = matchesEpoca(r);
                 return passaPesquisa && !esconderPago && passaEpoca;
               })
