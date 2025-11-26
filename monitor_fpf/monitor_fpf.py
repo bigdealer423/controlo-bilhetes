@@ -35,7 +35,7 @@ SMTP_SERVER = 'smtp.gmail.com'
 SMTP_PORT = 587
 
 PALAVRAS_CHAVE_FPF = ["COMPRAR", "Adquirir", "Ingressos", "Buy", "IRL", "HUN", "Irlanda", "Hungria", "Estádio José Alvalade"]
-PALAVRAS_CHAVE_SLB = ["Carcavelos"]
+PALAVRAS_CHAVE_SLB = ["Carcavelos", "SC Farense", "Farense"]
 PALAVRAS_CHAVE_SPORTING = ["Arouca"]
 PALAVRAS_CHAVE_BLUETICKET = ["Benfica"]
 PALAVRAS_CHAVE_2TICKET = [""]
