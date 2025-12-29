@@ -35,11 +35,11 @@ SMTP_SERVER = 'smtp.gmail.com'
 SMTP_PORT = 587
 
 PALAVRAS_CHAVE_FPF = ["COMPRAR", "Adquirir", "Ingressos", "Buy", "IRL", "HUN", "Irlanda", "Hungria", "Estádio José Alvalade"]
-PALAVRAS_CHAVE_SLB = ["Carcavelos", "SC Farense", "Farense", "FC PORTO vs SL BENFICA"]
+PALAVRAS_CHAVE_SLB = ["Carcavelos", "SC Farense", "Farense"]
 PALAVRAS_CHAVE_SPORTING = ["Arouca"]
 PALAVRAS_CHAVE_BLUETICKET = ["Benfica"]
 PALAVRAS_CHAVE_2TICKET = [""]
-
+#TAÇA DE PORTUGAL: FC PORTO vs SL BENFICA
 
 INVISIBLES_RE = re.compile(
     r"[\u00ad\u034f\u061c\u115f\u1160\u17b4\u17b5\u180e\u200b-\u200f\u2028\u2029\u202a-\u202e\u2060-\u2064\u2066-\u206f\ufeff]"
