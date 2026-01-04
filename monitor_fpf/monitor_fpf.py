@@ -26,19 +26,21 @@ URLS = [
     'https://www.sporting.pt/pt/bilhetes-e-gamebox/bilhetes',
     'https://blueticket.meo.pt/pt/search?q=desporto&page=2'
 ]
-
+# NAO ESQUECER QUE TENHO QUE ATIVAR NO RENDER FPFFF(a funcionar) - esta desativado apra nao consumir dinheiro
 HIST_FILE = 'fpf_hist.json'
 EMAIL_FROM = os.getenv("EMAIL_USERNAME")
 EMAIL_TO = os.getenv("EMAIL_USERNAME")
 EMAIL_PASS = os.getenv("EMAIL_PASSWORD")
 SMTP_SERVER = 'smtp.gmail.com'
 SMTP_PORT = 587
-
-PALAVRAS_CHAVE_FPF = ["COMPRAR", "Adquirir", "Ingressos", "Buy", "IRL", "HUN", "Irlanda", "Hungria", "Estádio José Alvalade"]
+# NAO ESQUECER QUE TENHO QUE ATIVAR NO RENDER FPFFF(a funcionar) - esta desativado apra nao consumir dinheiro
+PALAVRAS_CHAVE_FPF = ["COMPRAR", "Adquirir", "Ingressos", "Buy", "IRL", "HUN", "Irlanda", "Hungria", "Estádio José Alvalade"]# NAO ESQUECER QUE TENHO QUE ATIVAR NO RENDER FPFFF(a funcionar) - esta desativado apra nao consumir dinheiro
+# NAO ESQUECER QUE TENHO QUE ATIVAR NO RENDER FPFFF(a funcionar) - esta desativado apra nao consumir dinheiro
 PALAVRAS_CHAVE_SLB = ["Carcavelos", "SC Farense", "Farense"]
 PALAVRAS_CHAVE_SPORTING = ["Arouca"]
 PALAVRAS_CHAVE_BLUETICKET = ["Benfica"]
 PALAVRAS_CHAVE_2TICKET = [""]
+# NAO ESQUECER QUE TENHO QUE ATIVAR NO RENDER FPFFF(a funcionar) - esta desativado apra nao consumir dinheiro
 #TAÇA DE PORTUGAL: FC PORTO vs SL BENFICA
 
 INVISIBLES_RE = re.compile(
