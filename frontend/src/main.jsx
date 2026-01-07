@@ -9,3 +9,12 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <App />
   </AuthProvider>
 );
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker
+      .register("/service-worker.js")
+      .then(() => console.log("✅ Service Worker registado"))
+      .catch((err) => console.error("❌ Erro ao registar SW:", err));
+  });
+}
