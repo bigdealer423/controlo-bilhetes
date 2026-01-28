@@ -50,7 +50,7 @@ def verificar_eventos():
             print("🌐 Aceder à página de produtos...")
             page.goto(PRODUTOS_URL, timeout=60000)
 
-                        # esperar a página carregar totalmente (JS incluído)
+            # esperar a página carregar totalmente (JS incluído)
             page.wait_for_load_state("networkidle", timeout=60000)
             print("📦 Página de produtos carregada (HTML final).")
             
