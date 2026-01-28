@@ -12,7 +12,7 @@ subprocess.run(["playwright", "install", "chromium"], check=True)
 
 # ---- CONFIGURAÇÕES ----
 PALAVRAS_CHAVE = ["alverca", "benfica", "sporting", "porto"]
-PRODUTOS_URL = "https://www.odisseias.com/Book/ProductList"
+PRODUTOS_URL = "https://www.odisseias.com/packs/experiencia/sport-lisboa-e-benfica-bilhetes-para-jogo-no-estadio-da-luz-cachecois/314649"
 
 # Email de alerta
 EMAIL_FROM = os.getenv("EMAIL_USERNAME")
