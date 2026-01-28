@@ -50,24 +50,24 @@ def verificar_eventos():
             print("🌐 Aceder à página de produtos...")
             page.goto(PRODUTOS_URL, timeout=60000)
 
-            page.wait_for_selector(".ProductSummaryDetailsWrapper h2", timeout=30000)
-            print("📦 Página de produtos carregada.")
+                        # esperar a página carregar totalmente (JS incluído)
+            page.wait_for_load_state("networkidle", timeout=60000)
+            print("📦 Página de produtos carregada (HTML final).")
+            
+            # screenshot continua útil para debug
             page.screenshot(path="debug_produtos.png", full_page=True)
-
-            titulos = page.locator(".ProductSummaryDetailsWrapper h2").all_text_contents()
-            print(f"🔍 {len(titulos)} títulos encontrados:")
-            for t in titulos:
-                print("-", t)
-
-            titulos_baixo = [t.lower() for t in titulos]
+            
+            # obter HTML final
+            html = page.content().lower()
+            
             for palavra in PALAVRAS_CHAVE:
-                for titulo, titulo_original in zip(titulos_baixo, titulos):
-                    if palavra.lower() in titulo:
-                        print(f"✅ Palavra '{palavra}' encontrada no título: {titulo_original}")
-                        enviar_email_alerta(palavra, PRODUTOS_URL)
-                        return
+                if palavra.lower() in html:
+                    print(f"✅ Palavra '{palavra}' encontrada no HTML da página.")
+                    enviar_email_alerta(palavra, PRODUTOS_URL)
+                    return
+            
+            print("❌ Nenhuma palavra encontrada no HTML.")
 
-            print("❌ Nenhuma palavra encontrada nos títulos.")
 
         except Exception as e:
             print("❌ Erro:", str(e))
