@@ -57,16 +57,38 @@ def verificar_eventos():
             # screenshot continua útil para debug
             page.screenshot(path="debug_produtos.png", full_page=True)
             
-            # obter HTML final
-            html = page.content().lower()
+            # obter HTML final (sem lower aqui, para cortar com segurança)
+            html = page.content()
             
+            # --- cortar o HTML quando começar a secção "Outras sugestões - Bilhetes" ---
+            marcadores_corte = [
+                "Outras sugestões - Bilhetes",
+                'class="row space-top-2x more-sugestions"',
+                "more-sugestions",
+            ]
+            
+            idx_corte = None
+            for m in marcadores_corte:
+                pos = html.lower().find(m.lower())
+                if pos != -1:
+                    idx_corte = pos if idx_corte is None else min(idx_corte, pos)
+            
+            if idx_corte is not None:
+                html_para_pesquisa = html[:idx_corte].lower()
+                print(f"✂️ Corte aplicado no HTML na posição {idx_corte} (antes de 'Outras sugestões').")
+            else:
+                html_para_pesquisa = html.lower()
+                print("ℹ️ Marcador 'Outras sugestões' não encontrado — vou procurar no HTML completo.")
+            
+            # --- procurar palavras só no HTML antes do corte ---
             for palavra in PALAVRAS_CHAVE:
-                if palavra.lower() in html:
-                    print(f"✅ Palavra '{palavra}' encontrada no HTML da página.")
+                if palavra.lower() in html_para_pesquisa:
+                    print(f"✅ Palavra '{palavra}' encontrada (antes de 'Outras sugestões').")
                     enviar_email_alerta(palavra, PRODUTOS_URL)
                     return
             
-            print("❌ Nenhuma palavra encontrada no HTML.")
+            print("❌ Nenhuma palavra encontrada (antes de 'Outras sugestões').")
+
 
 
         except Exception as e:
