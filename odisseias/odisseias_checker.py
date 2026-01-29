@@ -11,7 +11,7 @@ STORAGE_STATE = "/opt/render/project/src/odisseias/storage_state.json"
 subprocess.run(["playwright", "install", "chromium"], check=True)
 
 # ---- CONFIGURAÇÕES ----
-PALAVRAS_CHAVE = ["oitavos final", "Sporting CP", "FC Porto", "liga dos campeões", "real madrid", "inter de milão", "inter milão", "alverca"]
+PALAVRAS_CHAVE = ["oitavos final", "Sporting CP", "FC Porto", "liga dos campeões", "real madrid", "inter de milão", "inter milão"]
 PRODUTOS_URL = "https://www.odisseias.com/packs/experiencia/sport-lisboa-e-benfica-bilhetes-para-jogo-no-estadio-da-luz-cachecois/314649"
 
 # Email de alerta
