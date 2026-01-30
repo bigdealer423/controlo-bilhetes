@@ -36,7 +36,7 @@ SMTP_PORT = 587
 # NAO ESQUECER QUE TENHO QUE ATIVAR NO RENDER FPFFF(a funcionar) - esta desativado apra nao consumir dinheiro
 PALAVRAS_CHAVE_FPF = ["COMPRAR", "Adquirir", "Ingressos", "Buy", "IRL", "HUN", "Irlanda", "Hungria", "Estádio José Alvalade"]# NAO ESQUECER QUE TENHO QUE ATIVAR NO RENDER FPFFF(a funcionar) - esta desativado apra nao consumir dinheiro
 # NAO ESQUECER QUE TENHO QUE ATIVAR NO RENDER FPFFF(a funcionar) - esta desativado apra nao consumir dinheiro
-PALAVRAS_CHAVE_SLB = ["Carcavelos", "SC Farense", "Real Madrid", "OITAVOS FINAL"]
+PALAVRAS_CHAVE_SLB = ["Carcavelos", "SC Farense", "Farense"]
 PALAVRAS_CHAVE_SPORTING = ["Arouca"]
 PALAVRAS_CHAVE_BLUETICKET = ["Benfica"]
 PALAVRAS_CHAVE_2TICKET = [""]
