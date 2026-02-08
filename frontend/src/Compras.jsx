@@ -101,7 +101,7 @@ const adicionarCompra = () => {
 
 
 
-  const locaisCompra = ["Benfica Viagens", "Site Benfica", "Odisseias", "Continente", "Site clube adversário", "Smartfans", "Outro"];
+  const locaisCompra = ["Benfica Viagens", "Site Benfica", "Odisseias", "Continente", "Site clube adversário", "Smartfans", "Outro", "Viagogo", "Stubhub"];
   const bancadas = ["Emirates", "BTV", "Sagres", "Mais vantagens"];
   const setores = [...Array.from({ length: 32 }, (_, i) => "lower " + (i + 1)),
                    ...Array.from({ length: 43 }, (_, i) => "middle " + (i + 1)),
