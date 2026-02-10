@@ -34,7 +34,7 @@ EMAIL_PASS = os.getenv("EMAIL_PASSWORD")
 SMTP_SERVER = 'smtp.gmail.com'
 SMTP_PORT = 587
 # NAO ESQUECER QUE TENHO QUE ATIVAR NO RENDER FPFFF(a funcionar) - esta desativado apra nao consumir dinheiro
-PALAVRAS_CHAVE_FPF = ["COMPRAR", "Adquirir", "Ingressos", "Buy", "IRL", "HUN", "Irlanda", "Eslováquia", "Finlândia"]# NAO ESQUECER QUE TENHO QUE ATIVAR NO RENDER FPFFF(a funcionar) - esta desativado apra nao consumir dinheiro
+PALAVRAS_CHAVE_FPF = ["COMPRAR", "Adquirir", "Ingressos", "Buy"]# NAO ESQUECER QUE TENHO QUE ATIVAR NO RENDER FPFFF(a funcionar) - esta desativado apra nao consumir dinheiro
 # NAO ESQUECER QUE TENHO QUE ATIVAR NO RENDER FPFFF(a funcionar) - esta desativado apra nao consumir dinheiro
 PALAVRAS_CHAVE_SLB = ["Carcavelos", "SC Farense", "Farense"]
 PALAVRAS_CHAVE_SPORTING = ["Arouca"]
