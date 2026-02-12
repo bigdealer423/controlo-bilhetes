@@ -12,7 +12,7 @@ STORAGE_STATE = "/opt/render/project/src/odisseias/storage_state.json"
 subprocess.run(["playwright", "install", "chromium"], check=True)
 
 # ---- CONFIGURAÇÕES ----
-PALAVRAS_CHAVE = ["fenerbahçe", "benfica", "sporting", "porto"]
+PALAVRAS_CHAVE = ["AFS", "benfica", "sporting", "porto"]
 PRODUTOS_URL = "https://www.odisseias.com/Book/ProductList"
 
 # Email de alerta
