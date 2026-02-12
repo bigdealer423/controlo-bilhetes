@@ -1,3 +1,4 @@
+
 from playwright.sync_api import sync_playwright
 import smtplib
 from email.message import EmailMessage
@@ -11,8 +12,8 @@ STORAGE_STATE = "/opt/render/project/src/odisseias/storage_state.json"
 subprocess.run(["playwright", "install", "chromium"], check=True)
 
 # ---- CONFIGURAÇÕES ----
-PALAVRAS_CHAVE = ["oitavos final", "Sporting CP", "FC Porto", "liga dos campeões", "real madrid", "inter de milão", "inter milão", "Liga dos Campões"]
-PRODUTOS_URL = "https://www.odisseias.com/packs/experiencia/sport-lisboa-e-benfica-bilhetes-para-jogo-no-estadio-da-luz-cachecois/314649"
+PALAVRAS_CHAVE = ["fenerbahçe", "benfica", "sporting", "porto"]
+PRODUTOS_URL = "https://www.odisseias.com/Book/ProductList"
 
 # Email de alerta
 EMAIL_FROM = os.getenv("EMAIL_USERNAME")
@@ -50,46 +51,24 @@ def verificar_eventos():
             print("🌐 Aceder à página de produtos...")
             page.goto(PRODUTOS_URL, timeout=60000)
 
-            # esperar a página carregar totalmente (JS incluído)
-            page.wait_for_load_state("networkidle", timeout=60000)
-            print("📦 Página de produtos carregada (HTML final).")
-            
-            # screenshot continua útil para debug
+            page.wait_for_selector(".ProductSummaryDetailsWrapper h2", timeout=30000)
+            print("📦 Página de produtos carregada.")
             page.screenshot(path="debug_produtos.png", full_page=True)
-            
-            # obter HTML final (sem lower aqui, para cortar com segurança)
-            html = page.content()
-            
-            # --- cortar o HTML quando começar a secção "Outras sugestões - Bilhetes" ---
-            marcadores_corte = [
-                "Outras sugestões - Bilhetes",
-                'class="row space-top-2x more-sugestions"',
-                "more-sugestions",
-            ]
-            
-            idx_corte = None
-            for m in marcadores_corte:
-                pos = html.lower().find(m.lower())
-                if pos != -1:
-                    idx_corte = pos if idx_corte is None else min(idx_corte, pos)
-            
-            if idx_corte is not None:
-                html_para_pesquisa = html[:idx_corte].lower()
-                print(f"✂️ Corte aplicado no HTML na posição {idx_corte} (antes de 'Outras sugestões').")
-            else:
-                html_para_pesquisa = html.lower()
-                print("ℹ️ Marcador 'Outras sugestões' não encontrado — vou procurar no HTML completo.")
-            
-            # --- procurar palavras só no HTML antes do corte ---
+
+            titulos = page.locator(".ProductSummaryDetailsWrapper h2").all_text_contents()
+            print(f"🔍 {len(titulos)} títulos encontrados:")
+            for t in titulos:
+                print("-", t)
+
+            titulos_baixo = [t.lower() for t in titulos]
             for palavra in PALAVRAS_CHAVE:
-                if palavra.lower() in html_para_pesquisa:
-                    print(f"✅ Palavra '{palavra}' encontrada (antes de 'Outras sugestões').")
-                    enviar_email_alerta(palavra, PRODUTOS_URL)
-                    return
-            
-            print("❌ Nenhuma palavra encontrada (antes de 'Outras sugestões').")
+                for titulo, titulo_original in zip(titulos_baixo, titulos):
+                    if palavra.lower() in titulo:
+                        print(f"✅ Palavra '{palavra}' encontrada no título: {titulo_original}")
+                        enviar_email_alerta(palavra, PRODUTOS_URL)
+                        return
 
-
+            print("❌ Nenhuma palavra encontrada nos títulos.")
 
         except Exception as e:
             print("❌ Erro:", str(e))
