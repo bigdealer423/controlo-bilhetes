@@ -8,7 +8,7 @@ import re
 STORAGE_STATE = "/opt/render/project/src/odisseias/storage_state.json"
 subprocess.run(["playwright", "install", "chromium"], check=True)
 
-PALAVRAS_CHAVE = ["afs"]
+PALAVRAS_CHAVE = ["FC PORTO"]
 
 AREA_CLIENTE_URL = "https://www.odisseias.com/Account/Packs"
 PRODUTOS_URL = "https://www.odisseias.com/Book/ProductList"
