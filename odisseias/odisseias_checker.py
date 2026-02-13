@@ -59,7 +59,6 @@ def clicar_reservar_packs(page) -> str:
     """
     Na página /Account/Packs, clicar no primeiro 'Reservar' (qualquer voucher),
     que nos leva ao /Book/ProductList.
-    Usa fallback em 3 seletores porque o HTML pode variar.
     """
     # 1) O selector que já tinha funcionado antes
     loc1 = page.locator("button.button-book:has-text('Reservar')")
@@ -68,59 +67,81 @@ def clicar_reservar_packs(page) -> str:
             loc1.first.click()
         return "button.button-book"
 
-    # 2) Às vezes é <a> e não <button>
+    # 2) Às vezes é <a>
     loc2 = page.locator("a:has-text('Reservar')")
     if loc2.count() > 0:
         with page.expect_navigation(timeout=60000, wait_until="domcontentloaded"):
             loc2.first.click()
         return "a:has-text"
 
-    # 3) Último fallback: um span com o texto e clicamos no pai clicável
+    # 3) Span com texto "Reservar" (e clicar em ancestral clicável)
     loc3 = page.locator("span:has-text('Reservar')")
     if loc3.count() > 0:
         span = loc3.first
-        # tenta clicar no elemento pai
+
+        # tenta primeiro button/a
         parent = span.locator("xpath=ancestor-or-self::*[self::button or self::a][1]")
         if parent.count() > 0:
             with page.expect_navigation(timeout=60000, wait_until="domcontentloaded"):
                 parent.click()
             return "span->parent(button/a)"
 
+        # fallback extra: algo com role button / onclick
+        parent2 = span.locator("xpath=ancestor-or-self::*[@role='button' or @onclick][1]")
+        if parent2.count() > 0:
+            with page.expect_navigation(timeout=60000, wait_until="domcontentloaded"):
+                parent2.click()
+            return "span->parent(role/onclick)"
+
     return ""
 
 
 def clicar_reservar_do_card_correto(page) -> str:
     """
-    Na página com vários cards e vários botões "Reservar" (como no seu print),
-    clica no botão Reservar do CARD que contém as palavras-chave.
+    Na página com vários cards, o 'Reservar' é um <span class="button button-orange">.
+    Clica no Reservar do card que contém as palavras-chave.
     """
-    page.wait_for_selector("button:has-text('Reservar')", timeout=60000)
+    page.wait_for_selector("span.button.button-orange:has-text('Reservar')", timeout=60000)
 
-    botoes = page.locator("button:has-text('Reservar')")
-    n = botoes.count()
-    print(f"🔎 Encontrei {n} botões 'Reservar' nesta página.")
+    spans = page.locator("span.button.button-orange:has-text('Reservar')")
+    n = spans.count()
+    print(f"🔎 Encontrei {n} spans 'Reservar' (button-orange) nesta página.")
 
     for i in range(n):
-        btn = botoes.nth(i)
+        sp = spans.nth(i)
 
-        # tentar apanhar um container/card suficientemente grande
-        card2 = btn.locator("xpath=ancestor::div[2]")
-        card3 = btn.locator("xpath=ancestor::div[3]")
+        # subir no DOM para apanhar texto do card (tentar alguns níveis)
+        cards = [
+            sp.locator("xpath=ancestor::div[2]"),
+            sp.locator("xpath=ancestor::div[3]"),
+            sp.locator("xpath=ancestor::div[4]"),
+            sp.locator("xpath=ancestor::div[5]"),
+        ]
 
-        texto2 = norm(card2.inner_text()) if card2.count() else ""
-        texto3 = norm(card3.inner_text()) if card3.count() else ""
-        texto_card = texto3 if len(texto3) > len(texto2) else texto2
+        textos = []
+        for c in cards:
+            try:
+                if c.count() > 0:
+                    t = norm(c.inner_text())
+                    if t:
+                        textos.append(t)
+            except Exception:
+                pass
+
+        texto_card = max(textos, key=len) if textos else ""
+        if not texto_card:
+            continue
 
         hits = [p for p in PALAVRAS_CHAVE if norm(p) and norm(p) in texto_card]
         if hits:
-            match_info = f"Card#{i+1} hits={hits[:4]}"
+            match_info = f"Span#{i+1} hits={hits[:4]}"
             print("✅ Card correto detetado:", match_info)
 
             with page.expect_navigation(timeout=60000, wait_until="domcontentloaded"):
-                btn.click()
-
+                sp.click()
             return match_info
 
+    print("❌ Não consegui associar nenhum 'Reservar' às palavras-chave.")
     return ""
 
 
@@ -155,12 +176,10 @@ def verificar_eventos():
 
             # 2) clicar Reservar (packs) -> ProductList
             print("⏳ A procurar 'Reservar' no Packs...")
-            # esperamos um pouco para o DOM estabilizar
             page.wait_for_timeout(1500)
 
             selector_usado = clicar_reservar_packs(page)
             if not selector_usado:
-                # Debug extra
                 print("❌ Não encontrei 'Reservar' no Packs com nenhum fallback.")
                 enviar_email(
                     "❌ Odisseias: Falha a encontrar 'Reservar' no Packs",
@@ -182,7 +201,7 @@ def verificar_eventos():
 
             page.screenshot(path=DEBUG_2, full_page=True)
 
-            # 4) Página com 2+ opções -> clicar Reservar do card correto
+            # 4) Lista com 2+ opções -> clicar Reservar do card correto
             page.screenshot(path=DEBUG_3, full_page=True)
             match_info = clicar_reservar_do_card_correto(page)
 
@@ -208,7 +227,13 @@ def verificar_eventos():
 
             enviar_email(
                 f"📌 Odisseias: Dentro do evento ({estado})",
-                f"Entrei no evento.\nMatch: {match_info}\nURL: {page.url}\nEstado: {estado}\n",
+                (
+                    f"Entrei no evento.\n"
+                    f"Match: {match_info}\n"
+                    f"URL: {page.url}\n"
+                    f"Estado: {estado}\n"
+                    f"Frase '{FRASE_SEM_DISP}': {'ENCONTRADA' if sem_disp else 'NÃO ENCONTRADA'}\n"
+                ),
                 anexos=[DEBUG_4, DEBUG_3],
             )
 
