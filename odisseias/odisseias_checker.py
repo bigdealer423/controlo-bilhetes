@@ -10,48 +10,49 @@ STORAGE_STATE = "/opt/render/project/src/odisseias/storage_state.json"
 # ✅ Garante que o Chromium está instalado no ambiente Render
 subprocess.run(["playwright", "install", "chromium"], check=True)
 
-# ---- CONFIGURAÇÕES ----
 PALAVRAS_CHAVE = ["AFS", "benfica", "sporting", "porto"]
+
+AREA_CLIENTE_URL = "https://www.odisseias.com/Account/Packs"
 PRODUTOS_URL = "https://www.odisseias.com/Book/ProductList"
 
-# Email de alerta
 EMAIL_FROM = os.getenv("EMAIL_USERNAME")
 EMAIL_TO = os.getenv("EMAIL_USERNAME")
 EMAIL_PASS = os.getenv("EMAIL_PASSWORD")
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
 
-DEBUG_AFTER_GOTO = "debug_apos_goto.png"
-DEBUG_SCREENSHOT = "debug_produtos.png"
+DEBUG_1 = "debug_1_packs.png"
+DEBUG_2 = "debug_2_productlist.png"
+DEBUG_3 = "debug_3_productlist_full.png"
 
-def enviar_email_alerta(palavra_encontrada, url, extra_msg=None):
+def norm(s: str) -> str:
+    return re.sub(r"\s+", " ", (s or "")).strip().lower()
+
+def enviar_email_alerta(palavra, url, extra=None):
     if not EMAIL_FROM or not EMAIL_PASS:
         print("⚠️ EMAIL_USERNAME/EMAIL_PASSWORD não definidos. Não consigo enviar email.")
         return
 
     msg = EmailMessage()
-    msg["Subject"] = f"⚽ Alerta: '{palavra_encontrada}' encontrado na Odisseias"
+    msg["Subject"] = f"⚽ Alerta: '{palavra}' encontrado na Odisseias"
     msg["From"] = EMAIL_FROM
     msg["To"] = EMAIL_TO
 
-    body = f"Foi encontrada a palavra '{palavra_encontrada}' em:\n{url}\n"
-    if extra_msg:
-        body += f"\n---\n{extra_msg}\n"
+    body = f"Encontrado: {palavra}\nURL: {url}\n"
+    if extra:
+        body += f"\n---\n{extra}\n"
     msg.set_content(body)
 
-    for screenshot in [DEBUG_AFTER_GOTO, DEBUG_SCREENSHOT]:
-        if os.path.exists(screenshot):
-            with open(screenshot, "rb") as f:
-                msg.add_attachment(f.read(), maintype="image", subtype="png", filename=screenshot)
+    for fn in [DEBUG_1, DEBUG_2, DEBUG_3]:
+        if os.path.exists(fn):
+            with open(fn, "rb") as f:
+                msg.add_attachment(f.read(), maintype="image", subtype="png", filename=fn)
 
     with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as smtp:
         smtp.starttls()
         smtp.login(EMAIL_FROM, EMAIL_PASS)
         smtp.send_message(msg)
-        print("✅ Email enviado com screenshot!")
-
-def normalizar(txt: str) -> str:
-    return re.sub(r"\s+", " ", (txt or "")).strip().lower()
+        print("✅ Email enviado com screenshots!")
 
 def verificar_eventos():
     with sync_playwright() as p:
@@ -77,50 +78,59 @@ def verificar_eventos():
         page = context.new_page()
 
         try:
-            print("🌐 Aceder à página de produtos...")
-            page.goto(PRODUTOS_URL, timeout=60000, wait_until="domcontentloaded")
+            # 1) Abrir Packs (onde está o botão Reservar)
+            print("🌐 Abrir área de cliente (Packs)...")
+            page.goto(AREA_CLIENTE_URL, timeout=60000, wait_until="domcontentloaded")
+            print("🔎 URL atual:", page.url)
+            page.screenshot(path=DEBUG_1, full_page=True)
 
-            print("🔎 URL final:", page.url)
-            page.screenshot(path=DEBUG_AFTER_GOTO, full_page=True)
+            # 2) Clicar Reservar (vai navegar para /Book/ProductList)
+            print("⏳ A procurar botão 'Reservar'...")
+            page.wait_for_selector("button.button-book:has-text('Reservar')", timeout=60000)
 
-            # ✅ esperar carregamentos dinâmicos (sem depender de selectors frágeis)
+            reservar_btn = page.locator("button.button-book:has-text('Reservar')").first
+            data_id = reservar_btn.get_attribute("data-id")
+            print(f"🟠 A clicar em 'Reservar' (data-id={data_id})...")
+
+            with page.expect_navigation(timeout=60000, wait_until="domcontentloaded"):
+                reservar_btn.click()
+
+            print("✅ Navegou. URL atual:", page.url)
+
+            # 3) Confirmar que chegou ao ProductList (ou esperar por ele)
+            if "/Book/ProductList" not in page.url:
+                print("⚠️ Não aterrou diretamente em /Book/ProductList. Vou forçar goto para PRODUTOS_URL...")
+                page.goto(PRODUTOS_URL, timeout=60000, wait_until="domcontentloaded")
+
+            # esperar carregar conteúdo dinâmico
             try:
                 page.wait_for_load_state("networkidle", timeout=60000)
             except Exception:
                 pass
 
-            # ✅ Screenshot “final”
-            page.screenshot(path=DEBUG_SCREENSHOT, full_page=True)
+            page.screenshot(path=DEBUG_2, full_page=True)
 
-            # ✅ Procurar texto visível total (mais robusto do que CSS específico)
-            texto_pagina = normalizar(page.inner_text("body"))
+            # 4) Procurar palavras (robusto: headings + texto total)
+            texto_total = norm(page.inner_text("body"))
+            headings = " | ".join([norm(x) for x in page.locator("h1,h2,h3").all_text_contents() if norm(x)])
 
-            # ✅ Extra: headings (às vezes são mais limpos)
-            headings = page.locator("h1, h2, h3").all_text_contents()
-            headings_norm = " | ".join([normalizar(h) for h in headings if normalizar(h)])
-
-            # Debug curto
-            print(f"🧾 Tamanho texto body: {len(texto_pagina)} chars")
-            print(f"🧷 Headings: {headings_norm[:200]}{'...' if len(headings_norm) > 200 else ''}")
+            page.screenshot(path=DEBUG_3, full_page=True)
 
             for palavra in PALAVRAS_CHAVE:
-                pnorm = normalizar(palavra)
-                if not pnorm:
-                    continue
-
-                if pnorm in texto_pagina or pnorm in headings_norm:
-                    print(f"✅ Palavra '{palavra}' encontrada (URL: {page.url})")
-                    enviar_email_alerta(
-                        palavra,
-                        page.url,
-                        extra_msg=f"URL original pedida: {PRODUTOS_URL}\nURL final: {page.url}",
-                    )
+                pnorm = norm(palavra)
+                if pnorm and (pnorm in texto_total or pnorm in headings):
+                    print(f"✅ Encontrado '{palavra}' em ProductList (URL={page.url})")
+                    enviar_email_alerta(palavra, page.url, extra=f"Reservar data-id: {data_id}")
                     return
 
-            print("❌ Nenhuma palavra encontrada no texto visível da página.")
+            print("❌ Nenhuma palavra encontrada em ProductList.")
 
         except Exception as e:
             print("❌ Erro:", str(e))
+            try:
+                page.screenshot(path="debug_erro.png", full_page=True)
+            except Exception:
+                pass
 
         finally:
             browser.close()
