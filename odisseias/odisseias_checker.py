@@ -98,19 +98,24 @@ def clicar_reservar_packs(page) -> str:
 
 def clicar_reservar_do_card_correto(page) -> str:
     """
-    Na página com vários cards, o 'Reservar' é um <span class="button button-orange">.
-    Clica no Reservar do card que contém as palavras-chave.
+    Clica no 'Reservar' (span) do card que melhor corresponde às PALAVRAS_CHAVE.
+    Prioridade 100% definida por PALAVRAS_CHAVE (ordem + quantidade de matches).
     """
     page.wait_for_selector("span.button.button-orange:has-text('Reservar')", timeout=60000)
 
     spans = page.locator("span.button.button-orange:has-text('Reservar')")
     n = spans.count()
-    print(f"🔎 Encontrei {n} spans 'Reservar' (button-orange) nesta página.")
+    print(f"🔎 Encontrei {n} spans 'Reservar' nesta página.")
+
+    candidatos = []
+
+    # Normalizar as keywords uma vez
+    kws = [norm(k) for k in PALAVRAS_CHAVE if norm(k)]
 
     for i in range(n):
         sp = spans.nth(i)
 
-        # subir no DOM para apanhar texto do card (tentar alguns níveis)
+        # apanhar texto do "card" (vários níveis)
         cards = [
             sp.locator("xpath=ancestor::div[2]"),
             sp.locator("xpath=ancestor::div[3]"),
@@ -132,17 +137,44 @@ def clicar_reservar_do_card_correto(page) -> str:
         if not texto_card:
             continue
 
-        hits = [p for p in PALAVRAS_CHAVE if norm(p) and norm(p) in texto_card]
-        if hits:
-            match_info = f"Span#{i+1} hits={hits[:4]}"
-            print("✅ Card correto detetado:", match_info)
+        # ✅ hits = keywords presentes no card (só as que você definiu)
+        hits = [k for k in kws if k in texto_card]
+        if not hits:
+            continue
 
-            with page.expect_navigation(timeout=60000, wait_until="domcontentloaded"):
-                sp.click()
-            return match_info
+        # ✅ score principal = quantidade de hits
+        hit_count = len(hits)
 
-    print("❌ Não consegui associar nenhum 'Reservar' às palavras-chave.")
-    return ""
+        # ✅ tie-breaker = qual o hit mais prioritário (menor índice na lista)
+        best_rank = min(kws.index(h) for h in hits)
+
+        candidatos.append({
+            "idx": i,
+            "hit_count": hit_count,
+            "best_rank": best_rank,
+            "hits": hits,
+        })
+
+    if not candidatos:
+        print("❌ Nenhum card contém PALAVRAS_CHAVE.")
+        return ""
+
+    # Ordenar:
+    # 1) mais hits
+    # 2) contém keyword mais prioritária (rank menor)
+    # 3) aparece primeiro na página
+    candidatos.sort(key=lambda x: (-x["hit_count"], x["best_rank"], x["idx"]))
+
+    escolhido = candidatos[0]
+    i = escolhido["idx"]
+
+    match_info = f"Span#{i+1} hits={escolhido['hits']} count={escolhido['hit_count']} best_rank={escolhido['best_rank']}"
+    print("✅ Card escolhido:", match_info)
+
+    with page.expect_navigation(timeout=60000, wait_until="domcontentloaded"):
+        spans.nth(i).click()
+
+    return match_info
 
 
 def verificar_eventos():
