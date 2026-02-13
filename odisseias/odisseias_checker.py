@@ -10,7 +10,7 @@ STORAGE_STATE = "/opt/render/project/src/odisseias/storage_state.json"
 # ✅ Garante que o Chromium está instalado no ambiente Render
 subprocess.run(["playwright", "install", "chromium"], check=True)
 
-PALAVRAS_CHAVE = ["AFS", "benfica", "sporting", "porto"]
+PALAVRAS_CHAVE = ["liga dos campões","liga dos campeões","Real Madrid","champions","Madrid", "sporting", "porto"]
 
 AREA_CLIENTE_URL = "https://www.odisseias.com/Account/Packs"
 PRODUTOS_URL = "https://www.odisseias.com/Book/ProductList"
