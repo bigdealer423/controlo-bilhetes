@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 import os
 import smtplib
 import time
+import json
 
 
 load_dotenv()  # Carrega as variáveis do ficheiro .env
@@ -379,7 +380,7 @@ def enviar_resumo_email(total_emails, sucesso, falha, ja_existentes, ids_erro=No
     except Exception as e:
         print(f"❌ Erro ao enviar email de resumo: {e}")
         traceback.print_exc()
-import json
+
 
 def verificar_emails_entregues(username, password, dias=PERIODO_DIAS):
 
@@ -587,6 +588,27 @@ def get_email_body_stubhub_pagamento_simples(msg):
     return texto_final
 
 
+def parse_money_to_float(valor_str: str):
+    """
+    Converte:
+      "-133.45", "-133,45", "1.234,56", "1234.56", "€ -133,45"
+    para float.
+    """
+    if not valor_str:
+        return None
+
+    s = valor_str.strip().replace("€", "").replace(" ", "").replace("\xa0", "")
+
+    # Se tiver vírgula e ponto, assume PT: ponto milhares e vírgula decimal
+    if "," in s and "." in s:
+        s = s.replace(".", "").replace(",", ".")
+    else:
+        s = s.replace(",", ".")
+
+    try:
+        return float(s)
+    except:
+        return None
 
 
 
@@ -622,7 +644,7 @@ def verificar_emails_pagamento(username, password, dias=PERIODO_DIAS):
         print(f"🔑 Referência de pagamento encontrada: {ref_pagamento}")
 
         # 2. Procurar IDs e valores associados
-        pattern = rf'({ref_pagamento}\d{{9}}).*?(\d{{2,5}}[.,]\d{{2}})\s*€?'
+        pattern = rf'({ref_pagamento}\d{{9}}).*?(-?\d{{1,5}}[.,]\d{{2}})\s*€?'
         blocos = re.findall(pattern, conteudo_normalizado)
         print("🧪 Blocos encontrados no conteúdo:")
         print(blocos)
@@ -633,7 +655,15 @@ def verificar_emails_pagamento(username, password, dias=PERIODO_DIAS):
         for id_completo, valor_str in blocos:
             id_venda = id_completo[-9:]
             try:
-                valor_pagamento = float(valor_str.replace(",", ".").replace(" ", ""))
+                valor_pagamento = parse_money_to_float(valor_str)
+                if valor_pagamento is None:
+                    print(f"❌ Erro ao converter valor: '{valor_str}'")
+                    continue
+                
+                # ✅ REGRA: se negativo, não faz nada
+                if valor_pagamento < 0:
+                    print(f"⛔ Valor negativo ({valor_pagamento:.2f}€). Ignorado (não alterar estado).")
+                    continue
             except Exception as e:
                 print(f"❌ Erro ao converter valor: '{valor_str}' - {e}")
                 continue
@@ -649,15 +679,13 @@ def verificar_emails_pagamento(username, password, dias=PERIODO_DIAS):
                     diferenca = abs(valor_pagamento - valor_esperado)
 
                     print(f"🔎 Valor esperado no sistema: {valor_esperado:.2f}€ | Diferença: {diferenca:.2f}€")
-
+                    if str(dados.get("estado", "")).lower() == "disputa":
+                        print("⛔ Já está em Disputa. Não altero estado.")
+                        continue    
                     if diferenca <= 1:
                         novo_estado = "Pago"
                         ids_pagamento_confirmado.append(id_venda)
                         print(f"✅ Estado atribuído: {novo_estado}")
-                    elif diferenca > 50 and valor_pagamento < 0:
-                        novo_estado = "Disputa"
-                        ids_disputa.append(id_venda)
-                        print(f"⚠️ Estado atribuído: {novo_estado} (valor negativo e diferença > 50€)")
                     else:
                         print("ℹ️ Diferença moderada. Nenhuma alteração de estado aplicada.")
                         continue
@@ -726,7 +754,8 @@ def verificar_emails_pagamento_stubhub(username, password, dias=PERIODO_DIAS):
                 for sec in secções[1:]:  # Ignora a primeira parte (antes do 1º pedido)
                     try:
                         id_match = re.search(r'[:\s]+(\d{6,12})', sec)
-                        valor_match = re.search(r'O\s+seu\s+pagamento\s*€\s*([\d\.,]+)', sec, re.IGNORECASE)
+                        valor_match = re.search(r'O\s+seu\s+pagamento\s*€\s*(-?[\d\.,]+)', sec, re.IGNORECASE)
+
                 
                         if id_match and valor_match:
                             id_venda = id_match.group(1)
@@ -743,7 +772,16 @@ def verificar_emails_pagamento_stubhub(username, password, dias=PERIODO_DIAS):
 
                 for id_venda, valor_str in blocos:
                     try:
-                        valor_pagamento = float(valor_str.replace(".", "").replace(",", "."))
+                        valor_pagamento = parse_money_to_float(valor_str)
+                        if valor_pagamento is None:
+                            print(f"❌ Erro ao converter valor: {valor_str}")
+                            continue
+                        
+                        # ✅ REGRA: se negativo, não faz nada
+                        if valor_pagamento < 0:
+                            print(f"⛔ Valor negativo ({valor_pagamento:.2f}€). Ignorado (não alterar estado).")
+                            continue
+
                     except:
                         print(f"❌ Erro ao converter valor: {valor_str}")
                         continue
@@ -757,13 +795,12 @@ def verificar_emails_pagamento_stubhub(username, password, dias=PERIODO_DIAS):
                             dados = res.json()
                             valor_esperado = float(dados.get("ganho", 0))
                             diferenca = abs(valor_pagamento - valor_esperado)
-
+                            if str(dados.get("estado", "")).lower() == "disputa":
+                                print("⛔ Já está em Disputa. Não altero estado.")
+                                continue
                             if diferenca <= 1:
                                 novo_estado = "Pago"
                                 ids_pagamento_confirmado.append(id_venda)
-                            elif diferenca > 50 and valor_pagamento < 0:
-                                novo_estado = "Disputa"
-                                ids_disputa.append(id_venda)
                             else:
                                 continue
 
@@ -833,53 +870,53 @@ if __name__ == "__main__":
     }
 
     # ✅ Verificações de pagamento
-resultado_pagamentos = verificar_emails_pagamento(username, password, dias=PERIODO_DIAS)
-resultado_pagamentos_stubhub = verificar_emails_pagamento_stubhub(username, password, dias=PERIODO_DIAS)
+    resultado_pagamentos = verificar_emails_pagamento(username, password, dias=PERIODO_DIAS)
+    resultado_pagamentos_stubhub = verificar_emails_pagamento_stubhub(username, password, dias=PERIODO_DIAS)
 
-# ✅ Carregar resumo e atualizar
-try:
-    with open("resumo_leitura.json", "r+") as f:
-        resumo = json.load(f)
-        resumo["sucesso"] += sucesso_stubhub
-        resumo["total_lidos"] += sucesso_stubhub + falha_stubhub
-        resumo["entregues"] = entregues_resumo["alterados_para_entregue"]
-        resumo["ids_entregues"] = entregues_resumo["ids_entregues"]
-        resumo["pagos"] = resultado_pagamentos.get("pagos", 0) + resultado_pagamentos_stubhub.get("pagos", 0)
-        resumo["disputas"] = resultado_pagamentos.get("disputas", []) + resultado_pagamentos_stubhub.get("disputas", [])
-        f.seek(0)
-        json.dump(resumo, f, indent=2)
-        f.truncate()
-except Exception as e:
-    print(f"❌ Erro ao atualizar resumo com entregues: {e}")
-    resumo = {
-        "total_lidos": sucesso_stubhub + falha_stubhub,
-        "sucesso": sucesso_stubhub,
-        "falhas": 0,
-        "existentes": 0,
-        "entregues": entregues_resumo.get("alterados_para_entregue", 0),
-        "ids_entregues": entregues_resumo.get("ids_entregues", []),
-        "pagos": resultado_pagamentos.get("pagos", 0) + resultado_pagamentos_stubhub.get("pagos", 0),
-        "disputas": resultado_pagamentos.get("disputas", []) + resultado_pagamentos_stubhub.get("disputas", [])
-    }
-
-# ✅ Atualiza API
-try:
-    requests.post("https://controlo-bilhetes.onrender.com/guardar_resumo", json=resumo)
-    print("📡 Resumo enviado para a API FastAPI com sucesso.")
-except Exception as e:
-    print(f"❌ Falha ao enviar resumo para API: {e}")
-
-# ✅ Enviar email (sempre, independentemente do try anterior)
-print("📨 A enviar resumo por email...")
-enviar_resumo_email(
-    total_emails=resumo["total_lidos"],
-    sucesso=resumo["sucesso"],
-    falha=resumo.get("falhas", 0),
-    ja_existentes=resumo.get("existentes", 0),
-    ids_erro=resumo.get("ids_falhados", []),
-    entregues=resumo.get("entregues", 0),
-    ids_entregues=resumo.get("ids_entregues", []),
-    pagos=resumo.get("pagos", 0),
-    disputas=resumo.get("disputas", [])
-)
+    # ✅ Carregar resumo e atualizar
+    try:
+        with open("resumo_leitura.json", "r+") as f:
+            resumo = json.load(f)
+            resumo["sucesso"] += sucesso_stubhub
+            resumo["total_lidos"] += sucesso_stubhub + falha_stubhub
+            resumo["entregues"] = entregues_resumo["alterados_para_entregue"]
+            resumo["ids_entregues"] = entregues_resumo["ids_entregues"]
+            resumo["pagos"] = resultado_pagamentos.get("pagos", 0) + resultado_pagamentos_stubhub.get("pagos", 0)
+            resumo["disputas"] = resultado_pagamentos.get("disputas", []) + resultado_pagamentos_stubhub.get("disputas", [])
+            f.seek(0)
+            json.dump(resumo, f, indent=2)
+            f.truncate()
+    except Exception as e:
+        print(f"❌ Erro ao atualizar resumo com entregues: {e}")
+        resumo = {
+            "total_lidos": sucesso_stubhub + falha_stubhub,
+            "sucesso": sucesso_stubhub,
+            "falhas": falha_stubhub,
+            "existentes": 0,
+            "entregues": entregues_resumo.get("alterados_para_entregue", 0),
+            "ids_entregues": entregues_resumo.get("ids_entregues", []),
+            "pagos": resultado_pagamentos.get("pagos", 0) + resultado_pagamentos_stubhub.get("pagos", 0),
+            "disputas": resultado_pagamentos.get("disputas", []) + resultado_pagamentos_stubhub.get("disputas", [])
+        }
+    
+    # ✅ Atualiza API
+    try:
+        requests.post("https://controlo-bilhetes.onrender.com/guardar_resumo", json=resumo)
+        print("📡 Resumo enviado para a API FastAPI com sucesso.")
+    except Exception as e:
+        print(f"❌ Falha ao enviar resumo para API: {e}")
+    
+    # ✅ Enviar email (sempre, independentemente do try anterior)
+    print("📨 A enviar resumo por email...")
+    enviar_resumo_email(
+        total_emails=resumo["total_lidos"],
+        sucesso=resumo["sucesso"],
+        falha=resumo.get("falhas", 0),
+        ja_existentes=resumo.get("existentes", 0),
+        ids_erro=resumo.get("ids_falhados", []),
+        entregues=resumo.get("entregues", 0),
+        ids_entregues=resumo.get("ids_entregues", []),
+        pagos=resumo.get("pagos", 0),
+        disputas=resumo.get("disputas", [])
+    )
 
