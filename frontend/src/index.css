@@ -134,3 +134,14 @@ html, body {
 .neon-glow {
   animation: neon 1.5s infinite;
 }
+
+/* Cor da seleção de texto no site */
+::selection {
+  background: #facc15; /* amarelo visível */
+  color: #000000;
+}
+
+::-moz-selection {
+  background: #facc15;
+  color: #000000;
+}
