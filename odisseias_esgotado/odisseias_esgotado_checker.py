@@ -5,7 +5,7 @@ import urllib.parse
 import urllib.request
 from email.mime.text import MIMEText
 
-URL = "https://viagens.slbenfica.pt/programas/casa-pia-ac-vs-sl-benfica-28-jornada-com-almoco/1005817"
+URL = "https://viagens.slbenfica.pt/programas/sporting-cp-vs-sl-benfica-30-jornada-com-almoco/1005818#ps:c682831e-4420-4f34-bbe6-668fc4b77324"
 
 # ISTO É PARA PROCURAR "ESGOTADO" no SITE DA BENFICA VIAGENS
 SELECTOR_ESGOTADO = "span.soldout.is-hidden-mobile"
