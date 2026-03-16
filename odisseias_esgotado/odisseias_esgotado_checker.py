@@ -5,7 +5,10 @@ import urllib.parse
 import urllib.request
 from email.mime.text import MIMEText
 
-URL = "https://viagens.slbenfica.pt/programas/sporting-cp-vs-sl-benfica-30-jornada-com-almoco/1005818#ps:c682831e-4420-4f34-bbe6-668fc4b77324"
+URLS = [
+    "https://viagens.slbenfica.pt/programas/sporting-cp-vs-sl-benfica-30-jornada-com-almoco/1005818", https://viagens.slbenfica.pt/programas/casa-pia-ac-vs-sl-benfica-28-jornada-com-almoco/1005817#ps:c43f8dbd-6376-4c13-99a3-d514153e9b78
+    # "https://viagens.slbenfica.pt/programas/outro-link-real",
+]
 
 # ISTO É PARA PROCURAR "ESGOTADO" no SITE DA BENFICA VIAGENS
 SELECTOR_ESGOTADO = "span.soldout.is-hidden-mobile"
@@ -47,45 +50,53 @@ with sync_playwright() as p:
         headless=True,
         args=["--no-sandbox", "--disable-setuid-sandbox"]
     )
-    page = browser.new_page()
 
-    print("A abrir página...")
-    page.goto(URL, wait_until="domcontentloaded", timeout=60000)
+    for url in URLS:
+        page = browser.new_page()
 
-    # dar tempo ao conteúdo dinâmico carregar
-    page.wait_for_timeout(10000)
+        try:
+            print(f"\nA verificar página: {url}")
 
-    tem_esgotado = False
-    tem_botao_plus = False
+            page.goto(url, wait_until="domcontentloaded", timeout=60000)
+            page.wait_for_timeout(10000)
 
-    try:
-        page.wait_for_load_state("networkidle", timeout=10000)
-    except PlaywrightTimeoutError:
-        print("Network idle não atingido, a continuar na mesma...")
+            tem_esgotado = False
+            tem_botao_plus = False
 
-    el_esgotado = page.query_selector(SELECTOR_ESGOTADO)
-    if el_esgotado:
-        texto_esgotado = (el_esgotado.inner_text() or "").strip().lower()
-        tem_esgotado = "esgotado" in texto_esgotado
+            try:
+                page.wait_for_load_state("networkidle", timeout=10000)
+            except PlaywrightTimeoutError:
+                print("Network idle não atingido.")
 
-    el_plus = page.query_selector(SELECTOR_PLUS)
-    if el_plus:
-        tem_botao_plus = True
+            el_esgotado = page.query_selector(SELECTOR_ESGOTADO)
+            if el_esgotado:
+                texto_esgotado = (el_esgotado.inner_text() or "").strip().lower()
+                tem_esgotado = "esgotado" in texto_esgotado
 
-    print(f"tem_esgotado={tem_esgotado}")
-    print(f"tem_botao_plus={tem_botao_plus}")
+            el_plus = page.query_selector(SELECTOR_PLUS)
+            if el_plus:
+                tem_botao_plus = True
 
-    if (not tem_esgotado) and tem_botao_plus:
-        mensagem = (
-            f"⚡ Disponibilidade detetada!\n\n"
-            f"Página: {URL}\n\n"
-            f"Já não aparece 'Esgotado' e o botão '+' já está visível."
-        )
+            print(f"tem_esgotado={tem_esgotado}")
+            print(f"tem_botao_plus={tem_botao_plus}")
 
-        print("⚡ Disponibilidade confirmada -> enviar email e Telegram")
-        enviar_email(mensagem)
-        enviar_telegram(mensagem)
-    else:
-        print("Sem disponibilidade confirmada.")
+            if (not tem_esgotado) and tem_botao_plus:
+                mensagem = (
+                    f"⚡ Disponibilidade detetada!\n\n"
+                    f"Página: {url}\n\n"
+                    f"Já não aparece 'Esgotado' e o botão '+' está visível."
+                )
+
+                print("Disponibilidade confirmada -> enviar email e Telegram")
+                enviar_email(mensagem)
+                enviar_telegram(mensagem)
+            else:
+                print("Sem disponibilidade confirmada.")
+
+        except Exception as e:
+            print(f"Erro ao verificar {url}: {e}")
+
+        finally:
+            page.close()
 
     browser.close()
