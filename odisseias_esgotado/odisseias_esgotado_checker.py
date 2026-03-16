@@ -59,46 +59,57 @@ def enviar_telegram(mensagem):
 
 def aceitar_cookies(page):
     try:
-        print("À espera do banner de cookies...")
+        print("À procura do banner de cookies...")
 
-        botao = page.locator(SELECTOR_COOKIES)
-        botao.first.wait_for(state="visible", timeout=15000)
-        page.wait_for_timeout(3000)
+        botao = page.locator("button.btn.btn-secondary.js_cookie_banner_accept_btn")
 
-        print("Botão de cookies visível. A clicar...")
-        botao.first.click(force=True, timeout=10000)
-        page.wait_for_timeout(6000)
+        total = botao.count()
+        if total == 0:
+            print("Botão de cookies não encontrado no DOM. A continuar...")
+            return True
 
         try:
-            ainda_visivel = botao.first.is_visible()
-        except Exception:
-            ainda_visivel = False
+            if botao.first.is_visible():
+                print("Botão de cookies visível. A clicar...")
+                botao.first.click(force=True, timeout=10000)
+                page.wait_for_timeout(6000)
 
-        if ainda_visivel:
-            print("Botão ainda visível após clique normal. A tentar clique por JavaScript...")
-            page.evaluate("""
-                () => {
-                    const el = document.querySelector('button.btn.btn-secondary.js_cookie_banner_accept_btn');
-                    if (el) el.click();
-                }
-            """)
-            page.wait_for_timeout(6000)
+                try:
+                    if botao.first.is_visible():
+                        print("Botão ainda visível após clique normal. A tentar JavaScript...")
+                        page.evaluate("""
+                            () => {
+                                const el = document.querySelector('button.btn.btn-secondary.js_cookie_banner_accept_btn');
+                                if (el) el.click();
+                            }
+                        """)
+                        page.wait_for_timeout(6000)
+                except Exception:
+                    pass
 
-            try:
-                ainda_visivel = botao.first.is_visible()
-            except Exception:
-                ainda_visivel = False
+                try:
+                    ainda_visivel = botao.first.is_visible()
+                except Exception:
+                    ainda_visivel = False
 
-        if ainda_visivel:
-            print("Banner de cookies continua visível.")
-            return False
+                if ainda_visivel:
+                    print("Banner continua visível.")
+                    return False
 
-        print("Cookies aceites com sucesso.")
-        return True
+                print("Cookies aceites com sucesso.")
+                return True
+
+            else:
+                print("Botão de cookies existe mas está oculto. Assumo cookies já tratados.")
+                return True
+
+        except Exception as e:
+            print(f"Não foi possível avaliar visibilidade do botão: {e}")
+            return True
 
     except Exception as e:
-        print(f"Não foi possível aceitar cookies: {e}")
-        return False
+        print(f"Erro ao tratar cookies: {e}")
+        return True
 
 
 def contar_esgotado_visivel(page):
