@@ -9,31 +9,33 @@ from email.mime.application import MIMEApplication
 
 URLS = [
     "https://viagens.slbenfica.pt/programas/sporting-cp-vs-sl-benfica-30-jornada-com-almoco/1005818#ps:777b9859-48aa-4ca9-89e5-4f85fd585cf3",
+   # "https://viagens.slbenfica.pt/programas/casa-pia-ac-vs-sl-benfica-28-jornada-com-almoco/1005817#ps:c43f8dbd-6376-4c13-99a3-d514153e9b78",
 ]
 
 SELECTOR_COOKIES = "button.btn.btn-secondary.js_cookie_banner_accept_btn"
 
 
-def enviar_email_com_screenshot(mensagem, screenshot_path):
+def enviar_email_com_screenshot(mensagem, screenshot_path, assunto="ALERTA - disponibilidade detetada"):
     email_from = os.environ["EMAIL_FROM"]
     email_to = os.environ["EMAIL_TO"]
     password = os.environ["EMAIL_PASSWORD"]
 
     msg = MIMEMultipart()
-    msg["Subject"] = "ALERTA - disponibilidade detetada"
+    msg["Subject"] = assunto
     msg["From"] = email_from
     msg["To"] = email_to
 
     msg.attach(MIMEText(mensagem, "plain", "utf-8"))
 
-    with open(screenshot_path, "rb") as f:
-        anexo = MIMEApplication(f.read(), _subtype="png")
-        anexo.add_header(
-            "Content-Disposition",
-            "attachment",
-            filename=os.path.basename(screenshot_path)
-        )
-        msg.attach(anexo)
+    if screenshot_path and os.path.exists(screenshot_path):
+        with open(screenshot_path, "rb") as f:
+            anexo = MIMEApplication(f.read(), _subtype="png")
+            anexo.add_header(
+                "Content-Disposition",
+                "attachment",
+                filename=os.path.basename(screenshot_path)
+            )
+            msg.attach(anexo)
 
     with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
         server.login(email_from, password)
@@ -57,15 +59,46 @@ def enviar_telegram(mensagem):
 
 def aceitar_cookies(page):
     try:
+        print("À espera do banner de cookies...")
+
         botao = page.locator(SELECTOR_COOKIES)
-        if botao.count() > 0 and botao.first.is_visible():
-            print("Banner de cookies detetado. A clicar em 'Aceitar todos os cookies'...")
-            botao.first.click(timeout=5000)
-            page.wait_for_timeout(3000)
-        else:
-            print("Banner de cookies não visível.")
+        botao.first.wait_for(state="visible", timeout=15000)
+        page.wait_for_timeout(3000)
+
+        print("Botão de cookies visível. A clicar...")
+        botao.first.click(force=True, timeout=10000)
+        page.wait_for_timeout(6000)
+
+        try:
+            ainda_visivel = botao.first.is_visible()
+        except Exception:
+            ainda_visivel = False
+
+        if ainda_visivel:
+            print("Botão ainda visível após clique normal. A tentar clique por JavaScript...")
+            page.evaluate("""
+                () => {
+                    const el = document.querySelector('button.btn.btn-secondary.js_cookie_banner_accept_btn');
+                    if (el) el.click();
+                }
+            """)
+            page.wait_for_timeout(6000)
+
+            try:
+                ainda_visivel = botao.first.is_visible()
+            except Exception:
+                ainda_visivel = False
+
+        if ainda_visivel:
+            print("Banner de cookies continua visível.")
+            return False
+
+        print("Cookies aceites com sucesso.")
+        return True
+
     except Exception as e:
-        print(f"Não foi possível tratar o banner de cookies: {e}")
+        print(f"Não foi possível aceitar cookies: {e}")
+        return False
 
 
 def contar_esgotado_visivel(page):
@@ -98,28 +131,58 @@ with sync_playwright() as p:
     )
 
     for url in URLS:
-        page = browser.new_page(viewport={"width": 1400, "height": 1200})
+        page = browser.new_page(
+            viewport={"width": 1400, "height": 1200},
+            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
+        )
 
         try:
+            page.set_extra_http_headers({
+                "Accept-Language": "pt-PT,pt;q=0.9,en;q=0.8"
+            })
+
             print(f"\nA verificar página: {url}")
             page.goto(url, wait_until="domcontentloaded", timeout=60000)
 
-            # aceitar cookies logo no início
-            page.wait_for_timeout(3000)
-            aceitar_cookies(page)
+            page.wait_for_timeout(8000)
+            cookies_ok = aceitar_cookies(page)
+            page.wait_for_timeout(12000)
+
+            screenshot_path = "/tmp/alerta_disponibilidade.png"
+
+            if not cookies_ok:
+                print("Não foi possível confirmar a aceitação dos cookies.")
+                page.screenshot(path=screenshot_path, full_page=True)
+
+                mensagem = (
+                    f"⚠️ Não foi possível validar corretamente a página porque o banner de cookies "
+                    f"continuou presente ou não foi tratado.\n\n"
+                    f"Página: {url}\n\n"
+                    f"Segue screenshot em anexo para análise."
+                )
+
+                enviar_email_com_screenshot(
+                    mensagem,
+                    screenshot_path,
+                    assunto="ALERTA - cookies não aceites / validação incompleta"
+                )
+                page.close()
+                continue
 
             disponibilidade_confirmada = False
-            screenshot_path = "/tmp/alerta_disponibilidade.png"
 
             for tentativa in range(3):
                 print(f"Tentativa {tentativa + 1}/3")
 
                 if tentativa > 0:
                     page.reload(wait_until="domcontentloaded", timeout=60000)
-                    page.wait_for_timeout(3000)
-                    aceitar_cookies(page)
+                    page.wait_for_timeout(8000)
+                    cookies_ok = aceitar_cookies(page)
+                    page.wait_for_timeout(12000)
 
-                page.wait_for_timeout(12000)
+                    if not cookies_ok:
+                        print("Após reload, cookies continuaram sem confirmação.")
+                        continue
 
                 try:
                     page.wait_for_load_state("networkidle", timeout=10000)
@@ -129,7 +192,6 @@ with sync_playwright() as p:
                 esgotados_visiveis = contar_esgotado_visivel(page)
                 print(f"Esgotados visíveis: {esgotados_visiveis}")
 
-                # screenshot para debug em cada tentativa
                 debug_path = f"/tmp/debug_tentativa_{tentativa+1}.png"
                 page.screenshot(path=debug_path, full_page=True)
                 print(f"Screenshot debug guardado em: {debug_path}")
