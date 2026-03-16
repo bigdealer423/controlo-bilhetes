@@ -11,6 +11,9 @@ URLS = [
     "https://viagens.slbenfica.pt/programas/sporting-cp-vs-sl-benfica-30-jornada-com-almoco/1005818#ps:777b9859-48aa-4ca9-89e5-4f85fd585cf3",
 ]
 
+SELECTOR_COOKIES = "button.btn.btn-secondary.js_cookie_banner_accept_btn"
+
+
 def enviar_email_com_screenshot(mensagem, screenshot_path):
     email_from = os.environ["EMAIL_FROM"]
     email_to = os.environ["EMAIL_TO"]
@@ -52,6 +55,19 @@ def enviar_telegram(mensagem):
         print("Telegram enviado com sucesso:", resposta)
 
 
+def aceitar_cookies(page):
+    try:
+        botao = page.locator(SELECTOR_COOKIES)
+        if botao.count() > 0 and botao.first.is_visible():
+            print("Banner de cookies detetado. A clicar em 'Aceitar todos os cookies'...")
+            botao.first.click(timeout=5000)
+            page.wait_for_timeout(3000)
+        else:
+            print("Banner de cookies não visível.")
+    except Exception as e:
+        print(f"Não foi possível tratar o banner de cookies: {e}")
+
+
 def contar_esgotado_visivel(page):
     total_visiveis = 0
 
@@ -88,6 +104,10 @@ with sync_playwright() as p:
             print(f"\nA verificar página: {url}")
             page.goto(url, wait_until="domcontentloaded", timeout=60000)
 
+            # aceitar cookies logo no início
+            page.wait_for_timeout(3000)
+            aceitar_cookies(page)
+
             disponibilidade_confirmada = False
             screenshot_path = "/tmp/alerta_disponibilidade.png"
 
@@ -96,6 +116,8 @@ with sync_playwright() as p:
 
                 if tentativa > 0:
                     page.reload(wait_until="domcontentloaded", timeout=60000)
+                    page.wait_for_timeout(3000)
+                    aceitar_cookies(page)
 
                 page.wait_for_timeout(12000)
 
@@ -106,6 +128,11 @@ with sync_playwright() as p:
 
                 esgotados_visiveis = contar_esgotado_visivel(page)
                 print(f"Esgotados visíveis: {esgotados_visiveis}")
+
+                # screenshot para debug em cada tentativa
+                debug_path = f"/tmp/debug_tentativa_{tentativa+1}.png"
+                page.screenshot(path=debug_path, full_page=True)
+                print(f"Screenshot debug guardado em: {debug_path}")
 
                 if esgotados_visiveis == 0:
                     disponibilidade_confirmada = True
