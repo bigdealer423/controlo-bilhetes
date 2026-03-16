@@ -3,7 +3,7 @@ import os
 import smtplib
 from email.mime.text import MIMEText
 
-URL = "https://viagens.slbenfica.pt/programas/sporting-cp-vs-sl-benfica-30-jornada-com-almoco/1005818#ps:3da6e6cc-b23b-4d8f-a049-cb74980a57a5/ps:8416f92f-01f5-44bb-8159-2f4da33de159"
+URL = "https://viagens.slbenfica.pt/programas/casa-pia-ac-vs-sl-benfica-28-jornada-com-almoco/1005817#ps:defdbb4f-2ebf-477b-8ebe-aadc618ced18"
 
 SELECTOR_ESGOTADO = "span.soldout.is-hidden-mobile"
 SELECTOR_PLUS = 'button.btn.btn-secondary.button-plus[data-field="room-1-number"]'
