@@ -1,10 +1,13 @@
 from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeoutError
 import os
 import smtplib
+import urllib.parse
+import urllib.request
 from email.mime.text import MIMEText
 
 URL = "https://viagens.slbenfica.pt/programas/sporting-cp-vs-sl-benfica-30-jornada-com-almoco/1005818#ps:777b9859-48aa-4ca9-89e5-4f85fd585cf3"
-#ISTO É PARA PROCURAR "ESGOTADO" no SITE DA BENFICA VIAGENS
+
+# ISTO É PARA PROCURAR "ESGOTADO" no SITE DA BENFICA VIAGENS
 SELECTOR_ESGOTADO = "span.soldout.is-hidden-mobile"
 SELECTOR_PLUS = 'button.btn.btn-secondary.button-plus[data-field="room-1-number"]'
 
@@ -22,6 +25,21 @@ def enviar_email(mensagem):
     with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
         server.login(email_from, password)
         server.sendmail(email_from, email_to, msg.as_string())
+
+
+def enviar_telegram(mensagem):
+    token = os.environ["TELEGRAM_BOT_TOKEN"]
+    chat_id = os.environ["TELEGRAM_CHAT_ID"]
+
+    base_url = f"https://api.telegram.org/bot{token}/sendMessage"
+    params = urllib.parse.urlencode({
+        "chat_id": chat_id,
+        "text": mensagem
+    })
+
+    with urllib.request.urlopen(f"{base_url}?{params}") as response:
+        resposta = response.read().decode("utf-8")
+        print("Telegram enviado com sucesso:", resposta)
 
 
 with sync_playwright() as p:
@@ -58,11 +76,15 @@ with sync_playwright() as p:
     print(f"tem_botao_plus={tem_botao_plus}")
 
     if (not tem_esgotado) and tem_botao_plus:
-        print("⚡ Disponibilidade confirmada -> enviar email")
-        enviar_email(
-            f"Disponibilidade detetada na página:\n{URL}\n\n"
+        mensagem = (
+            f"⚡ Disponibilidade detetada!\n\n"
+            f"Página: {URL}\n\n"
             f"Já não aparece 'Esgotado' e o botão '+' já está visível."
         )
+
+        print("⚡ Disponibilidade confirmada -> enviar email e Telegram")
+        enviar_email(mensagem)
+        enviar_telegram(mensagem)
     else:
         print("Sem disponibilidade confirmada.")
 
