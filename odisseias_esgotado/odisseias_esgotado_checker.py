@@ -4,7 +4,7 @@ import smtplib
 from email.mime.text import MIMEText
 
 URL = "https://viagens.slbenfica.pt/programas/sporting-cp-vs-sl-benfica-30-jornada-com-almoco/1005818#ps:777b9859-48aa-4ca9-89e5-4f85fd585cf3"
-
+#ISTO É PARA PROCURAR "ESGOTADO" no SITE DA BENFICA VIAGENS
 SELECTOR_ESGOTADO = "span.soldout.is-hidden-mobile"
 SELECTOR_PLUS = 'button.btn.btn-secondary.button-plus[data-field="room-1-number"]'
 
