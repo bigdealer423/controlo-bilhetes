@@ -1,15 +1,18 @@
 from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeoutError
 import os
+import re
 import smtplib
 import urllib.parse
 import urllib.request
+import pytesseract
+from PIL import Image
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.application import MIMEApplication
 
 URLS = [
     "https://viagens.slbenfica.pt/programas/sporting-cp-vs-sl-benfica-30-jornada-com-almoco/1005818#ps:777b9859-48aa-4ca9-89e5-4f85fd585cf3",
-   # "https://viagens.slbenfica.pt/programas/casa-pia-ac-vs-sl-benfica-28-jornada-com-almoco/1005817#ps:c43f8dbd-6376-4c13-99a3-d514153e9b78",
+    "https://viagens.slbenfica.pt/programas/casa-pia-ac-vs-sl-benfica-28-jornada-com-almoco/1005817#ps:c43f8dbd-6376-4c13-99a3-d514153e9b78",
 ]
 
 SELECTOR_COOKIES = "button.btn.btn-secondary.js_cookie_banner_accept_btn"
@@ -60,62 +63,54 @@ def enviar_telegram(mensagem):
 def aceitar_cookies(page):
     try:
         print("À procura do banner de cookies...")
-
-        botao = page.locator("button.btn.btn-secondary.js_cookie_banner_accept_btn")
+        botao = page.locator(SELECTOR_COOKIES)
 
         total = botao.count()
         if total == 0:
-            print("Botão de cookies não encontrado no DOM. A continuar...")
+            print("Botão de cookies não encontrado no DOM.")
             return True
 
-        try:
-            if botao.first.is_visible():
-                print("Botão de cookies visível. A clicar...")
-                botao.first.click(force=True, timeout=10000)
-                page.wait_for_timeout(6000)
+        if botao.first.is_visible():
+            print("Botão de cookies visível. A clicar...")
+            botao.first.click(force=True, timeout=10000)
+            page.wait_for_timeout(8000)
 
-                try:
-                    if botao.first.is_visible():
-                        print("Botão ainda visível após clique normal. A tentar JavaScript...")
-                        page.evaluate("""
-                            () => {
-                                const el = document.querySelector('button.btn.btn-secondary.js_cookie_banner_accept_btn');
-                                if (el) el.click();
-                            }
-                        """)
-                        page.wait_for_timeout(6000)
-                except Exception:
-                    pass
+            try:
+                if botao.first.is_visible():
+                    print("Botão ainda visível. A tentar clique por JavaScript...")
+                    page.evaluate("""
+                        () => {
+                            const el = document.querySelector('button.btn.btn-secondary.js_cookie_banner_accept_btn');
+                            if (el) el.click();
+                        }
+                    """)
+                    page.wait_for_timeout(8000)
+            except Exception:
+                pass
 
-                try:
-                    ainda_visivel = botao.first.is_visible()
-                except Exception:
-                    ainda_visivel = False
+            try:
+                ainda_visivel = botao.first.is_visible()
+            except Exception:
+                ainda_visivel = False
 
-                if ainda_visivel:
-                    print("Banner continua visível.")
-                    return False
+            if ainda_visivel:
+                print("Banner de cookies continua visível.")
+                return False
 
-                print("Cookies aceites com sucesso.")
-                return True
-
-            else:
-                print("Botão de cookies existe mas está oculto. Assumo cookies já tratados.")
-                return True
-
-        except Exception as e:
-            print(f"Não foi possível avaliar visibilidade do botão: {e}")
+            print("Cookies aceites com sucesso.")
             return True
+
+        print("Botão de cookies existe mas está oculto. Assumo cookies já tratados.")
+        return True
 
     except Exception as e:
         print(f"Erro ao tratar cookies: {e}")
         return True
 
 
-def contar_esgotado_visivel(page):
+def contar_esgotado_visivel_dom(page):
     total_visiveis = 0
-
-    loc = page.locator("text=Esgotado")
+    loc = page.locator("text=/esgotado/i")
     total = loc.count()
 
     print(f"Ocorrências totais de 'Esgotado' encontradas no DOM: {total}")
@@ -135,6 +130,31 @@ def contar_esgotado_visivel(page):
     return total_visiveis
 
 
+def preprocessar_imagem_para_ocr(caminho_entrada, caminho_saida):
+    img = Image.open(caminho_entrada).convert("L")
+    img = img.point(lambda x: 0 if x < 160 else 255, mode="1")
+    img.save(caminho_saida)
+
+
+def ocr_tem_esgotado(screenshot_path):
+    try:
+        imagem_processada = "/tmp/ocr_processada.png"
+        preprocessar_imagem_para_ocr(screenshot_path, imagem_processada)
+
+        img = Image.open(imagem_processada)
+        texto = pytesseract.image_to_string(img, lang="eng")
+
+        texto_normalizado = re.sub(r"\s+", " ", texto).strip().lower()
+
+        print("Texto OCR extraído:")
+        print(texto_normalizado[:1000])
+
+        return "esgotado" in texto_normalizado
+    except Exception as e:
+        print(f"Erro no OCR: {e}")
+        return None
+
+
 with sync_playwright() as p:
     browser = p.chromium.launch(
         headless=True,
@@ -143,7 +163,7 @@ with sync_playwright() as p:
 
     for url in URLS:
         page = browser.new_page(
-            viewport={"width": 1400, "height": 1200},
+            viewport={"width": 1400, "height": 1600},
             user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
         )
 
@@ -153,16 +173,15 @@ with sync_playwright() as p:
             })
 
             print(f"\nA verificar página: {url}")
-            page.goto(url, wait_until="domcontentloaded", timeout=60000)
+            page.goto(url, wait_until="domcontentloaded", timeout=90000)
 
-            page.wait_for_timeout(8000)
+            page.wait_for_timeout(15000)
             cookies_ok = aceitar_cookies(page)
-            page.wait_for_timeout(12000)
+            page.wait_for_timeout(15000)
 
             screenshot_path = "/tmp/alerta_disponibilidade.png"
 
             if not cookies_ok:
-                print("Não foi possível confirmar a aceitação dos cookies.")
                 page.screenshot(path=screenshot_path, full_page=True)
 
                 mensagem = (
@@ -177,54 +196,66 @@ with sync_playwright() as p:
                     screenshot_path,
                     assunto="ALERTA - cookies não aceites / validação incompleta"
                 )
-                page.close()
                 continue
 
-            disponibilidade_confirmada = False
+            disponibilidade_confirmada = True
 
-            for tentativa in range(3):
-                print(f"Tentativa {tentativa + 1}/3")
+            for tentativa in range(4):
+                print(f"Tentativa {tentativa + 1}/4")
 
                 if tentativa > 0:
-                    page.reload(wait_until="domcontentloaded", timeout=60000)
-                    page.wait_for_timeout(8000)
-                    cookies_ok = aceitar_cookies(page)
-                    page.wait_for_timeout(12000)
-
-                    if not cookies_ok:
-                        print("Após reload, cookies continuaram sem confirmação.")
-                        continue
+                    page.reload(wait_until="domcontentloaded", timeout=90000)
+                    page.wait_for_timeout(15000)
+                    aceitar_cookies(page)
+                    page.wait_for_timeout(15000)
 
                 try:
-                    page.wait_for_load_state("networkidle", timeout=10000)
+                    page.wait_for_load_state("networkidle", timeout=15000)
                 except PlaywrightTimeoutError:
                     print("Network idle não atingido.")
 
-                esgotados_visiveis = contar_esgotado_visivel(page)
-                print(f"Esgotados visíveis: {esgotados_visiveis}")
+                page.wait_for_timeout(10000)
 
                 debug_path = f"/tmp/debug_tentativa_{tentativa+1}.png"
                 page.screenshot(path=debug_path, full_page=True)
                 print(f"Screenshot debug guardado em: {debug_path}")
 
-                if esgotados_visiveis == 0:
-                    disponibilidade_confirmada = True
-                    page.screenshot(path=screenshot_path, full_page=True)
+                esgotados_visiveis_dom = contar_esgotado_visivel_dom(page)
+                print(f"Esgotados visíveis no DOM: {esgotados_visiveis_dom}")
+
+                tem_esgotado_ocr = ocr_tem_esgotado(debug_path)
+                print(f"OCR encontrou 'Esgotado': {tem_esgotado_ocr}")
+
+                if esgotados_visiveis_dom > 0:
+                    disponibilidade_confirmada = False
+                    print("DOM encontrou 'Esgotado' -> continua esgotado.")
+                    break
+
+                if tem_esgotado_ocr is True:
+                    disponibilidade_confirmada = False
+                    print("OCR encontrou 'Esgotado' -> continua esgotado.")
+                    break
+
+                if tem_esgotado_ocr is None:
+                    disponibilidade_confirmada = False
+                    print("OCR inconclusivo -> não enviar alerta.")
                     break
 
             if disponibilidade_confirmada:
+                page.screenshot(path=screenshot_path, full_page=True)
+
                 mensagem = (
                     f"⚡ Disponibilidade detetada!\n\n"
                     f"Página: {url}\n\n"
-                    f"Não foi encontrado nenhum texto visível 'Esgotado' após múltiplas verificações.\n"
-                    f"Segue screenshot em anexo."
+                    f"Após múltiplas verificações, nem o DOM nem o OCR encontraram "
+                    f"a palavra 'Esgotado'.\nSegue screenshot em anexo."
                 )
 
                 print("Disponibilidade confirmada -> enviar email e Telegram")
                 enviar_email_com_screenshot(mensagem, screenshot_path)
                 enviar_telegram(mensagem)
             else:
-                print("Continua esgotado.")
+                print("Continua esgotado ou validação inconclusiva.")
 
         except Exception as e:
             print(f"Erro ao verificar {url}: {e}")
