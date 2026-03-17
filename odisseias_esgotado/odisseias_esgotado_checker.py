@@ -1,21 +1,19 @@
 from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeoutError
 import os
-import re
 import smtplib
 import urllib.parse
 import urllib.request
-import pytesseract
-from PIL import Image
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.application import MIMEApplication
 
 URLS = [
     "https://viagens.slbenfica.pt/programas/sporting-cp-vs-sl-benfica-30-jornada-com-almoco/1005818#ps:777b9859-48aa-4ca9-89e5-4f85fd585cf3",
-    "https://viagens.slbenfica.pt/programas/casa-pia-ac-vs-sl-benfica-28-jornada-com-almoco/1005817#ps:c43f8dbd-6376-4c13-99a3-d514153e9b78",
+    #"https://viagens.slbenfica.pt/programas/casa-pia-ac-vs-sl-benfica-28-jornada-com-almoco/1005817#ps:c43f8dbd-6376-4c13-99a3-d514153e9b78",
 ]
 
 SELECTOR_COOKIES = "button.btn.btn-secondary.js_cookie_banner_accept_btn"
+SECTION_SELECTOR = "section.package-rooms--container"
 
 
 def enviar_email_com_screenshot(mensagem, screenshot_path, assunto="ALERTA - disponibilidade detetada"):
@@ -108,51 +106,26 @@ def aceitar_cookies(page):
         return True
 
 
-def contar_esgotado_visivel_dom(page):
-    total_visiveis = 0
-    loc = page.locator("text=/esgotado/i")
-    total = loc.count()
-
-    print(f"Ocorrências totais de 'Esgotado' encontradas no DOM: {total}")
-
-    for i in range(total):
-        item = loc.nth(i)
-        try:
-            if item.is_visible():
-                texto = (item.inner_text() or "").strip()
-                print(f"[VISÍVEL] Esgotado #{i+1}: {texto}")
-                total_visiveis += 1
-            else:
-                print(f"[OCULTO] Esgotado #{i+1}")
-        except Exception as e:
-            print(f"Erro ao avaliar ocorrência #{i+1}: {e}")
-
-    return total_visiveis
-
-
-def preprocessar_imagem_para_ocr(caminho_entrada, caminho_saida):
-    img = Image.open(caminho_entrada).convert("L")
-    img = img.point(lambda x: 0 if x < 160 else 255, mode="1")
-    img.save(caminho_saida)
-
-
-def ocr_tem_esgotado(screenshot_path):
+def obter_texto_secao_rooms(page):
     try:
-        imagem_processada = "/tmp/ocr_processada.png"
-        preprocessar_imagem_para_ocr(screenshot_path, imagem_processada)
+        secao = page.locator(SECTION_SELECTOR).first
 
-        img = Image.open(imagem_processada)
-        texto = pytesseract.image_to_string(img, lang="eng")
+        if secao.count() == 0:
+            print("Secção package-rooms--container não encontrada.")
+            return ""
 
-        texto_normalizado = re.sub(r"\s+", " ", texto).strip().lower()
+        if not secao.is_visible():
+            print("Secção package-rooms--container encontrada mas não visível.")
+            return ""
 
-        print("Texto OCR extraído:")
-        print(texto_normalizado[:1000])
+        texto = (secao.inner_text() or "").strip()
+        print("Texto da secção package-rooms--container:")
+        print(texto)
+        return texto.lower()
 
-        return "esgotado" in texto_normalizado
     except Exception as e:
-        print(f"Erro no OCR: {e}")
-        return None
+        print(f"Erro ao ler a secção rooms: {e}")
+        return ""
 
 
 with sync_playwright() as p:
@@ -182,6 +155,7 @@ with sync_playwright() as p:
             screenshot_path = "/tmp/alerta_disponibilidade.png"
 
             if not cookies_ok:
+                print("Não foi possível confirmar a aceitação dos cookies.")
                 page.screenshot(path=screenshot_path, full_page=True)
 
                 mensagem = (
@@ -216,29 +190,17 @@ with sync_playwright() as p:
 
                 page.wait_for_timeout(10000)
 
+                texto_secao = obter_texto_secao_rooms(page)
+                tem_esgotado = "esgotado" in texto_secao
+
+                print(f"tem_esgotado_na_secao={tem_esgotado}")
+
                 debug_path = f"/tmp/debug_tentativa_{tentativa+1}.png"
                 page.screenshot(path=debug_path, full_page=True)
                 print(f"Screenshot debug guardado em: {debug_path}")
 
-                esgotados_visiveis_dom = contar_esgotado_visivel_dom(page)
-                print(f"Esgotados visíveis no DOM: {esgotados_visiveis_dom}")
-
-                tem_esgotado_ocr = ocr_tem_esgotado(debug_path)
-                print(f"OCR encontrou 'Esgotado': {tem_esgotado_ocr}")
-
-                if esgotados_visiveis_dom > 0:
+                if tem_esgotado:
                     disponibilidade_confirmada = False
-                    print("DOM encontrou 'Esgotado' -> continua esgotado.")
-                    break
-
-                if tem_esgotado_ocr is True:
-                    disponibilidade_confirmada = False
-                    print("OCR encontrou 'Esgotado' -> continua esgotado.")
-                    break
-
-                if tem_esgotado_ocr is None:
-                    disponibilidade_confirmada = False
-                    print("OCR inconclusivo -> não enviar alerta.")
                     break
 
             if disponibilidade_confirmada:
@@ -247,15 +209,15 @@ with sync_playwright() as p:
                 mensagem = (
                     f"⚡ Disponibilidade detetada!\n\n"
                     f"Página: {url}\n\n"
-                    f"Após múltiplas verificações, nem o DOM nem o OCR encontraram "
-                    f"a palavra 'Esgotado'.\nSegue screenshot em anexo."
+                    f"Após múltiplas verificações, não foi encontrado o texto 'Esgotado' "
+                    f"na secção package-rooms--container.\nSegue screenshot em anexo."
                 )
 
                 print("Disponibilidade confirmada -> enviar email e Telegram")
                 enviar_email_com_screenshot(mensagem, screenshot_path)
                 enviar_telegram(mensagem)
             else:
-                print("Continua esgotado ou validação inconclusiva.")
+                print("Continua esgotado.")
 
         except Exception as e:
             print(f"Erro ao verificar {url}: {e}")
