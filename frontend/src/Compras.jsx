@@ -459,27 +459,9 @@ const adicionarCompra = () => {
               className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 transition-colors duration-300"
               value={novaCompra.gasto}
               onChange={handleChange}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-            
-                  const limpo = e.target.value.replace(/\s/g, "");
-            
-                  if (/^[0-9+\-*/.]+$/.test(limpo)) {
-                    try {
-                      const resultado = eval(limpo);
-            
-                      if (!isNaN(resultado) && isFinite(resultado)) {
-                        setNovaCompra((prev) => ({
-                          ...prev,
-                          gasto: String(resultado),
-                        }));
-                      }
-                    } catch {}
-                  }
-                }
-              }}
-            />                
+            />
+          </div>
+        
         </div>
 
         <button type="button" onClick={modoEdicao ? atualizarCompra : guardarCompra}
