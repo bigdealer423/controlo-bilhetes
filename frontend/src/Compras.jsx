@@ -268,7 +268,7 @@ const adicionarCompra = () => {
 
   const calcularExpressao = (valor) => {
     try {
-      const limpo = valor.replace(/\s/g, "");
+      const limpo = String(valor).replace(/\s/g, "");
   
       if (!/^[0-9+\-*/.]+$/.test(limpo)) return valor;
   
