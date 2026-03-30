@@ -774,11 +774,21 @@ const adicionarCompra = () => {
       {/* Gasto */}
       <input
         name="gasto"
-        type="number"
+        type="text"
         placeholder="Gasto (€)"
         className="w-full bg-gray-900 border border-gray-500 p-2 rounded text-white"
         value={novaCompra.gasto}
         onChange={handleChange}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            const resultado = calcularExpressao(e.target.value);
+            setNovaCompra((prev) => ({
+              ...prev,
+              gasto: String(resultado),
+            }));
+          }
+        }}
       />
 
       {/* Botão Guardar */}
@@ -968,21 +978,11 @@ const adicionarCompra = () => {
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     e.preventDefault();
-              
-                    const limpo = e.target.value.replace(/\s/g, "");
-              
-                    if (/^[0-9+\-*/.]+$/.test(limpo)) {
-                      try {
-                        const resultado = eval(limpo);
-              
-                        if (!isNaN(resultado) && isFinite(resultado)) {
-                          setNovaCompra({
-                            ...novaCompra,
-                            gasto: resultado,
-                          });
-                        }
-                      } catch {}
-                    }
+                    const resultado = calcularExpressao(e.target.value);
+                    setNovaCompra((prev) => ({
+                      ...prev,
+                      gasto: String(resultado),
+                    }));
                   }
                 }}
                 className="w-24 bg-gray-900 border border-gray-500 p-1 rounded text-red-400 text-right"
