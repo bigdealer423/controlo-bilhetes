@@ -266,6 +266,22 @@ const adicionarCompra = () => {
     buscarCompras();
   };
 
+  const calcularExpressao = (valor) => {
+    try {
+      const limpo = valor.replace(/\s/g, "");
+  
+      if (!/^[0-9+\-*/.]+$/.test(limpo)) return valor;
+  
+      const resultado = eval(limpo);
+  
+      if (isNaN(resultado) || !isFinite(resultado)) return valor;
+  
+      return resultado;
+    } catch {
+      return valor;
+    }
+  };
+  
   return (
      <div className="p-6 max-w-7xl mx-auto bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen transition-colors duration-300">
       <h1 className="text-2xl font-bold mb-4">Compras</h1>
@@ -926,9 +942,29 @@ const adicionarCompra = () => {
           {emEdicao ? (
             <span className="text-red-500 font-bold text-xl">
               <input
-                type="number"
+                type="text"
                 value={novaCompra.gasto}
                 onChange={(e) => setNovaCompra({ ...novaCompra, gasto: e.target.value })}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+              
+                    const limpo = e.target.value.replace(/\s/g, "");
+              
+                    if (/^[0-9+\-*/.]+$/.test(limpo)) {
+                      try {
+                        const resultado = eval(limpo);
+              
+                        if (!isNaN(resultado) && isFinite(resultado)) {
+                          setNovaCompra({
+                            ...novaCompra,
+                            gasto: resultado,
+                          });
+                        }
+                      } catch {}
+                    }
+                  }
+                }}
                 className="w-24 bg-gray-900 border border-gray-500 p-1 rounded text-red-400 text-right"
                 placeholder="Gasto (€)"
               />
