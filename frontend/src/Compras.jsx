@@ -595,11 +595,21 @@ const adicionarCompra = () => {
                     {/* Gasto */}
                     <td className="p-2">
                       <input
-                        type="number"
+                        type="text"
                         name="gasto"
                         className="border p-1 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                         value={novaCompra.gasto}
                         onChange={handleChange}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            const resultado = calcularExpressao(e.target.value);
+                            setNovaCompra((prev) => ({
+                              ...prev,
+                              gasto: String(resultado),
+                            }));
+                          }
+                        }}
                       />
                     </td>
             
