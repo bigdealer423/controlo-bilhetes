@@ -565,6 +565,7 @@ def lucro_por_mes(db: Session = Depends(get_db)):
         ganho = round(valores["ganho"], 2)
         lucro = round(valores["lucro"], 2)
         margem = round((lucro / ganho) * 100, 2) if ganho > 0 else 0.0
+        lucro_por_bilhete = round(lucro / bilhetes_vendidos, 2) if bilhetes_vendidos > 0 else 0.0
 
         resultado.append({
             "mes": nome_mes,
@@ -574,7 +575,7 @@ def lucro_por_mes(db: Session = Depends(get_db)):
             "ganho": ganho,
             "lucro": lucro,
             "margem": margem
-            "lucro_por_bilhete": round((lucro / valores["bilhetes_vendidos"]), 2) if valores["bilhetes_vendidos"] > 0 else 0.0
+            "lucro_por_bilhete": lucro_por_bilhete
         })
 
     return resultado
