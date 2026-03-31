@@ -683,9 +683,13 @@ def lucro_por_mes(db: Session = Depends(get_db)):
         margem = round((lucro / ganho) * 100, 2) if ganho > 0 else 0.0
         lucro_por_bilhete = round(lucro / bilhetes_vendidos, 2) if bilhetes_vendidos > 0 else 0.0
 
-        # Ordenar apenas os jogos dentro do mês pela margem
+        # Ordenar jogos do mês por lucro desc
         valores["eventos"].sort(
-            key=lambda e: -float(e.get("lucro", 0) or 0)
+            key=lambda e: (
+                -float(e.get("lucro", 0) or 0),
+                -float(e.get("margem", 0) or 0),
+                e.get("jogo", "")
+            )
         )
 
         resultado.append({
