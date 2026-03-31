@@ -685,8 +685,7 @@ def lucro_por_mes(db: Session = Depends(get_db)):
 
         # Ordenar apenas os jogos dentro do mês pela margem
         valores["eventos"].sort(
-            key=lambda e: e["margem"],
-            reverse=True
+            key=lambda e: -float(e.get("lucro", 0) or 0)
         )
 
         resultado.append({
