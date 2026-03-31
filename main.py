@@ -504,14 +504,22 @@ def resumo_mensal_eventos(db: Session = Depends(get_db)):
 @app.get("/lucro_por_mes")
 def lucro_por_mes(db: Session = Depends(get_db)):
     eventos = db.query(EventoCompletoModel).all()
+    vendas = db.query(ListagemVendas).all()
 
-    # Agrupar por mês/ano
     resumo_mensal = defaultdict(lambda: {
+        "nr_eventos": 0,
+        "bilhetes_vendidos": 0,
         "gasto": 0.0,
         "ganho": 0.0,
         "lucro": 0.0,
-        "percentagem_lucro": 0.0
+        "margem": 0.0
     })
+
+    # Indexar vendas por evento+data para contar bilhetes
+    vendas_por_evento = defaultdict(list)
+    for v in vendas:
+        chave = f"{v.evento}|{v.data_evento}"
+        vendas_por_evento[chave].append(v)
 
     for evento in eventos:
         if not evento.data_evento:
@@ -525,11 +533,24 @@ def lucro_por_mes(db: Session = Depends(get_db)):
         gasto = float(evento.gasto or 0)
         estado = (evento.estado or "").strip().lower()
 
-        # Mantém a mesma lógica que já tinhas
         if estado == "pago" or ganho > 0:
+            resumo_mensal[nome_mes]["nr_eventos"] += 1
             resumo_mensal[nome_mes]["gasto"] += gasto
             resumo_mensal[nome_mes]["ganho"] += ganho
             resumo_mensal[nome_mes]["lucro"] += (ganho - gasto)
+
+            chave_evento = f"{evento.evento}|{evento.data_evento}"
+            vendas_evento = vendas_por_evento.get(chave_evento, [])
+
+            for v in vendas_evento:
+                texto = (v.estadio or "").strip()
+
+                if texto.isdigit():
+                    resumo_mensal[nome_mes]["bilhetes_vendidos"] += int(texto)
+                else:
+                    match = re.search(r"\((\d+)\s*Bilhetes?\)", texto, re.IGNORECASE)
+                    if match:
+                        resumo_mensal[nome_mes]["bilhetes_vendidos"] += int(match.group(1))
 
     resultado = []
 
@@ -543,11 +564,12 @@ def lucro_por_mes(db: Session = Depends(get_db)):
         gasto = round(valores["gasto"], 2)
         ganho = round(valores["ganho"], 2)
         lucro = round(valores["lucro"], 2)
-
         margem = round((lucro / ganho) * 100, 2) if ganho > 0 else 0.0
 
         resultado.append({
             "mes": nome_mes,
+            "nr_eventos": int(valores["nr_eventos"]),
+            "bilhetes_vendidos": int(valores["bilhetes_vendidos"]),
             "gasto": gasto,
             "ganho": ganho,
             "lucro": lucro,
