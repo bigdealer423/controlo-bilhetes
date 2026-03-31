@@ -924,7 +924,7 @@ function resumoPorComprar(evento, data_evento, estadioNome) {
           gasto: Number(d.gasto || 0),
           ganho: Number(d.ganho || 0),
           lucro: Number(d.lucro || 0),
-          percentagem_lucro: Number(d.percentagem_lucro || 0),
+          margem: Number(d.margem || 0),
         }))
       );
   
@@ -2239,7 +2239,7 @@ return (
                       <th className="p-2 text-right">Gasto</th>
                       <th className="p-2 text-right">Ganho</th>
                       <th className="p-2 text-right">Lucro</th>
-                      <th className="p-2 text-right">% Lucro</th>
+                      <th className="p-2 text-right">Margem</th>
                     </tr>
                   </thead>
         
@@ -2262,10 +2262,10 @@ return (
                         </td>
                         <td
                           className={`p-2 text-right font-semibold ${
-                            item.percentagem_lucro < 0 ? "text-red-500" : "text-blue-600"
+                            item.margem < 0 ? "text-red-500" : "text-blue-600"
                           }`}
                         >
-                          {item.percentagem_lucro.toFixed(2)}%
+                          {item.margem.toFixed(2)}%
                         </td>
                       </tr>
                     ))}
