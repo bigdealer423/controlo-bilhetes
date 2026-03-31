@@ -561,6 +561,8 @@ def lucro_por_mes(db: Session = Depends(get_db)):
             list(calendar.month_name).index(x[0].split()[0])
         )
     ):
+        nr_eventos = int(valores["nr_eventos"])
+        bilhetes_vendidos = int(valores["bilhetes_vendidos"])
         gasto = round(valores["gasto"], 2)
         ganho = round(valores["ganho"], 2)
         lucro = round(valores["lucro"], 2)
@@ -569,12 +571,12 @@ def lucro_por_mes(db: Session = Depends(get_db)):
 
         resultado.append({
             "mes": nome_mes,
-            "nr_eventos": int(valores["nr_eventos"]),
-            "bilhetes_vendidos": int(valores["bilhetes_vendidos"]),
+            "nr_eventos": nr_eventos,
+            "bilhetes_vendidos": bilhetes_vendidos,
             "gasto": gasto,
             "ganho": ganho,
             "lucro": lucro,
-            "margem": margem
+            "margem": margem,
             "lucro_por_bilhete": lucro_por_bilhete
         })
 
