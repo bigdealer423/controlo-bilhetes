@@ -2238,17 +2238,20 @@ return (
                   <thead className="bg-gray-100 dark:bg-gray-700">
                     <tr>
                       <th className="p-2 text-left">Mês</th>
+                      <th className="p-2 text-right">Nr Eventos</th>
+                      <th className="p-2 text-right">Bilhetes Vendidos</th>
                       <th className="p-2 text-right">Gasto</th>
                       <th className="p-2 text-right">Ganho</th>
                       <th className="p-2 text-right">Lucro</th>
                       <th className="p-2 text-right">Margem</th>
                     </tr>
                   </thead>
-        
                   <tbody>
                     {Array.isArray(lucrosMensais) && lucrosMensais.map((item, idx) => (
                       <tr key={idx} className="border-t border-gray-200 dark:border-gray-600">
                         <td className="p-2">{traduzirMesParaPt(item.mes)}</td>
+                        <td className="p-2 text-right">{item.nr_eventos}</td>
+                        <td className="p-2 text-right">{item.bilhetes_vendidos}</td>
                         <td className="p-2 text-right">{formatarNumero(item.gasto)} €</td>
                         <td className="p-2 text-right">{formatarNumero(item.ganho)} €</td>
                         <td
@@ -2276,6 +2279,12 @@ return (
                   <tfoot className="border-t-2 border-gray-400 dark:border-gray-500 font-bold">
                     <tr>
                       <td className="p-2">Total</td>
+                      <td className="p-2 text-right">
+                        {lucrosMensais.reduce((acc, cur) => acc + Number(cur.nr_eventos || 0), 0)}
+                      </td>
+                      <td className="p-2 text-right">
+                        {lucrosMensais.reduce((acc, cur) => acc + Number(cur.bilhetes_vendidos || 0), 0)}
+                      </td>
                       <td className="p-2 text-right">
                         {formatarNumero(
                           lucrosMensais.reduce((acc, cur) => acc + Number(cur.gasto || 0), 0)
