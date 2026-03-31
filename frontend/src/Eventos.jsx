@@ -277,6 +277,14 @@ export default function Eventos() {
   const ready = vendas.length > 0 && compras.length > 0;
   const [vendasNaoAssociadasSet, setVendasNaoAssociadasSet] = useState(new Set());
   const [comprasNaoAssociadasSet, setComprasNaoAssociadasSet] = useState(new Set());
+  const [mesesExpandidos, setMesesExpandidos] = useState({});
+
+  const toggleMesExpandido = (mes) => {
+    setMesesExpandidos((prev) => ({
+      ...prev,
+      [mes]: !prev[mes],
+    }));
+  };
   const reqIdRef = useRef(0);
   const abortRef = useRef(null);
   const isCompact = typeof window !== "undefined"
@@ -2249,42 +2257,89 @@ return (
                     </tr>
                   </thead>
                   <tbody>
-                    {Array.isArray(lucrosMensais) && lucrosMensais.map((item, idx) => (
-                      <tr key={idx} className="border-t border-gray-200 dark:border-gray-600">
-                        <td className="p-2">{traduzirMesParaPt(item.mes)}</td>
-                        <td className="p-2 text-right">{item.nr_eventos}</td>
-                        <td className="p-2 text-right">{item.bilhetes_vendidos}</td>
-                        <td className="p-2 text-right">{formatarNumero(item.gasto)} €</td>
-                        <td className="p-2 text-right">{formatarNumero(item.ganho)} €</td>
+                    {Array.isArray(lucrosMensais) &&
+                      lucrosMensais.map((item, idx) => (
+                        <Fragment key={idx}>
+                          <tr className="border-t border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800">
+                            <td className="p-2">
+                              <button
+                                onClick={() => toggleMesExpandido(item.mes)}
+                                className="mr-2 font-bold text-blue-600 dark:text-blue-400"
+                                title={mesesExpandidos[item.mes] ? "Fechar" : "Expandir"}
+                              >
+                                {mesesExpandidos[item.mes] ? "−" : "+"}
+                              </button>
+                              {traduzirMesParaPt(item.mes)}
+                            </td>
                     
-                        {/* Lucro */}
-                        <td
-                          className={`p-2 text-right font-semibold ${
-                            item.lucro < 0
-                              ? "text-red-500"
-                              : isMesPassado(item.mes)
-                              ? "text-green-600"
-                              : ""
-                          }`}
-                        >
-                          {formatarNumero(item.lucro)} €
-                        </td>
+                            <td className="p-2 text-right">{item.nr_eventos}</td>
+                            <td className="p-2 text-right">{item.bilhetes_vendidos}</td>
+                            <td className="p-2 text-right">{formatarNumero(item.gasto)} €</td>
+                            <td className="p-2 text-right">{formatarNumero(item.ganho)} €</td>
                     
-                        {/* Margem */}
-                        <td
-                          className={`p-2 text-right font-semibold ${
-                            item.margem < 0 ? "text-red-500" : "text-blue-600"
-                          }`}
-                        >
-                          {item.margem.toFixed(2)}%
-                        </td>
-
-                        {/* 🔹 NOVA COLUNA AQUI */}
-                        <td className="p-2 text-right text-purple-600 font-semibold">
-                          {formatarNumero(item.lucro_por_bilhete)} €
-                        </td>
-                      </tr>
-                    ))}
+                            <td
+                              className={`p-2 text-right font-semibold ${
+                                item.lucro < 0
+                                  ? "text-red-500"
+                                  : isMesPassado(item.mes)
+                                  ? "text-green-600"
+                                  : ""
+                              }`}
+                            >
+                              {formatarNumero(item.lucro)} €
+                            </td>
+                    
+                            <td
+                              className={`p-2 text-right font-semibold ${
+                                item.margem < 0 ? "text-red-500" : "text-blue-600"
+                              }`}
+                            >
+                              {item.margem.toFixed(2)}%
+                            </td>
+                    
+                            <td className="p-2 text-right text-purple-600 font-semibold">
+                              {formatarNumero(item.lucro_por_bilhete)} €
+                            </td>
+                          </tr>
+                    
+                          {mesesExpandidos[item.mes] &&
+                            Array.isArray(item.eventos) &&
+                            item.eventos.map((ev, evIdx) => (
+                              <tr
+                                key={`${idx}-${evIdx}`}
+                                className="border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-sm"
+                              >
+                                <td className="p-2 pl-8 text-left">
+                                  {ev.jogo}
+                                </td>
+                                <td className="p-2 text-right">1</td>
+                                <td className="p-2 text-right">{ev.bilhetes_vendidos}</td>
+                                <td className="p-2 text-right">{formatarNumero(ev.gasto)} €</td>
+                                <td className="p-2 text-right">{formatarNumero(ev.ganho)} €</td>
+                    
+                                <td
+                                  className={`p-2 text-right font-semibold ${
+                                    ev.lucro < 0 ? "text-red-500" : "text-green-600"
+                                  }`}
+                                >
+                                  {formatarNumero(ev.lucro)} €
+                                </td>
+                    
+                                <td
+                                  className={`p-2 text-right font-semibold ${
+                                    ev.margem < 0 ? "text-red-500" : "text-blue-600"
+                                  }`}
+                                >
+                                  {Number(ev.margem || 0).toFixed(2)}%
+                                </td>
+                    
+                                <td className="p-2 text-right text-purple-600 font-semibold">
+                                  {formatarNumero(ev.lucro_por_bilhete)} €
+                                </td>
+                              </tr>
+                            ))}
+                        </Fragment>
+                      ))}
                   </tbody>
         
                   <tfoot className="border-t-2 border-gray-400 dark:border-gray-500 font-bold">
