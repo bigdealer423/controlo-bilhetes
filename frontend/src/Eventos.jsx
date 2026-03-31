@@ -2291,16 +2291,16 @@ return (
                       </td>
                       <td className="p-2 text-right">
                         {(() => {
-                          const gastoTotal = lucrosMensais.reduce(
-                            (acc, cur) => acc + Number(cur.gasto || 0),
+                          const ganhoTotal = lucrosMensais.reduce(
+                            (acc, cur) => acc + Number(cur.ganho || 0),
                             0
                           );
                           const lucroTotal = lucrosMensais.reduce(
                             (acc, cur) => acc + Number(cur.lucro || 0),
                             0
                           );
-                          const percentagemTotal = gastoTotal > 0 ? (lucroTotal / gastoTotal) * 100 : 0;
-                          return `${percentagemTotal.toFixed(2)}%`;
+                          const margemTotal = ganhoTotal > 0 ? (lucroTotal / ganhoTotal) * 100 : 0;
+                          return `${margemTotal.toFixed(2)}%`;
                         })()}
                       </td>
                     </tr>
