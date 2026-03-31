@@ -917,13 +917,23 @@ function resumoPorComprar(evento, data_evento, estadioNome) {
       const res = await fetch("https://controlo-bilhetes.onrender.com/lucro_por_mes");
       const data = await res.json();
       console.log("📊 Dados recebidos:", data);
-      setLucrosMensais(data.map(d => ({ ...d, lucro: Number(d.lucro) })));
-      setMostrarResumoDetalhado(true); // 👈 abre o modal
+  
+      setLucrosMensais(
+        data.map(d => ({
+          ...d,
+          gasto: Number(d.gasto || 0),
+          ganho: Number(d.ganho || 0),
+          lucro: Number(d.lucro || 0),
+          percentagem_lucro: Number(d.percentagem_lucro || 0),
+        }))
+      );
+  
+      setMostrarResumoDetalhado(true);
     } catch (err) {
       console.error("Erro ao buscar lucros mensais:", err);
     }
   };
-  
+    
   // ✅ Função auxiliar para saber se o mês já acabou
   function isMesPassado(mesStr) {
     try {
@@ -2214,44 +2224,99 @@ return (
       </div>
 
          {/* Modal de lucros por mês */}
-      {mostrarResumoDetalhado && (
-        <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white dark:bg-gray-800 text-black dark:text-white p-6 rounded shadow-lg">
-            <h2 className="text-lg font-bold mb-4 text-gray-900 dark:text-white">Lucro por Mês</h2>
-            <ul className="mb-4 space-y-1 text-black dark:text-white">
-              {Array.isArray(lucrosMensais) && lucrosMensais.map((item, idx) => (
-                <li key={idx} className="flex justify-between gap-8">
-                  <span>{traduzirMesParaPt(item.mes)}</span>
-                  <span className={
-                    isMesPassado(item.mes) && item.lucro >= 0
-                      ? "text-green-600 font-semibold"
-                      : item.lucro < 0
-                      ? "text-red-500"
-                      : ""
-                  }>
-                    {formatarNumero(Number(item.lucro))} €
-                  </span>
-                </li>
-
-              ))}
-            </ul>
-
-            {Array.isArray(lucrosMensais) && (
-              <div className="text-right font-bold text-lg border-t pt-2 text-black dark:text-white">
-                Total: {formatarNumero(lucrosMensais.reduce((acc, cur) => acc + Number(cur.lucro || 0), 0))} €
+        {mostrarResumoDetalhado && (
+          <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
+            <div className="bg-white dark:bg-gray-800 text-black dark:text-white p-6 rounded shadow-lg w-full max-w-5xl">
+              <h2 className="text-lg font-bold mb-4 text-gray-900 dark:text-white">
+                Lucro por Mês
+              </h2>
+        
+              <div className="mb-4 overflow-x-auto">
+                <table className="min-w-full text-sm border border-gray-300 dark:border-gray-600">
+                  <thead className="bg-gray-100 dark:bg-gray-700">
+                    <tr>
+                      <th className="p-2 text-left">Mês</th>
+                      <th className="p-2 text-right">Gasto</th>
+                      <th className="p-2 text-right">Ganho</th>
+                      <th className="p-2 text-right">Lucro</th>
+                      <th className="p-2 text-right">% Lucro</th>
+                    </tr>
+                  </thead>
+        
+                  <tbody>
+                    {Array.isArray(lucrosMensais) && lucrosMensais.map((item, idx) => (
+                      <tr key={idx} className="border-t border-gray-200 dark:border-gray-600">
+                        <td className="p-2">{traduzirMesParaPt(item.mes)}</td>
+                        <td className="p-2 text-right">{formatarNumero(item.gasto)} €</td>
+                        <td className="p-2 text-right">{formatarNumero(item.ganho)} €</td>
+                        <td
+                          className={`p-2 text-right font-semibold ${
+                            item.lucro < 0
+                              ? "text-red-500"
+                              : isMesPassado(item.mes)
+                              ? "text-green-600"
+                              : ""
+                          }`}
+                        >
+                          {formatarNumero(item.lucro)} €
+                        </td>
+                        <td
+                          className={`p-2 text-right font-semibold ${
+                            item.percentagem_lucro < 0 ? "text-red-500" : "text-blue-600"
+                          }`}
+                        >
+                          {item.percentagem_lucro.toFixed(2)}%
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+        
+                  <tfoot className="border-t-2 border-gray-400 dark:border-gray-500 font-bold">
+                    <tr>
+                      <td className="p-2">Total</td>
+                      <td className="p-2 text-right">
+                        {formatarNumero(
+                          lucrosMensais.reduce((acc, cur) => acc + Number(cur.gasto || 0), 0)
+                        )} €
+                      </td>
+                      <td className="p-2 text-right">
+                        {formatarNumero(
+                          lucrosMensais.reduce((acc, cur) => acc + Number(cur.ganho || 0), 0)
+                        )} €
+                      </td>
+                      <td className="p-2 text-right">
+                        {formatarNumero(
+                          lucrosMensais.reduce((acc, cur) => acc + Number(cur.lucro || 0), 0)
+                        )} €
+                      </td>
+                      <td className="p-2 text-right">
+                        {(() => {
+                          const gastoTotal = lucrosMensais.reduce(
+                            (acc, cur) => acc + Number(cur.gasto || 0),
+                            0
+                          );
+                          const lucroTotal = lucrosMensais.reduce(
+                            (acc, cur) => acc + Number(cur.lucro || 0),
+                            0
+                          );
+                          const percentagemTotal = gastoTotal > 0 ? (lucroTotal / gastoTotal) * 100 : 0;
+                          return `${percentagemTotal.toFixed(2)}%`;
+                        })()}
+                      </td>
+                    </tr>
+                  </tfoot>
+                </table>
               </div>
-
-            )}
-
-            <button
-              onClick={() => setMostrarResumoDetalhado(false)}
-              className="mt-4 bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-white px-4 py-2 rounded hover:bg-gray-400 dark:hover:bg-gray-600"
-            >
-              Fechar
-            </button>
+        
+              <button
+                onClick={() => setMostrarResumoDetalhado(false)}
+                className="mt-4 bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-white px-4 py-2 rounded hover:bg-gray-400 dark:hover:bg-gray-600"
+              >
+                Fechar
+              </button>
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
       {/* Modal de Nota do Evento */}
       {mostrarNotaEventoId && (
