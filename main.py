@@ -556,14 +556,12 @@ def lucro_por_mes(db: Session = Depends(get_db)):
         margem_evento = round((lucro_evento / ganho) * 100, 2) if ganho > 0 else 0.0
         lucro_por_bilhete_evento = round(lucro_evento / bilhetes_evento, 2) if bilhetes_evento > 0 else 0.0
 
-        # Totais do mês
         resumo_mensal[nome_mes]["nr_eventos"] += 1
         resumo_mensal[nome_mes]["bilhetes_vendidos"] += bilhetes_evento
         resumo_mensal[nome_mes]["gasto"] += gasto
         resumo_mensal[nome_mes]["ganho"] += ganho
         resumo_mensal[nome_mes]["lucro"] += lucro_evento
 
-        # Guardar detalhe do jogo
         resumo_mensal[nome_mes]["eventos"].append({
             "jogo": evento.evento,
             "data_evento": evento.data_evento.isoformat() if evento.data_evento else None,
@@ -592,99 +590,9 @@ def lucro_por_mes(db: Session = Depends(get_db)):
         margem = round((lucro / ganho) * 100, 2) if ganho > 0 else 0.0
         lucro_por_bilhete = round(lucro / bilhetes_vendidos, 2) if bilhetes_vendidos > 0 else 0.0
 
-        @app.get("/lucro_por_mes")
-def lucro_por_mes(db: Session = Depends(get_db)):
-    eventos = db.query(EventoCompletoModel).all()
-    vendas = db.query(ListagemVendas).all()
-
-    resumo_mensal = defaultdict(lambda: {
-        "nr_eventos": 0,
-        "bilhetes_vendidos": 0,
-        "gasto": 0.0,
-        "ganho": 0.0,
-        "lucro": 0.0,
-        "margem": 0.0,
-        "lucro_por_bilhete": 0.0,
-        "eventos": []
-    })
-
-    # Indexar vendas por evento+data para contar bilhetes
-    vendas_por_evento = defaultdict(list)
-    for v in vendas:
-        chave = f"{v.evento}|{v.data_evento}"
-        vendas_por_evento[chave].append(v)
-
-    for evento in eventos:
-        if not evento.data_evento:
-            continue
-
-        mes = evento.data_evento.month
-        ano = evento.data_evento.year
-        nome_mes = f"{calendar.month_name[mes]} {ano}"
-
-        ganho = float(evento.ganho or 0)
-        gasto = float(evento.gasto or 0)
-        estado = (evento.estado or "").strip().lower()
-
-        if not (estado == "pago" or ganho > 0):
-            continue
-
-        chave_evento = f"{evento.evento}|{evento.data_evento}"
-        vendas_evento = vendas_por_evento.get(chave_evento, [])
-
-        bilhetes_evento = 0
-        for v in vendas_evento:
-            texto = (v.estadio or "").strip()
-
-            if texto.isdigit():
-                bilhetes_evento += int(texto)
-            else:
-                match = re.search(r"\((\d+)\s*Bilhetes?\)", texto, re.IGNORECASE)
-                if match:
-                    bilhetes_evento += int(match.group(1))
-
-        lucro_evento = round(ganho - gasto, 2)
-        margem_evento = round((lucro_evento / ganho) * 100, 2) if ganho > 0 else 0.0
-        lucro_por_bilhete_evento = round(lucro_evento / bilhetes_evento, 2) if bilhetes_evento > 0 else 0.0
-
-        # Totais do mês
-        resumo_mensal[nome_mes]["nr_eventos"] += 1
-        resumo_mensal[nome_mes]["bilhetes_vendidos"] += bilhetes_evento
-        resumo_mensal[nome_mes]["gasto"] += gasto
-        resumo_mensal[nome_mes]["ganho"] += ganho
-        resumo_mensal[nome_mes]["lucro"] += lucro_evento
-
-        # Guardar detalhe do jogo
-        resumo_mensal[nome_mes]["eventos"].append({
-            "jogo": evento.evento,
-            "data_evento": evento.data_evento.isoformat() if evento.data_evento else None,
-            "bilhetes_vendidos": bilhetes_evento,
-            "gasto": round(gasto, 2),
-            "ganho": round(ganho, 2),
-            "lucro": lucro_evento,
-            "margem": margem_evento,
-            "lucro_por_bilhete": lucro_por_bilhete_evento
-        })
-
-    resultado = []
-
-    for nome_mes, valores in sorted(
-        resumo_mensal.items(),
-        key=lambda x: (
-            int(x[0].split()[-1]),
-            list(calendar.month_name).index(x[0].split()[0])
-        )
-    ):
-        nr_eventos = int(valores["nr_eventos"])
-        bilhetes_vendidos = int(valores["bilhetes_vendidos"])
-        gasto = round(valores["gasto"], 2)
-        ganho = round(valores["ganho"], 2)
-        lucro = round(valores["lucro"], 2)
-        margem = round((lucro / ganho) * 100, 2) if ganho > 0 else 0.0
-        lucro_por_bilhete = round(lucro / bilhetes_vendidos, 2) if bilhetes_vendidos > 0 else 0.0
-
-        # Ordenar jogos do mês por lucro desc
-        valores["eventos"].sort(
+        # ordenar jogos dentro do mês por lucro descrescente
+        eventos_ordenados = sorted(
+            valores["eventos"],
             key=lambda e: (
                 -float(e.get("lucro", 0) or 0),
                 -float(e.get("margem", 0) or 0),
@@ -701,22 +609,7 @@ def lucro_por_mes(db: Session = Depends(get_db)):
             "lucro": lucro,
             "margem": margem,
             "lucro_por_bilhete": lucro_por_bilhete,
-            "eventos": valores["eventos"]
-        })
-
-    return resultado
-
-
-        resultado.append({
-            "mes": nome_mes,
-            "nr_eventos": nr_eventos,
-            "bilhetes_vendidos": bilhetes_vendidos,
-            "gasto": gasto,
-            "ganho": ganho,
-            "lucro": lucro,
-            "margem": margem,
-            "lucro_por_bilhete": lucro_por_bilhete,
-            "eventos": valores["eventos"]
+            "eventos": eventos_ordenados
         })
 
     return resultado
