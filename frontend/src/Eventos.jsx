@@ -921,6 +921,8 @@ function resumoPorComprar(evento, data_evento, estadioNome) {
       setLucrosMensais(
         data.map(d => ({
           ...d,
+          nr_eventos: Number(d.nr_eventos || 0),
+          bilhetes_vendidos: Number(d.bilhetes_vendidos || 0),
           gasto: Number(d.gasto || 0),
           ganho: Number(d.ganho || 0),
           lucro: Number(d.lucro || 0),
