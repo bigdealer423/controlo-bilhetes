@@ -2359,9 +2359,7 @@ return (
                       </td>
                     
                       <td className="p-2 text-right">
-                        {(() => {
-                          const n = lucrosMensais.length || 1;
-                    
+                        {(() => {                                          
                           const ganhoTotal = lucrosMensais.reduce(
                             (acc, cur) => acc + Number(cur.ganho || 0),
                             0
