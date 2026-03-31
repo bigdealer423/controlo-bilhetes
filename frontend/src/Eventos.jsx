@@ -2310,7 +2310,9 @@ return (
                                 className="border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-sm"
                               >
                                 <td className="p-2 pl-8 text-left">
-                                  {ev.jogo}
+                                  <div className="flex items-center gap-1 flex-wrap">
+                                    {renderEventoComSimbolos(ev.jogo)}
+                                  </div>
                                 </td>
                                 <td className="p-2 text-right">1</td>
                                 <td className="p-2 text-right">{ev.bilhetes_vendidos}</td>
