@@ -969,6 +969,30 @@ function resumoPorComprar(evento, data_evento, estadioNome) {
     }
   }
 
+  function isMesAtual(mesStr) {
+  try {
+    const [mesNomeRaw, anoStr] = mesStr.trim().toLowerCase().split(" ");
+
+    const meses = [
+      "january", "february", "march", "april", "may", "june",
+      "july", "august", "september", "october", "november", "december"
+    ];
+
+    const mesIndex = meses.indexOf(mesNomeRaw);
+    const ano = parseInt(anoStr, 10);
+
+    if (mesIndex === -1 || isNaN(ano)) return false;
+
+    const hoje = new Date();
+
+    return (
+      hoje.getFullYear() === ano &&
+      hoje.getMonth() === mesIndex
+    );
+  } catch {
+    return false;
+  }
+}
   function traduzirMesParaPt(mesStr) {
     const [mesNomeRaw, anoStr] = mesStr.trim().toLowerCase().split(" ");
   
@@ -2260,7 +2284,13 @@ return (
                     {Array.isArray(lucrosMensais) &&
                       lucrosMensais.map((item, idx) => (
                         <Fragment key={idx}>
-                          <tr className="border-t border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800">
+                          <tr
+                            className={`border-t border-gray-200 dark:border-gray-600 ${
+                              isMesAtual(item.mes)
+                                ? "bg-blue-100 dark:bg-blue-900 font-semibold"
+                                : "bg-white dark:bg-gray-800"
+                            }`}
+                          >
                             <td className="p-2">
                               <button
                                 onClick={() => toggleMesExpandido(item.mes)}
