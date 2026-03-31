@@ -505,26 +505,54 @@ def resumo_mensal_eventos(db: Session = Depends(get_db)):
 def lucro_por_mes(db: Session = Depends(get_db)):
     eventos = db.query(EventoCompletoModel).all()
 
-    # Agrupar lucros por mês/ano
-    lucros = defaultdict(float)
+    # Agrupar por mês/ano
+    resumo_mensal = defaultdict(lambda: {
+        "gasto": 0.0,
+        "ganho": 0.0,
+        "lucro": 0.0,
+        "percentagem_lucro": 0.0
+    })
 
     for evento in eventos:
-        if evento.data_evento and evento.ganho is not None and evento.gasto is not None:
-            mes = evento.data_evento.month
-            ano = evento.data_evento.year
-            nome_mes = f"{calendar.month_name[mes]} {ano}"
-            ganho = evento.ganho or 0
-            gasto = evento.gasto or 0
-            estado = (evento.estado or "").strip().lower()
+        if not evento.data_evento:
+            continue
 
-            if estado == "pago" or ganho > 0:
-                lucros[nome_mes] += ganho - gasto
+        mes = evento.data_evento.month
+        ano = evento.data_evento.year
+        nome_mes = f"{calendar.month_name[mes]} {ano}"
 
-    # Converter em lista ordenada por ano e mês
-    resultado = [
-        {"mes": nome_mes, "lucro": round(valor, 2)}
-        for nome_mes, valor in sorted(lucros.items(), key=lambda x: (int(x[0].split()[-1]), list(calendar.month_name).index(x[0].split()[0])))
-    ]
+        ganho = float(evento.ganho or 0)
+        gasto = float(evento.gasto or 0)
+        estado = (evento.estado or "").strip().lower()
+
+        # Mantém a mesma lógica que já tinhas
+        if estado == "pago" or ganho > 0:
+            resumo_mensal[nome_mes]["gasto"] += gasto
+            resumo_mensal[nome_mes]["ganho"] += ganho
+            resumo_mensal[nome_mes]["lucro"] += (ganho - gasto)
+
+    resultado = []
+
+    for nome_mes, valores in sorted(
+        resumo_mensal.items(),
+        key=lambda x: (
+            int(x[0].split()[-1]),
+            list(calendar.month_name).index(x[0].split()[0])
+        )
+    ):
+        gasto = round(valores["gasto"], 2)
+        ganho = round(valores["ganho"], 2)
+        lucro = round(valores["lucro"], 2)
+
+        percentagem_lucro = round((lucro / gasto) * 100, 2) if gasto > 0 else 0.0
+
+        resultado.append({
+            "mes": nome_mes,
+            "gasto": gasto,
+            "ganho": ganho,
+            "lucro": lucro,
+            "percentagem_lucro": percentagem_lucro
+        })
 
     return resultado
 
