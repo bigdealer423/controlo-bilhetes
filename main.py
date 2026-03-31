@@ -544,14 +544,14 @@ def lucro_por_mes(db: Session = Depends(get_db)):
         ganho = round(valores["ganho"], 2)
         lucro = round(valores["lucro"], 2)
 
-        percentagem_lucro = round((lucro / gasto) * 100, 2) if gasto > 0 else 0.0
+        margem = round((lucro / ganho) * 100, 2) if ganho > 0 else 0.0
 
         resultado.append({
             "mes": nome_mes,
             "gasto": gasto,
             "ganho": ganho,
             "lucro": lucro,
-            "percentagem_lucro": percentagem_lucro
+            "margem": margem
         })
 
     return resultado
