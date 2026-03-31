@@ -574,6 +574,7 @@ def lucro_por_mes(db: Session = Depends(get_db)):
             "ganho": ganho,
             "lucro": lucro,
             "margem": margem
+            "lucro_por_bilhete": round((lucro / valores["bilhetes_vendidos"]), 2) if valores["bilhetes_vendidos"] > 0 else 0.0
         })
 
     return resultado
