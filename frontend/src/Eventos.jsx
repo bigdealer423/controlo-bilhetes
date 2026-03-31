@@ -927,6 +927,7 @@ function resumoPorComprar(evento, data_evento, estadioNome) {
           ganho: Number(d.ganho || 0),
           lucro: Number(d.lucro || 0),
           margem: Number(d.margem || 0),
+          lucro_por_bilhete: Number(d.lucro_por_bilhete || 0),
         }))
       );
   
@@ -2244,6 +2245,7 @@ return (
                       <th className="p-2 text-right">Ganho</th>
                       <th className="p-2 text-right">Lucro</th>
                       <th className="p-2 text-right">Margem</th>
+                      <th className="p-2 text-right">€/Bilhete</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -2254,6 +2256,8 @@ return (
                         <td className="p-2 text-right">{item.bilhetes_vendidos}</td>
                         <td className="p-2 text-right">{formatarNumero(item.gasto)} €</td>
                         <td className="p-2 text-right">{formatarNumero(item.ganho)} €</td>
+                    
+                        {/* Lucro */}
                         <td
                           className={`p-2 text-right font-semibold ${
                             item.lucro < 0
@@ -2265,12 +2269,19 @@ return (
                         >
                           {formatarNumero(item.lucro)} €
                         </td>
+                    
+                        {/* Margem */}
                         <td
                           className={`p-2 text-right font-semibold ${
                             item.margem < 0 ? "text-red-500" : "text-blue-600"
                           }`}
                         >
                           {item.margem.toFixed(2)}%
+                        </td>
+
+                        {/* 🔹 NOVA COLUNA AQUI */}
+                        <td className="p-2 text-right text-purple-600 font-semibold">
+                          {formatarNumero(item.lucro_por_bilhete)} €
                         </td>
                       </tr>
                     ))}
@@ -2314,10 +2325,25 @@ return (
                           return `${margemTotal.toFixed(2)}%`;
                         })()}
                       </td>
+                      <td className="p-2 text-right">
+                        {(() => {
+                          const lucroTotal = lucrosMensais.reduce(
+                            (acc, cur) => acc + Number(cur.lucro || 0),
+                            0
+                          );
+                          const bilhetesTotal = lucrosMensais.reduce(
+                            (acc, cur) => acc + Number(cur.bilhetes_vendidos || 0),
+                            0
+                          );
+                          const media = bilhetesTotal > 0 ? lucroTotal / bilhetesTotal : 0;
+                          return `${formatarNumero(media)} €`;
+                        })()}
+                      </td>
                     </tr>
+                  
                     <tr className="border-t border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700">
                       <td className="p-2">Média mensal</td>
-                    
+                  
                       <td className="p-2 text-right">
                         {(() => {
                           const n = lucrosMensais.length || 1;
@@ -2325,7 +2351,7 @@ return (
                           return (total / n).toFixed(1);
                         })()}
                       </td>
-                    
+                  
                       <td className="p-2 text-right">
                         {(() => {
                           const n = lucrosMensais.length || 1;
@@ -2333,7 +2359,7 @@ return (
                           return (total / n).toFixed(1);
                         })()}
                       </td>
-                    
+                  
                       <td className="p-2 text-right">
                         {(() => {
                           const n = lucrosMensais.length || 1;
@@ -2341,7 +2367,7 @@ return (
                           return `${formatarNumero(total / n)} €`;
                         })()}
                       </td>
-                    
+                  
                       <td className="p-2 text-right">
                         {(() => {
                           const n = lucrosMensais.length || 1;
@@ -2349,7 +2375,7 @@ return (
                           return `${formatarNumero(total / n)} €`;
                         })()}
                       </td>
-                    
+                  
                       <td className="p-2 text-right">
                         {(() => {
                           const n = lucrosMensais.length || 1;
@@ -2357,25 +2383,37 @@ return (
                           return `${formatarNumero(total / n)} €`;
                         })()}
                       </td>
-                    
+                  
                       <td className="p-2 text-right">
-                        {(() => {                                          
+                        {(() => {
                           const ganhoTotal = lucrosMensais.reduce(
                             (acc, cur) => acc + Number(cur.ganho || 0),
                             0
                           );
-                    
                           const lucroTotal = lucrosMensais.reduce(
                             (acc, cur) => acc + Number(cur.lucro || 0),
                             0
                           );
-                    
                           const margem = ganhoTotal > 0 ? (lucroTotal / ganhoTotal) * 100 : 0;
-                    
                           return `${margem.toFixed(2)}%`;
                         })()}
                       </td>
-                    </tr>  
+                  
+                      <td className="p-2 text-right">
+                        {(() => {
+                          const lucroTotal = lucrosMensais.reduce(
+                            (acc, cur) => acc + Number(cur.lucro || 0),
+                            0
+                          );
+                          const bilhetesTotal = lucrosMensais.reduce(
+                            (acc, cur) => acc + Number(cur.bilhetes_vendidos || 0),
+                            0
+                          );
+                          const media = bilhetesTotal > 0 ? lucroTotal / bilhetesTotal : 0;
+                          return `${formatarNumero(media)} €`;
+                        })()}
+                      </td>
+                    </tr>
                   </tfoot>
                 </table>
               </div>
