@@ -2260,7 +2260,10 @@ return (
 
          {/* Modal de lucros por mês */}
         {mostrarResumoDetalhado && (
-          <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
+          <div
+            className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center"
+            onClick={() => setMostrarResumoDetalhado(false)}
+          >
             <div className="bg-white dark:bg-gray-800 text-black dark:text-white p-6 rounded shadow-lg w-full max-w-5xl">
               <h2 className="text-lg font-bold mb-4 text-gray-900 dark:text-white">
                 Lucro por Mês
