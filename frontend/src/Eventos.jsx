@@ -2334,7 +2334,21 @@ return (
                     
                           {mesesExpandidos[item.mes] &&
                             Array.isArray(item.eventos) &&
-                            item.eventos.map((ev, evIdx) => (
+                            [...item.eventos]
+                              .sort((a, b) => {
+                                const lucroA = Number(a.lucro || 0);
+                                const lucroB = Number(b.lucro || 0);
+                          
+                                if (lucroB !== lucroA) return lucroB - lucroA;
+                          
+                                const margemA = Number(a.margem || 0);
+                                const margemB = Number(b.margem || 0);
+                          
+                                if (margemB !== margemA) return margemB - margemA;
+                          
+                                return String(a.jogo || "").localeCompare(String(b.jogo || ""), "pt");
+                              })
+                              .map((ev, evIdx) => (
                               <tr
                                 key={`${idx}-${evIdx}`}
                                 className="border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-sm"
