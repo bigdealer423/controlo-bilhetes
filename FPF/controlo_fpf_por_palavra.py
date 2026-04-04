@@ -21,7 +21,7 @@ URLS = [
     },
     {
         "url": "https://2ticket.pt/casapiaac/",
-        "keywords": ["Benfica", "vip"]
+        "keywords": ["SL Benfica", "Estádio"]
     }
 ]
 
