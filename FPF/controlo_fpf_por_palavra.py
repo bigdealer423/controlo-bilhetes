@@ -17,7 +17,7 @@ from email.mime.application import MIMEApplication
 URLS = [
     {
         "url": "https://bilheteira.fpf.pt/",
-        "keywords": ["informação", "benfica", "disponível"]
+        "keywords": ["exclusivos", "benfica", "pacote"]
     },
     {
         "url": "https://exemplo.com/pagina2",
