@@ -20,8 +20,8 @@ URLS = [
         "keywords": ["Nigéria", "Chile", "pacote"]
     },
     {
-        "url": "https://2ticket.pt/casapiaac/",
-        "keywords": ["SL Benfica", "Estádio"]
+        "url": "https://estorilpraia.pt/bilheteira/",
+        "keywords": ["FC Porto", ""]
     }
 ]
 
