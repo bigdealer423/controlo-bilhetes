@@ -168,7 +168,7 @@ useEffect(() => {
     })
     .filter(ev => ev.faltaComprar > 0 || ev.faltaVender > 0) // 🔥 só os que interessam
     .sort((a, b) => new Date(a.data_evento) - new Date(b.data_evento));
-
+  console.log("RESULTADO FINAL:", resultado);
   setResumoFaltas(resultado);
 
 }, [registosCompras, registosVendas, dataSelecionada]);
