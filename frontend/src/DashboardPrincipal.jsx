@@ -9,6 +9,7 @@ import BarraClubes from "./BarraClubes";
 
 
 export default function DashboardPrincipal() {
+  console.log("DASHBOARD RENDER");
   const [resumoFaltas, setResumoFaltas] = useState([]);
   const [registosCompras, setRegistosCompras] = useState([]);
   const [registosVendas, setRegistosVendas] = useState([]);
