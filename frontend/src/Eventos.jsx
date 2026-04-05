@@ -764,6 +764,42 @@ const getVendasOrdenadas = (evento, data_evento) => {
   });
 };
 
+  // Lista ordenada de compras do evento (por setor exato; depois bancada, setor, fila e id)
+const getComprasOrdenadas = (evento, data_evento) => {
+  const arr = compras.filter(c => c.evento === evento && c.data_evento === data_evento);
+
+  return arr.sort((a, b) => {
+    const ka = compraChave(a);
+    const kb = compraChave(b);
+
+    const p = ka.localeCompare(kb, "pt", {
+      sensitivity: "base",
+      numeric: true,
+    });
+    if (p !== 0) return p;
+
+    const bancadaCmp = limpar(a.bancada).localeCompare(limpar(b.bancada), "pt", {
+      sensitivity: "base",
+      numeric: true,
+    });
+    if (bancadaCmp !== 0) return bancadaCmp;
+
+    const setorCmp = limpar(a.setor).localeCompare(limpar(b.setor), "pt", {
+      sensitivity: "base",
+      numeric: true,
+    });
+    if (setorCmp !== 0) return setorCmp;
+
+    const filaCmp = limpar(a.fila).localeCompare(limpar(b.fila), "pt", {
+      sensitivity: "base",
+      numeric: true,
+    });
+    if (filaCmp !== 0) return filaCmp;
+
+    return (a.id || 0) - (b.id || 0);
+  });
+};
+
 // Total de bilhetes desse evento (lê de v.estadio "(X Bilhetes)" ou número isolado)
 const getTotalBilhetesVendas = (evento, data_evento) => {
   const arr = idxVendasPorEvento.get(`${evento}|${data_evento}`) || [];
@@ -2213,7 +2249,7 @@ return (
 
                       
                       {/* COMPRAS */}
-                      {compras.filter(c => c.evento === r.evento && c.data_evento === r.data_evento).map((c) => (
+                      {getComprasOrdenadas(r.evento, r.data_evento).map((c) => (
                         <div key={c.id} className="bg-yellow-800 text-white p-3 rounded shadow">
                           <div className="text-xs text-gray-300 mb-1">Compra #{c.id}</div>
                           <div className="text-sm space-y-1">
