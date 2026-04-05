@@ -9,6 +9,9 @@ import BarraClubes from "./BarraClubes";
 
 
 export default function DashboardPrincipal() {
+  const [resumoFaltas, setResumoFaltas] = useState([]);
+  const [registosCompras, setRegistosCompras] = useState([]);
+  const [registosVendas, setRegistosVendas] = useState([]);
   const [resumo, setResumo] = useState({ ganhos: 0, gastos: 0, lucro: 0, entregasPendentes: 0 });
   const [ultimosEventos, setUltimosEventos] = useState([]);
   const [dataSelecionada, setDataSelecionada] = useState(new Date());
@@ -86,7 +89,90 @@ useEffect(() => {
   fetchEntregasPendentes();
 }, []);
 
+  useEffect(() => {
+    const fetchDados = async () => {
+      try {
+        const [comprasRes, vendasRes] = await Promise.all([
+          fetch("https://controlo-bilhetes.onrender.com/compras"),
+          fetch("https://controlo-bilhetes.onrender.com/listagem_vendas")
+        ]);
+  
+        const compras = await comprasRes.json();
+        const vendas = await vendasRes.json();
+  
+        setRegistosCompras(compras);
+        setRegistosVendas(vendas);
+      } catch (err) {
+        console.error("Erro ao carregar compras/vendas:", err);
+      }
+    };
+  
+    fetchDados();
+  }, []);
 
+  useEffect(() => {
+  const mapa = {};
+
+  const mesAtual = dataSelecionada.getMonth();
+  const anoAtual = dataSelecionada.getFullYear();
+
+  const dentroDoMes = (dataStr) => {
+    if (!dataStr) return false;
+    const d = new Date(dataStr);
+    return d.getMonth() === mesAtual && d.getFullYear() === anoAtual;
+  };
+
+  registosCompras.forEach((c) => {
+    if (!dentroDoMes(c.data_evento)) return;
+
+    const chave = `${c.evento}|${c.data_evento}`;
+
+    if (!mapa[chave]) {
+      mapa[chave] = {
+        evento: c.evento,
+        data_evento: c.data_evento,
+        comprados: 0,
+        vendidos: 0,
+      };
+    }
+
+    mapa[chave].comprados += Number(c.bilhetes || c.quantidade || 0);
+  });
+
+  registosVendas.forEach((v) => {
+    if (!dentroDoMes(v.data_evento)) return;
+
+    const chave = `${v.evento}|${v.data_evento}`;
+
+    if (!mapa[chave]) {
+      mapa[chave] = {
+        evento: v.evento,
+        data_evento: v.data_evento,
+        comprados: 0,
+        vendidos: 0,
+      };
+    }
+
+    mapa[chave].vendidos += Number(v.bilhetes || v.quantidade || 0);
+  });
+
+  const resultado = Object.values(mapa)
+    .map(ev => {
+      const diff = ev.vendidos - ev.comprados;
+
+      return {
+        ...ev,
+        faltaComprar: diff > 0 ? diff : 0,
+        faltaVender: diff < 0 ? Math.abs(diff) : 0,
+      };
+    })
+    .filter(ev => ev.faltaComprar > 0 || ev.faltaVender > 0) // 🔥 só os que interessam
+    .sort((a, b) => new Date(a.data_evento) - new Date(b.data_evento));
+
+  setResumoFaltas(resultado);
+
+}, [registosCompras, registosVendas, dataSelecionada]);
+  
   return (
   <div>
     <BarraClubes />
@@ -94,90 +180,120 @@ useEffect(() => {
       <h1 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Dashboard</h1>
 
       <TooltipProvider>
-        <div className="bg-white dark:bg-gray-900 p-4 rounded shadow transition-colors duration-300">
-          <Calendar
-            onChange={setDataSelecionada}
-            value={dataSelecionada}
-            className="mb-4 rounded shadow"
-            tileClassName={({ date, view }) => {
-              if (view === "month") {
-                const eventosDoDia = eventosCalendario.filter(evento => {
-                  const [dia, mes, ano] = evento.data_evento.split("/");
-                  return (
-                    parseInt(dia) === date.getDate() &&
-                    parseInt(mes) === date.getMonth() + 1 &&
-                    parseInt(ano) === date.getFullYear()
-                  );
-                });
-            
-                if (eventosDoDia.length > 0) {
-                  const todosPagos = eventosDoDia.every(e => e.estado === "Pago");
-                  const algumEmDisputa = eventosDoDia.some(e => e.estado === "Disputa");
-            
-                  if (algumEmDisputa && !todosPagos) {
-                    return "!bg-red-300 !text-white dark:!bg-red-700 dark:!text-white font-semibold rounded-full transition-colors duration-200";
-                  }
-            
-                  if (todosPagos) {
-                    return "!bg-green-300 !text-white dark:!bg-green-700 dark:!text-white font-semibold rounded-full transition-colors duration-200";
-                  }
-            
-                  return "!bg-blue-200 !text-blue-900 dark:!bg-blue-700 dark:!text-blue-100 font-semibold rounded-full transition-colors duration-200";
-                }
-              }
-              return null;
-            }}
+<div className="grid grid-cols-1 xl:grid-cols-[380px_1fr] gap-4">
 
+  {/* CALENDÁRIO */}
+  <div className="bg-white dark:bg-gray-900 p-4 rounded shadow transition-colors duration-300">
+    <Calendar
+      onChange={setDataSelecionada}
+      value={dataSelecionada}
+      className="mb-4 rounded shadow"
+      tileClassName={({ date, view }) => {
+        if (view === "month") {
+          const eventosDoDia = eventosCalendario.filter(evento => {
+            const [dia, mes, ano] = evento.data_evento.split("/");
+            return (
+              parseInt(dia) === date.getDate() &&
+              parseInt(mes) === date.getMonth() + 1 &&
+              parseInt(ano) === date.getFullYear()
+            );
+          });
 
-            tileContent={({ date, view }) => {
-              if (view === "month") {
-                const eventosDoDia = eventosCalendario.filter(evento => {
-                  const [dia, mes, ano] = evento.data_evento.split("/");
-                  return (
-                    parseInt(dia) === date.getDate() &&
-                    parseInt(mes) === date.getMonth() + 1 &&
-                    parseInt(ano) === date.getFullYear()
-                  );
-                });
-            
-                if (eventosDoDia.length > 0) {
-                  return (
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <button className="w-full h-full cursor-pointer bg-transparent border-none p-0 m-0"></button>
-                      </PopoverTrigger>
-                      <PopoverContent className="max-w-xs">
-                        <div className="flex flex-col gap-1">
-                          {eventosDoDia.map((evento, idx) => {
-                            const partes = evento.nome_evento.split(/\s+vs\s+/i).map(p => p.trim());
-                            return (
-                              <div key={`${evento.id}-${idx}`} className="flex items-center gap-2 flex-wrap">
-                                {partes.map((nomeClube, idx2) => {
-                                  const clube = clubes.find(c => {
-                                    const nomeClubeLower = nomeClube.toLowerCase();
-                                    const nomeDbLower = c.nome.toLowerCase();
-                                    return nomeClubeLower.includes(nomeDbLower) || nomeDbLower.includes(nomeClubeLower);
-                                  });
-                                  return (
-                                    <div key={`${evento.id}-${idx}-${idx2}`} className="flex items-center gap-1">
-                                      {clube?.simbolo && (
-                                        <img
-                                          src={clube.simbolo}
-                                          alt={clube.nome}
-                                          className="w-5 h-5 rounded-full object-contain"
-                                        />
-                                      )}
-                                      <span className="text-sm text-gray-900 dark:text-gray-100">{nomeClube}</span>
-                                      {idx2 === 0 && partes.length > 1 && (
-                                        <span className="mx-1 text-gray-900 dark:text-gray-100">vs</span>
-                                      )}
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                            );
-                          })}
-                        </div>
+          if (eventosDoDia.length > 0) {
+            const todosPagos = eventosDoDia.every(e => e.estado === "Pago");
+            const algumEmDisputa = eventosDoDia.some(e => e.estado === "Disputa");
+
+            if (algumEmDisputa && !todosPagos) {
+              return "!bg-red-300 !text-white dark:!bg-red-700 dark:!text-white font-semibold rounded-full";
+            }
+
+            if (todosPagos) {
+              return "!bg-green-300 !text-white dark:!bg-green-700 dark:!text-white font-semibold rounded-full";
+            }
+
+            return "!bg-blue-200 !text-blue-900 dark:!bg-blue-700 dark:!text-blue-100 font-semibold rounded-full";
+          }
+        }
+        return null;
+      }}
+
+      tileContent={({ date, view }) => {
+        if (view === "month") {
+          const eventosDoDia = eventosCalendario.filter(evento => {
+            const [dia, mes, ano] = evento.data_evento.split("/");
+            return (
+              parseInt(dia) === date.getDate() &&
+              parseInt(mes) === date.getMonth() + 1 &&
+              parseInt(ano) === date.getFullYear()
+            );
+          });
+
+          if (eventosDoDia.length > 0) {
+            return (
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button className="w-full h-full cursor-pointer bg-transparent border-none p-0 m-0"></button>
+                </PopoverTrigger>
+                <PopoverContent className="max-w-xs">
+                  <div className="flex flex-col gap-1">
+                    {eventosDoDia.map((evento, idx) => (
+                      <div key={idx} className="text-sm text-gray-900 dark:text-gray-100">
+                        {evento.nome_evento}
+                      </div>
+                    ))}
+                  </div>
+                </PopoverContent>
+              </Popover>
+            );
+          }
+        }
+        return null;
+      }}
+    />
+  </div>
+
+  {/* 👉 RESUMO AO LADO */}
+  <div className="bg-white dark:bg-gray-900 p-4 rounded shadow max-h-[420px] overflow-y-auto">
+    <h2 className="text-md font-semibold mb-3 text-gray-900 dark:text-gray-100">
+      Falta Comprar / Vender
+    </h2>
+
+    {resumoFaltas.length === 0 ? (
+      <p className="text-sm text-gray-500 dark:text-gray-400">
+        ✅ Tudo equilibrado neste mês
+      </p>
+    ) : (
+      <div className="space-y-2">
+        {resumoFaltas.map((ev, i) => (
+          <div
+            key={i}
+            onClick={() => irParaEventoExpandido(ev.evento)}
+            className="bg-gray-100 dark:bg-gray-800 p-3 rounded text-sm cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700"
+          >
+            <div className="font-semibold text-gray-900 dark:text-gray-100">
+              {ev.evento}
+            </div>
+
+            <div className="text-xs text-gray-500 dark:text-gray-400">
+              {new Date(ev.data_evento).toLocaleDateString("pt-PT")}
+            </div>
+
+            <div className="flex justify-between mt-2">
+              <span className={ev.faltaComprar > 0 ? "text-red-500 font-medium" : "text-gray-400"}>
+                Comprar: {ev.faltaComprar}
+              </span>
+
+              <span className={ev.faltaVender > 0 ? "text-yellow-600 font-medium" : "text-gray-400"}>
+                Vender: {ev.faltaVender}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+    )}
+  </div>
+
+</div>
                       </PopoverContent>
                     </Popover>
                   );
