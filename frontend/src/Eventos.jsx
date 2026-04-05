@@ -144,14 +144,65 @@ const setorExato = (txt = "") => {
 
 // ——— Chave canónica para COMPRAS (mesmo parser das vendas) ———
 // 👉 SUBSTITUI a tua compraChave por esta
-const compraChave = (c = {}) => {
+const compraChave = (c = {}) => compraChaveExata(c);
   // só o que identifica o setor/andar
   const partes = [c.bancada, c.setor].filter(Boolean).join(" ");
   const key = setorExato(partes).replace(/^Setor\s+/i, "").trim();
   return key || "Outro";
 };
 
+const setorGrupo = (txt = "") => {
+  let s = limpar(txt);
 
+  s = s.replace(/\([^)]*\)\s*$/g, "").trim();
+  s = s.split(",")[0].split(" - ")[0].split(";")[0].trim();
+  s = s.replace(/\b(Fila|Row|Gate|Porta|Entrada|Door|Seat|Lugar)\b.*$/i, "").trim();
+
+  // normalizações conhecidas
+  s = s.replace(/\bmais\s+vantagens\b/gi, "");
+  s = s.replace(/\bemirates\b/gi, "");
+  s = s.replace(/\b(continente|worten|fnac|loja|online|site)\b/gi, "");
+  s = s.replace(/\s{2,}/g, " ").trim();
+
+  // pisos canónicos
+  s = s.replace(/\b(piso\s*zero|piso\s*0|p0)\b/gi, "Lower");
+  s = s.replace(/\b(middle|piso\s*1|piso\s*um|piso\s*primeiro|p1)\b/gi, "Middle");
+  s = s.replace(/\b(upper|piso\s*3|piso\s*tr[eê]s|p3)\b/gi, "Upper");
+
+  // section/setor/etc
+  s = s.replace(/\b(section|sect(?:ion)?|sec(?:ção|cao|cç?ao)?|sector|setor)\b/gi, "Setor");
+  s = s.replace(/\bSetor\s+(Lower|Middle|Upper)\b/gi, "$1");
+
+  s = s.replace(/\s{2,}/g, " ").trim();
+
+  if (!s) return "Outros";
+
+  // Se começar por Lower/Middle/Upper/Setor/Block/etc, o grupo é a família
+  const famMatch = s.match(/^(Lower|Middle|Upper|Setor|Block|Stand|Tribuna|Ring|Level|Nascente|Poente|Norte|Sul)\b/i);
+  if (famMatch) return canonFamilia(famMatch[1]);
+
+  // Caso tipo "Meltino 2" => grupo "Meltino"
+  const primeiroToken = s.match(/^([A-Za-zÀ-ÿ]+)\b/);
+  if (primeiroToken) return canonFamilia(primeiroToken[1]);
+
+  return s;
+};
+
+const vendaChaveExata = (v = {}) => setorExato(v.estadio);
+
+const vendaChaveGrupo = (v = {}) => setorGrupo(v.estadio);
+
+const compraChaveExata = (c = {}) => {
+  const partes = [c.bancada, c.setor].filter(Boolean).join(" ");
+  const key = setorExato(partes).replace(/^Setor\s+/i, "").trim();
+  return key || "Outro";
+};
+
+const compraChaveGrupo = (c = {}) => {
+  const partes = [c.bancada, c.setor].filter(Boolean).join(" ");
+  const key = setorGrupo(partes).replace(/^Setor\s+/i, "").trim();
+  return key || "Outro";
+};
 
 // ——— Nº de bilhetes (fallback 1) ———
 const qtdBilhetes = (txt = "") => {
@@ -700,6 +751,130 @@ const mapComprasPorSetor = (evento, data_evento) => {
     map.set(key, (map.get(key) || 0) + qtd);
   }
   return map;
+};
+
+const mapVendasPorSetorExato = (evento, data_evento) => {
+  const arr = idxVendasPorEvento.get(`${evento}|${data_evento}`) || [];
+  const map = new Map();
+
+  for (const v of arr) {
+    const key = vendaChaveExata(v).replace(/^Setor\s+/i, "").trim();
+    if (key === "Devolução") continue;
+
+    const qtd = qtdBilhetes(v.estadio) || 0;
+    if (!qtd) continue;
+
+    map.set(key, (map.get(key) || 0) + qtd);
+  }
+  return map;
+};
+
+const mapComprasPorSetorExato = (evento, data_evento) => {
+  const arr = compras.filter(c => c.evento === evento && c.data_evento === data_evento);
+  const map = new Map();
+
+  for (const c of arr) {
+    const key = compraChaveExata(c);
+    const qtd = Number(c.quantidade || 0);
+    if (!qtd) continue;
+
+    map.set(key, (map.get(key) || 0) + qtd);
+  }
+  return map;
+};
+
+const mapVendasPorGrupo = (evento, data_evento) => {
+  const arr = idxVendasPorEvento.get(`${evento}|${data_evento}`) || [];
+  const map = new Map();
+
+  for (const v of arr) {
+    const key = vendaChaveGrupo(v).replace(/^Setor\s+/i, "").trim();
+    if (key === "Devolução") continue;
+
+    const qtd = qtdBilhetes(v.estadio) || 0;
+    if (!qtd) continue;
+
+    map.set(key, (map.get(key) || 0) + qtd);
+  }
+  return map;
+};
+
+const mapComprasPorGrupo = (evento, data_evento) => {
+  const arr = compras.filter(c => c.evento === evento && c.data_evento === data_evento);
+  const map = new Map();
+
+  for (const c of arr) {
+    const key = compraChaveGrupo(c);
+    const qtd = Number(c.quantidade || 0);
+    if (!qtd) continue;
+
+    map.set(key, (map.get(key) || 0) + qtd);
+  }
+  return map;
+};
+
+const getResumoMatchingInteligente = (evento, data_evento) => {
+  const vendasExatas = mapVendasPorSetorExato(evento, data_evento);
+  const comprasExatas = mapComprasPorSetorExato(evento, data_evento);
+  const vendasGrupo = mapVendasPorGrupo(evento, data_evento);
+  const comprasGrupo = mapComprasPorGrupo(evento, data_evento);
+
+  const porComprar = [];
+  const porVender = [];
+  const coberturaIncerta = [];
+
+  // 1) Diferença exata
+  const chavesExatas = new Set([
+    ...vendasExatas.keys(),
+    ...comprasExatas.keys(),
+  ]);
+
+  for (const key of chavesExatas) {
+    const qV = vendasExatas.get(key) || 0;
+    const qC = comprasExatas.get(key) || 0;
+
+    if (qV > qC) porComprar.push([key, qV - qC]);
+    if (qC > qV) porVender.push([key, qC - qV]);
+  }
+
+  // 2) Cobertura incerta por grupo
+  // Se há défice exato numa chave, mas o grupo global tem compras >= vendas,
+  // então assinalamos como "incerto" em vez de simplesmente assumir coberto.
+  for (const [key, diff] of porComprar) {
+    const grupo = setorGrupo(key).replace(/^Setor\s+/i, "").trim();
+    const totalGrupoV = vendasGrupo.get(grupo) || 0;
+    const totalGrupoC = comprasGrupo.get(grupo) || 0;
+
+    if (totalGrupoC > 0) {
+      coberturaIncerta.push([
+        key,
+        diff,
+        grupo,
+        Math.max(0, totalGrupoC - totalGrupoV + diff)
+      ]);
+    }
+  }
+
+  const fmt = (arr) =>
+    arr
+      .sort((a, b) => a[0].localeCompare(b[0], "pt", { numeric: true, sensitivity: "base" }))
+      .map(([k, q]) => `${k} (${q})`)
+      .join(" • ");
+
+  const fmtIncerta = (arr) =>
+    arr
+      .sort((a, b) => a[0].localeCompare(b[0], "pt", { numeric: true, sensitivity: "base" }))
+      .map(([key, falta, grupo]) => `${key} (${falta}) ← grupo ${grupo}`)
+      .join(" • ");
+
+  return {
+    porComprar,
+    porVender,
+    coberturaIncerta,
+    porComprarTxt: fmt(porComprar),
+    porVenderTxt: fmt(porVender),
+    coberturaIncertaTxt: fmtIncerta(coberturaIncerta),
+  };
 };
 
 // --- resumos para o título ---
@@ -1745,36 +1920,40 @@ return (
                   <>
                     
                     
-                   <tr className="bg-indigo-50 dark:bg-gray-800 text-sm border-t border-l-4 border-blue-600 transition-colors duration-300">
+<tr className="bg-indigo-50 dark:bg-gray-800 text-sm border-t border-l-4 border-blue-600 transition-colors duration-300">
   <td colSpan="9" className="p-2 font-semibold">
-  <div>
-  <div>
-    Vendas ({getTotalBilhetesVendas(r.evento, r.data_evento)})
     {(() => {
-      const resumo = getResumoTituloVendas(r.evento, r.data_evento);
-      return resumo ? <> — {resumo}</> : null;
+      const resumo = getResumoMatchingInteligente(r.evento, r.data_evento);
+      const resumoTitulo = getResumoTituloVendas(r.evento, r.data_evento);
+
+      return (
+        <div>
+          <div>
+            Vendas ({getTotalBilhetesVendas(r.evento, r.data_evento)})
+            {resumoTitulo ? <> — {resumoTitulo}</> : null}
+          </div>
+
+          {resumo.porComprarTxt && (
+            <div className="text-red-600 dark:text-red-400 text-xs mt-1">
+              🔴 Por comprar: {resumo.porComprarTxt}
+            </div>
+          )}
+
+          {resumo.coberturaIncertaTxt && (
+            <div className="text-yellow-600 dark:text-yellow-300 text-xs mt-1">
+              🟡 Cobertura incerta: {resumo.coberturaIncertaTxt}
+            </div>
+          )}
+
+          {resumo.porVenderTxt && (
+            <div className="text-green-600 dark:text-green-400 text-xs mt-1">
+              🟢 Por vender: {resumo.porVenderTxt}
+            </div>
+          )}
+        </div>
+      );
     })()}
-  </div>
-
-  {/* 🔴 Falta comprar */}
-  {getResumoPorComprar(r.evento, r.data_evento) && (
-    <div className="text-red-600 dark:text-red-400 text-xs mt-1">
-      🔴 Por comprar: {getResumoPorComprar(r.evento, r.data_evento)}
-    </div>
-  )}
-
-  {/* 🟢 Falta vender */}
-  {getResumoPorVender(r.evento, r.data_evento) && (
-    <div className="text-green-600 dark:text-green-400 text-xs">
-      🟢 Por vender: {getResumoPorVender(r.evento, r.data_evento)}
-    </div>
-  )}
-</div>
-  
-</td>
-
-
-
+  </td>
 </tr>
 
 <tr className="border-l-4 border-blue-600 bg-blue-100 dark:bg-blue-800 text-xs font-semibold">
