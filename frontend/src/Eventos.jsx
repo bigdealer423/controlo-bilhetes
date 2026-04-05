@@ -2288,7 +2288,7 @@ return (
 
 
 
-   <<tr className="bg-yellow-50 dark:bg-yellow-900 text-sm border-t border-l-4 border-yellow-600">
+   <tr className="bg-yellow-50 dark:bg-yellow-900 text-sm border-t border-l-4 border-yellow-600">
   <td colSpan="9" className="p-2 font-semibold">
     {(() => {
       const chaveRegra = getEquipaCasaCanonica(r.evento);
