@@ -1768,10 +1768,7 @@ return (
     </div>
   )}
 </div>
-  {(() => {
-    const resumo = getResumoTituloVendas(r.evento, r.data_evento);
-    return resumo ? <> — {resumo}</> : null;
-  })()}
+  
 </td>
 
 
