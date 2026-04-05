@@ -145,11 +145,7 @@ const setorExato = (txt = "") => {
 // ——— Chave canónica para COMPRAS (mesmo parser das vendas) ———
 // 👉 SUBSTITUI a tua compraChave por esta
 const compraChave = (c = {}) => compraChaveExata(c);
-  // só o que identifica o setor/andar
-  const partes = [c.bancada, c.setor].filter(Boolean).join(" ");
-  const key = setorExato(partes).replace(/^Setor\s+/i, "").trim();
-  return key || "Outro";
-};
+ 
 
 const setorGrupo = (txt = "") => {
   let s = limpar(txt);
