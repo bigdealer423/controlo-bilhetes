@@ -1086,7 +1086,14 @@ const getVendasOrdenadas = (evento, data_evento) => {
     const ka = vendaChaveOperacionalExata(a, chaveRegra);
     const kb = vendaChaveOperacionalExata(b, chaveRegra);
 
-    const p = ka.localeCompare(kb, "pt", { sensitivity: "base", numeric: true });
+    // ✅ Devolução sempre primeiro
+    if (ka === "Devolução" && kb !== "Devolução") return -1;
+    if (kb === "Devolução" && ka !== "Devolução") return 1;
+
+    const p = ka.localeCompare(kb, "pt", {
+      sensitivity: "base",
+      numeric: true,
+    });
     if (p !== 0) return p;
 
     return limpar(a.estadio).localeCompare(limpar(b.estadio), "pt", {
