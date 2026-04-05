@@ -1745,7 +1745,29 @@ return (
                     
                    <tr className="bg-indigo-50 dark:bg-gray-800 text-sm border-t border-l-4 border-blue-600 transition-colors duration-300">
   <td colSpan="9" className="p-2 font-semibold">
-  Vendas ({getTotalBilhetesVendas(r.evento, r.data_evento)})
+  <div>
+  <div>
+    Vendas ({getTotalBilhetesVendas(r.evento, r.data_evento)})
+    {(() => {
+      const resumo = getResumoTituloVendas(r.evento, r.data_evento);
+      return resumo ? <> — {resumo}</> : null;
+    })()}
+  </div>
+
+  {/* 🔴 Falta comprar */}
+  {getResumoPorComprar(r.evento, r.data_evento) && (
+    <div className="text-red-600 dark:text-red-400 text-xs mt-1">
+      🔴 Por comprar: {getResumoPorComprar(r.evento, r.data_evento)}
+    </div>
+  )}
+
+  {/* 🟢 Falta vender */}
+  {getResumoPorVender(r.evento, r.data_evento) && (
+    <div className="text-green-600 dark:text-green-400 text-xs">
+      🟢 Por vender: {getResumoPorVender(r.evento, r.data_evento)}
+    </div>
+  )}
+</div>
   {(() => {
     const resumo = getResumoTituloVendas(r.evento, r.data_evento);
     return resumo ? <> — {resumo}</> : null;
