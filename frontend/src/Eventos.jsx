@@ -186,6 +186,94 @@ const setorGrupo = (txt = "") => {
 
 const vendaChaveExata = (v = {}) => setorExato(v.estadio);
 
+const REGRAS_SETOR_OPERACIONAL = {
+  default: {
+    numerosParaLabel: {},
+    aliasesTexto: {},
+  },
+
+  // troca este nome pelo identificador/estádio que quiseres usar
+  "ESTADIO_MELTINO_VALHALA_DOMINOS": {
+    numerosParaLabel: {
+      "2": "Meltino 2",
+      "3": "Meltino 3",
+      "4": "Meltino 4",
+      "5": "Valhala 5",
+      "6": "Valhala 6",
+      "7": "Valhala 7",
+      "8": "Dominos 8",
+      "9": "Dominos 9",
+      "10": "Dominos 10",
+      "11": "Dominos 11",
+    },
+    aliasesTexto: {
+      "meltino 2": "Meltino 2",
+      "meltino 3": "Meltino 3",
+      "meltino 4": "Meltino 4",
+      "val hala 5": "Valhala 5",
+      "valhala 5": "Valhala 5",
+      "val hala 6": "Valhala 6",
+      "valhala 6": "Valhala 6",
+      "val hala 7": "Valhala 7",
+      "valhala 7": "Valhala 7",
+      "dominos 8": "Dominos 8",
+      "dominos 9": "Dominos 9",
+      "dominos 10": "Dominos 10",
+      "dominos 11": "Dominos 11",
+
+      // isto fica separado; só conta se aparecer igual
+      "bancada meltino café": "Bancada Meltino Café",
+      "meltino café": "Bancada Meltino Café",
+    },
+  },
+};
+
+const getRegrasOperacionais = (estadioNome = "") => {
+  const nome = limpar(estadioNome || "");
+  return REGRAS_SETOR_OPERACIONAL[nome] || REGRAS_SETOR_OPERACIONAL.default;
+};
+
+const chaveOperacionalExata = (txt = "", estadioNome = "") => {
+  const regras = getRegrasOperacionais(estadioNome);
+  const bruto = limpar(txt).toLowerCase();
+
+  // 1) alias textual direto
+  for (const [alias, canonical] of Object.entries(regras.aliasesTexto || {})) {
+    if (bruto.includes(alias)) return canonical;
+  }
+
+  // 2) normalização base
+  const exato = setorExato(txt).replace(/^Setor\s+/i, "").trim();
+  const exatoLower = exato.toLowerCase();
+
+  for (const [alias, canonical] of Object.entries(regras.aliasesTexto || {})) {
+    if (exatoLower === alias || exatoLower.includes(alias)) return canonical;
+  }
+
+  // 3) se for só número, converte pelo mapa do estádio
+  const mNumeroPuro = exato.match(/^(\d{1,2})$/);
+  if (mNumeroPuro) {
+    return regras.numerosParaLabel?.[mNumeroPuro[1]] || exato;
+  }
+
+  // 4) se terminar em número, tenta também
+  const mNumeroFinal = exato.match(/(\d{1,2})$/);
+  if (mNumeroFinal) {
+    const canon = regras.numerosParaLabel?.[mNumeroFinal[1]];
+    if (canon) return canon;
+  }
+
+  return exato || "Outros";
+};
+
+const vendaChaveOperacionalExata = (v = {}, estadioNome = "") =>
+  chaveOperacionalExata(v.estadio, estadioNome);
+
+const compraChaveOperacionalExata = (c = {}, estadioNome = "") => {
+  const partes = [c.bancada, c.setor].filter(Boolean).join(" ");
+  return chaveOperacionalExata(partes, estadioNome);
+};
+
 const vendaChaveGrupo = (v = {}) => setorGrupo(v.estadio);
 
 const compraChaveExata = (c = {}) => {
@@ -751,12 +839,12 @@ const mapComprasPorSetor = (evento, data_evento) => {
   return map;
 };
 
-const mapVendasPorSetorExato = (evento, data_evento) => {
+const mapVendasPorSetorExato = (evento, data_evento, estadioNome = "") => {
   const arr = idxVendasPorEvento.get(`${evento}|${data_evento}`) || [];
   const map = new Map();
 
   for (const v of arr) {
-    const key = vendaChaveExata(v).replace(/^Setor\s+/i, "").trim();
+    const key = vendaChaveOperacionalExata(v, estadioNome);
     if (key === "Devolução") continue;
 
     const qtd = qtdBilhetes(v.estadio) || 0;
@@ -764,20 +852,22 @@ const mapVendasPorSetorExato = (evento, data_evento) => {
 
     map.set(key, (map.get(key) || 0) + qtd);
   }
+
   return map;
 };
 
-const mapComprasPorSetorExato = (evento, data_evento) => {
+const mapComprasPorSetorExato = (evento, data_evento, estadioNome = "") => {
   const arr = compras.filter(c => c.evento === evento && c.data_evento === data_evento);
   const map = new Map();
 
   for (const c of arr) {
-    const key = compraChaveExata(c);
+    const key = compraChaveOperacionalExata(c, estadioNome);
     const qtd = Number(c.quantidade || 0);
     if (!qtd) continue;
 
     map.set(key, (map.get(key) || 0) + qtd);
   }
+
   return map;
 };
 
@@ -811,9 +901,9 @@ const mapComprasPorGrupo = (evento, data_evento) => {
   return map;
 };
 
-const getResumoMatchingInteligente = (evento, data_evento) => {
-  const vendasExatas = mapVendasPorSetorExato(evento, data_evento);
-  const comprasExatas = mapComprasPorSetorExato(evento, data_evento);
+const getResumoMatchingInteligente = (evento, data_evento, estadioNome = "") => {
+  const vendasExatas = mapVendasPorSetorExato(evento, data_evento, estadioNome);
+  const comprasExatas = mapComprasPorSetorExato(evento, data_evento, estadioNome);
   const vendasGrupo = mapVendasPorGrupo(evento, data_evento);
   const comprasGrupo = mapComprasPorGrupo(evento, data_evento);
 
@@ -1921,7 +2011,7 @@ return (
 <tr className="bg-indigo-50 dark:bg-gray-800 text-sm border-t border-l-4 border-blue-600 transition-colors duration-300">
   <td colSpan="9" className="p-2 font-semibold">
     {(() => {
-      const resumo = getResumoMatchingInteligente(r.evento, r.data_evento);
+      const resumo = getResumoMatchingInteligente(r.evento, r.data_evento, r.estadio);
       const resumoTitulo = getResumoTituloVendas(r.evento, r.data_evento);
 
       return (
