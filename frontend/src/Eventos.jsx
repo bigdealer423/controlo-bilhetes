@@ -118,8 +118,10 @@ const setorExato = (txt = "") => {
   // colapsa "Setor Lower/Middle/Upper ..." → "Lower/Middle/Upper ..."
   s = s.replace(/\bSetor\s+(Lower|Middle|Upper)\b/gi, "$1");
 
-  // 🔽🔽🔽 ADICIONA AQUI (limpa ruído de compras/traços/duplos espaços)
-  s = s.replace(/\b(continente|worten|fnac|loja|online|site)\b/gi, "").trim();
+  // 🔽🔽🔽 limpa ruído comercial / nomes de bancada que não fazem parte do setor
+  s = s.replace(/\bmais\s+vantagens\b/gi, "");
+  s = s.replace(/\bemirates\b/gi, "");
+  s = s.replace(/\b(continente|worten|fnac|loja|online|site)\b/gi, "");
   s = s.replace(/\s*-+\s*$/g, "").trim();   // remove " - " no fim
   s = s.replace(/\s{2,}/g, " ");            // colapsa espaços repetidos
   // 🔼🔼🔼
