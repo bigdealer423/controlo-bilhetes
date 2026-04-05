@@ -186,14 +186,64 @@ const setorGrupo = (txt = "") => {
 
 const vendaChaveExata = (v = {}) => setorExato(v.estadio);
 
+const ALIASES_EQUIPAS_CASA = {
+  "casa pia": "Casa Pia",
+  "casa pia ac": "Casa Pia",
+  "casa pia a.c.": "Casa Pia",
+  "casa pia atletico clube": "Casa Pia",
+  "casa pia atlético clube": "Casa Pia",
+
+  "az": "AZ Alkmaar",
+  "az alkmaar": "AZ Alkmaar",
+
+  "sl benfica": "SL Benfica",
+  "benfica": "SL Benfica",
+
+  "sporting": "Sporting CP",
+  "sporting cp": "Sporting CP",
+
+  "fc porto": "FC Porto",
+  "porto": "FC Porto",
+};
+
+const normalizarNomeEquipa = (s = "") =>
+  limpar(s)
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")   // remove acentos
+    .replace(/[.\-_/]/g, " ")          // troca pontuação por espaço
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLowerCase();
+
+const extrairEquipaCasaRaw = (evento = "") => {
+  const s = limpar(evento);
+  const partes = s.split(/\bvs\b/i).map(p => limpar(p)).filter(Boolean);
+  return partes[0] || s;
+};
+
+const getEquipaCasaCanonica = (evento = "") => {
+  const raw = extrairEquipaCasaRaw(evento);
+  const norm = normalizarNomeEquipa(raw);
+
+  if (ALIASES_EQUIPAS_CASA[norm]) {
+    return ALIASES_EQUIPAS_CASA[norm];
+  }
+
+  // fallback inteligente: tenta encontrar alias contido no nome
+  const match = Object.entries(ALIASES_EQUIPAS_CASA).find(([alias]) => {
+    return norm === alias || norm.includes(alias) || alias.includes(norm);
+  });
+
+  return match ? match[1] : raw;
+};
+
 const REGRAS_SETOR_OPERACIONAL = {
   default: {
     numerosParaLabel: {},
     aliasesTexto: {},
   },
 
-  // troca este nome pelo identificador/estádio que quiseres usar
-  "ESTADIO_MELTINO_VALHALA_DOMINOS": {
+  "Casa Pia": {
     numerosParaLabel: {
       "2": "Meltino 2",
       "3": "Meltino 3",
@@ -220,8 +270,6 @@ const REGRAS_SETOR_OPERACIONAL = {
       "dominos 9": "Dominos 9",
       "dominos 10": "Dominos 10",
       "dominos 11": "Dominos 11",
-
-      // isto fica separado; só conta se aparecer igual
       "bancada meltino café": "Bancada Meltino Café",
       "meltino café": "Bancada Meltino Café",
     },
@@ -992,25 +1040,23 @@ const getResumoPorComprar = (evento, data_evento) => {
 
 
 // Título-resumo: "Setor X (N) • Lower 32 (M) ..."
-const getResumoTituloVendas = (evento, data_evento) => {
+const getResumoTituloVendas = (evento, data_evento, chaveRegra = "") => {
   const arr = idxVendasPorEvento.get(`${evento}|${data_evento}`) || [];
   if (!arr.length) return "";
 
   const mapa = new Map();
+
   for (const v of arr) {
-    const chave = setorExato(v.estadio);      // 👈 usa v.estadio
+    const chave = vendaChaveOperacionalExata(v, chaveRegra);
     if (chave === "Devolução") continue;
-    const qtd = qtdBilhetes(v.estadio);       // 👈 idem
-    const cur = mapa.get(chave) || { linhas: 0, bilhetes: 0 };
-    cur.linhas += 1;
-    cur.bilhetes += qtd;
-    mapa.set(chave, cur);
+
+    const qtd = qtdBilhetes(v.estadio) || 0;
+    mapa.set(chave, (mapa.get(chave) || 0) + qtd);
   }
 
   return [...mapa.entries()]
     .sort((a, b) => a[0].localeCompare(b[0], "pt", { sensitivity: "base", numeric: true }))
-    // mostra nº de linhas; troca para vals.bilhetes se quiseres total de bilhetes
-    .map(([setor, vals]) => `${setor.replace(/^Setor\s+/i, "")} (${vals.bilhetes})`)
+    .map(([setor, qtd]) => `${setor} (${qtd})`)
     .join(" • ");
 };
 
@@ -1032,10 +1078,11 @@ const getVendasOrdenadas = (evento, data_evento) => {
   // Lista ordenada de compras do evento (por setor exato; depois bancada, setor, fila e id)
 const getComprasOrdenadas = (evento, data_evento) => {
   const arr = compras.filter(c => c.evento === evento && c.data_evento === data_evento);
+  const chaveRegra = getEquipaCasaCanonica(evento);
 
   return arr.sort((a, b) => {
-    const ka = compraChave(a);
-    const kb = compraChave(b);
+    const ka = compraChaveOperacionalExata(a, chaveRegra);
+    const kb = compraChaveOperacionalExata(b, chaveRegra);
 
     const p = ka.localeCompare(kb, "pt", {
       sensitivity: "base",
@@ -2011,8 +2058,9 @@ return (
 <tr className="bg-indigo-50 dark:bg-gray-800 text-sm border-t border-l-4 border-blue-600 transition-colors duration-300">
   <td colSpan="9" className="p-2 font-semibold">
     {(() => {
-      const resumo = getResumoMatchingInteligente(r.evento, r.data_evento, r.estadio);
-      const resumoTitulo = getResumoTituloVendas(r.evento, r.data_evento);
+      const chaveRegra = getEquipaCasaCanonica(r.evento);
+      const resumo = getResumoMatchingInteligente(r.evento, r.data_evento, chaveRegra);
+      const resumoTitulo = getResumoTituloVendas(r.evento, r.data_evento, chaveRegra);
 
       return (
         <div>
