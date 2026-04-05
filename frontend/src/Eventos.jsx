@@ -276,11 +276,27 @@ const REGRAS_SETOR_OPERACIONAL = {
   },
 };
 
+const REGRAS_COBERTURA_UNIDIRECIONAL = {
+  "Casa Pia": {
+    "Bancada Meltino Café": ["Meltino 2", "Meltino 3", "Meltino 4"],
+    "Bancada Valhala Café": ["Valhala 5", "Valhala 6", "Valhala 7"],
+  },
+};
+
 const getRegrasOperacionais = (estadioNome = "") => {
   const nome = limpar(estadioNome || "");
   return REGRAS_SETOR_OPERACIONAL[nome] || REGRAS_SETOR_OPERACIONAL.default;
 };
 
+const getRegrasCobertura = (chaveRegra = "") => {
+  const nome = limpar(chaveRegra || "").toLowerCase();
+
+  const entrada = Object.entries(REGRAS_COBERTURA_UNIDIRECIONAL).find(([key]) => {
+    return limpar(key).toLowerCase() === nome;
+  });
+
+  return entrada ? entrada[1] : {};
+};
 const chaveOperacionalExata = (txt = "", estadioNome = "") => {
   const regras = getRegrasOperacionais(estadioNome);
   const bruto = limpar(txt).toLowerCase();
@@ -949,47 +965,54 @@ const mapComprasPorGrupo = (evento, data_evento) => {
   return map;
 };
 
-const getResumoMatchingInteligente = (evento, data_evento, estadioNome = "") => {
-  const vendasExatas = mapVendasPorSetorExato(evento, data_evento, estadioNome);
-  const comprasExatas = mapComprasPorSetorExato(evento, data_evento, estadioNome);
-  const vendasGrupo = mapVendasPorGrupo(evento, data_evento);
-  const comprasGrupo = mapComprasPorGrupo(evento, data_evento);
+const getResumoMatchingInteligente = (evento, data_evento, chaveRegra = "") => {
+  const vendasExatas = mapVendasPorSetorExato(evento, data_evento, chaveRegra);
+  const comprasExatas = mapComprasPorSetorExato(evento, data_evento, chaveRegra);
+  const regrasCobertura = getRegrasCobertura(chaveRegra);
 
-  const porComprar = [];
-  const porVender = [];
-  const coberturaIncerta = [];
+  // cópias mutáveis
+  const faltas = new Map();
+  const sobras = new Map();
 
-  // 1) Diferença exata
   const chavesExatas = new Set([
     ...vendasExatas.keys(),
     ...comprasExatas.keys(),
   ]);
 
+  // 1) match exato primeiro
   for (const key of chavesExatas) {
     const qV = vendasExatas.get(key) || 0;
     const qC = comprasExatas.get(key) || 0;
 
-    if (qV > qC) porComprar.push([key, qV - qC]);
-    if (qC > qV) porVender.push([key, qC - qV]);
+    if (qV > qC) faltas.set(key, qV - qC);
+    if (qC > qV) sobras.set(key, qC - qV);
   }
 
-  // 2) Cobertura incerta por grupo
-  // Se há défice exato numa chave, mas o grupo global tem compras >= vendas,
-  // então assinalamos como "incerto" em vez de simplesmente assumir coberto.
-  for (const [key, diff] of porComprar) {
-    const grupo = setorGrupo(key).replace(/^Setor\s+/i, "").trim();
-    const totalGrupoV = vendasGrupo.get(grupo) || 0;
-    const totalGrupoC = comprasGrupo.get(grupo) || 0;
+  // 2) cobertura unidirecional:
+  // sobras específicas podem cobrir faltas genéricas permitidas
+  for (const [alvoGenerico, origens] of Object.entries(regrasCobertura)) {
+    let falta = faltas.get(alvoGenerico) || 0;
+    if (!falta) continue;
 
-    if (totalGrupoC > 0) {
-      coberturaIncerta.push([
-        key,
-        diff,
-        grupo,
-        Math.max(0, totalGrupoC - totalGrupoV + diff)
-      ]);
+    for (const origem of origens) {
+      const sobra = sobras.get(origem) || 0;
+      if (!sobra || !falta) continue;
+
+      const uso = Math.min(falta, sobra);
+
+      falta -= uso;
+      const sobraRestante = sobra - uso;
+
+      if (sobraRestante > 0) sobras.set(origem, sobraRestante);
+      else sobras.delete(origem);
     }
+
+    if (falta > 0) faltas.set(alvoGenerico, falta);
+    else faltas.delete(alvoGenerico);
   }
+
+  const porComprar = [...faltas.entries()];
+  const porVender = [...sobras.entries()];
 
   const fmt = (arr) =>
     arr
@@ -997,19 +1020,13 @@ const getResumoMatchingInteligente = (evento, data_evento, estadioNome = "") => 
       .map(([k, q]) => `${k} (${q})`)
       .join(" • ");
 
-  const fmtIncerta = (arr) =>
-    arr
-      .sort((a, b) => a[0].localeCompare(b[0], "pt", { numeric: true, sensitivity: "base" }))
-      .map(([key, falta, grupo]) => `${key} (${falta}) ← grupo ${grupo}`)
-      .join(" • ");
-
   return {
     porComprar,
     porVender,
-    coberturaIncerta,
+    coberturaIncerta: [],
     porComprarTxt: fmt(porComprar),
     porVenderTxt: fmt(porVender),
-    coberturaIncertaTxt: fmtIncerta(coberturaIncerta),
+    coberturaIncertaTxt: "",
   };
 };
 
@@ -1063,12 +1080,16 @@ const getResumoTituloVendas = (evento, data_evento, chaveRegra = "") => {
 // Lista ordenada de vendas do evento (por setor exato; depois pelo texto completo)
 const getVendasOrdenadas = (evento, data_evento) => {
   const arr = [...(idxVendasPorEvento.get(`${evento}|${data_evento}`) || [])];
+  const chaveRegra = getEquipaCasaCanonica(evento);
+
   return arr.sort((a, b) => {
-    const ka = setorExato(a.estadio);
-    const kb = setorExato(b.estadio);
+    const ka = vendaChaveOperacionalExata(a, chaveRegra);
+    const kb = vendaChaveOperacionalExata(b, chaveRegra);
+
     const p = ka.localeCompare(kb, "pt", { sensitivity: "base", numeric: true });
     if (p !== 0) return p;
-    return (limpar(a.estadio)).localeCompare(limpar(b.estadio), "pt", {
+
+    return limpar(a.estadio).localeCompare(limpar(b.estadio), "pt", {
       sensitivity: "base",
       numeric: true,
     });
@@ -2256,9 +2277,10 @@ return (
 {(() => {
   let lastSetor = null;
   let toggle = false;
-
+  const chaveRegra = getEquipaCasaCanonica(r.evento);
+  
   return getComprasOrdenadas(r.evento, r.data_evento).map((c) => {
-    const setorAtual = compraChave(c);
+    const setorAtual = compraChaveOperacionalExata(c, chaveRegra);
 
     if (setorAtual !== lastSetor) {
       toggle = !toggle;
