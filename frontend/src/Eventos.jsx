@@ -1077,6 +1077,30 @@ const getResumoTituloVendas = (evento, data_evento, chaveRegra = "") => {
     .join(" • ");
 };
 
+const getResumoTituloCompras = (evento, data_evento, chaveRegra = "") => {
+  const arr = compras.filter(
+    c => c.evento === evento && c.data_evento === data_evento
+  );
+  if (!arr.length) return "";
+
+  const mapa = new Map();
+
+  for (const c of arr) {
+    const chave = compraChaveOperacionalExata(c, chaveRegra);
+    const qtd = Number(c.quantidade || 0);
+    if (!qtd) continue;
+
+    mapa.set(chave, (mapa.get(chave) || 0) + qtd);
+  }
+
+  return [...mapa.entries()]
+    .sort((a, b) =>
+      a[0].localeCompare(b[0], "pt", { sensitivity: "base", numeric: true })
+    )
+    .map(([setor, qtd]) => `${setor} (${qtd})`)
+    .join(" • ");
+};
+
 // Lista ordenada de vendas do evento (por setor exato; depois pelo texto completo)
 const getVendasOrdenadas = (evento, data_evento) => {
   const arr = [...(idxVendasPorEvento.get(`${evento}|${data_evento}`) || [])];
@@ -2264,9 +2288,27 @@ return (
 
 
 
-   <tr className="bg-yellow-50 dark:bg-yellow-900 text-sm border-t border-l-4 border-yellow-600">
+   <<tr className="bg-yellow-50 dark:bg-yellow-900 text-sm border-t border-l-4 border-yellow-600">
   <td colSpan="9" className="p-2 font-semibold">
-    Compras ({compras.filter(c => c.evento === r.evento && c.data_evento === r.data_evento).reduce((acc, c) => acc + Number(c.quantidade || 0), 0)})
+    {(() => {
+      const chaveRegra = getEquipaCasaCanonica(r.evento);
+      const totalCompras = compras
+        .filter(c => c.evento === r.evento && c.data_evento === r.data_evento)
+        .reduce((acc, c) => acc + Number(c.quantidade || 0), 0);
+
+      const resumoCompras = getResumoTituloCompras(
+        r.evento,
+        r.data_evento,
+        chaveRegra
+      );
+
+      return (
+        <div>
+          Compras ({totalCompras})
+          {resumoCompras ? <> — {resumoCompras}</> : null}
+        </div>
+      );
+    })()}
   </td>
 </tr>
 <tr className="border-l-4 border-yellow-600 bg-yellow-100 dark:bg-yellow-800 text-xs font-semibold">
@@ -2651,13 +2693,25 @@ return (
 
                       {/* ✅ Cabeçalho COMPRAS (MOBILE) */}
                       <div className="text-sm font-semibold text-yellow-300 mt-4">
-                        Compras (
-                        {
-                          compras
+                        {(() => {
+                          const chaveRegra = getEquipaCasaCanonica(r.evento);
+                          const totalCompras = compras
                             .filter(c => c.evento === r.evento && c.data_evento === r.data_evento)
-                            .reduce((acc, c) => acc + Number(c.quantidade || 0), 0)
-                        }
-                        )
+                            .reduce((acc, c) => acc + Number(c.quantidade || 0), 0);
+                      
+                          const resumoCompras = getResumoTituloCompras(
+                            r.evento,
+                            r.data_evento,
+                            chaveRegra
+                          );
+                      
+                          return (
+                            <>
+                              Compras ({totalCompras})
+                              {resumoCompras ? <> — {resumoCompras}</> : null}
+                            </>
+                          );
+                        })()}
                       </div>
 
 
