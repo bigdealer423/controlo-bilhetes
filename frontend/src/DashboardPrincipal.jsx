@@ -275,7 +275,10 @@ useEffect(() => {
             </div>
 
             <div className="text-xs text-gray-500 dark:text-gray-400">
-              {new Date(ev.data_evento).toLocaleDateString("pt-PT")}
+              {(() => {
+                const [d, m, y] = ev.data_evento.split("/");
+                return new Date(y, m - 1, d).toLocaleDateString("pt-PT");
+              })()}
             </div>
 
             <div className="flex justify-between mt-2">
