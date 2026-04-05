@@ -240,7 +240,16 @@ const getEquipaCasaCanonica = (evento = "") => {
 const REGRAS_SETOR_OPERACIONAL = {
   default: {
     numerosParaLabel: {},
-    aliasesTexto: {},
+    aliasesTexto: {
+      "bancada nascente": "Nascente",
+      "nascente": "Nascente",
+      "bancada poente": "Poente",
+      "poente": "Poente",
+      "bancada norte": "Norte",
+      "norte": "Norte",
+      "bancada sul": "Sul",
+      "sul": "Sul",
+    },
   },
 
   "Casa Pia": {
@@ -257,6 +266,15 @@ const REGRAS_SETOR_OPERACIONAL = {
       "11": "Dominos 11",
     },
     aliasesTexto: {
+      "bancada nascente": "Nascente",
+      "nascente": "Nascente",
+      "bancada poente": "Poente",
+      "poente": "Poente",
+      "bancada norte": "Norte",
+      "norte": "Norte",
+      "bancada sul": "Sul",
+      "sul": "Sul",
+
       "meltino 2": "Meltino 2",
       "meltino 3": "Meltino 3",
       "meltino 4": "Meltino 4",
@@ -285,7 +303,18 @@ const REGRAS_COBERTURA_UNIDIRECIONAL = {
 
 const getRegrasOperacionais = (estadioNome = "") => {
   const nome = limpar(estadioNome || "");
-  return REGRAS_SETOR_OPERACIONAL[nome] || REGRAS_SETOR_OPERACIONAL.default;
+  const especifica = REGRAS_SETOR_OPERACIONAL[nome] || {};
+
+  return {
+    numerosParaLabel: {
+      ...(REGRAS_SETOR_OPERACIONAL.default?.numerosParaLabel || {}),
+      ...(especifica.numerosParaLabel || {}),
+    },
+    aliasesTexto: {
+      ...(REGRAS_SETOR_OPERACIONAL.default?.aliasesTexto || {}),
+      ...(especifica.aliasesTexto || {}),
+    },
+  };
 };
 
 const getRegrasCobertura = (chaveRegra = "") => {
