@@ -144,7 +144,7 @@ const setorExato = (txt = "") => {
 
 // ——— Chave canónica para COMPRAS (mesmo parser das vendas) ———
 // 👉 SUBSTITUI a tua compraChave por esta
-const compraChave = (c = {}) => compraChaveExata(c);
+
  
 
 const setorGrupo = (txt = "") => {
@@ -199,6 +199,8 @@ const compraChaveGrupo = (c = {}) => {
   const key = setorGrupo(partes).replace(/^Setor\s+/i, "").trim();
   return key || "Outro";
 };
+
+const compraChave = (c = {}) => compraChaveExata(c);
 
 // ——— Nº de bilhetes (fallback 1) ———
 const qtdBilhetes = (txt = "") => {
