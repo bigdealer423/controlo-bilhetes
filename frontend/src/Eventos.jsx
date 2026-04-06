@@ -1439,10 +1439,18 @@ function resumoPorComprar(evento, data_evento, estadioNome) {
 // === IMPRIMIR VENDAS COM BOLA VERMELHA (por evento) ===
 const isVermelho = (val) => typeof val === "string" && /vermelho|red/i.test(val.trim());
 
-const imprimirVendasComNotaVermelha = (vendasDoEvento, tituloEvento = "Vendas com Nota (bola vermelha)") => {
+const imprimirVendasComNotaVermelha = (
+  vendasDoEvento,
+  {
+    tituloEvento = "Vendas com Nota (bola vermelha)",
+    cabecalhoResumo = "",
+    linhaPorComprar = "",
+    linhaPorVender = "",
+    linhaCoberturaIncerta = "",
+  } = {}
+) => {
   if (!Array.isArray(vendasDoEvento)) vendasDoEvento = [];
 
-  // ⚠️ agora só filtra por bola vermelha (nota pode estar vazia)
   const selecionadas = vendasDoEvento.filter(v => isVermelho(v?.circulo_estado_venda));
 
   if (selecionadas.length === 0) {
@@ -1450,15 +1458,21 @@ const imprimirVendasComNotaVermelha = (vendasDoEvento, tituloEvento = "Vendas co
     return;
   }
 
+  const esc = (s) =>
+    String(s ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+
   const linhas = selecionadas.map(v => `
     <tr>
-      <td>${v.id_venda ?? v.id ?? ""}</td>
-      <td>${(v.data_evento ?? "").toString().slice(0,10)}</td>
-      <td>${v.evento ?? ""}</td>
-      <td>${v.estadio ?? ""}</td>
-      <td>${v.ganho ?? ""}</td>
-      <td>${v.estado ?? ""}</td>
-      <td>${String(v.nota_estado_venda ?? "").replace(/</g,"&lt;")}</td>
+      <td>${esc(v.id_venda ?? v.id ?? "")}</td>
+      <td>${esc((v.data_evento ?? "").toString().slice(0, 10))}</td>
+      <td>${esc(v.evento ?? "")}</td>
+      <td>${esc(v.estadio ?? "")}</td>
+      <td>${esc(v.ganho ?? "")}</td>
+      <td>${esc(v.estado ?? "")}</td>
+      <td>${esc(v.nota_estado_venda ?? "")}</td>
     </tr>
   `).join("");
 
@@ -1466,18 +1480,42 @@ const imprimirVendasComNotaVermelha = (vendasDoEvento, tituloEvento = "Vendas co
     <html>
       <head>
         <meta charset="utf-8" />
-        <title>${tituloEvento}</title>
+        <title>${esc(tituloEvento)}</title>
         <style>
-          body { font-family: Arial, sans-serif; padding: 16px; }
-          h1 { font-size: 18px; margin-bottom: 12px; }
+          body { font-family: Arial, sans-serif; padding: 16px; color: #111; }
+          h1 { font-size: 18px; margin-bottom: 8px; }
+          .resumo-bloco { margin-bottom: 14px; }
+          .resumo-titulo { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+          .resumo-linha { font-size: 13px; margin: 3px 0; }
+          .comprar { color: #c62828; font-weight: 700; }
+          .vender { color: #0a8f2f; font-weight: 700; }
+          .incerta { color: #b26a00; font-weight: 700; }
+
           table { width: 100%; border-collapse: collapse; }
-          th, td { border: 1px solid #ccc; padding: 8px; font-size: 12px; }
+          th, td { border: 1px solid #ccc; padding: 8px; font-size: 12px; vertical-align: top; }
           th { background: #f3f3f3; text-align: left; }
-          @media print { @page { margin: 12mm; } }
+
+          @media print {
+            @page { margin: 12mm; }
+          }
         </style>
       </head>
       <body>
-        <h1>${tituloEvento}</h1>
+        <h1>${esc(tituloEvento)}</h1>
+
+        ${
+          cabecalhoResumo || linhaPorComprar || linhaPorVender || linhaCoberturaIncerta
+            ? `
+          <div class="resumo-bloco">
+            ${cabecalhoResumo ? `<div class="resumo-titulo">${esc(cabecalhoResumo)}</div>` : ""}
+            ${linhaPorComprar ? `<div class="resumo-linha comprar">🔴 ${esc(linhaPorComprar)}</div>` : ""}
+            ${linhaCoberturaIncerta ? `<div class="resumo-linha incerta">🟡 ${esc(linhaCoberturaIncerta)}</div>` : ""}
+            ${linhaPorVender ? `<div class="resumo-linha vender">🟢 ${esc(linhaPorVender)}</div>` : ""}
+          </div>
+        `
+            : ""
+        }
+
         <table>
           <thead>
             <tr>
@@ -1499,12 +1537,15 @@ const imprimirVendasComNotaVermelha = (vendasDoEvento, tituloEvento = "Vendas co
   `;
 
   const w = window.open("", "_blank", "width=900,height=700");
-  if (!w) { toast.error("Popup bloqueado. Permite popups para imprimir."); return; }
+  if (!w) {
+    toast.error("Popup bloqueado. Permite popups para imprimir.");
+    return;
+  }
+
   w.document.write(html);
   w.document.close();
   w.focus();
   w.print();
-  // w.close(); // opcional
 };
 
 
@@ -2116,13 +2157,32 @@ return (
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
+                
                     const vendasDoEvento = vendas.filter(
                       (v) => v.evento === r.evento && v.data_evento === r.data_evento
                     );
+                
+                    const chaveRegra = getEquipaCasaCanonica(r.evento);
+                    const resumo = getResumoMatchingInteligente(r.evento, r.data_evento, chaveRegra);
+                    const resumoTitulo = getResumoTituloVendas(r.evento, r.data_evento, chaveRegra);
+                
                     const titulo = `Vendas com Nota (bola vermelha) — ${r.evento} — ${new Date(
                       r.data_evento
                     ).toLocaleDateString("pt-PT")}`;
-                    imprimirVendasComNotaVermelha(vendasDoEvento, titulo);
+                
+                    const cabecalhoResumo = `Vendas (${getTotalBilhetesVendas(r.evento, r.data_evento)})${
+                      resumoTitulo ? ` — ${resumoTitulo}` : ""
+                    }`;
+                
+                    imprimirVendasComNotaVermelha(vendasDoEvento, {
+                      tituloEvento: titulo,
+                      cabecalhoResumo,
+                      linhaPorComprar: resumo.porComprarTxt ? `Por comprar: ${resumo.porComprarTxt}` : "",
+                      linhaCoberturaIncerta: resumo.coberturaIncertaTxt
+                        ? `Cobertura incerta: ${resumo.coberturaIncertaTxt}`
+                        : "",
+                      linhaPorVender: resumo.porVenderTxt ? `Por vender: ${resumo.porVenderTxt}` : "",
+                    });
                   }}
                   title="Imprimir vendas com Nota (bola vermelha) deste evento"
                   className="hidden md:flex items-center justify-center px-2 py-1 rounded bg-emerald-600 hover:bg-emerald-700 text-white leading-none"
