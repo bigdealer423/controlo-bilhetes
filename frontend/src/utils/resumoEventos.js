@@ -1,426 +1,381 @@
+// src/utils/resumoEventos.js
 
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import Calendar from "react-calendar";
-import 'react-calendar/dist/Calendar.css';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover"
-import BarraClubes from "./BarraClubes";
+const limpar = (s = "") =>
+  String(s)
+    .normalize("NFKC")
+    .replace(/\u00A0/g, " ")
+    .replace(/[\u200B-\u200D\uFEFF]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
 
+const canonFamilia = (w = "") => {
+  const x = String(w).toLowerCase().normalize("NFKC").trim();
 
-export default function DashboardPrincipal() {
-  console.log("DASHBOARD RENDER");
-  const [resumoFaltas, setResumoFaltas] = useState([]);
-  const [registosCompras, setRegistosCompras] = useState([]);
-  const [registosVendas, setRegistosVendas] = useState([]);
-  const [resumo, setResumo] = useState({ ganhos: 0, gastos: 0, lucro: 0, entregasPendentes: 0 });
-  const [ultimosEventos, setUltimosEventos] = useState([]);
-  const [dataSelecionada, setDataSelecionada] = useState(new Date());
-  const [clubes, setClubes] = useState([]);
-  const navigate = useNavigate();
-  const irParaEventoExpandido = (nomeEvento) => {
-  navigate(`/eventos?expandir=${encodeURIComponent(nomeEvento)}`);
+  if (x === "lower" || x === "piso 0" || x === "piso zero" || x === "p0") return "Lower";
+  if (x === "middle" || x === "piso 1" || x === "piso um" || x === "piso primeiro" || x === "p1") return "Middle";
+  if (x === "upper" || x === "piso 3" || x === "piso tres" || x === "piso três" || x === "p3") return "Upper";
+
+  if (x === "sector" || x === "setor" || x === "section" || x === "secao" || x === "seção" || x === "secção")
+    return "Setor";
+
+  if (x === "block" || x === "bloco") return "Block";
+  if (x === "stand" || x === "bancada") return "Stand";
+  if (x === "tribuna") return "Tribuna";
+  if (x === "ring" || x === "anel") return "Ring";
+  if (x === "tier" || x === "nivel" || x === "nível" || x === "level") return "Level";
+  if (x === "nascente") return "Nascente";
+  if (x === "poente") return "Poente";
+  if (x === "norte") return "Norte";
+  if (x === "sul") return "Sul";
+
+  return w;
 };
 
-  const [eventosCalendario, setEventosCalendario] = useState([]);
-  const [entregasPendentesDetalhadas, setEntregasPendentesDetalhadas] = useState([]);
-  const [isDarkMode, setIsDarkMode] = useState(
-  window.matchMedia &&
-  window.matchMedia('(prefers-color-scheme: dark)').matches
-);
+const setorExato = (txt = "") => {
+  let s = limpar(txt);
 
-useEffect(() => {
-  const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-  const handleChange = (e) => setIsDarkMode(e.matches);
-  mediaQuery.addEventListener('change', handleChange);
-  return () => mediaQuery.removeEventListener('change', handleChange);
-}, []);
+  s = s.replace(/\([^)]*\)\s*$/g, "").trim();
+  s = s.split(",")[0].split(" - ")[0].split(";")[0].trim();
+  s = s.replace(/\b(Fila|Row|Gate|Porta|Entrada|Door|Seat|Lugar)\b.*$/i, "").trim();
 
-useEffect(() => {
-    const fetchEventosCalendario = async () => {
-        try {
-            const res = await fetch("https://controlo-bilhetes.onrender.com/eventos_calendario");
-            const data = await res.json();
-            setEventosCalendario(data);
-        } catch (error) {
-            console.error("Erro ao carregar eventos do calendário:", error);
-        }
-    };
-    fetchEventosCalendario();
-}, []);
+  s = s.replace(/\b(piso\s*zero|piso\s*0|p0)\b/gi, "Lower");
+  s = s.replace(/\b(middle|piso\s*1|piso\s*um|piso\s*primeiro|p1)\b/gi, "Middle");
+  s = s.replace(/\b(upper|piso\s*3|piso\s*tr[eê]s|p3)\b/gi, "Upper");
 
+  s = s.replace(/\b(section|sect(?:ion)?|sec(?:ção|cao|cç?ao)?|sector|setor)\b/gi, "Setor");
+  s = s.replace(/\bSetor\s+(Lower|Middle|Upper)\b/gi, "$1");
 
-  useEffect(() => {
-    const fetchClubes = async () => {
-      try {
-        const res = await fetch("https://controlo-bilhetes.onrender.com/clubes");
-        const data = await res.json();
-        setClubes(data);
-      } catch (error) {
-        console.error("Erro ao carregar clubes:", error);
-      }
-    };
-    fetchClubes();
-  }, []);
+  s = s.replace(/\bmais\s+vantagens\b/gi, "");
+  s = s.replace(/\bemirates\b/gi, "");
+  s = s.replace(/\b(continente|worten|fnac|loja|online|site)\b/gi, "");
+  s = s.replace(/\s*-+\s*$/g, "").trim();
+  s = s.replace(/\s{2,}/g, " ");
 
-  useEffect(() => {
-    const fetchResumo = async () => {
-      try {
-        const res = await fetch("https://controlo-bilhetes.onrender.com/resumo_dashboard");
-        const data = await res.json();
-        setResumo(data);
-        setUltimosEventos(data.ultimos_eventos);
-      } catch (error) {
-        console.error("Erro ao carregar resumo do dashboard:", error);
-      }
-    };
-    fetchResumo();
-  }, []);
-
-  useEffect(() => {
-  const fetchEntregasPendentes = async () => {
-    try {
-      const res = await fetch("https://controlo-bilhetes.onrender.com/entregas_pendentes_proximos_15_dias");
-      const data = await res.json();
-      setEntregasPendentesDetalhadas(data);
-    } catch (error) {
-      console.error("Erro ao carregar entregas pendentes:", error);
-    }
-  };
-  fetchEntregasPendentes();
-}, []);
-
-  useEffect(() => {
-    const fetchDados = async () => {
-      try {
-        const [comprasRes, vendasRes] = await Promise.all([
-          fetch("https://controlo-bilhetes.onrender.com/compras"),
-          fetch("https://controlo-bilhetes.onrender.com/listagem_vendas")
-        ]);
-  
-        const compras = await comprasRes.json();
-        const vendas = await vendasRes.json();
-  
-        setRegistosCompras(compras);
-        setRegistosVendas(vendas);
-      } catch (err) {
-        console.error("Erro ao carregar compras/vendas:", err);
-      }
-    };
-  
-    fetchDados();
-  }, []);
-
-  
-
-  const parseDataSegura = (valor) => {
-  if (!valor || typeof valor !== "string") return null;
-
-  const texto = valor.trim();
-  if (!texto) return null;
-
-  // formato dd/mm/yyyy
-  if (texto.includes("/")) {
-    const partes = texto.split("/");
-    if (partes.length !== 3) return null;
-
-    const [d, m, y] = partes.map(Number);
-    if (!d || !m || !y) return null;
-
-    const data = new Date(y, m - 1, d);
-    return isNaN(data.getTime()) ? null : data;
+  const m = s.match(/^([A-Za-zÀ-ÿ]+)(?:\s+(.*))?$/);
+  if (m) {
+    const fam = canonFamilia(m[1]);
+    let resto = (m[2] || "").trim();
+    resto = resto.replace(/\b0+(\d+)\b/g, "$1");
+    s = resto ? `${fam} ${resto}` : fam;
   }
 
-  // formato yyyy-mm-dd ou ISO
-  const data = new Date(texto);
-  return isNaN(data.getTime()) ? null : data;
+  if (/^devolu/i.test(s)) return "Devolução";
+  return s || "Outros";
 };
 
-const formatarDataSegura = (valor) => {
-  const data = parseDataSegura(valor);
-  return data ? data.toLocaleDateString("pt-PT") : "Data inválida";
+const setorGrupo = (txt = "") => {
+  let s = limpar(txt);
+
+  s = s.replace(/\([^)]*\)\s*$/g, "").trim();
+  s = s.split(",")[0].split(" - ")[0].split(";")[0].trim();
+  s = s.replace(/\b(Fila|Row|Gate|Porta|Entrada|Door|Seat|Lugar)\b.*$/i, "").trim();
+
+  s = s.replace(/\bmais\s+vantagens\b/gi, "");
+  s = s.replace(/\bemirates\b/gi, "");
+  s = s.replace(/\b(continente|worten|fnac|loja|online|site)\b/gi, "");
+  s = s.replace(/\s{2,}/g, " ").trim();
+
+  s = s.replace(/\b(piso\s*zero|piso\s*0|p0)\b/gi, "Lower");
+  s = s.replace(/\b(middle|piso\s*1|piso\s*um|piso\s*primeiro|p1)\b/gi, "Middle");
+  s = s.replace(/\b(upper|piso\s*3|piso\s*tr[eê]s|p3)\b/gi, "Upper");
+
+  s = s.replace(/\b(section|sect(?:ion)?|sec(?:ção|cao|cç?ao)?|sector|setor)\b/gi, "Setor");
+  s = s.replace(/\bSetor\s+(Lower|Middle|Upper)\b/gi, "$1");
+  s = s.replace(/\s{2,}/g, " ").trim();
+
+  if (!s) return "Outros";
+
+  const famMatch = s.match(/^(Lower|Middle|Upper|Setor|Block|Stand|Tribuna|Ring|Level|Nascente|Poente|Norte|Sul)\b/i);
+  if (famMatch) return canonFamilia(famMatch[1]);
+
+  const primeiroToken = s.match(/^([A-Za-zÀ-ÿ]+)\b/);
+  if (primeiroToken) return canonFamilia(primeiroToken[1]);
+
+  return s;
 };
 
-const eventoAindaNaoPassou = (dataStr) => {
-  const dataEvento = parseDataSegura(dataStr);
-  if (!dataEvento) return false;
-
-  const hoje = new Date();
-  hoje.setHours(0, 0, 0, 0);
-
-  return dataEvento >= hoje;
+const qtdBilhetes = (txt = "") => {
+  const s = String(txt).trim();
+  if (/^\d+$/.test(s)) return Number(s);
+  const m = s.match(/\((\d+)\s*Bilhetes?\)/i);
+  return m ? Number(m[1]) : 0;
 };
-useEffect(() => {
-  const mapaEventos = new Map();
 
-  const mesAtual = dataSelecionada.getMonth();
-  const anoAtual = dataSelecionada.getFullYear();
+const ALIASES_EQUIPAS_CASA = {
+  "casa pia": "Casa Pia",
+  "casa pia ac": "Casa Pia",
+  "casa pia a.c.": "Casa Pia",
+  "casa pia atletico clube": "Casa Pia",
+  "casa pia atlético clube": "Casa Pia",
+  "az": "AZ Alkmaar",
+  "az alkmaar": "AZ Alkmaar",
+  "sl benfica": "SL Benfica",
+  benfica: "SL Benfica",
+  sporting: "Sporting CP",
+  "sporting cp": "Sporting CP",
+  "fc porto": "FC Porto",
+  porto: "FC Porto",
+};
 
-  const dentroDoMes = (dataStr) => {
-    const d = parseDataSegura(dataStr);
-    if (!d) return false;
-    return d.getMonth() === mesAtual && d.getFullYear() === anoAtual;
+const normalizarNomeEquipa = (s = "") =>
+  limpar(s)
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[.\-_/]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLowerCase();
+
+const extrairEquipaCasaRaw = (evento = "") => {
+  const s = limpar(evento);
+  const partes = s.split(/\bvs\b/i).map((p) => limpar(p)).filter(Boolean);
+  return partes[0] || s;
+};
+
+export const getEquipaCasaCanonica = (evento = "") => {
+  const raw = extrairEquipaCasaRaw(evento);
+  const norm = normalizarNomeEquipa(raw);
+
+  if (ALIASES_EQUIPAS_CASA[norm]) return ALIASES_EQUIPAS_CASA[norm];
+
+  const match = Object.entries(ALIASES_EQUIPAS_CASA).find(([alias]) => {
+    return norm === alias || norm.includes(alias) || alias.includes(norm);
+  });
+
+  return match ? match[1] : raw;
+};
+
+const REGRAS_SETOR_OPERACIONAL = {
+  default: {
+    numerosParaLabel: {},
+    aliasesTexto: {
+      "bancada nascente": "Nascente",
+      nascente: "Nascente",
+      "bancada poente": "Poente",
+      poente: "Poente",
+      "bancada norte": "Norte",
+      norte: "Norte",
+      "bancada sul": "Sul",
+      sul: "Sul",
+    },
+  },
+  "Casa Pia": {
+    numerosParaLabel: {
+      "2": "Meltino 2",
+      "3": "Meltino 3",
+      "4": "Meltino 4",
+      "5": "Valhala 5",
+      "6": "Valhala 6",
+      "7": "Valhala 7",
+      "8": "Dominos 8",
+      "9": "Dominos 9",
+      "10": "Dominos 10",
+      "11": "Dominos 11",
+    },
+    aliasesTexto: {
+      "bancada nascente": "Nascente",
+      nascente: "Nascente",
+      "bancada poente": "Poente",
+      poente: "Poente",
+      "bancada norte": "Norte",
+      norte: "Norte",
+      "bancada sul": "Sul",
+      sul: "Sul",
+      "meltino 2": "Meltino 2",
+      "meltino 3": "Meltino 3",
+      "meltino 4": "Meltino 4",
+      "val hala 5": "Valhala 5",
+      "valhala 5": "Valhala 5",
+      "val hala 6": "Valhala 6",
+      "valhala 6": "Valhala 6",
+      "val hala 7": "Valhala 7",
+      "valhala 7": "Valhala 7",
+      "dominos 8": "Dominos 8",
+      "dominos 9": "Dominos 9",
+      "dominos 10": "Dominos 10",
+      "dominos 11": "Dominos 11",
+      "bancada meltino café": "Bancada Meltino Café",
+      "meltino café": "Bancada Meltino Café",
+    },
+  },
+};
+
+const REGRAS_COBERTURA_UNIDIRECIONAL = {
+  "Casa Pia": {
+    "Bancada Meltino Café": ["Meltino 2", "Meltino 3", "Meltino 4"],
+    "Bancada Valhala Café": ["Valhala 5", "Valhala 6", "Valhala 7"],
+  },
+};
+
+const getRegrasOperacionais = (estadioNome = "") => {
+  const nome = limpar(estadioNome || "");
+  const especifica = REGRAS_SETOR_OPERACIONAL[nome] || {};
+
+  return {
+    numerosParaLabel: {
+      ...(REGRAS_SETOR_OPERACIONAL.default?.numerosParaLabel || {}),
+      ...(especifica.numerosParaLabel || {}),
+    },
+    aliasesTexto: {
+      ...(REGRAS_SETOR_OPERACIONAL.default?.aliasesTexto || {}),
+      ...(especifica.aliasesTexto || {}),
+    },
   };
+};
 
-  registosCompras.forEach((c) => {
-    if (!dentroDoMes(c.data_evento)) return;
-    if (!eventoAindaNaoPassou(c.data_evento)) return;
-
-    const chave = `${c.evento}|${c.data_evento}`;
-    if (!mapaEventos.has(chave)) {
-      mapaEventos.set(chave, {
-        evento: c.evento,
-        data_evento: c.data_evento,
-      });
-    }
+const getRegrasCobertura = (chaveRegra = "") => {
+  const nome = limpar(chaveRegra || "").toLowerCase();
+  const entrada = Object.entries(REGRAS_COBERTURA_UNIDIRECIONAL).find(([key]) => {
+    return limpar(key).toLowerCase() === nome;
   });
+  return entrada ? entrada[1] : {};
+};
 
-  registosVendas.forEach((v) => {
-    if (!dentroDoMes(v.data_evento)) return;
-    if (!eventoAindaNaoPassou(v.data_evento)) return;
+const chaveOperacionalExata = (txt = "", estadioNome = "") => {
+  const regras = getRegrasOperacionais(estadioNome);
+  const bruto = limpar(txt).toLowerCase();
 
-    const chave = `${v.evento}|${v.data_evento}`;
-    if (!mapaEventos.has(chave)) {
-      mapaEventos.set(chave, {
-        evento: v.evento,
-        data_evento: v.data_evento,
-      });
+  for (const [alias, canonical] of Object.entries(regras.aliasesTexto || {})) {
+    if (bruto.includes(alias)) return canonical;
+  }
+
+  const exato = setorExato(txt).replace(/^Setor\s+/i, "").trim();
+  const exatoLower = exato.toLowerCase();
+
+  for (const [alias, canonical] of Object.entries(regras.aliasesTexto || {})) {
+    if (exatoLower === alias || exatoLower.includes(alias)) return canonical;
+  }
+
+  const mNumeroPuro = exato.match(/^(\d{1,2})$/);
+  if (mNumeroPuro) return regras.numerosParaLabel?.[mNumeroPuro[1]] || exato;
+
+  const mNumeroFinal = exato.match(/(\d{1,2})$/);
+  if (mNumeroFinal) {
+    const canon = regras.numerosParaLabel?.[mNumeroFinal[1]];
+    if (canon) return canon;
+  }
+
+  return exato || "Outros";
+};
+
+const vendaChaveOperacionalExata = (v = {}, estadioNome = "") =>
+  chaveOperacionalExata(v.estadio, estadioNome);
+
+const compraChaveOperacionalExata = (c = {}, estadioNome = "") => {
+  const partes = [c.bancada, c.setor].filter(Boolean).join(" ");
+  return chaveOperacionalExata(partes, estadioNome);
+};
+
+const mapVendasPorSetorExato = (evento, data_evento, estadioNome = "", registosVendas = []) => {
+  const arr = registosVendas.filter(
+    (v) => v.evento === evento && v.data_evento === data_evento
+  );
+  const map = new Map();
+
+  for (const v of arr) {
+    const key = vendaChaveOperacionalExata(v, estadioNome);
+    if (key === "Devolução") continue;
+
+    const qtd = qtdBilhetes(v.estadio) || 0;
+    if (!qtd) continue;
+
+    map.set(key, (map.get(key) || 0) + qtd);
+  }
+
+  return map;
+};
+
+const mapComprasPorSetorExato = (evento, data_evento, estadioNome = "", registosCompras = []) => {
+  const arr = registosCompras.filter(
+    (c) => c.evento === evento && c.data_evento === data_evento
+  );
+  const map = new Map();
+
+  for (const c of arr) {
+    const key = compraChaveOperacionalExata(c, estadioNome);
+    const qtd = Number(c.quantidade || 0);
+    if (!qtd) continue;
+
+    map.set(key, (map.get(key) || 0) + qtd);
+  }
+
+  return map;
+};
+
+export const getResumoMatchingInteligente = (
+  evento,
+  data_evento,
+  chaveRegra = "",
+  registosCompras = [],
+  registosVendas = []
+) => {
+  const vendasExatas = mapVendasPorSetorExato(
+    evento,
+    data_evento,
+    chaveRegra,
+    registosVendas
+  );
+
+  const comprasExatas = mapComprasPorSetorExato(
+    evento,
+    data_evento,
+    chaveRegra,
+    registosCompras
+  );
+
+  const regrasCobertura = getRegrasCobertura(chaveRegra);
+
+  const faltas = new Map();
+  const sobras = new Map();
+
+  const chavesExatas = new Set([
+    ...vendasExatas.keys(),
+    ...comprasExatas.keys(),
+  ]);
+
+  for (const key of chavesExatas) {
+    const qV = vendasExatas.get(key) || 0;
+    const qC = comprasExatas.get(key) || 0;
+
+    if (qV > qC) faltas.set(key, qV - qC);
+    if (qC > qV) sobras.set(key, qC - qV);
+  }
+
+  for (const [alvoGenerico, origens] of Object.entries(regrasCobertura)) {
+    let falta = faltas.get(alvoGenerico) || 0;
+    if (!falta) continue;
+
+    for (const origem of origens) {
+      const sobra = sobras.get(origem) || 0;
+      if (!sobra || !falta) continue;
+
+      const uso = Math.min(falta, sobra);
+      falta -= uso;
+
+      const sobraRestante = sobra - uso;
+      if (sobraRestante > 0) sobras.set(origem, sobraRestante);
+      else sobras.delete(origem);
     }
-  });
 
-  const resultado = Array.from(mapaEventos.values())
-  .map((ev) => {
-    try {
-      const chaveRegra = getEquipaCasaCanonica(ev.evento);
+    if (falta > 0) faltas.set(alvoGenerico, falta);
+    else faltas.delete(alvoGenerico);
+  }
 
-      const resumo = getResumoMatchingInteligente(
-        ev.evento,
-        ev.data_evento,
-        chaveRegra
-      );
+  const porComprar = [...faltas.entries()];
+  const porVender = [...sobras.entries()];
 
-      console.log("Resumo evento:", ev.evento, resumo);
+  const fmt = (arr) =>
+    arr
+      .sort((a, b) => a[0].localeCompare(b[0], "pt", { numeric: true, sensitivity: "base" }))
+      .map(([k, q]) => `${k} (${q})`)
+      .join(" • ");
 
-      return {
-        ...ev,
-        porComprarTxt: resumo?.porComprarTxt || "",
-        porVenderTxt: resumo?.porVenderTxt || "",
-      };
-    } catch (e) {
-      console.error("Erro no resumo do evento:", ev, e);
-
-      return {
-        ...ev,
-        porComprarTxt: "",
-        porVenderTxt: "",
-      };
-    }
-  })
-  .filter((ev) => ev.porComprarTxt || ev.porVenderTxt)
-  .sort((a, b) => {
-    const dataA = parseDataSegura(a.data_evento);
-    const dataB = parseDataSegura(b.data_evento);
-
-    if (!dataA && !dataB) return 0;
-    if (!dataA) return 1;
-    if (!dataB) return -1;
-
-    return dataA - dataB;
-  });
-
-  setResumoFaltas(resultado);
-}, [registosCompras, registosVendas, dataSelecionada]);
-  return (
-  <div>
-    <BarraClubes />
-    <div className="p-4 w-full">
-      <h1 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Dashboard</h1>
-
-      <TooltipProvider>
-  <div className="grid grid-cols-1 xl:grid-cols-[380px_1fr] gap-4">
-
-    <div className="bg-white dark:bg-gray-900 p-4 rounded shadow transition-colors duration-300">
-      <Calendar
-        onChange={setDataSelecionada}
-        value={dataSelecionada}
-        className="mb-4 rounded shadow"
-        tileClassName={({ date, view }) => {
-          if (view === "month") {
-            const eventosDoDia = eventosCalendario.filter((evento) => {
-              const [dia, mes, ano] = String(evento.data_evento || "").split("/");
-              return (
-                parseInt(dia) === date.getDate() &&
-                parseInt(mes) === date.getMonth() + 1 &&
-                parseInt(ano) === date.getFullYear()
-              );
-            });
-
-            if (eventosDoDia.length > 0) {
-              const todosPagos = eventosDoDia.every((e) => e.estado === "Pago");
-              const algumEmDisputa = eventosDoDia.some((e) => e.estado === "Disputa");
-
-              if (algumEmDisputa && !todosPagos) {
-                return "!bg-red-300 !text-white dark:!bg-red-700 dark:!text-white font-semibold rounded-full";
-              }
-
-              if (todosPagos) {
-                return "!bg-green-300 !text-white dark:!bg-green-700 dark:!text-white font-semibold rounded-full";
-              }
-
-              return "!bg-blue-200 !text-blue-900 dark:!bg-blue-700 dark:!text-blue-100 font-semibold rounded-full";
-            }
-          }
-          return null;
-        }}
-        tileContent={({ date, view }) => {
-          if (view === "month") {
-            const eventosDoDia = eventosCalendario.filter((evento) => {
-              const [dia, mes, ano] = String(evento.data_evento || "").split("/");
-              return (
-                parseInt(dia) === date.getDate() &&
-                parseInt(mes) === date.getMonth() + 1 &&
-                parseInt(ano) === date.getFullYear()
-              );
-            });
-
-            if (eventosDoDia.length > 0) {
-              return (
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <button className="w-full h-full cursor-pointer bg-transparent border-none p-0 m-0"></button>
-                  </PopoverTrigger>
-                  <PopoverContent className="max-w-xs">
-                    <div className="flex flex-col gap-1">
-                      {eventosDoDia.map((evento, idx) => (
-                        <div key={idx} className="text-sm text-gray-900 dark:text-gray-100">
-                          {evento.nome_evento}
-                        </div>
-                      ))}
-                    </div>
-                  </PopoverContent>
-                </Popover>
-              );
-            }
-          }
-          return null;
-        }}
-      />
-    </div>
-
-    <div className="bg-white dark:bg-gray-900 p-4 rounded shadow max-h-[420px] overflow-y-auto">
-      <h2 className="text-md font-semibold mb-3 text-gray-900 dark:text-gray-100">
-        Falta Comprar / Vender
-      </h2>
-
-      {resumoFaltas.length === 0 ? (
-        <p className="text-sm text-gray-500 dark:text-gray-400">
-          ✅ Tudo equilibrado neste mês
-        </p>
-      ) : (
-        <div className="space-y-2">
-          {resumoFaltas.map((ev, i) => (
-            <div
-              key={i}
-              onClick={() => irParaEventoExpandido(ev.evento)}
-              className="bg-gray-100 dark:bg-gray-800 p-3 rounded text-sm cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700"
-            >
-              <div className="font-semibold text-gray-900 dark:text-gray-100">
-                {ev.evento}
-              </div>
-
-              <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">
-                {formatarDataSegura(ev.data_evento)}
-              </div>
-
-              {ev.porComprarTxt ? (
-                <div className="text-red-500 font-medium">
-                  Por comprar: {ev.porComprarTxt}
-                </div>
-              ) : null}
-
-              {ev.porVenderTxt ? (
-                <div className="text-green-500 font-medium mt-1">
-                  Por vender: {ev.porVenderTxt}
-                </div>
-              ) : null}
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-
-  </div>
-</TooltipProvider>
-
-      {/* ✅ BLOCO QUE ESTAVA FORA, AGORA INSERIDO CORRETAMENTE */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 mt-4">
-        <div className="bg-green-100 dark:bg-green-900 p-4 rounded shadow">
-          <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100">Ganhos</h2>
-          <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">€ {resumo.ganhos ? Math.round(resumo.ganhos) : "0"}</p>
-        </div>
-        <div className="bg-red-100 dark:bg-red-900 p-4 rounded shadow">
-          <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100">Gastos</h2>
-          <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">€ {resumo.gastos ? Math.round(resumo.gastos) : "0"}</p>
-        </div>
-        <div className="bg-blue-100 dark:bg-blue-900 p-4 rounded shadow">
-          <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100">Lucro Líquido</h2>
-          <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">€ {resumo.lucro ? Math.round(resumo.lucro) : "0"}</p>
-        </div>
-      </div>
-
-      <div className="bg-yellow-100 dark:bg-yellow-900 p-4 rounded shadow mb-4">
-        <p className="font-medium text-gray-900 dark:text-gray-100 mb-1">
-          ⚠️ Entregas pendentes nos próximos 15 dias:
-        </p>
-      
-        {entregasPendentesDetalhadas.length === 0 ? (
-          <p className="text-gray-900 dark:text-gray-100">
-            ✅ Sem entregas pendentes neste período.
-          </p>
-        ) : (
-          <div className="flex flex-col gap-1">
-            {entregasPendentesDetalhadas.map((e, idx) => (
-              <div
-                key={idx}
-                onClick={() => irParaEventoExpandido(e.evento)}
-                className="cursor-pointer hover:underline text-gray-900 dark:text-gray-100"
-              >
-                {e.bilhetes} {e.bilhetes === 1 ? "Entrega pendente" : "Entregas pendentes"} – {e.evento} ({formatarDataSegura(e.data_evento)})
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-
-
-      <h2 className="text-lg font-semibold mb-2 text-gray-900 dark:text-gray-100">Últimos eventos / vendas</h2>
-      <div className="space-y-2">
-        {ultimosEventos.map((evento) => (
-          <div
-            key={evento.id}
-            className="bg-white dark:bg-gray-800 p-3 rounded shadow flex justify-between items-center cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
-            onClick={() => navigate(`/listagem-vendas?id=${evento.id}`)}
-          >
-            <div>
-              <p className="font-medium text-gray-900 dark:text-gray-100">{evento.nome_evento}</p>
-              <p className="text-sm text-gray-600 dark:text-gray-300">{evento.data_evento}</p>
-            </div>
-            <span className={`text-xs px-2 py-1 rounded ${
-              evento.estado === "Pago"
-                ? "bg-green-200 dark:bg-green-700"
-                : evento.estado === "Disputa"
-                  ? "bg-red-200 dark:bg-red-700"
-                  : "bg-gray-200 dark:bg-gray-700"
-            }`}>
-              {evento.estado}
-            </span>
-          </div>
-        ))}
-      </div>
-      {/* ✅ FIM DO BLOCO INSERIDO */}
-    </div>
-  </div>
-);
-}
-  
+  return {
+    porComprar,
+    porVender,
+    coberturaIncerta: [],
+    porComprarTxt: fmt(porComprar),
+    porVenderTxt: fmt(porVender),
+    coberturaIncertaTxt: "",
+  };
+};
