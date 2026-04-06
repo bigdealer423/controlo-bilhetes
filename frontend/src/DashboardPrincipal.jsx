@@ -111,20 +111,49 @@ useEffect(() => {
     fetchDados();
   }, []);
 
-  useEffect(() => {
+  
+
+  const parseDataSegura = (valor) => {
+  if (!valor || typeof valor !== "string") return null;
+
+  const texto = valor.trim();
+  if (!texto) return null;
+
+  // formato dd/mm/yyyy
+  if (texto.includes("/")) {
+    const partes = texto.split("/");
+    if (partes.length !== 3) return null;
+
+    const [d, m, y] = partes.map(Number);
+    if (!d || !m || !y) return null;
+
+    const data = new Date(y, m - 1, d);
+    return isNaN(data.getTime()) ? null : data;
+  }
+
+  // formato yyyy-mm-dd ou ISO
+  const data = new Date(texto);
+  return isNaN(data.getTime()) ? null : data;
+};
+
+const formatarDataSegura = (valor) => {
+  const data = parseDataSegura(valor);
+  return data ? data.toLocaleDateString("pt-PT") : "Data inválida";
+};
+
+
+useEffect(() => {
   const mapa = {};
 
   const mesAtual = dataSelecionada.getMonth();
   const anoAtual = dataSelecionada.getFullYear();
 
   const dentroDoMes = (dataStr) => {
-  const d = parseDataSegura(dataStr);
-  if (!d) return false;
+    const d = parseDataSegura(dataStr);
+    if (!d) return false;
 
-  return d.getMonth() === mesAtual && d.getFullYear() === anoAtual;
-};
-
-
+    return d.getMonth() === mesAtual && d.getFullYear() === anoAtual;
+  };
 
   registosCompras.forEach((c) => {
     if (!dentroDoMes(c.data_evento)) return;
@@ -161,7 +190,7 @@ useEffect(() => {
   });
 
   const resultado = Object.values(mapa)
-    .map(ev => {
+    .map((ev) => {
       const diff = ev.vendidos - ev.comprados;
 
       return {
@@ -170,54 +199,21 @@ useEffect(() => {
         faltaVender: diff < 0 ? Math.abs(diff) : 0,
       };
     })
-    .filter(ev => ev.faltaComprar > 0 || ev.faltaVender > 0) // 🔥 só os que interessam
+    .filter((ev) => ev.faltaComprar > 0 || ev.faltaVender > 0)
     .sort((a, b) => {
-  const dataA = parseDataSegura(a.data_evento);
-  const dataB = parseDataSegura(b.data_evento);
+      const dataA = parseDataSegura(a.data_evento);
+      const dataB = parseDataSegura(b.data_evento);
 
-  if (!dataA && !dataB) return 0;
-  if (!dataA) return 1;
-  if (!dataB) return -1;
+      if (!dataA && !dataB) return 0;
+      if (!dataA) return 1;
+      if (!dataB) return -1;
 
-  return dataA - dataB;
-});
+      return dataA - dataB;
+    });
 
-  return new Date(y1, m1 - 1, d1) - new Date(y2, m2 - 1, d2);
-});
   console.log("RESULTADO FINAL:", resultado);
   setResumoFaltas(resultado);
-
-}, [registosCompras, registosVendas, dataSelecionada]);
-
-
-  const parseDataSegura = (valor) => {
-  if (!valor || typeof valor !== "string") return null;
-
-  const texto = valor.trim();
-  if (!texto) return null;
-
-  // formato dd/mm/yyyy
-  if (texto.includes("/")) {
-    const partes = texto.split("/");
-    if (partes.length !== 3) return null;
-
-    const [d, m, y] = partes.map(Number);
-    if (!d || !m || !y) return null;
-
-    const data = new Date(y, m - 1, d);
-    return isNaN(data.getTime()) ? null : data;
-  }
-
-  // formato yyyy-mm-dd ou ISO
-  const data = new Date(texto);
-  return isNaN(data.getTime()) ? null : data;
-};
-
-const formatarDataSegura = (valor) => {
-  const data = parseDataSegura(valor);
-  return data ? data.toLocaleDateString("pt-PT") : "Data inválida";
-};
-  
+}, [registosCompras, registosVendas, dataSelecionada]);  
   return (
   <div>
     <BarraClubes />
