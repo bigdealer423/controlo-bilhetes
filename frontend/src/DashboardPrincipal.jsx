@@ -232,7 +232,7 @@ useEffect(() => {
   return (
   <div>
     <BarraClubes />
-    <div className="p-4 w-full">
+    <div className="p-4 max-w-[1100px] mx-auto">
       <h1 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Dashboard</h1>
 
       <TooltipProvider>
