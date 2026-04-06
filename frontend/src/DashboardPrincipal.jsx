@@ -190,8 +190,11 @@ useEffect(() => {
 
   const resultado = Array.from(mapaEventos.values())
     .map((ev) => {
-      const chaveRegra = getEquipaCasaCanonica(ev.evento);
-      const resumo = getResumoMatchingInteligente(ev.evento, ev.data_evento, chaveRegra);
+      return {
+  ...ev,
+  porComprarTxt: "",
+  porVenderTxt: "",
+};
 
       return {
         ...ev,
@@ -298,66 +301,41 @@ useEffect(() => {
       Falta Comprar / Vender
     </h2>
 
-    {resumoFaltas.length === 0 ? (
-      <p className="text-sm text-gray-500 dark:text-gray-400">
-        ✅ Tudo equilibrado neste mês
-      </p>
-    ) : (
-      <div className="space-y-2">
-        {resumoFaltas.map((ev, i) => (
-          <div
-            key={i}
-            onClick={() => irParaEventoExpandido(ev.evento)}
-            className="bg-gray-100 dark:bg-gray-800 p-3 rounded text-sm cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700"
-          >
-            <div className="font-semibold text-gray-900 dark:text-gray-100">
-              {ev.evento}
-            </div>
-
-           <div className="text-xs text-gray-500 dark:text-gray-400">
-  {formatarDataSegura(ev.data_evento)}
-</div>
-
-            <div className="bg-white dark:bg-gray-900 p-4 rounded shadow max-h-[420px] overflow-y-auto">
-  <h2 className="text-md font-semibold mb-3 text-gray-900 dark:text-gray-100">
-    Falta Comprar / Vender
-  </h2>
-
-  {resumoFaltas.length === 0 ? (
-    <p className="text-sm text-gray-500 dark:text-gray-400">
-      ✅ Tudo equilibrado neste mês
-    </p>
-  ) : (
-    <div className="space-y-3">
-      {resumoFaltas.map((ev, i) => (
-        <div
-          key={i}
-          onClick={() => irParaEventoExpandido(ev.evento)}
-          className="bg-gray-100 dark:bg-gray-800 p-3 rounded text-sm cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700"
-        >
-          <div className="font-semibold text-gray-900 dark:text-gray-100">
-            {ev.evento}
-          </div>
-
-          <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">
-            {formatarDataSegura(ev.data_evento)}
-          </div>
-
-          {ev.porComprarTxt ? (
-            <div className="text-red-500 font-medium">
-              Por comprar: {ev.porComprarTxt}
-            </div>
-          ) : null}
-
-          {ev.porVenderTxt ? (
-            <div className="text-green-500 font-medium mt-1">
-              Por vender: {ev.porVenderTxt}
-            </div>
-          ) : null}
+{resumoFaltas.length === 0 ? (
+  <p className="text-sm text-gray-500 dark:text-gray-400">
+    ✅ Tudo equilibrado neste mês
+  </p>
+) : (
+  <div className="space-y-2">
+    {resumoFaltas.map((ev, i) => (
+      <div
+        key={i}
+        onClick={() => irParaEventoExpandido(ev.evento)}
+        className="bg-gray-100 dark:bg-gray-800 p-3 rounded text-sm cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700"
+      >
+        <div className="font-semibold text-gray-900 dark:text-gray-100">
+          {ev.evento}
         </div>
-      ))}
-    </div>
-  )}
+
+        <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+          {formatarDataSegura(ev.data_evento)}
+        </div>
+
+        {ev.porComprarTxt ? (
+          <div className="text-red-500 font-medium">
+            Por comprar: {ev.porComprarTxt}
+          </div>
+        ) : null}
+
+        {ev.porVenderTxt ? (
+          <div className="text-green-500 font-medium mt-1">
+            Por vender: {ev.porVenderTxt}
+          </div>
+        ) : null}
+      </div>
+    ))}
+  </div>
+)}
 </div>
           </div>
         ))}
