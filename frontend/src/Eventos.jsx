@@ -2034,7 +2034,7 @@ return (
                 </select>
               ) : (
                 <div className="flex items-center gap-2 min-w-0">
-                  <span className="flex flex-wrap items-center gap-1 min-w-0 overflow-hidden">
+                  <span className="flex items-center gap-1 whitespace-nowrap overflow-hidden text-ellipsis">
                     {renderEventoComSimbolos(r.evento)}
                   </span>
 
