@@ -118,10 +118,18 @@ useEffect(() => {
   const anoAtual = dataSelecionada.getFullYear();
 
   const dentroDoMes = (dataStr) => {
-    if (!dataStr) return false;
-    const d = new Date(dataStr);
+  if (!dataStr) return false;
+
+  if (dataStr.includes("/")) {
+    const [dia, mes, ano] = dataStr.split("/");
+    const d = new Date(ano, mes - 1, dia);
+
     return d.getMonth() === mesAtual && d.getFullYear() === anoAtual;
-  };
+  }
+
+  const d = new Date(dataStr);
+  return d.getMonth() === mesAtual && d.getFullYear() === anoAtual;
+};
 
   registosCompras.forEach((c) => {
     if (!dentroDoMes(c.data_evento)) return;
@@ -168,7 +176,12 @@ useEffect(() => {
       };
     })
     .filter(ev => ev.faltaComprar > 0 || ev.faltaVender > 0) // 🔥 só os que interessam
-    .sort((a, b) => new Date(a.data_evento) - new Date(b.data_evento));
+    .sort((a, b) => {
+  const [d1, m1, y1] = a.data_evento.split("/");
+  const [d2, m2, y2] = b.data_evento.split("/");
+
+  return new Date(y1, m1 - 1, d1) - new Date(y2, m2 - 1, d2);
+});
   console.log("RESULTADO FINAL:", resultado);
   setResumoFaltas(resultado);
 
