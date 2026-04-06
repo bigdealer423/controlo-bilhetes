@@ -124,9 +124,7 @@ useEffect(() => {
   return d.getMonth() === mesAtual && d.getFullYear() === anoAtual;
 };
 
-  const d = new Date(dataStr);
-  return d.getMonth() === mesAtual && d.getFullYear() === anoAtual;
-};
+
 
   registosCompras.forEach((c) => {
     if (!dentroDoMes(c.data_evento)) return;
