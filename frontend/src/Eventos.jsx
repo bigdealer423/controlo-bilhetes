@@ -1925,556 +1925,564 @@ return (
 
 
       <div className="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-md rounded p-4 transition-colors duration-300">
-        <div className="overflow-x-auto w-full">
-          <table className="hidden md:table min-w-full border border-gray-300 dark:border-gray-600 text-sm transition-colors duration-300">
-            <thead className="bg-gray-100 dark:bg-gray-800 transition-colors duration-300">
-               <tr>
-                <th></th>
-                <th className="p-2">Data</th>
-                <th className="p-2">Evento</th>
-                <th className="p-2">Estádio</th>
-                <th className="p-2">Gasto</th>
-                <th className="p-2">Ganho</th>
-                <th className="p-2">Lucro</th>
-                <th className="p-2">Estado</th>
-                <th className="p-2">Ações</th>
-              </tr>
-            </thead>
-            <tbody>
-            {registos
-              .filter(r => {
-                const passaPesquisa = (r.evento || "").toLowerCase().includes(filtroPesquisa.toLowerCase());
-                const filtroAtivo = !!filtroPesquisa.trim();
-                const esconderPago = !filtroAtivo && ocultarPagos && r.estado === "Pago" && modoEdicao !== r.id;
-                const passaEpoca = matchesEpoca(r);
-                return passaPesquisa && !esconderPago && passaEpoca;
-              })
-              .map(r => (
-              <Fragment key={r.id}>
-                <tr
-  
-  ref={(el) => (linhaRefs.current[r.id] = el)}
-  onClick={() => {
-    const novoExpandido = linhaExpandida === r.id ? null : r.id;
-    setLinhaExpandida(novoExpandido);
+       <table className="hidden md:table min-w-full table-fixed border border-gray-300 dark:border-gray-600 text-sm transition-colors duration-300">
+  <colgroup>
+    <col className="w-[44px]" />
+    <col className="w-[110px]" />
+    <col className="w-[330px]" />
+    <col />
+    <col className="w-[95px]" />
+    <col className="w-[95px]" />
+    <col className="w-[95px]" />
+    <col className="w-[120px]" />
+    <col className="w-[150px]" />
+  </colgroup>
 
-    if (novoExpandido !== null) {
-      requestAnimationFrame(() => {
-        setTimeout(() => {
-          const el = linhaRefs.current[r.id];
-          if (el) {
-            el.scrollIntoView({ behavior: "smooth", block: "start" });
-          }
-        }, 150); // ligeiro atraso para garantir que DOM já expandiu
-      });
-    }
-  }}
-  className={`cursor-pointer ${
-    linhaExpandida === r.id
-      ? "bg-blue-100 dark:bg-blue-800 text-gray-900 dark:text-gray-100 font-semibold"
-      : r.estado === "Pago"
-      ? "bg-green-100 dark:bg-green-700"
-      : r.estado === "Entregue"
-      ? "bg-yellow-100 dark:bg-yellow-700"
-      : r.estado === "Disputa"
-      ? "bg-red-200 dark:bg-red-800"
-      : ""
-  } transition-colors duration-300`}
->
+  <thead className="bg-gray-100 dark:bg-gray-800 transition-colors duration-300">
+    <tr className="align-middle">
+      <th className="p-2"></th>
+      <th className="p-2 whitespace-nowrap">Data</th>
+      <th className="p-2 whitespace-nowrap">Evento</th>
+      <th className="p-2 whitespace-nowrap">Estádio</th>
+      <th className="p-2 whitespace-nowrap text-right">Gasto</th>
+      <th className="p-2 whitespace-nowrap text-right">Ganho</th>
+      <th className="p-2 whitespace-nowrap text-right">Lucro</th>
+      <th className="p-2 whitespace-nowrap">Estado</th>
+      <th className="p-2 whitespace-nowrap">Ações</th>
+    </tr>
+  </thead>
 
+  <tbody>
+    {registos
+      .filter(r => {
+        const passaPesquisa = (r.evento || "").toLowerCase().includes(filtroPesquisa.toLowerCase());
+        const filtroAtivo = !!filtroPesquisa.trim();
+        const esconderPago = !filtroAtivo && ocultarPagos && r.estado === "Pago" && modoEdicao !== r.id;
+        const passaEpoca = matchesEpoca(r);
+        return passaPesquisa && !esconderPago && passaEpoca;
+      })
+      .map(r => (
+        <Fragment key={r.id}>
+          <tr
+            ref={(el) => (linhaRefs.current[r.id] = el)}
+            onClick={() => {
+              const novoExpandido = linhaExpandida === r.id ? null : r.id;
+              setLinhaExpandida(novoExpandido);
 
-                 <td className="p-2">
-  {vendas.some(v => v.evento === r.evento && v.data_evento === r.data_evento) || compras.some(c => c.evento === r.evento && c.data_evento === r.data_evento) ? (
-    <button onClick={() => setLinhaExpandida(linhaExpandida === r.id ? null : r.id)}>
-      {linhaExpandida === r.id ? "🔼" : "🔽"}
-    </button>
-  ) : (
-    <span className="text-red-600">🔻</span>
-  )}
-</td>
-  <td className="p-2">
-    {modoEdicao === r.id ? (
-      <input
-        type="date"
-        value={toInputDate(r.data_evento)}   // ✅ agora usa o helper
-        onChange={(e) => atualizarCampo(r.id, "data_evento", e.target.value)}
-        className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300 [color-scheme:dark]"
-      />
-    ) : (
-      formatarDataPt(r.data_evento)
-    )}
-  </td>
-
-
-                  <td className="p-2">
-  {modoEdicao === r.id ? (
-    <select
-  value={r.evento}
-  onChange={(e) => atualizarCampo(r.id, "evento", e.target.value)}
-  className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
->
-  <option value="">-- Selecionar Evento --</option>
-  {eventosDropdown.map(e => (
-    <option key={e.id} value={e.nome}>{e.nome}</option>
-  ))}
-</select>
-  ) : (
-    <div className="flex items-center gap-2">
-      <span className="flex flex-wrap items-center gap-1">
-        {renderEventoComSimbolos(r.evento)}
-      </span>
-    
-      {/* Ícone da nota, se existir */}
-      {r.nota_evento && (
-        <span className="text-yellow-400 animate-pulse" title={r.nota_evento}>📝</span>
-      )}
-    
-      {/* Ícone/link do URL, se existir */}
-      {r.url_evento ? (
-        <a
-          href={normalizeUrl(r.url_evento)}
-          target="_blank"
-          rel="noopener noreferrer"
-          title="Abrir link do evento"
-          className="inline-flex items-center hover:opacity-80"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <img
-            src={viagogoLogo}
-            alt="Viagogo"
-            className="w-5 h-5 inline-block align-[-2px]"
-            loading="lazy"
-          />
-        </a>
-      ) : null}
-    </div>
-  )}
-</td>
-                  <td className="p-2">
-                    {modoEdicao === r.id
-                      ? <input value={r.estadio} onChange={(e) => atualizarCampo(r.id, "estadio", e.target.value)} className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" />
-                      : r.estadio}
-                  </td>
-                  <td className="p-2">{r.gasto} €</td>
-                  <td className="p-2">{r.ganho} €</td>
-                  <td className="p-2">{(r.ganho - r.gasto)} €</td>
-                  <td className="p-2">
-                    {modoEdicao === r.id
-                      ? (
-                        <select value={r.estado} onChange={(e) => atualizarCampo(r.id, "estado", e.target.value)} className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300">
-                          <option value="Entregue">Entregue</option>
-                          <option value="Por entregar">Por entregar</option>
-                          <option value="Disputa">Disputa</option>
-                          <option value="Pago">Pago</option>
-                        </select>
-                      ) : r.estado}
-                  </td>
-                  <td className="p-2 align-middle">
-                    <div className="flex items-center gap-2">
-                      {/* Editar */}
-                      <button
-                        onClick={() => {
-                          if (modoEdicao === r.id) {
-                            guardarEvento(r);
-                          } else {
-                            setModoEdicao(r.id);
-                          }
-                        }}
-                        className="flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded leading-none"
-                        title={modoEdicao === r.id ? "Guardar" : "Editar"}
-                      >
-                        {modoEdicao === r.id ? "💾" : <FaEdit size={14} />}
-                      </button>
-                  
-                      {/* Eliminar */}
-                      <button
-                        onClick={() => confirmarEliminar(r.id)}
-                        className="flex items-center justify-center bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded leading-none"
-                        title="Eliminar"
-                      >
-                        <FaTrash size={14} />
-                      </button>
-                  
-                      {/* Imprimir (só desktop) */}
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          const vendasDoEvento = vendas.filter(
-                            (v) => v.evento === r.evento && v.data_evento === r.data_evento
-                          );
-                          const titulo = `Vendas com Nota (bola vermelha) — ${r.evento} — ${new Date(
-                            r.data_evento
-                          ).toLocaleDateString("pt-PT")}`;
-                          imprimirVendasComNotaVermelha(vendasDoEvento, titulo);
-                        }}
-                        title="Imprimir vendas com Nota (bola vermelha) deste evento"
-                        className="hidden md:flex items-center justify-center px-2 py-1 rounded bg-emerald-600 hover:bg-emerald-700 text-white leading-none"
-                      >
-                        <FaPrint size={14} />
-                      </button>
-                  
-                      {/* Notas */}
-                      {/* Notas (por evento) */}
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setMostrarNotaEventoId(r.id);
-                          setNotaEventoTmp(r.nota_evento || "");
-                          setUrlEventoTmp(r.url_evento || "");
-                        }}
-                        className={`flex items-center justify-center px-2 py-1 rounded leading-none
-                          ${r.nota_evento ? "bg-purple-600 text-white neon-glow" : "bg-gray-500 text-white hover:bg-gray-600"}`}
-                        title={r.nota_evento ? "Editar notas do evento" : "Adicionar nota ao evento"}
-                      >
-                        📝
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-
-                {linhaExpandida === r.id && (
-                  <>
-                    
-                    
-<tr className="bg-indigo-50 dark:bg-gray-800 text-sm border-t border-l-4 border-blue-600 transition-colors duration-300">
-  <td colSpan="9" className="p-2 font-semibold">
-    {(() => {
-      const chaveRegra = getEquipaCasaCanonica(r.evento);
-      const resumo = getResumoMatchingInteligente(r.evento, r.data_evento, chaveRegra);
-      const resumoTitulo = getResumoTituloVendas(r.evento, r.data_evento, chaveRegra);
-
-      return (
-        <div>
-          <div>
-            Vendas ({getTotalBilhetesVendas(r.evento, r.data_evento)})
-            {resumoTitulo ? <> — {resumoTitulo}</> : null}
-          </div>
-
-          {resumo.porComprarTxt && (
-            <div className="text-red-600 dark:text-red-400 text-xs mt-1">
-              🔴 Por comprar: {resumo.porComprarTxt}
-            </div>
-          )}
-
-          {resumo.coberturaIncertaTxt && (
-            <div className="text-yellow-600 dark:text-yellow-300 text-xs mt-1">
-              🟡 Cobertura incerta: {resumo.coberturaIncertaTxt}
-            </div>
-          )}
-
-          {resumo.porVenderTxt && (
-            <div className="text-green-600 dark:text-green-400 text-xs mt-1">
-              🟢 Por vender: {resumo.porVenderTxt}
-            </div>
-          )}
-        </div>
-      );
-    })()}
-  </td>
-</tr>
-
-<tr className="border-l-4 border-blue-600 bg-blue-100 dark:bg-blue-800 text-xs font-semibold">
-  <td className="p-2">ID Venda</td>
-  <td className="p-2" colSpan="3">Bilhetes</td>
-  <td className="p-2">Ganho</td>
-  <td className="p-2">Estado</td>
-  <td className="p-2">Nota</td>
-  <td className="p-2">Ações</td>
-  <td className="p-2"></td> {/* ← coluna vazia para manter 9 colunas */}
-</tr>
-
-
-
-
-{(() => {
-  let lastSetor = null;
-  let toggle = false;
-
-  return getVendasOrdenadas(r.evento, r.data_evento).map((v) => {
-    const setorAtual = setorExato(v.estadio);
-
-    // Se mudou de setor → alterna cor
-    if (setorAtual !== lastSetor) {
-      toggle = !toggle;
-      lastSetor = setorAtual;
-    }
-
-    const bgClass = toggle
-      ? "bg-blue-50 dark:bg-blue-900"   // azul clarinho
-      : "bg-blue-100 dark:bg-blue-800"; // azul normal
-
-    if (modoEdicaoVenda === v.id) {
-      return (
-        <tr
-          key={"v" + v.id}
-          className={`border-l-4 border-blue-600 text-xs border-t ${bgClass}`}
-        >
-          <td className="p-2">
-            <input
-              type="number"
-              className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
-              value={vendaEditada.id_venda}
-              onChange={(e) =>
-                setVendaEditada({ ...vendaEditada, id_venda: e.target.value })
+              if (novoExpandido !== null) {
+                requestAnimationFrame(() => {
+                  setTimeout(() => {
+                    const el = linhaRefs.current[r.id];
+                    if (el) {
+                      el.scrollIntoView({ behavior: "smooth", block: "start" });
+                    }
+                  }, 150);
+                });
               }
-            />
-          </td>
-          <td className="p-2" colSpan="2">
-            <input
-              className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
-              value={vendaEditada.estadio}
-              onChange={(e) =>
-                setVendaEditada({ ...vendaEditada, estadio: e.target.value })
-              }
-            />
-          </td>
-          <td className="p-2">
-            <input
-              type="number"
-              className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
-              value={vendaEditada.ganho}
-              onChange={(e) =>
-                setVendaEditada({ ...vendaEditada, ganho: e.target.value })
-              }
-            />
-          </td>
-          <td className="p-2">
-            <select
-              className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
-              value={vendaEditada.estado}
-              onChange={(e) =>
-                setVendaEditada({ ...vendaEditada, estado: e.target.value })
-              }
-            >
-              <option value="Entregue">Entregue</option>
-              <option value="Por entregar">Por entregar</option>
-              <option value="Disputa">Disputa</option>
-              <option value="Pago">Pago</option>
-            </select>
-          </td>
-          <td colSpan="4" className="p-2">
-            <button
-              className="text-green-600 mr-2"
-              onClick={() => guardarVenda(vendaEditada)}
-            >
-              Guardar
-            </button>
-            <button
-              className="text-gray-500"
-              onClick={() => setModoEdicaoVenda(null)}
-            >
-              Cancelar
-            </button>
-          </td>
-        </tr>
-      );
-    } else {
-      return (
-        <tr
-          key={"v" + v.id}
-          className={`border-l-4 border-blue-600 text-xs border-t ${bgClass}`}
-        >
-          <td className="p-2">{v.id_venda}</td>
-          <td className="p-2" colSpan="3">
-            {v.estadio}
-          </td>
-          <td className="p-2">{v.ganho} €</td>
-          <td className="p-2 whitespace-nowrap">{v.estado}</td>
-          <td className="p-2">
-            <CirculoEstado
-              tipo="listagem_vendas"
-              id={v.id}
-              texto_estado={v.circulo_estado_venda}
-              nota_estado={v.nota_estado_venda}
-              setVendas={setVendas}
-            />
-          </td>
-          <td className="p-2">
-            {vendasNaoAssociadasSet.has(v.id) && (
-              <span
-                className="text-yellow-500 mr-2"
-                title="Venda não associada a evento"
-              >
-                ⚠️
-              </span>
-            )}
-            <button
-              onClick={() => {
-                setModoEdicaoVenda(v.id);
-                setVendaEditada(v);
-              }}
-              className="text-blue-600 hover:underline"
-            >
-              Editar
-            </button>
-          </td>
-          <td className="p-2"></td>
-        </tr>
-      );
-    }
-  });
-})()}
-
-
-
-   <tr className="bg-yellow-50 dark:bg-yellow-900 text-sm border-t border-l-4 border-yellow-600">
-  <td colSpan="9" className="p-2 font-semibold">
-    {(() => {
-      const chaveRegra = getEquipaCasaCanonica(r.evento);
-      const totalCompras = compras
-        .filter(c => c.evento === r.evento && c.data_evento === r.data_evento)
-        .reduce((acc, c) => acc + Number(c.quantidade || 0), 0);
-
-      const resumoCompras = getResumoTituloCompras(
-        r.evento,
-        r.data_evento,
-        chaveRegra
-      );
-
-      return (
-        <div>
-          Compras ({totalCompras})
-          {resumoCompras ? <> — {resumoCompras}</> : null}
-        </div>
-      );
-    })()}
-  </td>
-</tr>
-<tr className="border-l-4 border-yellow-600 bg-yellow-100 dark:bg-yellow-800 text-xs font-semibold">
-  <td className="p-2">Local</td>
-  <td className="p-2">Bancada</td>
-  <td className="p-2">Setor</td>
-  <td className="p-2">Fila</td>
-  <td className="p-2">Qt</td>
-  <td className="p-2">Gasto</td>
-  <td className="p-2">Nota</td>
-  <td className="p-2">Ações</td>
-  <td></td>
-</tr>
-
-{(() => {
-  let lastSetor = null;
-  let toggle = false;
-  const chaveRegra = getEquipaCasaCanonica(r.evento);
-  
-  return getComprasOrdenadas(r.evento, r.data_evento).map((c) => {
-    const setorAtual = compraChaveOperacionalExata(c, chaveRegra);
-
-    if (setorAtual !== lastSetor) {
-      toggle = !toggle;
-      lastSetor = setorAtual;
-    }
-
-    const bgClass = toggle
-      ? "bg-yellow-50 dark:bg-yellow-900"
-      : "bg-yellow-100 dark:bg-yellow-800";
-
-    return (
-      <tr
-        key={"c" + c.id}
-        className={`border-l-4 border-yellow-600 text-xs border-t ${bgClass}`}
-      >
-        {modoEdicaoCompra === c.id ? (
-          <>
-            <td className="p-2">
-              <input
-                className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
-                value={compraEditada.local_compras}
-                onChange={e => setCompraEditada({ ...compraEditada, local_compras: e.target.value })}
-              />
-            </td>
-            <td className="p-2">
-              <input
-                className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
-                value={compraEditada.bancada}
-                onChange={e => setCompraEditada({ ...compraEditada, bancada: e.target.value })}
-              />
-            </td>
-            <td className="p-2">
-              <input
-                className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
-                value={compraEditada.setor}
-                onChange={e => setCompraEditada({ ...compraEditada, setor: e.target.value })}
-              />
-            </td>
-            <td className="p-2">
-              <input
-                className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
-                value={compraEditada.fila}
-                onChange={e => setCompraEditada({ ...compraEditada, fila: e.target.value })}
-              />
-            </td>
-            <td className="p-2">
-              <input
-                type="number"
-                className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
-                value={compraEditada.quantidade}
-                onChange={e => setCompraEditada({ ...compraEditada, quantidade: e.target.value })}
-              />
-            </td>
-            <td className="p-2">
-              <input
-                type="number"
-                className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
-                value={compraEditada.gasto}
-                onChange={e => setCompraEditada({ ...compraEditada, gasto: e.target.value })}
-              />
-            </td>
-            <td className="p-2" colSpan="3">
-              <button className="text-green-600 mr-2" onClick={() => guardarCompra(compraEditada)}>
-                Guardar
-              </button>
-              <button className="text-gray-500" onClick={() => setModoEdicaoCompra(null)}>
-                Cancelar
-              </button>
-            </td>
-          </>
-        ) : (
-          <>
-            <td className="p-2">{c.local_compras}</td>
-            <td className="p-2">{c.bancada}</td>
-            <td className="p-2">{c.setor}</td>
-            <td className="p-2 whitespace-nowrap overflow-hidden text-ellipsis max-w-[150px]" title={c.fila}>
-              {c.fila}
-            </td>
-            <td className="p-2">{c.quantidade}</td>
-            <td className="p-2">{c.gasto} €</td>
-            <td className="p-2">
-              <CirculoEstado
-                tipo="compras"
-                id={c.id}
-                texto_estado={c.circulo_estado_compra}
-                nota_estado={c.nota_estado_compra}
-                setCompras={setCompras}
-              />
-            </td>
-            <td className="p-2">
-              {comprasNaoAssociadasSet.has(c.id) && (
-                <span className="text-yellow-500 mr-2" title="Compra não associada a evento">⚠️</span>
+            }}
+            className={`cursor-pointer ${
+              linhaExpandida === r.id
+                ? "bg-blue-100 dark:bg-blue-800 text-gray-900 dark:text-gray-100 font-semibold"
+                : r.estado === "Pago"
+                ? "bg-green-100 dark:bg-green-700"
+                : r.estado === "Entregue"
+                ? "bg-yellow-100 dark:bg-yellow-700"
+                : r.estado === "Disputa"
+                ? "bg-red-200 dark:bg-red-800"
+                : ""
+            } transition-colors duration-300`}
+          >
+            <td className="p-2 whitespace-nowrap">
+              {vendas.some(v => v.evento === r.evento && v.data_evento === r.data_evento) || compras.some(c => c.evento === r.evento && c.data_evento === r.data_evento) ? (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setLinhaExpandida(linhaExpandida === r.id ? null : r.id);
+                  }}
+                >
+                  {linhaExpandida === r.id ? "🔼" : "🔽"}
+                </button>
+              ) : (
+                <span className="text-red-600">🔻</span>
               )}
-              <button
-                onClick={() => {
-                  setModoEdicaoCompra(c.id);
-                  setCompraEditada(c);
-                }}
-                className="text-blue-600 hover:underline"
-              >
-                Editar
-              </button>
             </td>
-            <td></td>
-          </>
-        )}
-      </tr>
-    );
-  });
-})()}
-                  </>
-                )}
-              </Fragment>
-            ))}
-          </tbody>
-        </table>       
+
+            <td className="p-2 whitespace-nowrap">
+              {modoEdicao === r.id ? (
+                <input
+                  type="date"
+                  value={toInputDate(r.data_evento)}
+                  onChange={(e) => atualizarCampo(r.id, "data_evento", e.target.value)}
+                  className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300 [color-scheme:dark]"
+                />
+              ) : (
+                formatarDataPt(r.data_evento)
+              )}
+            </td>
+
+            <td className="p-2 overflow-hidden">
+              {modoEdicao === r.id ? (
+                <select
+                  value={r.evento}
+                  onChange={(e) => atualizarCampo(r.id, "evento", e.target.value)}
+                  className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
+                >
+                  <option value="">-- Selecionar Evento --</option>
+                  {eventosDropdown.map(e => (
+                    <option key={e.id} value={e.nome}>{e.nome}</option>
+                  ))}
+                </select>
+              ) : (
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="flex flex-wrap items-center gap-1 min-w-0 overflow-hidden">
+                    {renderEventoComSimbolos(r.evento)}
+                  </span>
+
+                  {r.nota_evento && (
+                    <span className="text-yellow-400 animate-pulse shrink-0" title={r.nota_evento}>📝</span>
+                  )}
+
+                  {r.url_evento ? (
+                    <a
+                      href={normalizeUrl(r.url_evento)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title="Abrir link do evento"
+                      className="inline-flex items-center hover:opacity-80 shrink-0"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <img
+                        src={viagogoLogo}
+                        alt="Viagogo"
+                        className="w-5 h-5 inline-block align-[-2px]"
+                        loading="lazy"
+                      />
+                    </a>
+                  ) : null}
+                </div>
+              )}
+            </td>
+
+            <td className="p-2 overflow-hidden text-ellipsis whitespace-nowrap">
+              {modoEdicao === r.id
+                ? <input value={r.estadio} onChange={(e) => atualizarCampo(r.id, "estadio", e.target.value)} className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" />
+                : r.estadio}
+            </td>
+
+            <td className="p-2 whitespace-nowrap text-right">{r.gasto} €</td>
+            <td className="p-2 whitespace-nowrap text-right">{r.ganho} €</td>
+            <td className="p-2 whitespace-nowrap text-right">{(r.ganho - r.gasto)} €</td>
+
+            <td className="p-2 whitespace-nowrap">
+              {modoEdicao === r.id
+                ? (
+                  <select value={r.estado} onChange={(e) => atualizarCampo(r.id, "estado", e.target.value)} className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300">
+                    <option value="Entregue">Entregue</option>
+                    <option value="Por entregar">Por entregar</option>
+                    <option value="Disputa">Disputa</option>
+                    <option value="Pago">Pago</option>
+                  </select>
+                ) : r.estado}
+            </td>
+
+            <td className="p-2 align-middle whitespace-nowrap">
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (modoEdicao === r.id) {
+                      guardarEvento(r);
+                    } else {
+                      setModoEdicao(r.id);
+                    }
+                  }}
+                  className="flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded leading-none"
+                  title={modoEdicao === r.id ? "Guardar" : "Editar"}
+                >
+                  {modoEdicao === r.id ? "💾" : <FaEdit size={14} />}
+                </button>
+
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    confirmarEliminar(r.id);
+                  }}
+                  className="flex items-center justify-center bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded leading-none"
+                  title="Eliminar"
+                >
+                  <FaTrash size={14} />
+                </button>
+
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const vendasDoEvento = vendas.filter(
+                      (v) => v.evento === r.evento && v.data_evento === r.data_evento
+                    );
+                    const titulo = `Vendas com Nota (bola vermelha) — ${r.evento} — ${new Date(
+                      r.data_evento
+                    ).toLocaleDateString("pt-PT")}`;
+                    imprimirVendasComNotaVermelha(vendasDoEvento, titulo);
+                  }}
+                  title="Imprimir vendas com Nota (bola vermelha) deste evento"
+                  className="hidden md:flex items-center justify-center px-2 py-1 rounded bg-emerald-600 hover:bg-emerald-700 text-white leading-none"
+                >
+                  <FaPrint size={14} />
+                </button>
+
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setMostrarNotaEventoId(r.id);
+                    setNotaEventoTmp(r.nota_evento || "");
+                    setUrlEventoTmp(r.url_evento || "");
+                  }}
+                  className={`flex items-center justify-center px-2 py-1 rounded leading-none
+                    ${r.nota_evento ? "bg-purple-600 text-white neon-glow" : "bg-gray-500 text-white hover:bg-gray-600"}`}
+                  title={r.nota_evento ? "Editar notas do evento" : "Adicionar nota ao evento"}
+                >
+                  📝
+                </button>
+              </div>
+            </td>
+          </tr>
+
+          {linhaExpandida === r.id && (
+            <>
+              <tr className="bg-indigo-50 dark:bg-gray-800 text-sm border-t border-l-4 border-blue-600 transition-colors duration-300">
+                <td colSpan="9" className="p-2 font-semibold">
+                  {(() => {
+                    const chaveRegra = getEquipaCasaCanonica(r.evento);
+                    const resumo = getResumoMatchingInteligente(r.evento, r.data_evento, chaveRegra);
+                    const resumoTitulo = getResumoTituloVendas(r.evento, r.data_evento, chaveRegra);
+
+                    return (
+                      <div>
+                        <div>
+                          Vendas ({getTotalBilhetesVendas(r.evento, r.data_evento)})
+                          {resumoTitulo ? <> — {resumoTitulo}</> : null}
+                        </div>
+
+                        {resumo.porComprarTxt && (
+                          <div className="text-red-600 dark:text-red-400 text-xs mt-1">
+                            🔴 Por comprar: {resumo.porComprarTxt}
+                          </div>
+                        )}
+
+                        {resumo.coberturaIncertaTxt && (
+                          <div className="text-yellow-600 dark:text-yellow-300 text-xs mt-1">
+                            🟡 Cobertura incerta: {resumo.coberturaIncertaTxt}
+                          </div>
+                        )}
+
+                        {resumo.porVenderTxt && (
+                          <div className="text-green-600 dark:text-green-400 text-xs mt-1">
+                            🟢 Por vender: {resumo.porVenderTxt}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })()}
+                </td>
+              </tr>
+
+              <tr className="border-l-4 border-blue-600 bg-blue-100 dark:bg-blue-800 text-xs font-semibold">
+                <td className="p-2 whitespace-nowrap">ID Venda</td>
+                <td className="p-2" colSpan="3">Bilhetes</td>
+                <td className="p-2 whitespace-nowrap text-right">Ganho</td>
+                <td className="p-2 whitespace-nowrap">Estado</td>
+                <td className="p-2 whitespace-nowrap">Nota</td>
+                <td className="p-2 whitespace-nowrap">Ações</td>
+                <td className="p-2"></td>
+              </tr>
+
+              {(() => {
+                let lastSetor = null;
+                let toggle = false;
+
+                return getVendasOrdenadas(r.evento, r.data_evento).map((v) => {
+                  const setorAtual = setorExato(v.estadio);
+
+                  if (setorAtual !== lastSetor) {
+                    toggle = !toggle;
+                    lastSetor = setorAtual;
+                  }
+
+                  const bgClass = toggle
+                    ? "bg-blue-50 dark:bg-blue-900"
+                    : "bg-blue-100 dark:bg-blue-800";
+
+                  if (modoEdicaoVenda === v.id) {
+                    return (
+                      <tr
+                        key={"v" + v.id}
+                        className={`border-l-4 border-blue-600 text-xs border-t ${bgClass}`}
+                      >
+                        <td className="p-2">
+                          <input
+                            type="number"
+                            className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
+                            value={vendaEditada.id_venda}
+                            onChange={(e) =>
+                              setVendaEditada({ ...vendaEditada, id_venda: e.target.value })
+                            }
+                          />
+                        </td>
+                        <td className="p-2" colSpan="2">
+                          <input
+                            className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
+                            value={vendaEditada.estadio}
+                            onChange={(e) =>
+                              setVendaEditada({ ...vendaEditada, estadio: e.target.value })
+                            }
+                          />
+                        </td>
+                        <td className="p-2">
+                          <input
+                            type="number"
+                            className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
+                            value={vendaEditada.ganho}
+                            onChange={(e) =>
+                              setVendaEditada({ ...vendaEditada, ganho: e.target.value })
+                            }
+                          />
+                        </td>
+                        <td className="p-2">
+                          <select
+                            className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
+                            value={vendaEditada.estado}
+                            onChange={(e) =>
+                              setVendaEditada({ ...vendaEditada, estado: e.target.value })
+                            }
+                          >
+                            <option value="Entregue">Entregue</option>
+                            <option value="Por entregar">Por entregar</option>
+                            <option value="Disputa">Disputa</option>
+                            <option value="Pago">Pago</option>
+                          </select>
+                        </td>
+                        <td colSpan="4" className="p-2">
+                          <button
+                            className="text-green-600 mr-2"
+                            onClick={() => guardarVenda(vendaEditada)}
+                          >
+                            Guardar
+                          </button>
+                          <button
+                            className="text-gray-500"
+                            onClick={() => setModoEdicaoVenda(null)}
+                          >
+                            Cancelar
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  } else {
+                    return (
+                      <tr
+                        key={"v" + v.id}
+                        className={`border-l-4 border-blue-600 text-xs border-t ${bgClass}`}
+                      >
+                        <td className="p-2 whitespace-nowrap">{v.id_venda}</td>
+                        <td className="p-2" colSpan="3">
+                          {v.estadio}
+                        </td>
+                        <td className="p-2 whitespace-nowrap text-right">{v.ganho} €</td>
+                        <td className="p-2 whitespace-nowrap">{v.estado}</td>
+                        <td className="p-2">
+                          <CirculoEstado
+                            tipo="listagem_vendas"
+                            id={v.id}
+                            texto_estado={v.circulo_estado_venda}
+                            nota_estado={v.nota_estado_venda}
+                            setVendas={setVendas}
+                          />
+                        </td>
+                        <td className="p-2 whitespace-nowrap">
+                          {vendasNaoAssociadasSet.has(v.id) && (
+                            <span
+                              className="text-yellow-500 mr-2"
+                              title="Venda não associada a evento"
+                            >
+                              ⚠️
+                            </span>
+                          )}
+                          <button
+                            onClick={() => {
+                              setModoEdicaoVenda(v.id);
+                              setVendaEditada(v);
+                            }}
+                            className="text-blue-600 hover:underline"
+                          >
+                            Editar
+                          </button>
+                        </td>
+                        <td className="p-2"></td>
+                      </tr>
+                    );
+                  }
+                });
+              })()}
+
+              <tr className="bg-yellow-50 dark:bg-yellow-900 text-sm border-t border-l-4 border-yellow-600">
+                <td colSpan="9" className="p-2 font-semibold">
+                  {(() => {
+                    const chaveRegra = getEquipaCasaCanonica(r.evento);
+                    const totalCompras = compras
+                      .filter(c => c.evento === r.evento && c.data_evento === r.data_evento)
+                      .reduce((acc, c) => acc + Number(c.quantidade || 0), 0);
+
+                    const resumoCompras = getResumoTituloCompras(
+                      r.evento,
+                      r.data_evento,
+                      chaveRegra
+                    );
+
+                    return (
+                      <div>
+                        Compras ({totalCompras})
+                        {resumoCompras ? <> — {resumoCompras}</> : null}
+                      </div>
+                    );
+                  })()}
+                </td>
+              </tr>
+
+              <tr className="border-l-4 border-yellow-600 bg-yellow-100 dark:bg-yellow-800 text-xs font-semibold">
+                <td className="p-2 whitespace-nowrap">Local</td>
+                <td className="p-2 whitespace-nowrap">Bancada</td>
+                <td className="p-2 whitespace-nowrap">Setor</td>
+                <td className="p-2 whitespace-nowrap">Fila</td>
+                <td className="p-2 whitespace-nowrap">Qt</td>
+                <td className="p-2 whitespace-nowrap text-right">Gasto</td>
+                <td className="p-2 whitespace-nowrap">Nota</td>
+                <td className="p-2 whitespace-nowrap">Ações</td>
+                <td></td>
+              </tr>
+
+              {(() => {
+                let lastSetor = null;
+                let toggle = false;
+                const chaveRegra = getEquipaCasaCanonica(r.evento);
+
+                return getComprasOrdenadas(r.evento, r.data_evento).map((c) => {
+                  const setorAtual = compraChaveOperacionalExata(c, chaveRegra);
+
+                  if (setorAtual !== lastSetor) {
+                    toggle = !toggle;
+                    lastSetor = setorAtual;
+                  }
+
+                  const bgClass = toggle
+                    ? "bg-yellow-50 dark:bg-yellow-900"
+                    : "bg-yellow-100 dark:bg-yellow-800";
+
+                  return (
+                    <tr
+                      key={"c" + c.id}
+                      className={`border-l-4 border-yellow-600 text-xs border-t ${bgClass}`}
+                    >
+                      {modoEdicaoCompra === c.id ? (
+                        <>
+                          <td className="p-2">
+                            <input
+                              className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
+                              value={compraEditada.local_compras}
+                              onChange={e => setCompraEditada({ ...compraEditada, local_compras: e.target.value })}
+                            />
+                          </td>
+                          <td className="p-2">
+                            <input
+                              className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
+                              value={compraEditada.bancada}
+                              onChange={e => setCompraEditada({ ...compraEditada, bancada: e.target.value })}
+                            />
+                          </td>
+                          <td className="p-2">
+                            <input
+                              className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
+                              value={compraEditada.setor}
+                              onChange={e => setCompraEditada({ ...compraEditada, setor: e.target.value })}
+                            />
+                          </td>
+                          <td className="p-2">
+                            <input
+                              className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
+                              value={compraEditada.fila}
+                              onChange={e => setCompraEditada({ ...compraEditada, fila: e.target.value })}
+                            />
+                          </td>
+                          <td className="p-2">
+                            <input
+                              type="number"
+                              className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
+                              value={compraEditada.quantidade}
+                              onChange={e => setCompraEditada({ ...compraEditada, quantidade: e.target.value })}
+                            />
+                          </td>
+                          <td className="p-2">
+                            <input
+                              type="number"
+                              className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
+                              value={compraEditada.gasto}
+                              onChange={e => setCompraEditada({ ...compraEditada, gasto: e.target.value })}
+                            />
+                          </td>
+                          <td className="p-2" colSpan="3">
+                            <button className="text-green-600 mr-2" onClick={() => guardarCompra(compraEditada)}>
+                              Guardar
+                            </button>
+                            <button className="text-gray-500" onClick={() => setModoEdicaoCompra(null)}>
+                              Cancelar
+                            </button>
+                          </td>
+                        </>
+                      ) : (
+                        <>
+                          <td className="p-2">{c.local_compras}</td>
+                          <td className="p-2">{c.bancada}</td>
+                          <td className="p-2">{c.setor}</td>
+                          <td className="p-2 whitespace-nowrap overflow-hidden text-ellipsis max-w-[150px]" title={c.fila}>
+                            {c.fila}
+                          </td>
+                          <td className="p-2 whitespace-nowrap">{c.quantidade}</td>
+                          <td className="p-2 whitespace-nowrap text-right">{c.gasto} €</td>
+                          <td className="p-2">
+                            <CirculoEstado
+                              tipo="compras"
+                              id={c.id}
+                              texto_estado={c.circulo_estado_compra}
+                              nota_estado={c.nota_estado_compra}
+                              setCompras={setCompras}
+                            />
+                          </td>
+                          <td className="p-2 whitespace-nowrap">
+                            {comprasNaoAssociadasSet.has(c.id) && (
+                              <span className="text-yellow-500 mr-2" title="Compra não associada a evento">⚠️</span>
+                            )}
+                            <button
+                              onClick={() => {
+                                setModoEdicaoCompra(c.id);
+                                setCompraEditada(c);
+                              }}
+                              className="text-blue-600 hover:underline"
+                            >
+                              Editar
+                            </button>
+                          </td>
+                          <td></td>
+                        </>
+                      )}
+                    </tr>
+                  );
+                });
+              })()}
+            </>
+          )}
+        </Fragment>
+      ))}
+  </tbody>
+</table>       
           <div className="space-y-5 md:hidden mt-6 px-0 w-full max-w-full">
             {registos
               .filter(r => {
