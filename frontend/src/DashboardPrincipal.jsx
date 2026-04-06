@@ -118,14 +118,11 @@ useEffect(() => {
   const anoAtual = dataSelecionada.getFullYear();
 
   const dentroDoMes = (dataStr) => {
-  if (!dataStr) return false;
+  const d = parseDataSegura(dataStr);
+  if (!d) return false;
 
-  if (dataStr.includes("/")) {
-    const [dia, mes, ano] = dataStr.split("/");
-    const d = new Date(ano, mes - 1, dia);
-
-    return d.getMonth() === mesAtual && d.getFullYear() === anoAtual;
-  }
+  return d.getMonth() === mesAtual && d.getFullYear() === anoAtual;
+};
 
   const d = new Date(dataStr);
   return d.getMonth() === mesAtual && d.getFullYear() === anoAtual;
@@ -177,8 +174,15 @@ useEffect(() => {
     })
     .filter(ev => ev.faltaComprar > 0 || ev.faltaVender > 0) // 🔥 só os que interessam
     .sort((a, b) => {
-  const [d1, m1, y1] = a.data_evento.split("/");
-  const [d2, m2, y2] = b.data_evento.split("/");
+  const dataA = parseDataSegura(a.data_evento);
+  const dataB = parseDataSegura(b.data_evento);
+
+  if (!dataA && !dataB) return 0;
+  if (!dataA) return 1;
+  if (!dataB) return -1;
+
+  return dataA - dataB;
+});
 
   return new Date(y1, m1 - 1, d1) - new Date(y2, m2 - 1, d2);
 });
@@ -186,6 +190,35 @@ useEffect(() => {
   setResumoFaltas(resultado);
 
 }, [registosCompras, registosVendas, dataSelecionada]);
+
+
+  const parseDataSegura = (valor) => {
+  if (!valor || typeof valor !== "string") return null;
+
+  const texto = valor.trim();
+  if (!texto) return null;
+
+  // formato dd/mm/yyyy
+  if (texto.includes("/")) {
+    const partes = texto.split("/");
+    if (partes.length !== 3) return null;
+
+    const [d, m, y] = partes.map(Number);
+    if (!d || !m || !y) return null;
+
+    const data = new Date(y, m - 1, d);
+    return isNaN(data.getTime()) ? null : data;
+  }
+
+  // formato yyyy-mm-dd ou ISO
+  const data = new Date(texto);
+  return isNaN(data.getTime()) ? null : data;
+};
+
+const formatarDataSegura = (valor) => {
+  const data = parseDataSegura(valor);
+  return data ? data.toLocaleDateString("pt-PT") : "Data inválida";
+};
   
   return (
   <div>
@@ -288,12 +321,9 @@ useEffect(() => {
               {ev.evento}
             </div>
 
-            <div className="text-xs text-gray-500 dark:text-gray-400">
-              {(() => {
-                const [d, m, y] = ev.data_evento.split("/");
-                return new Date(y, m - 1, d).toLocaleDateString("pt-PT");
-              })()}
-            </div>
+           <div className="text-xs text-gray-500 dark:text-gray-400">
+  {formatarDataSegura(ev.data_evento)}
+</div>
 
             <div className="flex justify-between mt-2">
               <span className={ev.faltaComprar > 0 ? "text-red-500 font-medium" : "text-gray-400"}>
@@ -345,7 +375,7 @@ useEffect(() => {
                 onClick={() => irParaEventoExpandido(e.evento)}
                 className="cursor-pointer hover:underline text-gray-900 dark:text-gray-100"
               >
-                {e.bilhetes} {e.bilhetes === 1 ? "Entrega pendente" : "Entregas pendentes"} – {e.evento} ({new Date(e.data_evento).toLocaleDateString("pt-PT")})
+                {e.bilhetes} {e.bilhetes === 1 ? "Entrega pendente" : "Entregas pendentes"} – {e.evento} ({formatarDataSegura(e.data_evento)})
               </div>
             ))}
           </div>
