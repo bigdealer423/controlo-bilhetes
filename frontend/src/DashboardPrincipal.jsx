@@ -151,7 +151,7 @@ const eventoAindaNaoPassou = (dataStr) => {
   return dataEvento >= hoje;
 };
 useEffect(() => {
-  const mapa = {};
+  const mapaEventos = new Map();
 
   const mesAtual = dataSelecionada.getMonth();
   const anoAtual = dataSelecionada.getFullYear();
@@ -159,7 +159,6 @@ useEffect(() => {
   const dentroDoMes = (dataStr) => {
     const d = parseDataSegura(dataStr);
     if (!d) return false;
-
     return d.getMonth() === mesAtual && d.getFullYear() === anoAtual;
   };
 
@@ -168,17 +167,12 @@ useEffect(() => {
     if (!eventoAindaNaoPassou(c.data_evento)) return;
 
     const chave = `${c.evento}|${c.data_evento}`;
-
-    if (!mapa[chave]) {
-      mapa[chave] = {
+    if (!mapaEventos.has(chave)) {
+      mapaEventos.set(chave, {
         evento: c.evento,
         data_evento: c.data_evento,
-        comprados: 0,
-        vendidos: 0,
-      };
+      });
     }
-
-    mapa[chave].comprados += Number(c.bilhetes || c.quantidade || 0);
   });
 
   registosVendas.forEach((v) => {
@@ -186,32 +180,26 @@ useEffect(() => {
     if (!eventoAindaNaoPassou(v.data_evento)) return;
 
     const chave = `${v.evento}|${v.data_evento}`;
-
-    if (!mapa[chave]) {
-      mapa[chave] = {
+    if (!mapaEventos.has(chave)) {
+      mapaEventos.set(chave, {
         evento: v.evento,
         data_evento: v.data_evento,
-        comprados: 0,
-        vendidos: 0,
-        detalheCompras: {},
-        detalheVendas: {},
-      };
+      });
     }
-
-    mapa[chave].vendidos += Number(v.bilhetes || v.quantidade || 0);
   });
 
-  const resultado = Object.values(mapa)
+  const resultado = Array.from(mapaEventos.values())
     .map((ev) => {
-      const diff = ev.vendidos - ev.comprados;
+      const chaveRegra = getEquipaCasaCanonica(ev.evento);
+      const resumo = getResumoMatchingInteligente(ev.evento, ev.data_evento, chaveRegra);
 
       return {
         ...ev,
-        faltaComprar: diff > 0 ? diff : 0,
-        faltaVender: diff < 0 ? Math.abs(diff) : 0,
+        porComprarTxt: resumo.porComprarTxt || "",
+        porVenderTxt: resumo.porVenderTxt || "",
       };
     })
-    .filter((ev) => ev.faltaComprar > 0 || ev.faltaVender > 0)
+    .filter((ev) => ev.porComprarTxt || ev.porVenderTxt)
     .sort((a, b) => {
       const dataA = parseDataSegura(a.data_evento);
       const dataB = parseDataSegura(b.data_evento);
@@ -223,9 +211,8 @@ useEffect(() => {
       return dataA - dataB;
     });
 
-  console.log("RESULTADO FINAL:", resultado);
   setResumoFaltas(resultado);
-}, [registosCompras, registosVendas, dataSelecionada]);  
+}, [registosCompras, registosVendas, dataSelecionada]);
   return (
   <div>
     <BarraClubes />
@@ -331,15 +318,47 @@ useEffect(() => {
   {formatarDataSegura(ev.data_evento)}
 </div>
 
-            <div className="flex justify-between mt-2">
-              <span className={ev.faltaComprar > 0 ? "text-red-500 font-medium" : "text-gray-400"}>
-                Comprar: {ev.faltaComprar}
-              </span>
+            <div className="bg-white dark:bg-gray-900 p-4 rounded shadow max-h-[420px] overflow-y-auto">
+  <h2 className="text-md font-semibold mb-3 text-gray-900 dark:text-gray-100">
+    Falta Comprar / Vender
+  </h2>
 
-              <span className={ev.faltaVender > 0 ? "text-yellow-600 font-medium" : "text-gray-400"}>
-                Vender: {ev.faltaVender}
-              </span>
+  {resumoFaltas.length === 0 ? (
+    <p className="text-sm text-gray-500 dark:text-gray-400">
+      ✅ Tudo equilibrado neste mês
+    </p>
+  ) : (
+    <div className="space-y-3">
+      {resumoFaltas.map((ev, i) => (
+        <div
+          key={i}
+          onClick={() => irParaEventoExpandido(ev.evento)}
+          className="bg-gray-100 dark:bg-gray-800 p-3 rounded text-sm cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700"
+        >
+          <div className="font-semibold text-gray-900 dark:text-gray-100">
+            {ev.evento}
+          </div>
+
+          <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+            {formatarDataSegura(ev.data_evento)}
+          </div>
+
+          {ev.porComprarTxt ? (
+            <div className="text-red-500 font-medium">
+              Por comprar: {ev.porComprarTxt}
             </div>
+          ) : null}
+
+          {ev.porVenderTxt ? (
+            <div className="text-green-500 font-medium mt-1">
+              Por vender: {ev.porVenderTxt}
+            </div>
+          ) : null}
+        </div>
+      ))}
+    </div>
+  )}
+</div>
           </div>
         ))}
       </div>
