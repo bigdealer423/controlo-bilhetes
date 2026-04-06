@@ -141,7 +141,15 @@ const formatarDataSegura = (valor) => {
   return data ? data.toLocaleDateString("pt-PT") : "Data inválida";
 };
 
+const eventoAindaNaoPassou = (dataStr) => {
+  const dataEvento = parseDataSegura(dataStr);
+  if (!dataEvento) return false;
 
+  const hoje = new Date();
+  hoje.setHours(0, 0, 0, 0);
+
+  return dataEvento >= hoje;
+};
 useEffect(() => {
   const mapa = {};
 
@@ -157,6 +165,7 @@ useEffect(() => {
 
   registosCompras.forEach((c) => {
     if (!dentroDoMes(c.data_evento)) return;
+    if (!eventoAindaNaoPassou(c.data_evento)) return;
 
     const chave = `${c.evento}|${c.data_evento}`;
 
@@ -174,6 +183,7 @@ useEffect(() => {
 
   registosVendas.forEach((v) => {
     if (!dentroDoMes(v.data_evento)) return;
+    if (!eventoAindaNaoPassou(v.data_evento)) return;
 
     const chave = `${v.evento}|${v.data_evento}`;
 
@@ -183,6 +193,8 @@ useEffect(() => {
         data_evento: v.data_evento,
         comprados: 0,
         vendidos: 0,
+        detalheCompras: {},
+        detalheVendas: {},
       };
     }
 
