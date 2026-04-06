@@ -1929,13 +1929,13 @@ return (
   <colgroup>
     <col className="w-[44px]" />
     <col className="w-[110px]" />
-    <col className="w-[330px]" />
-    <col />
-    <col className="w-[95px]" />
-    <col className="w-[95px]" />
-    <col className="w-[95px]" />
-    <col className="w-[120px]" />
-    <col className="w-[150px]" />
+    <col className="w-[290px]" />
+    <col className="w-[220px]" />
+    <col className="w-[90px]" />
+    <col className="w-[90px]" />
+    <col className="w-[90px]" />
+    <col className="w-[110px]" />
+    <col className="w-[140px]" />
   </colgroup>
 
   <thead className="bg-gray-100 dark:bg-gray-800 transition-colors duration-300">
