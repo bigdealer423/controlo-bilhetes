@@ -189,30 +189,21 @@ useEffect(() => {
   });
 
   const resultado = Array.from(mapaEventos.values())
-    .map((ev) => {
-      return {
-  ...ev,
-  porComprarTxt: "",
-  porVenderTxt: "",
-};
+  .map((ev) => ({
+    ...ev,
+    porComprarTxt: "Teste comprar",
+    porVenderTxt: "Teste vender",
+  }))
+  .sort((a, b) => {
+    const dataA = parseDataSegura(a.data_evento);
+    const dataB = parseDataSegura(b.data_evento);
 
-      return {
-        ...ev,
-        porComprarTxt: resumo.porComprarTxt || "",
-        porVenderTxt: resumo.porVenderTxt || "",
-      };
-    })
-    .filter((ev) => ev.porComprarTxt || ev.porVenderTxt)
-    .sort((a, b) => {
-      const dataA = parseDataSegura(a.data_evento);
-      const dataB = parseDataSegura(b.data_evento);
+    if (!dataA && !dataB) return 0;
+    if (!dataA) return 1;
+    if (!dataB) return -1;
 
-      if (!dataA && !dataB) return 0;
-      if (!dataA) return 1;
-      if (!dataB) return -1;
-
-      return dataA - dataB;
-    });
+    return dataA - dataB;
+  });
 
   setResumoFaltas(resultado);
 }, [registosCompras, registosVendas, dataSelecionada]);
