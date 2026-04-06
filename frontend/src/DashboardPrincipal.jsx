@@ -223,127 +223,120 @@ useEffect(() => {
       <h1 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Dashboard</h1>
 
       <TooltipProvider>
-<div className="grid grid-cols-1 xl:grid-cols-[380px_1fr] gap-4">
+  <div className="grid grid-cols-1 xl:grid-cols-[380px_1fr] gap-4">
 
-  {/* CALENDÁRIO */}
-  <div className="bg-white dark:bg-gray-900 p-4 rounded shadow transition-colors duration-300">
-    <Calendar
-      onChange={setDataSelecionada}
-      value={dataSelecionada}
-      className="mb-4 rounded shadow"
-      tileClassName={({ date, view }) => {
-        if (view === "month") {
-          const eventosDoDia = eventosCalendario.filter(evento => {
-            const [dia, mes, ano] = evento.data_evento.split("/");
-            return (
-              parseInt(dia) === date.getDate() &&
-              parseInt(mes) === date.getMonth() + 1 &&
-              parseInt(ano) === date.getFullYear()
-            );
-          });
+    <div className="bg-white dark:bg-gray-900 p-4 rounded shadow transition-colors duration-300">
+      <Calendar
+        onChange={setDataSelecionada}
+        value={dataSelecionada}
+        className="mb-4 rounded shadow"
+        tileClassName={({ date, view }) => {
+          if (view === "month") {
+            const eventosDoDia = eventosCalendario.filter((evento) => {
+              const [dia, mes, ano] = String(evento.data_evento || "").split("/");
+              return (
+                parseInt(dia) === date.getDate() &&
+                parseInt(mes) === date.getMonth() + 1 &&
+                parseInt(ano) === date.getFullYear()
+              );
+            });
 
-          if (eventosDoDia.length > 0) {
-            const todosPagos = eventosDoDia.every(e => e.estado === "Pago");
-            const algumEmDisputa = eventosDoDia.some(e => e.estado === "Disputa");
+            if (eventosDoDia.length > 0) {
+              const todosPagos = eventosDoDia.every((e) => e.estado === "Pago");
+              const algumEmDisputa = eventosDoDia.some((e) => e.estado === "Disputa");
 
-            if (algumEmDisputa && !todosPagos) {
-              return "!bg-red-300 !text-white dark:!bg-red-700 dark:!text-white font-semibold rounded-full";
+              if (algumEmDisputa && !todosPagos) {
+                return "!bg-red-300 !text-white dark:!bg-red-700 dark:!text-white font-semibold rounded-full";
+              }
+
+              if (todosPagos) {
+                return "!bg-green-300 !text-white dark:!bg-green-700 dark:!text-white font-semibold rounded-full";
+              }
+
+              return "!bg-blue-200 !text-blue-900 dark:!bg-blue-700 dark:!text-blue-100 font-semibold rounded-full";
             }
+          }
+          return null;
+        }}
+        tileContent={({ date, view }) => {
+          if (view === "month") {
+            const eventosDoDia = eventosCalendario.filter((evento) => {
+              const [dia, mes, ano] = String(evento.data_evento || "").split("/");
+              return (
+                parseInt(dia) === date.getDate() &&
+                parseInt(mes) === date.getMonth() + 1 &&
+                parseInt(ano) === date.getFullYear()
+              );
+            });
 
-            if (todosPagos) {
-              return "!bg-green-300 !text-white dark:!bg-green-700 dark:!text-white font-semibold rounded-full";
+            if (eventosDoDia.length > 0) {
+              return (
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button className="w-full h-full cursor-pointer bg-transparent border-none p-0 m-0"></button>
+                  </PopoverTrigger>
+                  <PopoverContent className="max-w-xs">
+                    <div className="flex flex-col gap-1">
+                      {eventosDoDia.map((evento, idx) => (
+                        <div key={idx} className="text-sm text-gray-900 dark:text-gray-100">
+                          {evento.nome_evento}
+                        </div>
+                      ))}
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              );
             }
-
-            return "!bg-blue-200 !text-blue-900 dark:!bg-blue-700 dark:!text-blue-100 font-semibold rounded-full";
           }
-        }
-        return null;
-      }}
+          return null;
+        }}
+      />
+    </div>
 
-      tileContent={({ date, view }) => {
-        if (view === "month") {
-          const eventosDoDia = eventosCalendario.filter(evento => {
-            const [dia, mes, ano] = evento.data_evento.split("/");
-            return (
-              parseInt(dia) === date.getDate() &&
-              parseInt(mes) === date.getMonth() + 1 &&
-              parseInt(ano) === date.getFullYear()
-            );
-          });
+    <div className="bg-white dark:bg-gray-900 p-4 rounded shadow max-h-[420px] overflow-y-auto">
+      <h2 className="text-md font-semibold mb-3 text-gray-900 dark:text-gray-100">
+        Falta Comprar / Vender
+      </h2>
 
-          if (eventosDoDia.length > 0) {
-            return (
-              <Popover>
-                <PopoverTrigger asChild>
-                  <button className="w-full h-full cursor-pointer bg-transparent border-none p-0 m-0"></button>
-                </PopoverTrigger>
-                <PopoverContent className="max-w-xs">
-                  <div className="flex flex-col gap-1">
-                    {eventosDoDia.map((evento, idx) => (
-                      <div key={idx} className="text-sm text-gray-900 dark:text-gray-100">
-                        {evento.nome_evento}
-                      </div>
-                    ))}
-                  </div>
-                </PopoverContent>
-              </Popover>
-            );
-          }
-        }
-        return null;
-      }}
-    />
-  </div>
+      {resumoFaltas.length === 0 ? (
+        <p className="text-sm text-gray-500 dark:text-gray-400">
+          ✅ Tudo equilibrado neste mês
+        </p>
+      ) : (
+        <div className="space-y-2">
+          {resumoFaltas.map((ev, i) => (
+            <div
+              key={i}
+              onClick={() => irParaEventoExpandido(ev.evento)}
+              className="bg-gray-100 dark:bg-gray-800 p-3 rounded text-sm cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700"
+            >
+              <div className="font-semibold text-gray-900 dark:text-gray-100">
+                {ev.evento}
+              </div>
 
-  {/* 👉 RESUMO AO LADO */}
-  <div className="bg-white dark:bg-gray-900 p-4 rounded shadow max-h-[420px] overflow-y-auto">
-    <h2 className="text-md font-semibold mb-3 text-gray-900 dark:text-gray-100">
-      Falta Comprar / Vender
-    </h2>
+              <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+                {formatarDataSegura(ev.data_evento)}
+              </div>
 
-{resumoFaltas.length === 0 ? (
-  <p className="text-sm text-gray-500 dark:text-gray-400">
-    ✅ Tudo equilibrado neste mês
-  </p>
-) : (
-  <div className="space-y-2">
-    {resumoFaltas.map((ev, i) => (
-      <div
-        key={i}
-        onClick={() => irParaEventoExpandido(ev.evento)}
-        className="bg-gray-100 dark:bg-gray-800 p-3 rounded text-sm cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700"
-      >
-        <div className="font-semibold text-gray-900 dark:text-gray-100">
-          {ev.evento}
+              {ev.porComprarTxt ? (
+                <div className="text-red-500 font-medium">
+                  Por comprar: {ev.porComprarTxt}
+                </div>
+              ) : null}
+
+              {ev.porVenderTxt ? (
+                <div className="text-green-500 font-medium mt-1">
+                  Por vender: {ev.porVenderTxt}
+                </div>
+              ) : null}
+            </div>
+          ))}
         </div>
+      )}
+    </div>
 
-        <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">
-          {formatarDataSegura(ev.data_evento)}
-        </div>
-
-        {ev.porComprarTxt ? (
-          <div className="text-red-500 font-medium">
-            Por comprar: {ev.porComprarTxt}
-          </div>
-        ) : null}
-
-        {ev.porVenderTxt ? (
-          <div className="text-green-500 font-medium mt-1">
-            Por vender: {ev.porVenderTxt}
-          </div>
-        ) : null}
-      </div>
-    ))}
   </div>
-)}
-</div>
-          </div>
-        ))}
-      </div>
-    )}
-  </div>
-</div>
-</TooltipProvider> {/* 👈 ESTA LINHA FALTAVA */}
+</TooltipProvider>
 
       {/* ✅ BLOCO QUE ESTAVA FORA, AGORA INSERIDO CORRETAMENTE */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 mt-4">
