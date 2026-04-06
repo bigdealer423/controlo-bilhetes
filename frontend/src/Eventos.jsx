@@ -1946,7 +1946,7 @@ return (
       <th className="p-2 whitespace-nowrap">Estádio</th>
       <th className="p-2 whitespace-nowrap text-center">Gasto</th>
       <th className="p-2 whitespace-nowrap text-center">Ganho</th>
-      <th className="p-2 whitespace-nowrap text-center">Lucro</th>
+      <th className="p-2 whitespace-nowrap text-left">Lucro</th>
       <th className="p-2 whitespace-nowrap">Estado</th>
       <th className="p-2 whitespace-nowrap">Ações</th>
     </tr>
@@ -2071,7 +2071,7 @@ return (
 
             <td className="p-2 whitespace-nowrap text-center">{r.gasto} €</td>
             <td className="p-2 whitespace-nowrap text-center">{r.ganho} €</td>
-            <td className="p-2 whitespace-nowrap text-center">{(r.ganho - r.gasto)} €</td>
+            <td className="p-2 whitespace-nowrap text-left">{(r.ganho - r.gasto)} €</td>
 
             <td className="p-2 whitespace-nowrap">
               {modoEdicao === r.id
