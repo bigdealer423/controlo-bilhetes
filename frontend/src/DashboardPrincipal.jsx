@@ -189,11 +189,34 @@ useEffect(() => {
   });
 
   const resultado = Array.from(mapaEventos.values())
-  .map((ev) => ({
-    ...ev,
-    porComprarTxt: "Teste comprar",
-    porVenderTxt: "Teste vender",
-  }))
+  .map((ev) => {
+    try {
+      const chaveRegra = getEquipaCasaCanonica(ev.evento);
+
+      const resumo = getResumoMatchingInteligente(
+        ev.evento,
+        ev.data_evento,
+        chaveRegra
+      );
+
+      console.log("Resumo evento:", ev.evento, resumo);
+
+      return {
+        ...ev,
+        porComprarTxt: resumo?.porComprarTxt || "",
+        porVenderTxt: resumo?.porVenderTxt || "",
+      };
+    } catch (e) {
+      console.error("Erro no resumo do evento:", ev, e);
+
+      return {
+        ...ev,
+        porComprarTxt: "",
+        porVenderTxt: "",
+      };
+    }
+  })
+  .filter((ev) => ev.porComprarTxt || ev.porVenderTxt)
   .sort((a, b) => {
     const dataA = parseDataSegura(a.data_evento);
     const dataB = parseDataSegura(b.data_evento);
