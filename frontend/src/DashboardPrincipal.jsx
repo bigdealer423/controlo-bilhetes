@@ -1,4 +1,4 @@
-
+import { getEquipaCasaCanonica, getResumoMatchingInteligente } from "@/utils/resumoEventos";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Calendar from "react-calendar";
@@ -196,10 +196,10 @@ useEffect(() => {
       const resumo = getResumoMatchingInteligente(
         ev.evento,
         ev.data_evento,
-        chaveRegra
+        chaveRegra,
+        registosCompras,
+        registosVendas
       );
-
-      console.log("Resumo evento:", ev.evento, resumo);
 
       return {
         ...ev,
@@ -208,7 +208,6 @@ useEffect(() => {
       };
     } catch (e) {
       console.error("Erro no resumo do evento:", ev, e);
-
       return {
         ...ev,
         porComprarTxt: "",
