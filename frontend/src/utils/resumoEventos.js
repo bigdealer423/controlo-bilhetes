@@ -262,8 +262,18 @@ const vendaChaveOperacionalExata = (v = {}, estadioNome = "") =>
   chaveOperacionalExata(v.estadio, estadioNome);
 
 const compraChaveOperacionalExata = (c = {}, estadioNome = "") => {
-  const partes = [c.bancada, c.setor].filter(Boolean).join(" ");
-  return chaveOperacionalExata(partes, estadioNome);
+  const setor = limpar(c.setor);
+  const bancada = limpar(c.bancada);
+
+  if (setor && setor !== "-" && setor.toLowerCase() !== "null") {
+    return chaveOperacionalExata(setor, estadioNome);
+  }
+
+  if (bancada) {
+    return chaveOperacionalExata(bancada, estadioNome);
+  }
+
+  return "Outros";
 };
 
 const mapVendasPorSetorExato = (evento, data_evento, estadioNome = "", registosVendas = []) => {
