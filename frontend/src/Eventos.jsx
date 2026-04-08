@@ -1853,7 +1853,6 @@ const renderEventoComSimbolos = (eventoNome) => {
 
 
 
-
 return (
    <div className="p-4 md:p-6 w-full md:max-w-[1400px] md:mx-auto min-h-screen">
       <h1 className="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100">Resumo de Eventos</h1>
