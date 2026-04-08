@@ -1798,7 +1798,7 @@ const guardarEvento = async (evento) => {
   const normalizarTextoClube = (s = "") =>
   limpar(s)
     .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "") // remove acentos
+    .replace(/[\u0300-\u036f]/g, "")
     .replace(/[.\-_/]/g, " ")
     .replace(/\s+/g, " ")
     .trim()
@@ -1815,17 +1815,24 @@ const renderEventoComSimbolos = (eventoNome) => {
   return partes.map((parte, idx) => {
     const parteNorm = normalizarTextoClube(parte);
 
-    // 1) tenta correspondência exata
+    // 1) match exato normalizado
     let clubeMatch = clubesInfo.find(
       clube => normalizarTextoClube(clube.nome) === parteNorm
     );
 
-    // 2) fallback opcional: contains só se não houver exato
+    // 2) match parcial controlado
     if (!clubeMatch) {
       clubeMatch = clubesInfo.find(clube => {
         const clubeNorm = normalizarTextoClube(clube.nome);
         return parteNorm.includes(clubeNorm) || clubeNorm.includes(parteNorm);
       });
+    }
+
+    // 3) fallback antigo: primeiros 5 caracteres
+    if (!clubeMatch) {
+      clubeMatch = clubesInfo.find(clube =>
+        parteNorm.includes(normalizarTextoClube(clube.nome).slice(0, 5))
+      );
     }
 
     return (
