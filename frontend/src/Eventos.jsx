@@ -1795,23 +1795,42 @@ const guardarEvento = async (evento) => {
     }
   };
 
-  const renderEventoComSimbolos = (eventoNome) => {
-  // Limpa "vs vs", "vs  vs", etc.
+  const normalizarTextoClube = (s = "") =>
+  limpar(s)
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "") // remove acentos
+    .replace(/[.\-_/]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLowerCase();
+
+const renderEventoComSimbolos = (eventoNome) => {
   const nomeLimpo = eventoNome.replace(/\b(vs\s*){2,}/gi, "vs");
 
-  // Divide apenas por "vs" como palavra isolada
-  const partes = nomeLimpo.split(/\bvs\b/i)
+  const partes = nomeLimpo
+    .split(/\bvs\b/i)
     .map(p => p.trim())
     .filter(p => p.length > 0);
 
   return partes.map((parte, idx) => {
-    const clubeMatch = clubesInfo.find(clube =>
-      parte.toLowerCase().includes(clube.nome.toLowerCase().slice(0, 5))
+    const parteNorm = normalizarTextoClube(parte);
+
+    // 1) tenta correspondência exata
+    let clubeMatch = clubesInfo.find(
+      clube => normalizarTextoClube(clube.nome) === parteNorm
     );
+
+    // 2) fallback opcional: contains só se não houver exato
+    if (!clubeMatch) {
+      clubeMatch = clubesInfo.find(clube => {
+        const clubeNorm = normalizarTextoClube(clube.nome);
+        return parteNorm.includes(clubeNorm) || clubeNorm.includes(parteNorm);
+      });
+    }
 
     return (
       <span key={idx} className="inline-flex items-center gap-1 mr-2">
-        {clubeMatch && clubeMatch.simbolo && (
+        {clubeMatch?.simbolo && (
           <img
             src={clubeMatch.simbolo}
             alt={clubeMatch.nome}
@@ -1819,7 +1838,6 @@ const guardarEvento = async (evento) => {
           />
         )}
         {parte}
-        {/* Só adiciona "vs" entre os dois clubes */}
         {idx === 0 && partes.length > 1 && <span className="mx-1">vs</span>}
       </span>
     );
