@@ -1924,7 +1924,18 @@ const renderEventoComSimbolos = (eventoNome) => {
   });
 };
 
-
+const getDataBadgeClass = (estado) => {
+  if (estado === "Pago") {
+    return "bg-emerald-500/15 text-emerald-200 ring-1 ring-emerald-400/20";
+  }
+  if (estado === "Entregue") {
+    return "bg-amber-500/15 text-amber-200 ring-1 ring-amber-400/20";
+  }
+  if (estado === "Disputa") {
+    return "bg-red-500/15 text-red-200 ring-1 ring-red-400/20";
+  }
+  return "bg-white/[0.05] text-white/90 ring-1 ring-white/10";
+};
 
 return (
    <div className="p-4 md:p-6 w-full md:max-w-[1400px] md:mx-auto min-h-screen">
@@ -2182,16 +2193,22 @@ return (
                   });
                 }
               }}
-              className={`cursor-pointer border-b border-white/6 transition-all duration-200 hover:bg-white/[0.045] ${
+              className={`cursor-pointer border-b border-white/6 border-l-4 transition-all duration-200 hover:bg-white/[0.045] ${
                 linhaExpandida === r.id
-                  ? "bg-blue-500/10"
+                  ? r.estado === "Pago"
+                    ? "bg-emerald-500/10 border-l-emerald-400"
+                    : r.estado === "Entregue"
+                    ? "bg-amber-500/10 border-l-amber-400"
+                    : r.estado === "Disputa"
+                    ? "bg-red-500/12 border-l-red-400"
+                    : "bg-blue-500/10 border-l-blue-400"
                   : r.estado === "Pago"
-                  ? "bg-emerald-500/10"
+                  ? "bg-emerald-500/10 border-l-emerald-400"
                   : r.estado === "Entregue"
-                  ? "bg-amber-500/10"
+                  ? "bg-amber-500/10 border-l-amber-400"
                   : r.estado === "Disputa"
-                  ? "bg-red-500/12"
-                  : "bg-transparent"
+                  ? "bg-red-500/12 border-l-red-400"
+                  : "bg-transparent border-l-white/10"
               }`}
             >
 
@@ -2225,7 +2242,9 @@ return (
 
                     return (
                       <div className="flex items-center gap-3 min-w-0 overflow-hidden">
-                        <span className="shrink-0 rounded-xl bg-white/[0.05] px-2.5 py-1.5 text-[13px] font-semibold tabular-nums text-white/90">
+                        <span
+                          className={`shrink-0 rounded-xl px-2.5 py-1.5 text-[13px] font-semibold tabular-nums ${getDataBadgeClass(r.estado)}`}
+                        >
                           {formatarDataPt(r.data_evento)}
                         </span>
 
