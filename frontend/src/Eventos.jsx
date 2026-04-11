@@ -441,6 +441,54 @@ function parseDataPt(input) {
   return null;
 }
 
+const getTotaisBilhetesEvento = (evento, data_evento, vendas = [], compras = []) => {
+  const totalVendas = (vendas || [])
+    .filter(v => v.evento === evento && v.data_evento === data_evento)
+    .reduce((acc, v) => {
+      if (setorExato(v.estadio) === "Devolução") return acc;
+      return acc + (qtdBilhetes(v.estadio) || 0);
+    }, 0);
+
+  const totalCompras = (compras || [])
+    .filter(c => c.evento === evento && c.data_evento === data_evento)
+    .reduce((acc, c) => acc + (Number(c.quantidade) || 0), 0);
+
+  const saldo = totalCompras - totalVendas;
+
+  return {
+    totalCompras,
+    totalVendas,
+    saldo,
+  };
+};
+
+const getBadgeBilhetesMeta = (saldo) => {
+  if (saldo > 0) {
+    return {
+      valor: saldo,
+      title: `${saldo} bilhete${saldo === 1 ? "" : "s"} por vender`,
+      className:
+        "bg-emerald-500/20 text-white ring-1 ring-emerald-400/40 " +
+        "shadow-[0_0_18px_rgba(16,185,129,0.22)] " +
+        "before:absolute before:inset-[1px] before:rounded-[10px] before:bg-emerald-400/10",
+    };
+  }
+
+  if (saldo < 0) {
+    const abs = Math.abs(saldo);
+    return {
+      valor: abs,
+      title: `${abs} bilhete${abs === 1 ? "" : "s"} por comprar`,
+      className:
+        "bg-red-500/20 text-white ring-1 ring-red-400/40 " +
+        "shadow-[0_0_18px_rgba(239,68,68,0.22)] " +
+        "before:absolute before:inset-[1px] before:rounded-[10px] before:bg-red-400/10",
+    };
+  }
+
+  return null;
+};
+
 
 // ——— Normaliza URL para garantir https:// ———
 function normalizeUrl(s) {
@@ -2003,8 +2051,8 @@ return (
        <table className="hidden md:table min-w-full table-fixed border border-gray-300 dark:border-gray-600 text-sm transition-colors duration-300">
   <colgroup>
     <col className="w-[44px]" />
-    <col className="w-[110px]" />
-    <col className="w-[290px]" />
+    <col className="w-[160px]" />
+    <col className="w-[255px]" />
     <col className="w-[220px]" />
     <col className="w-[90px]" />
     <col className="w-[90px]" />
@@ -2091,7 +2139,31 @@ return (
                   className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300 [color-scheme:dark]"
                 />
               ) : (
-                formatarDataPt(r.data_evento)
+                (() => {
+                  const { saldo } = getTotaisBilhetesEvento(r.evento, r.data_evento, vendas, compras);
+                  const badge = getBadgeBilhetesMeta(saldo);
+            
+                  return (
+                    <div className="flex items-center gap-3">
+                      <span className="shrink-0">{formatarDataPt(r.data_evento)}</span>
+            
+                      {badge && (
+                        <span
+                          title={badge.title}
+                          className={`
+                            relative inline-flex shrink-0 items-center justify-center
+                            min-w-[30px] h-[30px] px-2 rounded-[11px]
+                            text-[13px] font-extrabold tracking-tight
+                            backdrop-blur-md overflow-hidden
+                            ${badge.className}
+                          `}
+                        >
+                          <span className="relative z-10 leading-none">{badge.valor}</span>
+                        </span>
+                      )}
+                    </div>
+                  );
+                })()
               )}
             </td>
 
