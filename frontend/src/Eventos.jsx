@@ -2133,7 +2133,6 @@ return (
       <div className="overflow-hidden rounded-[26px] border border-white/10 bg-white/[0.025] shadow-[0_20px_60px_rgba(0,0,0,0.35)] backdrop-blur-xl">
   <table className="hidden md:table min-w-full table-fixed text-sm text-white">
     <colgroup>
-      <col className="w-[34px]" />
       <col className="w-[420px]" />
       <col className="w-[280px]" />
       <col className="w-[95px]" />
@@ -2145,7 +2144,6 @@ return (
 
     <thead className="bg-white/[0.045]">
       <tr className="border-b border-white/10 text-[13px] uppercase tracking-[0.08em] text-white/70">
-        <th className="p-4"></th>
         <th className="p-4 font-semibold">Evento</th>
         <th className="p-4 font-semibold">Estádio</th>
         <th className="p-4 text-center font-semibold">Gasto</th>
@@ -2198,24 +2196,7 @@ return (
                     : "bg-transparent before:bg-transparent"
                 }`}
             >
-              <td className="p-4 text-center align-middle">
-                {(vendas.some(v => v.evento === r.evento && v.data_evento === r.data_evento) ||
-                  compras.some(c => c.evento === r.evento && c.data_evento === r.data_evento)) ? (
-                  <span
-                    className={`inline-block h-2.5 w-2.5 rounded-full transition-all duration-200 ${
-                      linhaExpandida === r.id
-                        ? "bg-blue-400 shadow-[0_0_14px_rgba(96,165,250,0.75)]"
-                        : "bg-white/20"
-                    }`}
-                    title={linhaExpandida === r.id ? "Expandido" : "Tem detalhe"}
-                  />
-                ) : (
-                  <span
-                    className="inline-block h-2.5 w-2.5 rounded-full bg-red-400/80"
-                    title="Sem vendas nem compras associadas"
-                  />
-                )}
-              </td>
+              
 
               <td className="p-4 overflow-hidden">
                 {modoEdicao === r.id ? (
@@ -2444,7 +2425,7 @@ return (
             {linhaExpandida === r.id && (
               <>
                 <tr className="bg-blue-500/6">
-                  <td colSpan="8" className="p-4 border-b border-white/6">
+                  <td colSpan="7" className="p-4 border-b border-white/6">
                     {(() => {
                       const chaveRegra = getEquipaCasaCanonica(r.evento);
                       const resumo = getResumoMatchingInteligente(r.evento, r.data_evento, chaveRegra);
