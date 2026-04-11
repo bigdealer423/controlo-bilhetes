@@ -2579,7 +2579,7 @@ return (
                 })()}
 
                 <tr className="bg-amber-500/8">
-                  <td colSpan="8" className="p-4 border-b border-white/6">
+                  <td colSpan="7" className="p-4 border-b border-white/6">
                     {(() => {
                       const chaveRegra = getEquipaCasaCanonica(r.evento);
                       const totalCompras = compras
@@ -2609,8 +2609,7 @@ return (
                   <td className="p-3">Fila</td>
                   <td className="p-3">Qt</td>
                   <td className="p-3 text-right">Gasto</td>
-                  <td className="p-3">Nota</td>
-                  <td className="p-3">Ações</td>
+                  <td className="p-3">Nota / Ações</td>
                 </tr>
 
                 {(() => {
@@ -2696,27 +2695,29 @@ return (
                             <td className="p-3 whitespace-nowrap text-white/90">{c.quantidade}</td>
                             <td className="p-3 whitespace-nowrap text-right font-medium text-red-300">{c.gasto} €</td>
                             <td className="p-3">
-                              <CirculoEstado
-                                tipo="compras"
-                                id={c.id}
-                                texto_estado={c.circulo_estado_compra}
-                                nota_estado={c.nota_estado_compra}
-                                setCompras={setCompras}
-                              />
-                            </td>
-                            <td className="p-3 whitespace-nowrap">
-                              {comprasNaoAssociadasSet.has(c.id) && (
-                                <span className="text-yellow-400 mr-2" title="Compra não associada a evento">⚠️</span>
-                              )}
-                              <button
-                                onClick={() => {
-                                  setModoEdicaoCompra(c.id);
-                                  setCompraEditada(c);
-                                }}
-                                className="text-blue-300 hover:text-blue-200"
-                              >
-                                Editar
-                              </button>
+                              <div className="flex items-center gap-3">
+                                <CirculoEstado
+                                  tipo="compras"
+                                  id={c.id}
+                                  texto_estado={c.circulo_estado_compra}
+                                  nota_estado={c.nota_estado_compra}
+                                  setCompras={setCompras}
+                                />
+                            
+                                {comprasNaoAssociadasSet.has(c.id) && (
+                                  <span className="text-yellow-400" title="Compra não associada a evento">⚠️</span>
+                                )}
+                            
+                                <button
+                                  onClick={() => {
+                                    setModoEdicaoCompra(c.id);
+                                    setCompraEditada(c);
+                                  }}
+                                  className="text-blue-300 hover:text-blue-200"
+                                >
+                                  Editar
+                                </button>
+                              </div>
                             </td>
                           </>
                         )}
