@@ -468,8 +468,7 @@ const getBadgeBilhetesMeta = (saldo) => {
       valor: saldo,
       title: `${saldo} bilhete${saldo === 1 ? "" : "s"} por vender`,
       className:
-        "bg-white/8 text-white ring-1 ring-white/12 " +
-        "before:absolute before:inset-[1px] before:rounded-[10px] before:bg-emerald-300/10",
+        "bg-emerald-900/85 text-white border border-emerald-700/80",
     };
   }
 
@@ -479,8 +478,7 @@ const getBadgeBilhetesMeta = (saldo) => {
       valor: abs,
       title: `${abs} bilhete${abs === 1 ? "" : "s"} por comprar`,
       className:
-        "bg-white/8 text-white ring-1 ring-white/12 " +
-        "before:absolute before:inset-[1px] before:rounded-[10px] before:bg-red-300/10",
+        "bg-red-900/85 text-white border border-red-700/80",
     };
   }
 
@@ -488,11 +486,9 @@ const getBadgeBilhetesMeta = (saldo) => {
     valor: 0,
     title: "Equilíbrio total",
     className:
-      "bg-white/8 text-white/90 ring-1 ring-white/10 " +
-      "before:absolute before:inset-[1px] before:rounded-[10px] before:bg-white/6",
+      "bg-slate-700/90 text-white border border-slate-500/80",
   };
 };
-
 
 // ——— Normaliza URL para garantir https:// ———
 function normalizeUrl(s) {
@@ -2175,14 +2171,14 @@ return (
             <span
               title={badge.title}
               className={`
-                relative inline-flex shrink-0 items-center justify-center
+                inline-flex shrink-0 items-center justify-center
                 min-w-[28px] h-[28px] px-2 rounded-[10px]
-                text-[12px] font-bold tracking-tight
-                backdrop-blur-sm overflow-hidden
+                text-[12px] font-bold leading-none
+                shadow-sm
                 ${badge.className}
               `}
             >
-              <span className="relative z-10 leading-none">{badge.valor}</span>
+              {badge.valor}
             </span>
           )}
 
