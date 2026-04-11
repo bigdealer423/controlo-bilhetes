@@ -2133,22 +2133,22 @@ return (
       <div className="overflow-hidden rounded-[26px] border border-white/10 bg-white/[0.025] shadow-[0_20px_60px_rgba(0,0,0,0.35)] backdrop-blur-xl">
   <table className="hidden md:table w-full table-fixed text-sm text-white">
     <colgroup>
-      <col className="w-[420px]" />
-      <col className="w-[280px]" />
-      <col className="w-[95px]" />
-      <col className="w-[95px]" />
-      <col className="w-[95px]" />
-      <col className="w-[120px]" />
-      <col className="w-[220px]" />
+      <col className="w-[33%]" />
+      <col className="w-[15%]" />
+      <col className="w-[9%]" />
+      <col className="w-[9%]" />
+      <col className="w-[9%]" />
+      <col className="w-[11%]" />
+      <col className="w-[14%]" />
     </colgroup>
 
     <thead className="bg-white/[0.045]">
       <tr className="border-b border-white/10 text-[13px] uppercase tracking-[0.08em] text-white/70">
         <th className="p-4 font-semibold">Evento</th>
         <th className="p-4 font-semibold">Estádio</th>
-        <th className="p-4 text-center font-semibold">Gasto</th>
-        <th className="p-4 text-center font-semibold">Ganho</th>
-        <th className="p-4 text-left font-semibold">Lucro</th>
+        <th className="p-4 text-right font-semibold">Gasto</th>
+        <th className="p-4 text-right font-semibold">Ganho</th>
+        <th className="p-4 text-right font-semibold">Lucro</th>
         <th className="p-4 font-semibold">Estado</th>
         <th className="p-4 font-semibold">Ações</th>
       </tr>
@@ -2227,7 +2227,7 @@ return (
                     const badge = getBadgeBilhetesMeta(saldo);
 
                     return (
-                      <div className="flex items-center gap-3 min-w-0 overflow-hidden">
+                      <div className="flex items-center gap-2 min-w-0 overflow-hidden">
                         <span className="shrink-0 rounded-xl bg-white/[0.05] px-2.5 py-1.5 text-[13px] font-semibold tabular-nums text-white/90">
                           {formatarDataPt(r.data_evento)}
                         </span>
@@ -2297,15 +2297,15 @@ return (
                 )}
               </td>
 
-              <td className="p-4 whitespace-nowrap text-center font-medium text-red-300">
+              <td className="p-4 whitespace-nowrap text-right font-medium text-red-300">
                 {r.gasto} €
               </td>
 
-              <td className="p-4 whitespace-nowrap text-center font-medium text-emerald-300">
+              <td className="p-4 whitespace-nowrap text-right font-medium text-emerald-300">
                 {r.ganho} €
               </td>
 
-              <td className="p-4 whitespace-nowrap text-left font-semibold text-white">
+              <td className="p-4 whitespace-nowrap text-right font-semibold text-white">
                 {(r.ganho - r.gasto)} €
               </td>
 
@@ -2339,7 +2339,7 @@ return (
               </td>
 
               <td className="p-4 align-middle whitespace-nowrap">
-                <div className="flex items-center justify-start gap-2 flex-nowrap">
+                <div className="flex items-center justify-start gap-1.5 flex-nowrap">
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -2349,7 +2349,7 @@ return (
                         ativarEdicao(r.id, r);
                       }
                     }}
-                    className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-blue-500 text-white shadow-[0_8px_20px_rgba(59,130,246,0.28)] transition hover:scale-105 hover:bg-blue-400"
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-blue-500 text-white shadow-[0_8px_20px_rgba(59,130,246,0.28)] transition hover:scale-105 hover:bg-blue-400"
                     title={modoEdicao === r.id ? "Guardar" : "Editar"}
                   >
                     {modoEdicao === r.id ? "💾" : <FaEdit size={14} />}
@@ -2360,7 +2360,7 @@ return (
                       e.stopPropagation();
                       confirmarEliminar(r.id);
                     }}
-                    className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-red-500 text-white shadow-[0_8px_20px_rgba(239,68,68,0.28)] transition hover:scale-105 hover:bg-red-400"
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-red-500 text-white shadow-[0_8px_20px_rgba(239,68,68,0.28)] transition hover:scale-105 hover:bg-red-400"
                     title="Eliminar"
                   >
                     <FaTrash size={14} />
@@ -2397,7 +2397,7 @@ return (
                       });
                     }}
                     title="Imprimir vendas com Nota (bola vermelha) deste evento"
-                    className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500 text-white shadow-[0_8px_20px_rgba(16,185,129,0.28)] transition hover:scale-105 hover:bg-emerald-400"
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-500 text-white shadow-[0_8px_20px_rgba(16,185,129,0.28)] transition hover:scale-105 hover:bg-emerald-400"
                   >
                     <FaPrint size={14} />
                   </button>
