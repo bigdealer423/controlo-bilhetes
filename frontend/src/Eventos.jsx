@@ -2622,18 +2622,20 @@ return (
                     {v.ganho} €
                   </td>
 
-                  <td className="py-3 px-2 whitespace-nowrap text-white/80 align-top">
-                    {v.estado}
-                  </td>
-
                   <td className="py-3 px-2 align-top">
-                    <CirculoEstado
-                      tipo="listagem_vendas"
-                      id={v.id}
-                      texto_estado={v.circulo_estado_venda}
-                      nota_estado={v.nota_estado_venda}
-                      setVendas={setVendas}
-                    />
+                    <div className="flex items-center gap-2">
+                      <span className="whitespace-nowrap text-white/80">
+                        {v.estado}
+                      </span>
+                  
+                      <CirculoEstado
+                        tipo="listagem_vendas"
+                        id={v.id}
+                        texto_estado={v.circulo_estado_venda}
+                        nota_estado={v.nota_estado_venda}
+                        setVendas={setVendas}
+                      />
+                    </div>
                   </td>
 
                   <td className="py-3 pl-2 pr-3 whitespace-nowrap align-top">
