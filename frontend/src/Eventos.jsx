@@ -1975,7 +1975,7 @@ return (
         <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-amber-400/10 text-amber-300">
           <span className="text-[24px]">⏳</span>
         </div>
-        <p className="text-sm text-white/65">A aguardar</p>
+        <p className="text-sm text-white/65">Por Pagar</p>
         <p className="mt-1 text-[32px] font-extrabold leading-none tracking-tight text-amber-300 md:text-[38px]">
           {formatarNumero(resumoMensal.pagamento)} €
         </p>
