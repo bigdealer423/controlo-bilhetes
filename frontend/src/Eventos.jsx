@@ -542,6 +542,7 @@ function listarEpocasFixas({ inicio = 2020, incluirProxima = true } = {}) {
 }
 
 
+
 export default function Eventos() {
   const [registos, setRegistos] = useState([]);
   const [urlEventoTmp, setUrlEventoTmp] = useState("");
@@ -1894,7 +1895,7 @@ const renderEventoComSimbolos = (eventoNome) => {
     }
 
     return (
-      <span key={idx} className="inline-flex items-center gap-1 mr-2">
+      <span key={idx} className="inline-flex items-center gap-1 mr-1">
         {clubeMatch?.simbolo && (
           <img
             src={clubeMatch.simbolo}
@@ -2050,9 +2051,8 @@ return (
       <div className="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-md rounded p-4 transition-colors duration-300">
        <table className="hidden md:table min-w-full table-fixed border border-gray-300 dark:border-gray-600 text-sm transition-colors duration-300">
   <colgroup>
-    <col className="w-[44px]" />
-    <col className="w-[160px]" />
-    <col className="w-[255px]" />
+    <col className="w-[30px]" />
+    <col className="w-[380px]" />
     <col className="w-[220px]" />
     <col className="w-[90px]" />
     <col className="w-[90px]" />
@@ -2064,7 +2064,6 @@ return (
   <thead className="bg-gray-100 dark:bg-gray-800 transition-colors duration-300">
     <tr className="align-middle">
       <th className="p-2"></th>
-      <th className="p-2 whitespace-nowrap">Data</th>
       <th className="p-2 whitespace-nowrap">Evento</th>
       <th className="p-2 whitespace-nowrap">Estádio</th>
       <th className="p-2 whitespace-nowrap text-center">Gasto</th>
@@ -2134,87 +2133,94 @@ return (
               )}
             </td>
 
-            <td className="p-2 whitespace-nowrap">
-              {modoEdicao === r.id ? (
-                <input
-                  type="date"
-                  value={toInputDate(r.data_evento)}
-                  onChange={(e) => atualizarCampo(r.id, "data_evento", e.target.value)}
-                  className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300 [color-scheme:dark]"
-                />
-              ) : (
-                (() => {
-                  const { saldo } = getTotaisBilhetesEvento(r.evento, r.data_evento, vendas, compras);
-                  const badge = getBadgeBilhetesMeta(saldo);
-            
-                  return (
-                    <div className="flex items-center gap-3">
-                      <span className="shrink-0">{formatarDataPt(r.data_evento)}</span>
-            
-                      {badge && (
-                        <span
-                          title={badge.title}
-                          className={`
-                            relative inline-flex shrink-0 items-center justify-center
-                            min-w-[30px] h-[30px] px-2 rounded-[11px]
-                            text-[13px] font-extrabold tracking-tight
-                            backdrop-blur-md overflow-hidden
-                            ${badge.className}
-                          `}
-                        >
-                          <span className="relative z-10 leading-none">{badge.valor}</span>
-                        </span>
-                      )}
-                    </div>
-                  );
-                })()
-              )}
-            </td>
-
             <td className="p-2 overflow-hidden">
-              {modoEdicao === r.id ? (
-                <select
-                  value={r.evento}
-                  onChange={(e) => atualizarCampo(r.id, "evento", e.target.value)}
-                  className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
-                >
-                  <option value="">-- Selecionar Evento --</option>
-                  {eventosDropdown.map(e => (
-                    <option key={e.id} value={e.nome}>{e.nome}</option>
-                  ))}
-                </select>
-              ) : (
-                <div className="flex items-center gap-2 min-w-0">
-                  <span className="flex items-center gap-1 whitespace-nowrap overflow-hidden text-ellipsis">
-                    {renderEventoComSimbolos(r.evento)}
-                  </span>
+  {modoEdicao === r.id ? (
+    <div className="flex items-center gap-2 min-w-0">
+      <input
+        type="date"
+        value={toInputDate(r.data_evento)}
+        onChange={(e) => atualizarCampo(r.id, "data_evento", e.target.value)}
+        onClick={(e) => e.stopPropagation()}
+        className="border p-2 rounded shrink-0 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 transition-colors duration-300 [color-scheme:dark]"
+      />
 
-                  {r.nota_evento && (
-                    <span className="text-yellow-400 animate-pulse shrink-0" title={r.nota_evento}>📝</span>
-                  )}
+      <select
+        value={r.evento}
+        onChange={(e) => atualizarCampo(r.id, "evento", e.target.value)}
+        onClick={(e) => e.stopPropagation()}
+        className="border p-2 rounded flex-1 min-w-0 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 transition-colors duration-300"
+      >
+        <option value="">-- Selecionar Evento --</option>
+        {eventosDropdown.map(e => (
+          <option key={e.id} value={e.nome}>{e.nome}</option>
+        ))}
+      </select>
+    </div>
+  ) : (
+    (() => {
+      const { saldo } = getTotaisBilhetesEvento(r.evento, r.data_evento, vendas, compras);
+      const badge = getBadgeBilhetesMeta(saldo);
 
-                  {r.url_evento ? (
-                    <a
-                      href={normalizeUrl(r.url_evento)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      title="Abrir link do evento"
-                      className="inline-flex items-center hover:opacity-80 shrink-0"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <img
-                        src={viagogoLogo}
-                        alt="Viagogo"
-                        className="w-5 h-5 inline-block align-[-2px]"
-                        loading="lazy"
-                      />
-                    </a>
-                  ) : null}
-                </div>
-              )}
-            </td>
+      return (
+        <div className="flex items-center gap-2 min-w-0 overflow-hidden">
+          <span className="shrink-0 tabular-nums text-gray-800 dark:text-gray-100">
+            {formatarDataPt(r.data_evento)}
+          </span>
 
-            <td className="p-2 overflow-hidden text-ellipsis whitespace-nowrap">
+          {badge && (
+            <span
+              title={badge.title}
+              className={`
+                relative inline-flex shrink-0 items-center justify-center
+                min-w-[28px] h-[28px] px-2 rounded-[10px]
+                text-[12px] font-extrabold tracking-tight
+                backdrop-blur-md overflow-hidden
+                ${badge.className}
+              `}
+            >
+              <span className="relative z-10 leading-none">{badge.valor}</span>
+            </span>
+          )}
+
+          <div className="flex items-center gap-1.5 min-w-0 overflow-hidden">
+            <span className="flex items-center gap-1 whitespace-nowrap overflow-hidden text-ellipsis min-w-0">
+              {renderEventoComSimbolos(r.evento)}
+            </span>
+
+            {r.nota_evento && (
+              <span
+                className="text-yellow-400 animate-pulse shrink-0"
+                title={r.nota_evento}
+              >
+                📝
+              </span>
+            )}
+
+            {r.url_evento ? (
+              <a
+                href={normalizeUrl(r.url_evento)}
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Abrir link do evento"
+                className="inline-flex items-center hover:opacity-80 shrink-0"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <img
+                  src={viagogoLogo}
+                  alt="Viagogo"
+                  className="w-5 h-5 inline-block align-[-2px]"
+                  loading="lazy"
+                />
+              </a>
+            ) : null}
+          </div>
+        </div>
+      );
+    })()
+  )}
+</td>
+
+            <td className="p-2 whitespace-nowrap overflow-hidden truncate">
               {modoEdicao === r.id
                 ? <input value={r.estadio} onChange={(e) => atualizarCampo(r.id, "estadio", e.target.value)} className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" />
                 : r.estadio}
@@ -2241,10 +2247,10 @@ return (
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    if (modoEdicao === r.id) {
+                   if (modoEdicao === r.id) {
                       guardarEvento(r);
                     } else {
-                      setModoEdicao(r.id);
+                      ativarEdicao(r.id, r);
                     }
                   }}
                   className="flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded leading-none"
@@ -2320,7 +2326,7 @@ return (
           {linhaExpandida === r.id && (
             <>
               <tr className="bg-indigo-50 dark:bg-gray-800 text-sm border-t border-l-4 border-blue-600 transition-colors duration-300">
-                <td colSpan="9" className="p-2 font-semibold">
+                <td colSpan="8" className="p-2 font-semibold">
                   {(() => {
                     const chaveRegra = getEquipaCasaCanonica(r.evento);
                     const resumo = getResumoMatchingInteligente(r.evento, r.data_evento, chaveRegra);
@@ -2358,7 +2364,7 @@ return (
 
               <tr className="border-l-4 border-blue-600 bg-blue-100 dark:bg-blue-800 text-xs font-semibold">
                 <td className="p-2 whitespace-nowrap">ID Venda</td>
-                <td className="p-2" colSpan="3">Bilhetes</td>
+                <td className="p-2" colSpan="2">Bilhetes</td>
                 <td className="p-2 whitespace-nowrap text-right">Ganho</td>
                 <td className="p-2 whitespace-nowrap">Estado</td>
                 <td className="p-2 whitespace-nowrap">Nota</td>
@@ -2431,7 +2437,7 @@ return (
                             <option value="Pago">Pago</option>
                           </select>
                         </td>
-                        <td colSpan="4" className="p-2">
+                        <td colSpan="3" className="p-2">
                           <button
                             className="text-green-600 mr-2"
                             onClick={() => guardarVenda(vendaEditada)}
@@ -2454,7 +2460,7 @@ return (
                         className={`border-l-4 border-blue-600 text-xs border-t ${bgClass}`}
                       >
                         <td className="p-2 whitespace-nowrap">{v.id_venda}</td>
-                        <td className="p-2" colSpan="3">
+                        <td className="p-2" colSpan="2">
                           {v.estadio}
                         </td>
                         <td className="p-2 whitespace-nowrap text-right">{v.ganho} €</td>
@@ -2495,7 +2501,7 @@ return (
               })()}
 
               <tr className="bg-yellow-50 dark:bg-yellow-900 text-sm border-t border-l-4 border-yellow-600">
-                <td colSpan="9" className="p-2 font-semibold">
+                <td colSpan="8" className="p-2 font-semibold">
                   {(() => {
                     const chaveRegra = getEquipaCasaCanonica(r.evento);
                     const totalCompras = compras
@@ -2527,7 +2533,6 @@ return (
                 <td className="p-2 whitespace-nowrap text-right">Gasto</td>
                 <td className="p-2 whitespace-nowrap">Nota</td>
                 <td className="p-2 whitespace-nowrap">Ações</td>
-                <td></td>
               </tr>
 
               {(() => {
@@ -2598,7 +2603,7 @@ return (
                               onChange={e => setCompraEditada({ ...compraEditada, gasto: e.target.value })}
                             />
                           </td>
-                          <td className="p-2" colSpan="3">
+                          <td className="p-2" colSpan="2">
                             <button className="text-green-600 mr-2" onClick={() => guardarCompra(compraEditada)}>
                               Guardar
                             </button>
@@ -2640,7 +2645,6 @@ return (
                               Editar
                             </button>
                           </td>
-                          <td></td>
                         </>
                       )}
                     </tr>
