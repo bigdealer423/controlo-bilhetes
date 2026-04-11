@@ -2499,12 +2499,12 @@ return (
     <div className="px-4 pb-2">
       <table className="w-full table-fixed text-xs text-white">
         <colgroup>
-          <col className="w-[110px]" />
-          <col className="w-[580px]" />
-          <col className="w-[80px]" />
-          <col className="w-[100px]" />
-          <col className="w-[180px]" />  {/* 👈 reduz nota */}
-          <col className="w-[80px]" />
+          <col className="w-[120px]" />
+          <col className="w-[520px]" />
+          <col className="w-[90px]" />
+          <col className="w-[120px]" />
+          <col className="w-[220px]" />
+          <col className="w-[90px]" />
         </colgroup>
         <thead>
           <tr className="bg-blue-500/10 text-[11px] uppercase tracking-[0.08em] text-white/65">
