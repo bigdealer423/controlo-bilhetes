@@ -2507,33 +2507,7 @@ return (
                     })()}
                   </td>
                 </tr>
-                          <div className="font-semibold text-white">
-                            Vendas ({getTotalBilhetesVendas(r.evento, r.data_evento)})
-                            {resumoTitulo ? <> — {resumoTitulo}</> : null}
-                          </div>
-
-                          {resumo.porComprarTxt && (
-                            <div className="text-red-300 text-xs mt-1">
-                              🔴 Por comprar: {resumo.porComprarTxt}
-                            </div>
-                          )}
-
-                          {resumo.coberturaIncertaTxt && (
-                            <div className="text-yellow-300 text-xs mt-1">
-                              🟡 Cobertura incerta: {resumo.coberturaIncertaTxt}
-                            </div>
-                          )}
-
-                          {resumo.porVenderTxt && (
-                            <div className="text-emerald-300 text-xs mt-1">
-                              🟢 Por vender: {resumo.porVenderTxt}
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })()}
-                  </td>
-                </tr>
+                          
 
                 <tr className={`${getExpandedVendaHeaderClass} text-[11px] uppercase tracking-[0.08em]`}>
                   <td className="p-3">ID Venda</td>
