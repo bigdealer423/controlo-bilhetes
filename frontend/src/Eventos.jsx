@@ -2511,9 +2511,9 @@ return (
             <th className="py-3 pl-3 pr-2 text-left">ID Venda</th>
             <th className="py-3 px-2 text-left">Bilhetes</th>
             <th className="py-3 px-2 text-right">Ganho</th>
-            <th className="py-3 px-2 text-left">Estado</th>
-            <th className="py-3 px-2 text-left">Nota</th>
-            <th className="py-3 pl-2 pr-3 text-left">Ações</th>
+            <th className="py-3 pl-2 pr-1 text-left">Estado</th>
+            <th className="py-3 pl-1 pr-1 text-left">Nota</th>
+            <th className="py-3 pl-1 pr-3 text-left">Ações</th>
           </tr>
         </thead>
 
@@ -2622,23 +2622,21 @@ return (
                     {v.ganho} €
                   </td>
 
-                  <td className="py-3 px-2 align-top">
-                    <div className="flex items-center gap-2">
-                      <span className="whitespace-nowrap text-white/80">
-                        {v.estado}
-                      </span>
-                  
-                      <CirculoEstado
-                        tipo="listagem_vendas"
-                        id={v.id}
-                        texto_estado={v.circulo_estado_venda}
-                        nota_estado={v.nota_estado_venda}
-                        setVendas={setVendas}
-                      />
-                    </div>
+                  <td className="py-3 pl-2 pr-1 whitespace-nowrap text-white/80 align-middle">
+                    {v.estado}
                   </td>
-
-                  <td className="py-3 pl-2 pr-3 whitespace-nowrap align-top">
+                  
+                  <td className="py-3 pl-1 pr-1 align-middle">
+                    <CirculoEstado
+                      tipo="listagem_vendas"
+                      id={v.id}
+                      texto_estado={v.circulo_estado_venda}
+                      nota_estado={v.nota_estado_venda}
+                      setVendas={setVendas}
+                    />
+                  </td>
+                  
+                  <td className="py-3 pl-1 pr-3 whitespace-nowrap align-middle">
                     {vendasNaoAssociadasSet.has(v.id) && (
                       <span
                         className="text-yellow-400 mr-2"
