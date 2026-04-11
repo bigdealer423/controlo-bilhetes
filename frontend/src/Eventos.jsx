@@ -2014,107 +2014,117 @@ return (
   </div>
 </div>
 
-{/* ── TOOLBAR ───────────────────────────────────────────────────── */}
-<div className="mb-4 flex flex-col md:flex-row md:items-center md:flex-wrap gap-2">
-  {/* Adicionar */}
-  <button
-    onClick={adicionarLinha}
-    className={`${BTN_BASE} ${BTN_VARIANTS.blue}`}
-  >
-    Adicionar Evento
-  </button>
+<div className="mb-6 flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
+  <div className="flex flex-col gap-3 md:flex-row md:flex-wrap md:items-center">
+    {/* Adicionar Evento */}
+    <button
+      onClick={adicionarLinha}
+      className="inline-flex items-center justify-center gap-3 rounded-2xl border border-blue-400/20 bg-gradient-to-r from-blue-600 to-blue-500 px-5 py-3 font-semibold text-white shadow-[0_12px_30px_rgba(37,99,235,0.28)] transition hover:scale-[1.01] hover:from-blue-500 hover:to-blue-400"
+    >
+      <span className="text-xl leading-none">＋</span>
+      <span>Adicionar Evento</span>
+    </button>
 
-  {/* Pesquisa (cresce para ocupar o meio) */}
-  <div className="relative w-full md:max-w-sm md:flex-1">
-    <input
-      type="text"
-      placeholder="🔍 Pesquisar equipa..."
-      value={filtroPesquisa}
-      onChange={(e) => setFiltroPesquisa(e.target.value)}
-      className="p-2 pr-8 w-full rounded-xl
-                 bg-white text-gray-900 border border-gray-300
-                 dark:bg-gray-900 dark:text-gray-100 dark:border-gray-700
-                 placeholder-gray-500 dark:placeholder-gray-400"
-    />
-    {filtroPesquisa && (
+    {/* Pesquisa */}
+    <div className="relative min-w-0 md:w-[380px] xl:w-[420px]">
+      <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-lg text-white/45">
+        🔍
+      </span>
+      <input
+        type="text"
+        placeholder="Pesquisar equipa..."
+        value={filtroPesquisa}
+        onChange={(e) => setFiltroPesquisa(e.target.value)}
+        className="w-full rounded-2xl border border-white/10 bg-white/[0.03] py-3 pl-12 pr-11 text-white placeholder:text-white/35 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] outline-none transition focus:border-blue-400/40 focus:bg-white/[0.05]"
+      />
+      {filtroPesquisa && (
+        <button
+          onClick={() => setFiltroPesquisa("")}
+          className="absolute right-3 top-1/2 inline-flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full text-sm text-white/55 transition hover:bg-white/10 hover:text-red-400"
+          title="Limpar"
+        >
+          ✕
+        </button>
+      )}
+    </div>
+
+    {/* Época */}
+    <div ref={epocaRef} className="relative">
       <button
-        onClick={() => setFiltroPesquisa("")}
-        className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-red-500"
-        title="Limpar"
+        type="button"
+        onClick={() => setEpocaAberta(v => !v)}
+        className="inline-flex min-w-[190px] items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/[0.05] px-5 py-3 font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] transition hover:bg-white/[0.08]"
+        aria-expanded={epocaAberta}
+        aria-haspopup="listbox"
       >
-        ❌
+        <span className="truncate">Época {epocaSelecionada}</span>
+        <svg
+          className={`h-4 w-4 shrink-0 text-white/70 transition-transform ${epocaAberta ? "rotate-180" : ""}`}
+          viewBox="0 0 20 20"
+          fill="currentColor"
+        >
+          <path d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 011.08 1.04l-4.25 4.25a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z"/>
+        </svg>
       </button>
-    )}
+
+      {epocaAberta && (
+        <div
+          role="listbox"
+          className="absolute left-0 top-full z-50 mt-2 w-full min-w-[220px] overflow-hidden rounded-2xl border border-white/10 bg-[#0f172a]/95 p-2 shadow-2xl backdrop-blur-xl"
+        >
+          <div className="max-h-64 overflow-y-auto">
+            {opcoesEpoca.map((opt) => {
+              const ativo = epocaSelecionada === opt;
+              return (
+                <button
+                  key={opt}
+                  role="option"
+                  aria-selected={ativo}
+                  onClick={() => {
+                    setEpocaSelecionada(opt);
+                    setEpocaAberta(false);
+                  }}
+                  className={`w-full rounded-xl px-3 py-2 text-left text-sm transition ${
+                    ativo
+                      ? "bg-blue-500/15 font-semibold text-blue-200"
+                      : "text-white/80 hover:bg-white/8 hover:text-white"
+                  }`}
+                >
+                  {opt}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+    </div>
+
+    {/* Ocultar Pagos */}
+    <button
+      onClick={() => setOcultarPagos(v => !v)}
+      title={ocultarPagos ? "A ocultar eventos pagos" : "A mostrar eventos pagos"}
+      className={`inline-flex items-center justify-center gap-3 rounded-2xl px-5 py-3 font-semibold text-white transition ${
+        ocultarPagos
+          ? "border border-amber-400/20 bg-amber-500/12 shadow-[0_12px_30px_rgba(245,158,11,0.18)] hover:bg-amber-500/18"
+          : "border border-emerald-400/20 bg-emerald-500/12 shadow-[0_12px_30px_rgba(16,185,129,0.18)] hover:bg-emerald-500/18"
+      }`}
+    >
+      <span className="text-base">💰</span>
+      <span>Ocultar Pagos: {ocultarPagos ? "ON" : "OFF"}</span>
+    </button>
   </div>
 
-  {/* Época (popover controlado) */}
-<div ref={epocaRef} className="relative">
-  <button
-    type="button"
-    onClick={() => setEpocaAberta(v => !v)}
-    className={`${BTN_BASE} bg-slate-600 hover:bg-slate-700 text-white focus:ring-slate-400`}
-    aria-expanded={epocaAberta}
-    aria-haspopup="listbox"
-  >
-    <span className="font-medium">Época</span>
-    <span className="opacity-90">{epocaSelecionada}</span>
-    <svg className={`h-4 w-4 transition-transform ${epocaAberta ? "rotate-180" : ""}`} viewBox="0 0 20 20" fill="currentColor">
-      <path d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 011.08 1.04l-4.25 4.25a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z"/>
-    </svg>
-  </button>
-
-  {epocaAberta && (
-    <div
-      role="listbox"
-      className="absolute right-0 mt-2 w-56 z-50 rounded-xl border p-1 shadow-lg
-                 bg-white text-gray-900 border-gray-200
-                 dark:bg-gray-900 dark:text-gray-100 dark:border-gray-700"
+  {/* Exportar */}
+  <div className="flex">
+    <button
+      onClick={() => exportarEventosParaExcel(registos)}
+      className="inline-flex items-center justify-center gap-3 rounded-2xl border border-emerald-400/20 bg-gradient-to-r from-emerald-600 to-green-500 px-5 py-3 font-semibold text-white shadow-[0_12px_30px_rgba(16,185,129,0.24)] transition hover:scale-[1.01] hover:from-emerald-500 hover:to-green-400"
     >
-      <div className="max-h-64 overflow-y-auto">
-        {opcoesEpoca.map((opt) => {
-          const ativo = epocaSelecionada === opt;
-          return (
-            <button
-              key={opt}
-              role="option"
-              aria-selected={ativo}
-              onClick={() => {
-                setEpocaSelecionada(opt);
-                setEpocaAberta(false);   // fecha ao selecionar
-              }}
-              className={`w-full text-left rounded-lg px-3 py-2 text-sm
-                          hover:bg-gray-100 dark:hover:bg-gray-800
-                          ${ativo ? "bg-gray-100 dark:bg-gray-800 font-semibold" : ""}`}
-            >
-              {opt}
-            </button>
-          );
-        })}
-      </div>
-    </div>
-  )}
+      <FaFileExcel className="h-4 w-4" />
+      <span>Exportar Excel</span>
+    </button>
+  </div>
 </div>
-
-
-  {/* Ocultar Pagos (mesmo shape; cor muda ON/OFF) */}
-  <button
-    onClick={() => setOcultarPagos(v => !v)}
-    className={`${BTN_BASE} ${ocultarPagos ? BTN_VARIANTS.gray : BTN_VARIANTS.green}`}
-    title={ocultarPagos ? "A ocultar eventos pagos" : "A mostrar eventos pagos"}
-  >
-    💰 Ocultar Pagos: {ocultarPagos ? "ON" : "OFF"}
-  </button>
-
-  {/* Exportar (igual ao 'Exportar Excel' que já gostas) */}
-  <button
-    onClick={() => exportarEventosParaExcel(registos)}
-    className={`${BTN_BASE} ${BTN_VARIANTS.green} hidden md:inline-flex`}
-  >
-    <FaFileExcel className="h-4 w-4" />
-    Exportar Excel
-  </button>
-</div>
-
 
 
     
