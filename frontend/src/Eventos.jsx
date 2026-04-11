@@ -1914,31 +1914,86 @@ const renderEventoComSimbolos = (eventoNome) => {
 
 return (
    <div className="p-4 md:p-6 w-full md:max-w-[1400px] md:mx-auto min-h-screen">
-      <h1 className="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100">Resumo de Eventos</h1>
+      
 
 
-      <div className="bg-yellow-100 dark:bg-yellow-900 border-l-4 border-yellow-600 dark:border-yellow-400 text-yellow-800 dark:text-yellow-200 p-4 mb-6 rounded transition-colors duration-300">
-  <div className="flex items-center justify-between mb-2">
-    <p className="font-semibold text-lg">Resumo Mensal</p>
-    <button
-  type="button"
-  onClick={buscarLucrosMensais}
-  className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 text-sm"
->
-  📊 Ver Lucros por Mês
-</button>
-  </div>    
-  <p>📆 Lucro de {new Date().toLocaleString("pt-PT", { month: "long", year: "numeric" })}: <strong>{formatarNumero(resumoMensal.lucro)} €</strong></p>
-  <p>
-  💸 A aguardar pagamento:{" "}
-  <strong>{formatarNumero(resumoMensal.pagamento)} €</strong>
-  {resumoMensal.disputas > 0 && (
-    <span className="ml-2 text-xs font-semibold text-red-600 dark:text-red-400">
-      (+Disputas {formatarNumero(resumoMensal.disputas)} €)
-    </span>
-  )}
-</p>
-  <p>🎟️ Bilhetes vendidos esta época: <strong>{formatarNumero(resumoMensal.bilhetes_epoca)}</strong></p>
+      <div className="mb-6">
+  <div className="
+    w-full rounded-2xl p-5
+    bg-gradient-to-r from-[#0f172a] via-[#1e293b] to-[#0f172a]
+    border border-white/10
+    shadow-[0_0_30px_rgba(59,130,246,0.15)]
+    flex flex-col md:flex-row md:items-center md:justify-between gap-4
+  ">
+
+    {/* ESQUERDA */}
+    <div className="flex items-center gap-4">
+      <div className="w-12 h-12 flex items-center justify-center rounded-xl
+        bg-blue-500/20 text-blue-400 text-xl">
+        📊
+      </div>
+
+      <div>
+        <div className="text-lg font-semibold text-white">
+          {new Date().toLocaleString("pt-PT", { month: "long", year: "numeric" })}
+        </div>
+
+        <div className="text-xs text-gray-400 mt-1">
+          Época {epocaSelecionada}
+        </div>
+      </div>
+    </div>
+
+    {/* CENTRO - MÉTRICAS */}
+    <div className="flex flex-1 justify-between md:justify-center md:gap-10">
+
+      {/* LUCRO */}
+      <div className="text-center">
+        <div className="text-xs text-gray-400">Lucro</div>
+        <div className="text-xl font-bold text-green-400">
+          {formatarNumero(resumoMensal.lucro)} €
+        </div>
+      </div>
+
+      {/* AGUARDAR */}
+      <div className="text-center">
+        <div className="text-xs text-gray-400">A aguardar</div>
+        <div className="text-xl font-bold text-yellow-400">
+          {formatarNumero(resumoMensal.pagamento)} €
+        </div>
+
+        {resumoMensal.disputas > 0 && (
+          <div className="text-[10px] text-red-400 mt-1">
+            +Disputas {formatarNumero(resumoMensal.disputas)} €
+          </div>
+        )}
+      </div>
+
+      {/* BILHETES */}
+      <div className="text-center">
+        <div className="text-xs text-gray-400">Bilhetes</div>
+        <div className="text-xl font-bold text-purple-400">
+          {formatarNumero(resumoMensal.bilhetes_epoca)}
+        </div>
+      </div>
+
+    </div>
+
+    {/* DIREITA */}
+    <div className="flex justify-end">
+      <button
+        onClick={buscarLucrosMensais}
+        className="
+          px-4 py-2 rounded-xl text-sm font-semibold
+          bg-blue-600 hover:bg-blue-700
+          text-white shadow-md
+        "
+      >
+        📈 Ver Lucros
+      </button>
+    </div>
+
+  </div>
 </div>
 
 
