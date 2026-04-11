@@ -497,8 +497,6 @@ const getBadgeBilhetesMeta = (saldo) => {
   };
 };
 
-  return null;
-};
 
 
 // ——— Normaliza URL para garantir https:// ———
