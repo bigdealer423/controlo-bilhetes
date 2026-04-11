@@ -2115,18 +2115,22 @@ return (
                 : ""
             } transition-colors duration-300`}
           >
-            <td className="p-2 whitespace-nowrap">
-              {vendas.some(v => v.evento === r.evento && v.data_evento === r.data_evento) || compras.some(c => c.evento === r.evento && c.data_evento === r.data_evento) ? (
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setLinhaExpandida(linhaExpandida === r.id ? null : r.id);
-                  }}
-                >
-                  {linhaExpandida === r.id ? "🔼" : "🔽"}
-                </button>
+            <td className="p-2 whitespace-nowrap text-center">
+              {(vendas.some(v => v.evento === r.evento && v.data_evento === r.data_evento) ||
+                compras.some(c => c.evento === r.evento && c.data_evento === r.data_evento)) ? (
+                <span
+                  className={`inline-block h-2.5 w-2.5 rounded-full transition-all duration-200 ${
+                    linhaExpandida === r.id
+                      ? "bg-blue-400 shadow-[0_0_10px_rgba(96,165,250,0.7)]"
+                      : "bg-white/20"
+                  }`}
+                  title={linhaExpandida === r.id ? "Expandido" : "Tem detalhe"}
+                />
               ) : (
-                <span className="text-red-600">🔻</span>
+                <span
+                  className="inline-block h-2.5 w-2.5 rounded-full bg-red-500/80"
+                  title="Sem vendas nem compras associadas"
+                />
               )}
             </td>
 
