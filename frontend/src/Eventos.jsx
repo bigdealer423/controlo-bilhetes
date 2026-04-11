@@ -2133,7 +2133,6 @@ return (
       <div className="overflow-hidden rounded-[26px] border border-white/10 bg-white/[0.025] shadow-[0_20px_60px_rgba(0,0,0,0.35)] backdrop-blur-xl">
   <table className="hidden md:table min-w-full table-fixed text-sm text-white">
     <colgroup>
-      <col className="w-[34px]" />
       <col className="w-[420px]" />
       <col className="w-[280px]" />
       <col className="w-[95px]" />
@@ -2145,7 +2144,6 @@ return (
 
     <thead className="bg-white/[0.045]">
       <tr className="border-b border-white/10 text-[13px] uppercase tracking-[0.08em] text-white/70">
-        <th className="p-4"></th>
         <th className="p-4 font-semibold">Evento</th>
         <th className="p-4 font-semibold">Estádio</th>
         <th className="p-4 text-center font-semibold">Gasto</th>
