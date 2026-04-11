@@ -1987,7 +1987,7 @@ return (
         <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:gap-0">
           <div className="flex items-center gap-4 xl:px-8">
             <div className="flex h-20 w-20 items-center justify-center rounded-full bg-emerald-400/10 ring-1 ring-emerald-300/10">
-              <FaArrowTrendUp className="text-[30px] text-emerald-400" />
+              <FaChartLine className="text-[30px] text-emerald-400" />
             </div>
             <div>
               <div className="text-sm text-slate-400">Lucro</div>
