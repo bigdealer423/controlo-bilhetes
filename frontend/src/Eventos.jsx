@@ -2461,14 +2461,13 @@ return (
                   </td>
                 </tr>
 
-                <tr className="bg-blue-500/10 text-[11px] uppercase tracking-[0.08em] text-white/65">
+               <tr className="bg-blue-500/10 text-[11px] uppercase tracking-[0.08em] text-white/65">
                   <td className="p-3">ID Venda</td>
                   <td className="p-3" colSpan="2">Bilhetes</td>
                   <td className="p-3 text-right">Ganho</td>
                   <td className="p-3">Estado</td>
                   <td className="p-3">Nota</td>
                   <td className="p-3">Ações</td>
-                  <td className="p-3"></td>
                 </tr>
 
                 {(() => {
@@ -2574,7 +2573,6 @@ return (
                             Editar
                           </button>
                         </td>
-                        <td className="p-3"></td>
                       </tr>
                     );
                   });
