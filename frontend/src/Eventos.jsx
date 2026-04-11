@@ -2131,26 +2131,28 @@ return (
 
 
       <div className="overflow-hidden rounded-[26px] border border-white/10 bg-white/[0.025] shadow-[0_20px_60px_rgba(0,0,0,0.35)] backdrop-blur-xl">
-   <table className="hidden md:table w-full table-fixed text-sm text-white">
+  <table className="hidden md:table min-w-full table-fixed text-sm text-white">
     <colgroup>
-      <col className="w-[44%]" />  {/* Evento */}
-      <col className="w-[16%]" />  {/* Estádio */}
-      <col className="w-[8%]" />   {/* Gasto */}
-      <col className="w-[8%]" />   {/* Ganho */}
-      <col className="w-[8%]" />   {/* Lucro */}
-      <col className="w-[8%]" />   {/* Estado */}
-      <col className="w-[8rem]" /> {/* Ações */}
+      <col className="w-[34px]" />
+      <col className="w-[420px]" />
+      <col className="w-[280px]" />
+      <col className="w-[95px]" />
+      <col className="w-[95px]" />
+      <col className="w-[95px]" />
+      <col className="w-[120px]" />
+      <col className="w-[170px]" />
     </colgroup>
 
     <thead className="bg-white/[0.045]">
       <tr className="border-b border-white/10 text-[13px] uppercase tracking-[0.08em] text-white/70">
+        <th className="p-4"></th>
         <th className="p-4 font-semibold">Evento</th>
         <th className="p-4 font-semibold">Estádio</th>
-        <th className="p-4 text-right font-semibold">Gasto</th>
-        <th className="p-4 text-right font-semibold">Ganho</th>
-        <th className="p-4 text-right font-semibold">Lucro</th>
+        <th className="p-4 text-center font-semibold">Gasto</th>
+        <th className="p-4 text-center font-semibold">Ganho</th>
+        <th className="p-4 text-left font-semibold">Lucro</th>
         <th className="p-4 font-semibold">Estado</th>
-        <th className="p-4 font-semibold whitespace-nowrap">Ações</th>
+        <th className="p-4 font-semibold">Ações</th>
       </tr>
     </thead>
 
@@ -2182,23 +2184,38 @@ return (
                   });
                 }
               }}
-              className={`relative cursor-pointer border-b border-white/6 transition-all duration-200 hover:bg-white/[0.045]
-                before:absolute before:left-0 before:top-0 before:h-full before:w-[4px] before:rounded-r-md before:content-['']
-                ${
-                  linhaExpandida === r.id
-                    ? "bg-blue-500/10 before:bg-blue-400 before:shadow-[0_0_14px_rgba(96,165,250,0.8)]"
-                    : r.estado === "Pago"
-                    ? "bg-emerald-500/10 before:bg-emerald-400 before:shadow-[0_0_14px_rgba(52,211,153,0.75)]"
-                    : r.estado === "Entregue"
-                    ? "bg-amber-500/10 before:bg-amber-400 before:shadow-[0_0_14px_rgba(251,191,36,0.75)]"
-                    : r.estado === "Disputa"
-                    ? "bg-red-500/12 before:bg-red-400 before:shadow-[0_0_14px_rgba(248,113,113,0.8)]"
-                    : "bg-transparent before:bg-transparent"
-                }`}
+              className={`cursor-pointer border-b border-white/6 transition-all duration-200 hover:bg-white/[0.045] ${
+                linhaExpandida === r.id
+                  ? "bg-blue-500/10"
+                  : r.estado === "Pago"
+                  ? "bg-emerald-500/10"
+                  : r.estado === "Entregue"
+                  ? "bg-amber-500/10"
+                  : r.estado === "Disputa"
+                  ? "bg-red-500/12"
+                  : "bg-transparent"
+              }`}
             >
-              
+              <td className="p-4 text-center align-middle">
+                {(vendas.some(v => v.evento === r.evento && v.data_evento === r.data_evento) ||
+                  compras.some(c => c.evento === r.evento && c.data_evento === r.data_evento)) ? (
+                  <span
+                    className={`inline-block h-2.5 w-2.5 rounded-full transition-all duration-200 ${
+                      linhaExpandida === r.id
+                        ? "bg-blue-400 shadow-[0_0_14px_rgba(96,165,250,0.75)]"
+                        : "bg-white/20"
+                    }`}
+                    title={linhaExpandida === r.id ? "Expandido" : "Tem detalhe"}
+                  />
+                ) : (
+                  <span
+                    className="inline-block h-2.5 w-2.5 rounded-full bg-red-400/80"
+                    title="Sem vendas nem compras associadas"
+                  />
+                )}
+              </td>
 
-              <td className="p-4">
+              <td className="p-4 overflow-hidden">
                 {modoEdicao === r.id ? (
                   <div className="flex items-center gap-2 min-w-0">
                     <input
@@ -2227,7 +2244,7 @@ return (
                     const badge = getBadgeBilhetesMeta(saldo);
 
                     return (
-                      <div className="flex items-center gap-2 min-w-0 w-full overflow-hidden">
+                      <div className="flex items-center gap-3 min-w-0 overflow-hidden">
                         <span className="shrink-0 rounded-xl bg-white/[0.05] px-2.5 py-1.5 text-[13px] font-semibold tabular-nums text-white/90">
                           {formatarDataPt(r.data_evento)}
                         </span>
@@ -2247,12 +2264,10 @@ return (
                           </span>
                         )}
 
-                        <div className="flex items-center gap-2 min-w-0 flex-1 overflow-hidden">
-                          <div className="min-w-0 flex-1 font-medium text-white overflow-hidden">
-                            <div className="flex items-center gap-1 flex-wrap leading-tight">
-                              {renderEventoComSimbolos(r.evento)}
-                            </div>
-                          </div>
+                        <div className="flex items-center gap-2 min-w-0 overflow-hidden">
+                          <span className="flex items-center gap-1 whitespace-nowrap overflow-hidden text-ellipsis min-w-0 font-medium text-white">
+                            {renderEventoComSimbolos(r.evento)}
+                          </span>
 
                           {r.nota_evento && (
                             <span
@@ -2287,7 +2302,7 @@ return (
                 )}
               </td>
 
-              <td className="p-4 overflow-hidden truncate text-white/88">
+              <td className="p-4 whitespace-nowrap overflow-hidden truncate text-white/88">
                 {modoEdicao === r.id ? (
                   <input
                     value={r.estadio}
@@ -2299,15 +2314,15 @@ return (
                 )}
               </td>
 
-              <td className="p-4 whitespace-nowrap text-right font-medium text-red-300">
+              <td className="p-4 whitespace-nowrap text-center font-medium text-red-300">
                 {r.gasto} €
               </td>
 
-              <td className="p-4 whitespace-nowrap text-right font-medium text-emerald-300">
+              <td className="p-4 whitespace-nowrap text-center font-medium text-emerald-300">
                 {r.ganho} €
               </td>
 
-              <td className="p-4 whitespace-nowrap text-right font-semibold text-white">
+              <td className="p-4 whitespace-nowrap text-left font-semibold text-white">
                 {(r.ganho - r.gasto)} €
               </td>
 
@@ -2340,8 +2355,8 @@ return (
                 )}
               </td>
 
-              <td className="p-4 align-middle whitespace-nowrap w-[8rem]">
-                <div className="flex items-center justify-start gap-2 flex-nowrap min-w-[150px]">
+              <td className="p-4 align-middle whitespace-nowrap">
+                <div className="flex items-center gap-2">
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -2351,7 +2366,7 @@ return (
                         ativarEdicao(r.id, r);
                       }
                     }}
-                    className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-blue-500 text-white shadow-[0_8px_20px_rgba(59,130,246,0.28)] transition hover:scale-105 hover:bg-blue-400"
+                    className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-blue-500 text-white shadow-[0_8px_20px_rgba(59,130,246,0.28)] transition hover:scale-105 hover:bg-blue-400"
                     title={modoEdicao === r.id ? "Guardar" : "Editar"}
                   >
                     {modoEdicao === r.id ? "💾" : <FaEdit size={14} />}
@@ -2362,7 +2377,7 @@ return (
                       e.stopPropagation();
                       confirmarEliminar(r.id);
                     }}
-                    className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-red-500 text-white shadow-[0_8px_20px_rgba(239,68,68,0.28)] transition hover:scale-105 hover:bg-red-400"
+                    className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-red-500 text-white shadow-[0_8px_20px_rgba(239,68,68,0.28)] transition hover:scale-105 hover:bg-red-400"
                     title="Eliminar"
                   >
                     <FaTrash size={14} />
@@ -2399,7 +2414,7 @@ return (
                       });
                     }}
                     title="Imprimir vendas com Nota (bola vermelha) deste evento"
-                    className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-500 text-white shadow-[0_8px_20px_rgba(16,185,129,0.28)] transition hover:scale-105 hover:bg-emerald-400"
+                    className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500 text-white shadow-[0_8px_20px_rgba(16,185,129,0.28)] transition hover:scale-105 hover:bg-emerald-400"
                   >
                     <FaPrint size={14} />
                   </button>
@@ -2427,7 +2442,7 @@ return (
             {linhaExpandida === r.id && (
               <>
                 <tr className="bg-blue-500/6">
-                  <td colSpan="7" className="p-4 border-b border-white/6">
+                  <td colSpan="8" className="p-4 border-b border-white/6">
                     {(() => {
                       const chaveRegra = getEquipaCasaCanonica(r.evento);
                       const resumo = getResumoMatchingInteligente(r.evento, r.data_evento, chaveRegra);
@@ -2463,13 +2478,14 @@ return (
                   </td>
                 </tr>
 
-               <tr className="bg-blue-500/10 text-[11px] uppercase tracking-[0.08em] text-white/65">
+                <tr className="bg-blue-500/10 text-[11px] uppercase tracking-[0.08em] text-white/65">
                   <td className="p-3">ID Venda</td>
                   <td className="p-3" colSpan="2">Bilhetes</td>
                   <td className="p-3 text-right">Ganho</td>
                   <td className="p-3">Estado</td>
                   <td className="p-3">Nota</td>
                   <td className="p-3">Ações</td>
+                  <td className="p-3"></td>
                 </tr>
 
                 {(() => {
@@ -2575,13 +2591,14 @@ return (
                             Editar
                           </button>
                         </td>
+                        <td className="p-3"></td>
                       </tr>
                     );
                   });
                 })()}
 
                 <tr className="bg-amber-500/8">
-                  <td colSpan="7" className="p-4 border-b border-white/6">
+                  <td colSpan="8" className="p-4 border-b border-white/6">
                     {(() => {
                       const chaveRegra = getEquipaCasaCanonica(r.evento);
                       const totalCompras = compras
@@ -2611,7 +2628,8 @@ return (
                   <td className="p-3">Fila</td>
                   <td className="p-3">Qt</td>
                   <td className="p-3 text-right">Gasto</td>
-                  <td className="p-3">Nota / Ações</td>
+                  <td className="p-3">Nota</td>
+                  <td className="p-3">Ações</td>
                 </tr>
 
                 {(() => {
@@ -2697,29 +2715,27 @@ return (
                             <td className="p-3 whitespace-nowrap text-white/90">{c.quantidade}</td>
                             <td className="p-3 whitespace-nowrap text-right font-medium text-red-300">{c.gasto} €</td>
                             <td className="p-3">
-                              <div className="flex items-center gap-3">
-                                <CirculoEstado
-                                  tipo="compras"
-                                  id={c.id}
-                                  texto_estado={c.circulo_estado_compra}
-                                  nota_estado={c.nota_estado_compra}
-                                  setCompras={setCompras}
-                                />
-                            
-                                {comprasNaoAssociadasSet.has(c.id) && (
-                                  <span className="text-yellow-400" title="Compra não associada a evento">⚠️</span>
-                                )}
-                            
-                                <button
-                                  onClick={() => {
-                                    setModoEdicaoCompra(c.id);
-                                    setCompraEditada(c);
-                                  }}
-                                  className="text-blue-300 hover:text-blue-200"
-                                >
-                                  Editar
-                                </button>
-                              </div>
+                              <CirculoEstado
+                                tipo="compras"
+                                id={c.id}
+                                texto_estado={c.circulo_estado_compra}
+                                nota_estado={c.nota_estado_compra}
+                                setCompras={setCompras}
+                              />
+                            </td>
+                            <td className="p-3 whitespace-nowrap">
+                              {comprasNaoAssociadasSet.has(c.id) && (
+                                <span className="text-yellow-400 mr-2" title="Compra não associada a evento">⚠️</span>
+                              )}
+                              <button
+                                onClick={() => {
+                                  setModoEdicaoCompra(c.id);
+                                  setCompraEditada(c);
+                                }}
+                                className="text-blue-300 hover:text-blue-200"
+                              >
+                                Editar
+                              </button>
                             </td>
                           </>
                         )}
