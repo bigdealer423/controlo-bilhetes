@@ -19,7 +19,7 @@ import {
   FaEdit,
   FaExternalLinkAlt,
   FaChartBar,
-  FaArrowTrendUp,
+  FaChartLine,
   FaHourglassHalf,
   FaTicketAlt,
   FaCalendarAlt,
