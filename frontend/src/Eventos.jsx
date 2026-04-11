@@ -2131,15 +2131,15 @@ return (
 
 
       <div className="overflow-hidden rounded-[26px] border border-white/10 bg-white/[0.025] shadow-[0_20px_60px_rgba(0,0,0,0.35)] backdrop-blur-xl">
-  <table className="hidden md:table w-full table-fixed text-sm text-white">
+  <table className="hidden md:table w-full table-auto text-sm text-white">
     <colgroup>
-      <col className="w-[33%]" />
-      <col className="w-[15%]" />
+      <col className="w-[42%]" />
+      <col className="w-[16%]" />
       <col className="w-[9%]" />
       <col className="w-[9%]" />
       <col className="w-[9%]" />
-      <col className="w-[11%]" />
-      <col className="w-[14%]" />
+      <col className="w-[8%]" />
+      <col className="w-[7%]" />
     </colgroup>
 
     <thead className="bg-white/[0.045]">
@@ -2198,7 +2198,7 @@ return (
             >
               
 
-              <td className="p-4 overflow-hidden">
+              <td className="p-4">
                 {modoEdicao === r.id ? (
                   <div className="flex items-center gap-2 min-w-0">
                     <input
@@ -2227,7 +2227,7 @@ return (
                     const badge = getBadgeBilhetesMeta(saldo);
 
                     return (
-                      <div className="flex items-center gap-2 min-w-0 overflow-hidden">
+                      <div className="flex items-center gap-2 min-w-0">
                         <span className="shrink-0 rounded-xl bg-white/[0.05] px-2.5 py-1.5 text-[13px] font-semibold tabular-nums text-white/90">
                           {formatarDataPt(r.data_evento)}
                         </span>
@@ -2247,10 +2247,12 @@ return (
                           </span>
                         )}
 
-                        <div className="flex items-center gap-2 min-w-0 overflow-hidden">
-                          <span className="flex items-center gap-1 whitespace-nowrap overflow-hidden text-ellipsis min-w-0 font-medium text-white">
-                            {renderEventoComSimbolos(r.evento)}
-                          </span>
+                        <div className="flex items-center gap-2 min-w-0">
+                          <div className="min-w-0 flex-1 font-medium text-white">
+                            <div className="flex items-center gap-1 flex-wrap">
+                              {renderEventoComSimbolos(r.evento)}
+                            </div>
+                          </div>
 
                           {r.nota_evento && (
                             <span
