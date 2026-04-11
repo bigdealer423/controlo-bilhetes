@@ -1949,6 +1949,11 @@ const getDataBadgeClass = (estado) => {
   return "border-l-[3px] border-l-white/10";
 }; 
 
+  const getExpandedCompraRowClass = (toggle) => {
+  return toggle
+    ? "bg-rose-950/50 hover:bg-rose-900/40"
+    : "bg-red-900/22 hover:bg-red-800/30";
+};
 return (
    <div className="p-4 md:p-6 w-full md:max-w-[1400px] md:mx-auto min-h-screen">
       
@@ -2647,19 +2652,19 @@ return (
                   let lastSetor = null;
                   let toggle = false;
                   const chaveRegra = getEquipaCasaCanonica(r.evento);
-
+                  
                   return getComprasOrdenadas(r.evento, r.data_evento).map((c) => {
                     const setorAtual = compraChaveOperacionalExata(c, chaveRegra);
-
+                  
                     if (setorAtual !== lastSetor) {
                       toggle = !toggle;
                       lastSetor = setorAtual;
                     }
-
-                    const bgClass = toggle ? "bg-white/[0.02]" : "bg-amber-500/[0.05]";
+                  
+                    const bgClass = getExpandedCompraRowClass(toggle);
 
                     return (
-                      <tr key={"c" + c.id} className={`border-b border-white/6 text-xs ${bgClass}`}>
+                      <tr key={"c" + c.id} className={`border-b border-red-400/10 text-xs transition-colors ${bgClass}`}>
                         {modoEdicaoCompra === c.id ? (
                           <>
                             <td className="p-3">
