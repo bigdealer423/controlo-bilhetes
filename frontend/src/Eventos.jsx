@@ -468,9 +468,8 @@ const getBadgeBilhetesMeta = (saldo) => {
       valor: saldo,
       title: `${saldo} bilhete${saldo === 1 ? "" : "s"} por vender`,
       className:
-        "bg-emerald-500/20 text-white ring-1 ring-emerald-400/40 " +
-        "shadow-[0_0_18px_rgba(16,185,129,0.22)] " +
-        "before:absolute before:inset-[1px] before:rounded-[10px] before:bg-emerald-400/10",
+        "bg-white/8 text-white ring-1 ring-white/12 " +
+        "before:absolute before:inset-[1px] before:rounded-[10px] before:bg-emerald-300/10",
     };
   }
 
@@ -480,23 +479,19 @@ const getBadgeBilhetesMeta = (saldo) => {
       valor: abs,
       title: `${abs} bilhete${abs === 1 ? "" : "s"} por comprar`,
       className:
-        "bg-red-500/20 text-white ring-1 ring-red-400/40 " +
-        "shadow-[0_0_18px_rgba(239,68,68,0.22)] " +
-        "before:absolute before:inset-[1px] before:rounded-[10px] before:bg-red-400/10",
+        "bg-white/8 text-white ring-1 ring-white/12 " +
+        "before:absolute before:inset-[1px] before:rounded-[10px] before:bg-red-300/10",
     };
   }
 
-  // ✅ NOVO: saldo = 0
   return {
     valor: 0,
-    title: "Equilíbrio total (sem bilhetes por comprar ou vender)",
+    title: "Equilíbrio total",
     className:
-      "bg-gray-500/20 text-white ring-1 ring-gray-400/30 " +
-      "shadow-[0_0_10px_rgba(156,163,175,0.15)] " +
-      "before:absolute before:inset-[1px] before:rounded-[10px] before:bg-gray-400/10",
+      "bg-white/8 text-white/90 ring-1 ring-white/10 " +
+      "before:absolute before:inset-[1px] before:rounded-[10px] before:bg-white/6",
   };
 };
-
 
 
 // ——— Normaliza URL para garantir https:// ———
@@ -2182,8 +2177,8 @@ return (
               className={`
                 relative inline-flex shrink-0 items-center justify-center
                 min-w-[28px] h-[28px] px-2 rounded-[10px]
-                text-[12px] font-extrabold tracking-tight
-                backdrop-blur-md overflow-hidden
+                text-[12px] font-bold tracking-tight
+                backdrop-blur-sm overflow-hidden
                 ${badge.className}
               `}
             >
