@@ -2131,15 +2131,15 @@ return (
 
 
       <div className="overflow-hidden rounded-[26px] border border-white/10 bg-white/[0.025] shadow-[0_20px_60px_rgba(0,0,0,0.35)] backdrop-blur-xl">
-  <table className="hidden md:table w-full table-auto text-sm text-white">
+   <table className="hidden md:table w-full table-fixed text-sm text-white">
     <colgroup>
-      <col className="w-[42%]" />
-      <col className="w-[16%]" />
-      <col className="w-[9%]" />
-      <col className="w-[9%]" />
-      <col className="w-[9%]" />
-      <col className="w-[8%]" />
-      <col className="w-[7%]" />
+      <col className="w-[44%]" />  {/* Evento */}
+      <col className="w-[16%]" />  {/* Estádio */}
+      <col className="w-[8%]" />   {/* Gasto */}
+      <col className="w-[8%]" />   {/* Ganho */}
+      <col className="w-[8%]" />   {/* Lucro */}
+      <col className="w-[8%]" />   {/* Estado */}
+      <col className="w-[8rem]" /> {/* Ações */}
     </colgroup>
 
     <thead className="bg-white/[0.045]">
@@ -2150,7 +2150,7 @@ return (
         <th className="p-4 text-right font-semibold">Ganho</th>
         <th className="p-4 text-right font-semibold">Lucro</th>
         <th className="p-4 font-semibold">Estado</th>
-        <th className="p-4 font-semibold">Ações</th>
+        <th className="p-4 font-semibold whitespace-nowrap">Ações</th>
       </tr>
     </thead>
 
@@ -2227,7 +2227,7 @@ return (
                     const badge = getBadgeBilhetesMeta(saldo);
 
                     return (
-                      <div className="flex items-center gap-2 min-w-0">
+                      <div className="flex items-center gap-2 min-w-0 w-full overflow-hidden">
                         <span className="shrink-0 rounded-xl bg-white/[0.05] px-2.5 py-1.5 text-[13px] font-semibold tabular-nums text-white/90">
                           {formatarDataPt(r.data_evento)}
                         </span>
@@ -2247,9 +2247,9 @@ return (
                           </span>
                         )}
 
-                        <div className="flex items-center gap-2 min-w-0">
-                          <div className="min-w-0 flex-1 font-medium text-white">
-                            <div className="flex items-center gap-1 flex-wrap">
+                        <div className="flex items-center gap-2 min-w-0 flex-1 overflow-hidden">
+                          <div className="min-w-0 flex-1 font-medium text-white overflow-hidden">
+                            <div className="flex items-center gap-1 flex-wrap leading-tight">
                               {renderEventoComSimbolos(r.evento)}
                             </div>
                           </div>
@@ -2287,7 +2287,7 @@ return (
                 )}
               </td>
 
-              <td className="p-4 whitespace-nowrap overflow-hidden truncate text-white/88">
+              <td className="p-4 overflow-hidden truncate text-white/88">
                 {modoEdicao === r.id ? (
                   <input
                     value={r.estadio}
@@ -2340,8 +2340,8 @@ return (
                 )}
               </td>
 
-              <td className="p-4 align-middle whitespace-nowrap">
-                <div className="flex items-center justify-start gap-1.5 flex-nowrap">
+              <td className="p-4 align-middle whitespace-nowrap w-[8rem]">
+                <div className="flex items-center justify-start gap-2 flex-nowrap min-w-[150px]">
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
