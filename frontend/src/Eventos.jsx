@@ -1931,126 +1931,85 @@ return (
       
 
 
-      <div className="mb-6">
-  <div
-    className="
-      relative overflow-hidden rounded-[26px]
-      border border-white/10
-      bg-[linear-gradient(135deg,rgba(15,23,42,0.96)_0%,rgba(17,24,39,0.96)_45%,rgba(30,27,75,0.94)_100%)]
-      shadow-[0_12px_40px_rgba(0,0,0,0.45)]
-    "
-  >
-    {/* glow decorativo */}
-    <div className="pointer-events-none absolute inset-0 rounded-[26px] ring-1 ring-inset ring-white/5" />
-    <div className="pointer-events-none absolute -left-16 top-0 h-40 w-40 rounded-full bg-amber-400/20 blur-3xl" />
-    <div className="pointer-events-none absolute -right-12 top-0 h-40 w-40 rounded-full bg-fuchsia-500/20 blur-3xl" />
-    <div className="pointer-events-none absolute left-1/3 bottom-0 h-24 w-40 rounded-full bg-orange-400/10 blur-2xl" />
+      <div className="relative mb-6 overflow-hidden rounded-[28px] border border-white/10 bg-[radial-gradient(circle_at_0%_0%,rgba(251,191,36,0.18),transparent_24%),radial-gradient(circle_at_100%_0%,rgba(168,85,247,0.18),transparent_26%),linear-gradient(135deg,#0f172a_0%,#111c3a_45%,#1b1b4b_100%)] px-5 py-5 shadow-[0_20px_60px_rgba(0,0,0,0.35)] md:px-8 md:py-6">
+  {/* brilho topo */}
+  <div className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-amber-300/70 to-blue-300/70" />
 
-    <div className="relative px-6 py-6 md:px-8">
-      <div className="flex flex-col gap-6 xl:flex-row xl:items-center xl:justify-between">
-        {/* bloco esquerdo */}
-        <div className="flex items-center gap-5 min-w-0">
-          <div
-            className="
-              flex h-28 w-28 shrink-0 items-center justify-center rounded-full
-              bg-gradient-to-br from-amber-300/20 to-orange-500/10
-              ring-1 ring-amber-200/20
-              shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_0_30px_rgba(251,191,36,0.18)]
-            "
-          >
-            <FaChartBar className="text-[42px] text-amber-300" />
-          </div>
+  <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+    {/* lado esquerdo */}
+    <div className="flex min-w-0 items-center gap-4 lg:w-[28%]">
+      <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full border border-amber-300/30 bg-amber-400/10 shadow-[0_0_35px_rgba(251,191,36,0.16)]">
+        <FaChartBar className="text-[30px] text-amber-300" />
+      </div>
 
-          <div className="min-w-0">
-            <div className="text-5xl font-extrabold tracking-tight text-white">
-              Resumo Mensal
-            </div>
+      <div className="min-w-0">
+        <h2 className="text-[26px] font-extrabold leading-none tracking-tight text-white md:text-[30px]">
+          Resumo Mensal
+        </h2>
 
-            <div className="mt-2 text-3xl text-slate-300 capitalize">
-              {new Date().toLocaleString("pt-PT", { month: "long", year: "numeric" })}
-            </div>
+        <p className="mt-2 text-[22px] font-medium capitalize leading-none text-white/90 md:text-[24px]">
+          {new Date().toLocaleString("pt-PT", { month: "long", year: "numeric" })}
+        </p>
 
-            <div
-              className="
-                mt-4 inline-flex items-center gap-2 rounded-2xl px-4 py-2
-                bg-white/6 text-slate-200 ring-1 ring-white/10
-                backdrop-blur-md
-              "
-            >
-              <FaCalendarAlt className="text-amber-300" />
-              <span className="font-semibold">Época {epocaSelecionada}</span>
-            </div>
-          </div>
-        </div>
-
-        {/* métricas */}
-        <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:gap-0">
-          <div className="flex items-center gap-4 xl:px-8">
-            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-emerald-400/10 ring-1 ring-emerald-300/10">
-              <FaChartLine className="text-[30px] text-emerald-400" />
-            </div>
-            <div>
-              <div className="text-sm text-slate-400">Lucro</div>
-              <div className="text-5xl font-extrabold text-white">
-                {formatarNumero(resumoMensal.lucro)} €
-              </div>
-              <div className="mt-1 text-sm text-slate-400">Este mês</div>
-            </div>
-          </div>
-
-          <div className="hidden xl:block h-24 w-px bg-white/10" />
-
-          <div className="flex items-center gap-4 xl:px-8">
-            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-amber-400/10 ring-1 ring-amber-300/10">
-              <FaHourglassHalf className="text-[28px] text-amber-300" />
-            </div>
-            <div>
-              <div className="text-sm text-slate-400">A aguardar</div>
-              <div className="text-5xl font-extrabold text-white">
-                {formatarNumero(resumoMensal.pagamento)} €
-              </div>
-              {resumoMensal.disputas > 0 && (
-                <div className="mt-1 text-sm font-semibold text-red-400">
-                  (+Disputas {formatarNumero(resumoMensal.disputas)} €)
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div className="hidden xl:block h-24 w-px bg-white/10" />
-
-          <div className="flex items-center gap-4 xl:px-8">
-            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-fuchsia-500/10 ring-1 ring-fuchsia-300/10">
-              <FaTicketAlt className="text-[28px] text-fuchsia-400" />
-            </div>
-            <div>
-              <div className="text-sm text-slate-400">Bilhetes Vendidos</div>
-              <div className="text-5xl font-extrabold text-white">
-                {formatarNumero(resumoMensal.bilhetes_epoca)}
-              </div>
-              <div className="mt-1 text-sm text-slate-400">Nesta época</div>
-            </div>
-          </div>
-        </div>
-
-        {/* botão */}
-        <div className="flex xl:justify-end">
-          <button
-            type="button"
-            onClick={buscarLucrosMensais}
-            className="
-              inline-flex items-center gap-3 rounded-2xl px-6 py-4
-              border border-blue-300/20 bg-blue-500/10
-              text-white font-semibold
-              shadow-[0_8px_24px_rgba(59,130,246,0.18)]
-              hover:bg-blue-500/20 transition
-            "
-          >
-            <FaChartBar className="text-emerald-300" />
-            <span>Ver Lucros por Mês</span>
-          </button>
+        <div className="mt-4 inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white/75 backdrop-blur-sm">
+          <span className="text-amber-300">🗓️</span>
+          <span>Época {epocaSelecionada}</span>
         </div>
       </div>
+    </div>
+
+    {/* centro */}
+    <div className="grid flex-1 grid-cols-1 gap-4 sm:grid-cols-3 lg:px-4">
+      <div className="relative rounded-2xl border border-white/8 bg-white/[0.03] px-4 py-4 backdrop-blur-sm">
+        <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-emerald-400/10 text-emerald-300">
+          <span className="text-[26px]">↗</span>
+        </div>
+        <p className="text-sm text-white/65">Lucro</p>
+        <p className="mt-1 text-[32px] font-extrabold leading-none tracking-tight text-emerald-300 md:text-[38px]">
+          {formatarNumero(resumoMensal.lucro)} €
+        </p>
+        <p className="mt-3 text-sm text-white/55">Este mês</p>
+      </div>
+
+      <div className="relative rounded-2xl border border-white/8 bg-white/[0.03] px-4 py-4 backdrop-blur-sm">
+        <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-amber-400/10 text-amber-300">
+          <span className="text-[24px]">⏳</span>
+        </div>
+        <p className="text-sm text-white/65">A aguardar</p>
+        <p className="mt-1 text-[32px] font-extrabold leading-none tracking-tight text-amber-300 md:text-[38px]">
+          {formatarNumero(resumoMensal.pagamento)} €
+        </p>
+        {resumoMensal.disputas > 0 ? (
+          <p className="mt-3 text-sm font-semibold text-red-400">
+            (+Disputas {formatarNumero(resumoMensal.disputas)} €)
+          </p>
+        ) : (
+          <p className="mt-3 text-sm text-white/55">Sem disputas</p>
+        )}
+      </div>
+
+      <div className="relative rounded-2xl border border-white/8 bg-white/[0.03] px-4 py-4 backdrop-blur-sm">
+        <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-fuchsia-400/10 text-fuchsia-300">
+          <span className="text-[24px]">🎟️</span>
+        </div>
+        <p className="text-sm text-white/65">Bilhetes Vendidos</p>
+        <p className="mt-1 text-[32px] font-extrabold leading-none tracking-tight text-fuchsia-300 md:text-[38px]">
+          {formatarNumero(resumoMensal.bilhetes_epoca)}
+        </p>
+        <p className="mt-3 text-sm text-white/55">Nesta época</p>
+      </div>
+    </div>
+
+    {/* direita */}
+    <div className="flex lg:w-[18%] lg:justify-end">
+      <button
+        type="button"
+        onClick={buscarLucrosMensais}
+        className="inline-flex w-full items-center justify-center gap-3 rounded-2xl border border-blue-400/25 bg-blue-500/15 px-5 py-4 text-white shadow-[0_10px_30px_rgba(59,130,246,0.20)] transition hover:bg-blue-500/20 md:w-auto"
+      >
+        <FaChartBar className="text-lg text-blue-300" />
+        <span className="whitespace-nowrap font-semibold">Ver Lucros por Mês</span>
+      </button>
     </div>
   </div>
 </div>
