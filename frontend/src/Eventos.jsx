@@ -1937,6 +1937,13 @@ const getDataBadgeClass = (estado) => {
   return "bg-white/[0.05] text-white/90 ring-1 ring-white/10";
 };
 
+ const getLeftBarClass = (estado) => {
+  if (estado === "Pago") return "border-l-[3px] border-l-emerald-400";
+  if (estado === "Entregue") return "border-l-[3px] border-l-amber-400";
+  if (estado === "Disputa") return "border-l-[3px] border-l-red-400";
+  return "border-l-[3px] border-l-white/10";
+}; 
+
 return (
    <div className="p-4 md:p-6 w-full md:max-w-[1400px] md:mx-auto min-h-screen">
       
@@ -2212,7 +2219,7 @@ return (
               }`}
             >
 
-              <td className="p-4 overflow-hidden">
+              <td className={`p-4 pl-5 overflow-hidden ${getLeftBarClass(r.estado)}`}>
                 {modoEdicao === r.id ? (
                   <div className="flex items-center gap-2 min-w-0">
                     <input
