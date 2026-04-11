@@ -2499,21 +2499,21 @@ return (
     <div className="px-4 pb-2">
       <table className="w-full table-fixed text-xs text-white">
         <colgroup>
-          <col className="w-[120px]" />
-          <col className="w-[520px]" />
-          <col className="w-[90px]" />
-          <col className="w-[120px]" />
-          <col className="w-[220px]" />
-          <col className="w-[90px]" />
+          <col className="w-[110px]" />
+          <col className="w-[430px]" />
+          <col className="w-[85px]" />
+          <col className="w-[95px]" />
+          <col className="w-[170px]" />
+          <col className="w-[80px]" />
         </colgroup>
         <thead>
           <tr className="bg-blue-500/10 text-[11px] uppercase tracking-[0.08em] text-white/65">
-            <th className="p-3 text-left">ID Venda</th>
-            <th className="p-3 text-left">Bilhetes</th>
-            <th className="p-3 text-right">Ganho</th>
-            <th className="p-3 text-left">Estado</th>
-            <th className="p-3 text-left">Nota</th>
-            <th className="p-3 text-left">Ações</th>
+            <th className="py-3 pl-3 pr-2 text-left">ID Venda</th>
+            <th className="py-3 px-2 text-left">Bilhetes</th>
+            <th className="py-3 px-2 text-right">Ganho</th>
+            <th className="py-3 px-2 text-left">Estado</th>
+            <th className="py-3 px-2 text-left">Nota</th>
+            <th className="py-3 pl-2 pr-3 text-left">Ações</th>
           </tr>
         </thead>
 
@@ -2538,7 +2538,7 @@ return (
                     key={"v" + v.id}
                     className={`border-b border-emerald-400/10 transition-colors ${bgClass}`}
                   >
-                    <td className="p-3 align-top">
+                    <td className="py-3 pl-3 pr-2 align-top">
                       <input
                         type="number"
                         className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
@@ -2549,7 +2549,7 @@ return (
                       />
                     </td>
 
-                    <td className="p-3 align-top">
+                    <td className="py-3 px-2 align-top">
                       <input
                         className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
                         value={vendaEditada.estadio}
@@ -2559,7 +2559,7 @@ return (
                       />
                     </td>
 
-                    <td className="p-3 align-top">
+                    <td className="py-3 px-2 align-top">
                       <input
                         type="number"
                         className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-right text-white"
@@ -2570,7 +2570,7 @@ return (
                       />
                     </td>
 
-                    <td className="p-3 align-top">
+                    <td className="py-3 px-2 align-top">
                       <select
                         className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
                         value={vendaEditada.estado}
@@ -2585,9 +2585,9 @@ return (
                       </select>
                     </td>
 
-                    <td className="p-3 align-top"></td>
+                   <td className="py-3 px-2 align-top"></td>
 
-                    <td className="p-3 align-top whitespace-nowrap">
+                    <td className="py-3 pl-2 pr-3 align-top whitespace-nowrap">
                       <button
                         className="mr-3 text-emerald-300"
                         onClick={() => guardarVenda(vendaEditada)}
@@ -2610,23 +2610,23 @@ return (
                   key={"v" + v.id}
                   className={`border-b border-emerald-400/10 transition-colors ${bgClass}`}
                 >
-                  <td className="p-3 whitespace-nowrap text-white/90 align-top">
+                  <td className="py-3 pl-3 pr-2 whitespace-nowrap text-white/90 align-top">
                     {v.id_venda}
                   </td>
 
-                  <td className="p-3 text-white/85 align-top">
+                  <td className="py-3 px-2 text-white/85 align-top">
                     {v.estadio}
                   </td>
 
-                  <td className="p-3 whitespace-nowrap text-right font-medium text-emerald-300 align-top">
+                  <td className="py-3 px-2 whitespace-nowrap text-right font-medium text-emerald-300 align-top">
                     {v.ganho} €
                   </td>
 
-                  <td className="p-3 whitespace-nowrap text-white/80 align-top">
+                  <td className="py-3 px-2 whitespace-nowrap text-white/80 align-top">
                     {v.estado}
                   </td>
 
-                  <td className="p-3 align-top">
+                  <td className="py-3 px-2 align-top">
                     <CirculoEstado
                       tipo="listagem_vendas"
                       id={v.id}
@@ -2636,7 +2636,7 @@ return (
                     />
                   </td>
 
-                  <td className="p-3 whitespace-nowrap align-top">
+                  <td className="py-3 pl-2 pr-3 whitespace-nowrap align-top">
                     {vendasNaoAssociadasSet.has(v.id) && (
                       <span
                         className="text-yellow-400 mr-2"
