@@ -2193,7 +2193,7 @@ return (
                   });
                 }
               }}
-              className={`cursor-pointer border-b border-white/6 border-l-4 transition-all duration-200 hover:bg-white/[0.045] ${
+              className={`cursor-pointer border-b border-white/[0.03] transition-all duration-200 hover:bg-white/[0.045] ${
                 linhaExpandida === r.id
                   ? r.estado === "Pago"
                     ? "bg-emerald-500/10 border-l-emerald-400"
