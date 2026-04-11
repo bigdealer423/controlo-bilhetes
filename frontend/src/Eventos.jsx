@@ -2703,14 +2703,14 @@ return (
                 </tr>
 
                 <tr className="bg-amber-500/10 text-[11px] uppercase tracking-[0.08em] text-white/65">
-                  <td className="p-3">Local</td>
-                  <td className="p-3">Bancada</td>
-                  <td className="p-3">Setor</td>
-                  <td className="p-3">Fila</td>
-                  <td className="p-3">Qt</td>
-                  <td className="p-3 text-right">Gasto</td>
-                  <td className="p-3">Nota</td>
-                  <td className="p-3">Ações</td>
+                  <td className="py-3 pl-3 pr-2">Local</td>
+                  <td className="py-3 px-2">Bancada</td>
+                  <td className="py-3 px-2">Setor</td>
+                  <td className="py-3 px-2">Fila</td>
+                  <td className="py-3 px-2">Qt</td>
+                  <td className="py-3 px-2 text-right">Gasto</td>
+                  <td className="py-3 px-2">Nota</td>
+                  <td className="py-3 pl-2 pr-3">Ações</td>
                 </tr>
 
                 {(() => {
@@ -2732,35 +2732,35 @@ return (
                       <tr key={"c" + c.id} className={`border-b border-red-400/10 text-xs transition-colors ${bgClass}`}>
                         {modoEdicaoCompra === c.id ? (
                           <>
-                            <td className="p-3">
+                            <td className="py-3 pl-3 pr-2">
                               <input
                                 className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
                                 value={compraEditada.local_compras}
                                 onChange={e => setCompraEditada({ ...compraEditada, local_compras: e.target.value })}
                               />
                             </td>
-                            <td className="p-3">
+                            <td className="py-3 pl-3 pr-2">
                               <input
                                 className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
                                 value={compraEditada.bancada}
                                 onChange={e => setCompraEditada({ ...compraEditada, bancada: e.target.value })}
                               />
                             </td>
-                            <td className="p-3">
+                            <td className="py-3 pl-3 pr-2">
                               <input
                                 className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
                                 value={compraEditada.setor}
                                 onChange={e => setCompraEditada({ ...compraEditada, setor: e.target.value })}
                               />
                             </td>
-                            <td className="p-3">
+                            <td className="py-3 pl-3 pr-2">
                               <input
                                 className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
                                 value={compraEditada.fila}
                                 onChange={e => setCompraEditada({ ...compraEditada, fila: e.target.value })}
                               />
                             </td>
-                            <td className="p-3">
+                            <td className="py-3 pl-3 pr-2">
                               <input
                                 type="number"
                                 className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
@@ -2768,7 +2768,7 @@ return (
                                 onChange={e => setCompraEditada({ ...compraEditada, quantidade: e.target.value })}
                               />
                             </td>
-                            <td className="p-3">
+                            <td className="py-3 pl-3 pr-2">
                               <input
                                 type="number"
                                 className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
@@ -2776,7 +2776,7 @@ return (
                                 onChange={e => setCompraEditada({ ...compraEditada, gasto: e.target.value })}
                               />
                             </td>
-                            <td className="p-3" colSpan="2">
+                            <td className="py-3 pl-2 pr-3" colSpan="2">
                               <button className="mr-3 text-emerald-300" onClick={() => guardarCompra(compraEditada)}>
                                 Guardar
                               </button>
@@ -2787,15 +2787,18 @@ return (
                           </>
                         ) : (
                           <>
-                            <td className="p-3 text-white/85">{c.local_compras}</td>
-                            <td className="p-3 text-white/85">{c.bancada}</td>
-                            <td className="p-3 text-white/85">{c.setor}</td>
-                            <td className="p-3 max-w-[150px] overflow-hidden text-ellipsis whitespace-nowrap text-white/75" title={c.fila}>
+                            <td className="py-3 pl-3 pr-2 text-white/85">{c.local_compras}</td>
+                            <td className="py-3 px-2 text-white/85">{c.bancada}</td>
+                            <td className="py-3 px-2 text-white/85">{c.setor}</td>
+                            <td
+                              className="py-3 px-2 max-w-[110px] overflow-hidden text-ellipsis whitespace-nowrap text-white/75"
+                              title={c.fila}
+                            >
                               {c.fila}
                             </td>
-                            <td className="p-3 whitespace-nowrap text-white/90">{c.quantidade}</td>
-                            <td className="p-3 whitespace-nowrap text-right font-medium text-red-300">{c.gasto} €</td>
-                            <td className="p-3">
+                            <td className="py-3 px-2 whitespace-nowrap text-white/90">{c.quantidade}</td>
+                            <td className="py-3 px-2 whitespace-nowrap text-right font-medium text-red-300">{c.gasto} €</td>
+                            <td className="py-3 px-2">
                               <CirculoEstado
                                 tipo="compras"
                                 id={c.id}
@@ -2804,7 +2807,7 @@ return (
                                 setCompras={setCompras}
                               />
                             </td>
-                            <td className="p-3 whitespace-nowrap">
+                            <td className="py-3 pl-2 pr-3 whitespace-nowrap">
                               {comprasNaoAssociadasSet.has(c.id) && (
                                 <span className="text-yellow-400 mr-2" title="Compra não associada a evento">⚠️</span>
                               )}
