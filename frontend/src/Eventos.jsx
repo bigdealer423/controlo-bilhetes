@@ -2623,8 +2623,20 @@ return (
                     {v.ganho} €
                   </td>
 
-                  <td className="py-3 pl-2 pr-1 whitespace-nowrap text-white/80 align-middle">
-                    {v.estado}
+                  <td className="py-3 pl-2 pr-1 whitespace-nowrap align-middle">
+                    <span
+                      className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${
+                        v.estado === "Pago"
+                          ? "bg-emerald-500/15 text-emerald-300 ring-1 ring-emerald-400/20"
+                          : v.estado === "Entregue"
+                          ? "bg-amber-500/15 text-amber-300 ring-1 ring-amber-400/20"
+                          : v.estado === "Disputa"
+                          ? "bg-red-500/15 text-red-300 ring-1 ring-red-400/20"
+                          : "bg-white/8 text-white/80 ring-1 ring-white/10"
+                      }`}
+                    >
+                      {v.estado}
+                    </span>
                   </td>
                   
                   <td className="py-3 pl-1 pr-1 align-middle">
