@@ -1937,6 +1937,11 @@ const getDataBadgeClass = (estado) => {
   return "bg-white/[0.05] text-white/90 ring-1 ring-white/10";
 };
 
+ const getExpandedVendaRowClass = (toggle) => {
+  return toggle
+    ? "bg-emerald-950/55 hover:bg-emerald-900/45"
+    : "bg-emerald-900/28 hover:bg-emerald-800/35";
+}; 
  const getLeftBarClass = (estado) => {
   if (estado === "Pago") return "border-l-[3px] border-l-emerald-400";
   if (estado === "Entregue") return "border-l-[3px] border-l-amber-400";
@@ -2497,20 +2502,20 @@ return (
                 {(() => {
                   let lastSetor = null;
                   let toggle = false;
-
+                  
                   return getVendasOrdenadas(r.evento, r.data_evento).map((v) => {
                     const setorAtual = setorExato(v.estadio);
-
+                  
                     if (setorAtual !== lastSetor) {
                       toggle = !toggle;
                       lastSetor = setorAtual;
                     }
-
-                    const bgClass = toggle ? "bg-white/[0.02]" : "bg-blue-500/[0.05]";
+                  
+                    const bgClass = getExpandedVendaRowClass(toggle);
 
                     if (modoEdicaoVenda === v.id) {
                       return (
-                        <tr key={"v" + v.id} className={`border-b border-white/6 text-xs ${bgClass}`}>
+                        <tr key={"v" + v.id} className={`border-b border-emerald-400/10 text-xs transition-colors ${bgClass}`}>
                           <td className="p-3">
                             <input
                               type="number"
@@ -2567,7 +2572,7 @@ return (
                     }
 
                     return (
-                      <tr key={"v" + v.id} className={`border-b border-white/6 text-xs ${bgClass}`}>
+                      <tr key={"v" + v.id} className={`border-b border-emerald-400/10 text-xs transition-colors ${bgClass}`}>
                         <td className="p-3 whitespace-nowrap text-white/90">{v.id_venda}</td>
                         <td className="p-3 text-white/85" colSpan="2">{v.estadio}</td>
                         <td className="p-3 whitespace-nowrap text-right font-medium text-emerald-300">{v.ganho} €</td>
