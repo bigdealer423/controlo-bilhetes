@@ -1944,6 +1944,30 @@ const getDataBadgeClass = (estado) => {
   return "border-l-[3px] border-l-white/10";
 }; 
 
+const getExpandedVendaRowClass = (toggle) => {
+  return toggle
+    ? "bg-emerald-950/55 hover:bg-emerald-900/45"
+    : "bg-emerald-900/28 hover:bg-emerald-800/35";
+};
+
+const getExpandedCompraRowClass = (toggle) => {
+  return toggle
+    ? "bg-rose-950/50 hover:bg-rose-900/40"
+    : "bg-red-900/22 hover:bg-red-800/30";
+};
+
+const getExpandedVendaHeaderClass =
+  "bg-emerald-500/10 text-emerald-100";
+
+const getExpandedCompraHeaderClass =
+  "bg-red-500/10 text-red-100";
+
+const getExpandedVendaBoxClass =
+  "rounded-2xl border border-emerald-400/15 bg-emerald-500/8 px-4 py-3";
+
+const getExpandedCompraBoxClass =
+  "rounded-2xl border border-red-400/15 bg-red-500/8 px-4 py-3";  
+
 return (
    <div className="p-4 md:p-6 w-full md:max-w-[1400px] md:mx-auto min-h-screen">
       
@@ -2447,15 +2471,42 @@ return (
 
             {linhaExpandida === r.id && (
               <>
-                <tr className="bg-blue-500/6">
-                  <td colSpan="7" className="p-4 border-b border-white/6">
+                <tr className="bg-emerald-500/5">
+                  <td colSpan="7" className="p-4 border-b border-emerald-400/10">
                     {(() => {
                       const chaveRegra = getEquipaCasaCanonica(r.evento);
                       const resumo = getResumoMatchingInteligente(r.evento, r.data_evento, chaveRegra);
                       const resumoTitulo = getResumoTituloVendas(r.evento, r.data_evento, chaveRegra);
-
+                
                       return (
-                        <div className="rounded-2xl border border-blue-400/10 bg-blue-500/8 px-4 py-3">
+                        <div className={getExpandedVendaBoxClass}>
+                          <div className="font-semibold text-white">
+                            Vendas ({getTotalBilhetesVendas(r.evento, r.data_evento)})
+                            {resumoTitulo ? <> — {resumoTitulo}</> : null}
+                          </div>
+                
+                          {resumo.porComprarTxt && (
+                            <div className="text-red-300 text-xs mt-1">
+                              🔴 Por comprar: {resumo.porComprarTxt}
+                            </div>
+                          )}
+                
+                          {resumo.coberturaIncertaTxt && (
+                            <div className="text-yellow-300 text-xs mt-1">
+                              🟡 Cobertura incerta: {resumo.coberturaIncertaTxt}
+                            </div>
+                          )}
+                
+                          {resumo.porVenderTxt && (
+                            <div className="text-emerald-300 text-xs mt-1">
+                              🟢 Por vender: {resumo.porVenderTxt}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })()}
+                  </td>
+                </tr>
                           <div className="font-semibold text-white">
                             Vendas ({getTotalBilhetesVendas(r.evento, r.data_evento)})
                             {resumoTitulo ? <> — {resumoTitulo}</> : null}
@@ -2484,7 +2535,7 @@ return (
                   </td>
                 </tr>
 
-                <tr className="bg-blue-500/10 text-[11px] uppercase tracking-[0.08em] text-white/65">
+                <tr className={`${getExpandedVendaHeaderClass} text-[11px] uppercase tracking-[0.08em]`}>
                   <td className="p-3">ID Venda</td>
                   <td className="p-3" colSpan="2">Bilhetes</td>
                   <td className="p-3 text-right">Ganho</td>
@@ -2506,11 +2557,11 @@ return (
                       lastSetor = setorAtual;
                     }
 
-                    const bgClass = toggle ? "bg-white/[0.02]" : "bg-blue-500/[0.05]";
+                    const bgClass = getExpandedVendaRowClass(toggle);
 
                     if (modoEdicaoVenda === v.id) {
                       return (
-                        <tr key={"v" + v.id} className={`border-b border-white/6 text-xs ${bgClass}`}>
+                        <tr key={"v" + v.id} className={`border-b border-emerald-400/10 text-xs transition-colors ${bgClass}`}>
                           <td className="p-3">
                             <input
                               type="number"
@@ -2604,30 +2655,32 @@ return (
                 })()}
 
                 <tr className="bg-amber-500/8">
-                  <td colSpan="7" className="p-4 border-b border-white/6">
-                    {(() => {
-                      const chaveRegra = getEquipaCasaCanonica(r.evento);
-                      const totalCompras = compras
-                        .filter(c => c.evento === r.evento && c.data_evento === r.data_evento)
-                        .reduce((acc, c) => acc + Number(c.quantidade || 0), 0);
+                  <tr className="bg-red-500/5">
+                    <td colSpan="7" className="p-4 border-b border-red-400/10">
+                      {(() => {
+                        const chaveRegra = getEquipaCasaCanonica(r.evento);
+                        const totalCompras = compras
+                          .filter(c => c.evento === r.evento && c.data_evento === r.data_evento)
+                          .reduce((acc, c) => acc + Number(c.quantidade || 0), 0);
+                  
+                        const resumoCompras = getResumoTituloCompras(
+                          r.evento,
+                          r.data_evento,
+                          chaveRegra
+                        );
+                  
+                        return (
+                          <div className={`${getExpandedCompraBoxClass} font-semibold text-white`}>
+                            Compras ({totalCompras})
+                            {resumoCompras ? <> — {resumoCompras}</> : null}
+                          </div>
+                        );
+                      })()}
+                    </td>
+                  </tr>
+                        
 
-                      const resumoCompras = getResumoTituloCompras(
-                        r.evento,
-                        r.data_evento,
-                        chaveRegra
-                      );
-
-                      return (
-                        <div className="rounded-2xl border border-amber-400/10 bg-amber-500/8 px-4 py-3 font-semibold text-white">
-                          Compras ({totalCompras})
-                          {resumoCompras ? <> — {resumoCompras}</> : null}
-                        </div>
-                      );
-                    })()}
-                  </td>
-                </tr>
-
-                <tr className="bg-amber-500/10 text-[11px] uppercase tracking-[0.08em] text-white/65">
+                <tr className={`${getExpandedCompraHeaderClass} text-[11px] uppercase tracking-[0.08em]`}>
                   <td className="p-3">Local</td>
                   <td className="p-3">Bancada</td>
                   <td className="p-3">Setor</td>
@@ -2651,10 +2704,10 @@ return (
                       lastSetor = setorAtual;
                     }
 
-                    const bgClass = toggle ? "bg-white/[0.02]" : "bg-amber-500/[0.05]";
+                    const bgClass = getExpandedCompraRowClass(toggle);
 
                     return (
-                      <tr key={"c" + c.id} className={`border-b border-white/6 text-xs ${bgClass}`}>
+                      <tr key={"c" + c.id} className={`border-b border-red-400/10 text-xs transition-colors ${bgClass}`}>
                         {modoEdicaoCompra === c.id ? (
                           <>
                             <td className="p-3">
