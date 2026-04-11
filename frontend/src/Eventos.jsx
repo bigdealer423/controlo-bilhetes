@@ -2440,7 +2440,7 @@ return (
             {linhaExpandida === r.id && (
               <>
                 <tr className="bg-blue-500/6">
-                  <td colSpan="8" className="p-4 border-b border-white/6">
+                  <td colSpan="7" className="p-4 border-b border-white/6">
                     {(() => {
                       const chaveRegra = getEquipaCasaCanonica(r.evento);
                       const resumo = getResumoMatchingInteligente(r.evento, r.data_evento, chaveRegra);
@@ -2596,7 +2596,7 @@ return (
                 })()}
 
                 <tr className="bg-amber-500/8">
-                  <td colSpan="8" className="p-4 border-b border-white/6">
+                  <td colSpan="7" className="p-4 border-b border-white/6">
                     {(() => {
                       const chaveRegra = getEquipaCasaCanonica(r.evento);
                       const totalCompras = compras
