@@ -2131,7 +2131,7 @@ return (
 
 
       <div className="overflow-hidden rounded-[26px] border border-white/10 bg-white/[0.025] shadow-[0_20px_60px_rgba(0,0,0,0.35)] backdrop-blur-xl">
-  <table className="hidden md:table min-w-full table-fixed text-sm text-white">
+  <table className="hidden md:table w-full table-fixed text-sm text-white">
     <colgroup>
       <col className="w-[420px]" />
       <col className="w-[280px]" />
@@ -2139,7 +2139,7 @@ return (
       <col className="w-[95px]" />
       <col className="w-[95px]" />
       <col className="w-[120px]" />
-      <col className="w-[170px]" />
+      <col className="w-[220px]" />
     </colgroup>
 
     <thead className="bg-white/[0.045]">
