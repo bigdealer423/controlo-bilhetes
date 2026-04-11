@@ -2184,17 +2184,19 @@ return (
                   });
                 }
               }}
-              className={`cursor-pointer border-b border-white/6 transition-all duration-200 hover:bg-white/[0.045] ${
-                linhaExpandida === r.id
-                  ? "bg-blue-500/10"
-                  : r.estado === "Pago"
-                  ? "bg-emerald-500/10"
-                  : r.estado === "Entregue"
-                  ? "bg-amber-500/10"
-                  : r.estado === "Disputa"
-                  ? "bg-red-500/12"
-                  : "bg-transparent"
-              }`}
+              className={`relative cursor-pointer border-b border-white/6 transition-all duration-200 hover:bg-white/[0.045]
+                before:absolute before:left-0 before:top-0 before:h-full before:w-[3px] before:rounded-r-md before:content-['']
+                ${
+                  linhaExpandida === r.id
+                    ? "bg-blue-500/10 before:bg-blue-400 before:shadow-[0_0_14px_rgba(96,165,250,0.8)]"
+                    : r.estado === "Pago"
+                    ? "bg-emerald-500/10 before:bg-emerald-400 before:shadow-[0_0_14px_rgba(52,211,153,0.75)]"
+                    : r.estado === "Entregue"
+                    ? "bg-amber-500/10 before:bg-amber-400 before:shadow-[0_0_14px_rgba(251,191,36,0.75)]"
+                    : r.estado === "Disputa"
+                    ? "bg-red-500/12 before:bg-red-400 before:shadow-[0_0_14px_rgba(248,113,113,0.8)]"
+                    : "bg-transparent before:bg-transparent"
+                }`}
             >
               <td className="p-4 text-center align-middle">
                 {(vendas.some(v => v.evento === r.evento && v.data_evento === r.data_evento) ||
