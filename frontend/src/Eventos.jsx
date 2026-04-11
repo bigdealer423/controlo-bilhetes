@@ -1918,84 +1918,93 @@ return (
 
 
       <div className="mb-6">
-  <div className="
-    w-full rounded-2xl p-5
-    bg-gradient-to-r from-[#0f172a] via-[#1e293b] to-[#0f172a]
-    border border-white/10
-    shadow-[0_0_30px_rgba(59,130,246,0.15)]
-    flex flex-col md:flex-row md:items-center md:justify-between gap-4
-  ">
+  <div
+    className="
+      relative overflow-hidden rounded-[22px]
+      border border-blue-400/20
+      bg-[linear-gradient(135deg,#0f172a_0%,#111c34_45%,#0b1328_100%)]
+      shadow-[0_0_0_1px_rgba(255,255,255,0.02),0_10px_35px_rgba(0,0,0,0.35),0_0_35px_rgba(37,99,235,0.12)]
+    "
+  >
+    {/* glow exterior/overlay */}
+    <div className="pointer-events-none absolute inset-0 rounded-[22px] ring-1 ring-inset ring-white/5" />
+    <div className="pointer-events-none absolute -inset-px rounded-[22px] bg-gradient-to-r from-blue-500/10 via-cyan-400/5 to-blue-500/10 blur-xl" />
 
-    {/* ESQUERDA */}
-    <div className="flex items-center gap-4">
-      <div className="w-12 h-12 flex items-center justify-center rounded-xl
-        bg-blue-500/20 text-blue-400 text-xl">
-        📊
-      </div>
-
-      <div>
-        <div className="text-lg font-semibold text-white">
-          {new Date().toLocaleString("pt-PT", { month: "long", year: "numeric" })}
+    <div className="relative flex flex-col gap-5 px-5 py-6 md:flex-row md:items-center md:justify-between">
+      {/* ESQUERDA */}
+      <div className="flex items-center gap-4 min-w-0">
+        <div
+          className="
+            flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl
+            bg-gradient-to-br from-blue-500/25 to-cyan-400/10
+            ring-1 ring-blue-300/15
+            shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_8px_20px_rgba(37,99,235,0.18)]
+          "
+        >
+          <span className="text-xl">📊</span>
         </div>
 
-        <div className="text-xs text-gray-400 mt-1">
-          Época {epocaSelecionada}
-        </div>
-      </div>
-    </div>
-
-    {/* CENTRO - MÉTRICAS */}
-    <div className="flex flex-1 justify-between md:justify-center md:gap-10">
-
-      {/* LUCRO */}
-      <div className="text-center">
-        <div className="text-xs text-gray-400">Lucro</div>
-        <div className="text-xl font-bold text-green-400">
-          {formatarNumero(resumoMensal.lucro)} €
-        </div>
-      </div>
-
-      {/* AGUARDAR */}
-      <div className="text-center">
-        <div className="text-xs text-gray-400">A aguardar</div>
-        <div className="text-xl font-bold text-yellow-400">
-          {formatarNumero(resumoMensal.pagamento)} €
-        </div>
-
-        {resumoMensal.disputas > 0 && (
-          <div className="text-[10px] text-red-400 mt-1">
-            +Disputas {formatarNumero(resumoMensal.disputas)} €
+        <div className="min-w-0">
+          <div className="text-[15px] md:text-[16px] font-semibold text-white capitalize">
+            {new Date().toLocaleString("pt-PT", { month: "long", year: "numeric" })}
           </div>
-        )}
-      </div>
-
-      {/* BILHETES */}
-      <div className="text-center">
-        <div className="text-xs text-gray-400">Bilhetes</div>
-        <div className="text-xl font-bold text-purple-400">
-          {formatarNumero(resumoMensal.bilhetes_epoca)}
+          <div className="mt-1 text-sm text-slate-300">
+            Época {epocaSelecionada}
+          </div>
         </div>
       </div>
 
-    </div>
+      {/* CENTRO */}
+      <div className="grid grid-cols-3 gap-6 md:gap-10 items-start">
+        <div className="text-center">
+          <div className="text-[12px] text-slate-400 mb-1">Lucro</div>
+          <div className="text-[20px] md:text-[21px] font-extrabold tracking-tight text-emerald-400">
+            {formatarNumero(resumoMensal.lucro)} €
+          </div>
+        </div>
 
-    {/* DIREITA */}
-    <div className="flex justify-end">
-      <button
-        onClick={buscarLucrosMensais}
-        className="
-          px-4 py-2 rounded-xl text-sm font-semibold
-          bg-blue-600 hover:bg-blue-700
-          text-white shadow-md
-        "
-      >
-        📈 Ver Lucros
-      </button>
-    </div>
+        <div className="text-center">
+          <div className="text-[12px] text-slate-400 mb-1">A aguardar</div>
+          <div className="text-[20px] md:text-[21px] font-extrabold tracking-tight text-amber-300">
+            {formatarNumero(resumoMensal.pagamento)} €
+          </div>
+          {resumoMensal.disputas > 0 && (
+            <div className="mt-1 text-[11px] font-semibold text-red-400 whitespace-nowrap">
+              +Disputas {formatarNumero(resumoMensal.disputas)} €
+            </div>
+          )}
+        </div>
 
+        <div className="text-center">
+          <div className="text-[12px] text-slate-400 mb-1">Bilhetes</div>
+          <div className="text-[20px] md:text-[21px] font-extrabold tracking-tight text-fuchsia-400">
+            {formatarNumero(resumoMensal.bilhetes_epoca)}
+          </div>
+        </div>
+      </div>
+
+      {/* DIREITA */}
+      <div className="flex justify-end">
+        <button
+          type="button"
+          onClick={buscarLucrosMensais}
+          className="
+            inline-flex items-center gap-2 rounded-2xl px-5 py-3
+            bg-gradient-to-r from-blue-600 to-blue-500
+            hover:from-blue-500 hover:to-blue-400
+            text-white font-semibold
+            shadow-[0_10px_24px_rgba(37,99,235,0.28)]
+            ring-1 ring-white/10
+            transition
+          "
+        >
+          <span>📈</span>
+          <span>Ver Lucros</span>
+        </button>
+      </div>
+    </div>
   </div>
 </div>
-
 
 {/* ── TOOLBAR ───────────────────────────────────────────────────── */}
 <div className="mb-4 flex flex-col md:flex-row md:items-center md:flex-wrap gap-2">
