@@ -2185,7 +2185,7 @@ return (
                 }
               }}
               className={`relative cursor-pointer border-b border-white/6 transition-all duration-200 hover:bg-white/[0.045]
-                before:absolute before:left-0 before:top-0 before:h-full before:w-[3px] before:rounded-r-md before:content-['']
+                before:absolute before:left-0 before:top-0 before:h-full before:w-[4px] before:rounded-r-md before:content-['']
                 ${
                   linhaExpandida === r.id
                     ? "bg-blue-500/10 before:bg-blue-400 before:shadow-[0_0_14px_rgba(96,165,250,0.8)]"
