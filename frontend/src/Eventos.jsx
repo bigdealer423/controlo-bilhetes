@@ -1944,30 +1944,6 @@ const getDataBadgeClass = (estado) => {
   return "border-l-[3px] border-l-white/10";
 }; 
 
-const getExpandedVendaRowClass = (toggle) => {
-  return toggle
-    ? "bg-emerald-950/55 hover:bg-emerald-900/45"
-    : "bg-emerald-900/28 hover:bg-emerald-800/35";
-};
-
-const getExpandedCompraRowClass = (toggle) => {
-  return toggle
-    ? "bg-rose-950/50 hover:bg-rose-900/40"
-    : "bg-red-900/22 hover:bg-red-800/30";
-};
-
-const getExpandedVendaHeaderClass =
-  "bg-emerald-500/10 text-emerald-100";
-
-const getExpandedCompraHeaderClass =
-  "bg-red-500/10 text-red-100";
-
-const getExpandedVendaBoxClass =
-  "rounded-2xl border border-emerald-400/15 bg-emerald-500/8 px-4 py-3";
-
-const getExpandedCompraBoxClass =
-  "rounded-2xl border border-red-400/15 bg-red-500/8 px-4 py-3";  
-
 return (
    <div className="p-4 md:p-6 w-full md:max-w-[1400px] md:mx-auto min-h-screen">
       
@@ -2470,365 +2446,316 @@ return (
             </tr>
 
             {linhaExpandida === r.id && (
-  <>
-    <tr className="bg-emerald-500/5">
-      <td colSpan="7" className="p-4 border-b border-emerald-400/10">
-        {(() => {
-          const chaveRegra = getEquipaCasaCanonica(r.evento);
-          const resumo = getResumoMatchingInteligente(r.evento, r.data_evento, chaveRegra);
-          const resumoTitulo = getResumoTituloVendas(r.evento, r.data_evento, chaveRegra);
+              <>
+                <tr className="bg-blue-500/6">
+                  <td colSpan="7" className="p-4 border-b border-white/6">
+                    {(() => {
+                      const chaveRegra = getEquipaCasaCanonica(r.evento);
+                      const resumo = getResumoMatchingInteligente(r.evento, r.data_evento, chaveRegra);
+                      const resumoTitulo = getResumoTituloVendas(r.evento, r.data_evento, chaveRegra);
 
-          return (
-            <div className={getExpandedVendaBoxClass}>
-              <div className="font-semibold text-white">
-                Vendas ({getTotalBilhetesVendas(r.evento, r.data_evento)})
-                {resumoTitulo ? <> — {resumoTitulo}</> : null}
-              </div>
+                      return (
+                        <div className="rounded-2xl border border-blue-400/10 bg-blue-500/8 px-4 py-3">
+                          <div className="font-semibold text-white">
+                            Vendas ({getTotalBilhetesVendas(r.evento, r.data_evento)})
+                            {resumoTitulo ? <> — {resumoTitulo}</> : null}
+                          </div>
 
-              {resumo.porComprarTxt && (
-                <div className="mt-1 text-xs text-red-300">
-                  🔴 Por comprar: {resumo.porComprarTxt}
-                </div>
-              )}
+                          {resumo.porComprarTxt && (
+                            <div className="text-red-300 text-xs mt-1">
+                              🔴 Por comprar: {resumo.porComprarTxt}
+                            </div>
+                          )}
 
-              {resumo.coberturaIncertaTxt && (
-                <div className="mt-1 text-xs text-yellow-300">
-                  🟡 Cobertura incerta: {resumo.coberturaIncertaTxt}
-                </div>
-              )}
+                          {resumo.coberturaIncertaTxt && (
+                            <div className="text-yellow-300 text-xs mt-1">
+                              🟡 Cobertura incerta: {resumo.coberturaIncertaTxt}
+                            </div>
+                          )}
 
-              {resumo.porVenderTxt && (
-                <div className="mt-1 text-xs text-emerald-300">
-                  🟢 Por vender: {resumo.porVenderTxt}
-                </div>
-              )}
-            </div>
-          );
-        })()}
-      </td>
-    </tr>
+                          {resumo.porVenderTxt && (
+                            <div className="text-emerald-300 text-xs mt-1">
+                              🟢 Por vender: {resumo.porVenderTxt}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })()}
+                  </td>
+                </tr>
 
-    <tr className={`${getExpandedVendaHeaderClass} text-[11px] uppercase tracking-[0.08em]`}>
-      <td className="p-3">ID Venda</td>
-      <td className="p-3" colSpan="2">Bilhetes</td>
-      <td className="p-3 text-right">Ganho</td>
-      <td className="p-3">Estado</td>
-      <td className="p-3">Nota</td>
-      <td className="p-3">Ações</td>
-    </tr>
+                <tr className="bg-blue-500/10 text-[11px] uppercase tracking-[0.08em] text-white/65">
+                  <td className="p-3">ID Venda</td>
+                  <td className="p-3" colSpan="2">Bilhetes</td>
+                  <td className="p-3 text-right">Ganho</td>
+                  <td className="p-3">Estado</td>
+                  <td className="p-3">Nota</td>
+                  <td className="p-3">Ações</td>
+                  <td className="p-3"></td>
+                </tr>
 
-    {(() => {
-      let lastSetor = null;
-      let toggle = false;
+                {(() => {
+                  let lastSetor = null;
+                  let toggle = false;
 
-      return getVendasOrdenadas(r.evento, r.data_evento).map((v) => {
-        const setorAtual = setorExato(v.estadio);
+                  return getVendasOrdenadas(r.evento, r.data_evento).map((v) => {
+                    const setorAtual = setorExato(v.estadio);
 
-        if (setorAtual !== lastSetor) {
-          toggle = !toggle;
-          lastSetor = setorAtual;
-        }
+                    if (setorAtual !== lastSetor) {
+                      toggle = !toggle;
+                      lastSetor = setorAtual;
+                    }
 
-        const bgClass = getExpandedVendaRowClass(toggle);
+                    const bgClass = toggle ? "bg-white/[0.02]" : "bg-blue-500/[0.05]";
 
-        if (modoEdicaoVenda === v.id) {
-          return (
-            <tr
-              key={"v" + v.id}
-              className={`border-b border-emerald-400/10 text-xs transition-colors ${bgClass}`}
-            >
-              <td className="p-3">
-                <input
-                  type="number"
-                  className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
-                  value={vendaEditada.id_venda}
-                  onChange={(e) =>
-                    setVendaEditada({ ...vendaEditada, id_venda: e.target.value })
-                  }
-                />
-              </td>
+                    if (modoEdicaoVenda === v.id) {
+                      return (
+                        <tr key={"v" + v.id} className={`border-b border-white/6 text-xs ${bgClass}`}>
+                          <td className="p-3">
+                            <input
+                              type="number"
+                              className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
+                              value={vendaEditada.id_venda}
+                              onChange={(e) =>
+                                setVendaEditada({ ...vendaEditada, id_venda: e.target.value })
+                              }
+                            />
+                          </td>
+                          <td className="p-3" colSpan="2">
+                            <input
+                              className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
+                              value={vendaEditada.estadio}
+                              onChange={(e) =>
+                                setVendaEditada({ ...vendaEditada, estadio: e.target.value })
+                              }
+                            />
+                          </td>
+                          <td className="p-3">
+                            <input
+                              type="number"
+                              className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
+                              value={vendaEditada.ganho}
+                              onChange={(e) =>
+                                setVendaEditada({ ...vendaEditada, ganho: e.target.value })
+                              }
+                            />
+                          </td>
+                          <td className="p-3">
+                            <select
+                              className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
+                              value={vendaEditada.estado}
+                              onChange={(e) =>
+                                setVendaEditada({ ...vendaEditada, estado: e.target.value })
+                              }
+                            >
+                              <option value="Entregue">Entregue</option>
+                              <option value="Por entregar">Por entregar</option>
+                              <option value="Disputa">Disputa</option>
+                              <option value="Pago">Pago</option>
+                            </select>
+                          </td>
+                          <td colSpan="3" className="p-3">
+                            <button className="mr-3 text-emerald-300" onClick={() => guardarVenda(vendaEditada)}>
+                              Guardar
+                            </button>
+                            <button className="text-white/60" onClick={() => setModoEdicaoVenda(null)}>
+                              Cancelar
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    }
 
-              <td className="p-3" colSpan="2">
-                <input
-                  className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
-                  value={vendaEditada.estadio}
-                  onChange={(e) =>
-                    setVendaEditada({ ...vendaEditada, estadio: e.target.value })
-                  }
-                />
-              </td>
+                    return (
+                      <tr key={"v" + v.id} className={`border-b border-white/6 text-xs ${bgClass}`}>
+                        <td className="p-3 whitespace-nowrap text-white/90">{v.id_venda}</td>
+                        <td className="p-3 text-white/85" colSpan="2">{v.estadio}</td>
+                        <td className="p-3 whitespace-nowrap text-right font-medium text-emerald-300">{v.ganho} €</td>
+                        <td className="p-3 whitespace-nowrap text-white/80">{v.estado}</td>
+                        <td className="p-3">
+                          <CirculoEstado
+                            tipo="listagem_vendas"
+                            id={v.id}
+                            texto_estado={v.circulo_estado_venda}
+                            nota_estado={v.nota_estado_venda}
+                            setVendas={setVendas}
+                          />
+                        </td>
+                        <td className="p-3 whitespace-nowrap">
+                          {vendasNaoAssociadasSet.has(v.id) && (
+                            <span className="text-yellow-400 mr-2" title="Venda não associada a evento">
+                              ⚠️
+                            </span>
+                          )}
+                          <button
+                            onClick={() => {
+                              setModoEdicaoVenda(v.id);
+                              setVendaEditada(v);
+                            }}
+                            className="text-blue-300 hover:text-blue-200"
+                          >
+                            Editar
+                          </button>
+                        </td>
+                        <td className="p-3"></td>
+                      </tr>
+                    );
+                  });
+                })()}
 
-              <td className="p-3">
-                <input
-                  type="number"
-                  className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
-                  value={vendaEditada.ganho}
-                  onChange={(e) =>
-                    setVendaEditada({ ...vendaEditada, ganho: e.target.value })
-                  }
-                />
-              </td>
+                <tr className="bg-amber-500/8">
+                  <td colSpan="7" className="p-4 border-b border-white/6">
+                    {(() => {
+                      const chaveRegra = getEquipaCasaCanonica(r.evento);
+                      const totalCompras = compras
+                        .filter(c => c.evento === r.evento && c.data_evento === r.data_evento)
+                        .reduce((acc, c) => acc + Number(c.quantidade || 0), 0);
 
-              <td className="p-3">
-                <select
-                  className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
-                  value={vendaEditada.estado}
-                  onChange={(e) =>
-                    setVendaEditada({ ...vendaEditada, estado: e.target.value })
-                  }
-                >
-                  <option value="Entregue">Entregue</option>
-                  <option value="Por entregar">Por entregar</option>
-                  <option value="Disputa">Disputa</option>
-                  <option value="Pago">Pago</option>
-                </select>
-              </td>
+                      const resumoCompras = getResumoTituloCompras(
+                        r.evento,
+                        r.data_evento,
+                        chaveRegra
+                      );
 
-              <td colSpan="2" className="p-3">
-                <button
-                  className="mr-3 text-emerald-300"
-                  onClick={() => guardarVenda(vendaEditada)}
-                >
-                  Guardar
-                </button>
-                <button
-                  className="text-white/60"
-                  onClick={() => setModoEdicaoVenda(null)}
-                >
-                  Cancelar
-                </button>
-              </td>
-            </tr>
-          );
-        }
+                      return (
+                        <div className="rounded-2xl border border-amber-400/10 bg-amber-500/8 px-4 py-3 font-semibold text-white">
+                          Compras ({totalCompras})
+                          {resumoCompras ? <> — {resumoCompras}</> : null}
+                        </div>
+                      );
+                    })()}
+                  </td>
+                </tr>
 
-        return (
-          <tr
-            key={"v" + v.id}
-            className={`border-b border-emerald-400/10 text-xs transition-colors ${bgClass}`}
-          >
-            <td className="p-3 whitespace-nowrap text-white/90">{v.id_venda}</td>
-            <td className="p-3 text-white/85" colSpan="2">{v.estadio}</td>
-            <td className="p-3 whitespace-nowrap text-right font-medium text-emerald-300">
-              {v.ganho} €
-            </td>
-            <td className="p-3 whitespace-nowrap text-white/80">{v.estado}</td>
-            <td className="p-3">
-              <CirculoEstado
-                tipo="listagem_vendas"
-                id={v.id}
-                texto_estado={v.circulo_estado_venda}
-                nota_estado={v.nota_estado_venda}
-                setVendas={setVendas}
-              />
-            </td>
-            <td className="p-3 whitespace-nowrap">
-              {vendasNaoAssociadasSet.has(v.id) && (
-                <span
-                  className="mr-2 text-yellow-400"
-                  title="Venda não associada a evento"
-                >
-                  ⚠️
-                </span>
-              )}
-              <button
-                onClick={() => {
-                  setModoEdicaoVenda(v.id);
-                  setVendaEditada(v);
-                }}
-                className="text-blue-300 hover:text-blue-200"
-              >
-                Editar
-              </button>
-            </td>
-          </tr>
-        );
-      });
-    })()}
+                <tr className="bg-amber-500/10 text-[11px] uppercase tracking-[0.08em] text-white/65">
+                  <td className="p-3">Local</td>
+                  <td className="p-3">Bancada</td>
+                  <td className="p-3">Setor</td>
+                  <td className="p-3">Fila</td>
+                  <td className="p-3">Qt</td>
+                  <td className="p-3 text-right">Gasto</td>
+                  <td className="p-3">Nota</td>
+                  <td className="p-3">Ações</td>
+                </tr>
 
-    <tr className="bg-red-500/5">
-      <td colSpan="7" className="p-4 border-b border-red-400/10">
-        {(() => {
-          const chaveRegra = getEquipaCasaCanonica(r.evento);
-          const totalCompras = compras
-            .filter(c => c.evento === r.evento && c.data_evento === r.data_evento)
-            .reduce((acc, c) => acc + Number(c.quantidade || 0), 0);
+                {(() => {
+                  let lastSetor = null;
+                  let toggle = false;
+                  const chaveRegra = getEquipaCasaCanonica(r.evento);
 
-          const resumoCompras = getResumoTituloCompras(
-            r.evento,
-            r.data_evento,
-            chaveRegra
-          );
+                  return getComprasOrdenadas(r.evento, r.data_evento).map((c) => {
+                    const setorAtual = compraChaveOperacionalExata(c, chaveRegra);
 
-          return (
-            <div className={`${getExpandedCompraBoxClass} font-semibold text-white`}>
-              Compras ({totalCompras})
-              {resumoCompras ? <> — {resumoCompras}</> : null}
-            </div>
-          );
-        })()}
-      </td>
-    </tr>
+                    if (setorAtual !== lastSetor) {
+                      toggle = !toggle;
+                      lastSetor = setorAtual;
+                    }
 
-    <tr className={`${getExpandedCompraHeaderClass} text-[11px] uppercase tracking-[0.08em]`}>
-      <td className="p-3">Local</td>
-      <td className="p-3">Bancada</td>
-      <td className="p-3">Setor</td>
-      <td className="p-3">Fila</td>
-      <td className="p-3">Qt</td>
-      <td className="p-3 text-right">Gasto</td>
-      <td className="p-3">Nota</td>
-    </tr>
+                    const bgClass = toggle ? "bg-white/[0.02]" : "bg-amber-500/[0.05]";
 
-    {(() => {
-      let lastSetor = null;
-      let toggle = false;
-      const chaveRegra = getEquipaCasaCanonica(r.evento);
-
-      return getComprasOrdenadas(r.evento, r.data_evento).map((c) => {
-        const setorAtual = compraChaveOperacionalExata(c, chaveRegra);
-
-        if (setorAtual !== lastSetor) {
-          toggle = !toggle;
-          lastSetor = setorAtual;
-        }
-
-        const bgClass = getExpandedCompraRowClass(toggle);
-
-        if (modoEdicaoCompra === c.id) {
-          return (
-            <tr
-              key={"c" + c.id}
-              className={`border-b border-red-400/10 text-xs transition-colors ${bgClass}`}
-            >
-              <td className="p-3">
-                <input
-                  className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
-                  value={compraEditada.local_compras}
-                  onChange={(e) =>
-                    setCompraEditada({ ...compraEditada, local_compras: e.target.value })
-                  }
-                />
-              </td>
-              <td className="p-3">
-                <input
-                  className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
-                  value={compraEditada.bancada}
-                  onChange={(e) =>
-                    setCompraEditada({ ...compraEditada, bancada: e.target.value })
-                  }
-                />
-              </td>
-              <td className="p-3">
-                <input
-                  className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
-                  value={compraEditada.setor}
-                  onChange={(e) =>
-                    setCompraEditada({ ...compraEditada, setor: e.target.value })
-                  }
-                />
-              </td>
-              <td className="p-3">
-                <input
-                  className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
-                  value={compraEditada.fila}
-                  onChange={(e) =>
-                    setCompraEditada({ ...compraEditada, fila: e.target.value })
-                  }
-                />
-              </td>
-              <td className="p-3">
-                <input
-                  type="number"
-                  className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
-                  value={compraEditada.quantidade}
-                  onChange={(e) =>
-                    setCompraEditada({ ...compraEditada, quantidade: e.target.value })
-                  }
-                />
-              </td>
-              <td className="p-3">
-                <input
-                  type="number"
-                  className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
-                  value={compraEditada.gasto}
-                  onChange={(e) =>
-                    setCompraEditada({ ...compraEditada, gasto: e.target.value })
-                  }
-                />
-              </td>
-              <td className="p-3">
-                <button
-                  className="mr-3 text-emerald-300"
-                  onClick={() => guardarCompra(compraEditada)}
-                >
-                  Guardar
-                </button>
-                <button
-                  className="text-white/60"
-                  onClick={() => setModoEdicaoCompra(null)}
-                >
-                  Cancelar
-                </button>
-              </td>
-            </tr>
-          );
-        }
-
-        return (
-          <tr
-            key={"c" + c.id}
-            className={`border-b border-red-400/10 text-xs transition-colors ${bgClass}`}
-          >
-            <td className="p-3 text-white/85">{c.local_compras}</td>
-            <td className="p-3 text-white/85">{c.bancada}</td>
-            <td className="p-3 text-white/85">{c.setor}</td>
-            <td
-              className="max-w-[150px] overflow-hidden text-ellipsis whitespace-nowrap p-3 text-white/75"
-              title={c.fila}
-            >
-              {c.fila}
-            </td>
-            <td className="p-3 whitespace-nowrap text-white/90">{c.quantidade}</td>
-            <td className="p-3 whitespace-nowrap text-right font-medium text-red-300">
-              {c.gasto} €
-            </td>
-            <td className="p-3">
-              <div className="flex items-center justify-between gap-2">
-                <CirculoEstado
-                  tipo="compras"
-                  id={c.id}
-                  texto_estado={c.circulo_estado_compra}
-                  nota_estado={c.nota_estado_compra}
-                  setCompras={setCompras}
-                />
-                <div className="whitespace-nowrap">
-                  {comprasNaoAssociadasSet.has(c.id) && (
-                    <span
-                      className="mr-2 text-yellow-400"
-                      title="Compra não associada a evento"
-                    >
-                      ⚠️
-                    </span>
-                  )}
-                  <button
-                    onClick={() => {
-                      setModoEdicaoCompra(c.id);
-                      setCompraEditada(c);
-                    }}
-                    className="text-blue-300 hover:text-blue-200"
-                  >
-                    Editar
-                  </button>
-                </div>
-              </div>
-            </td>
-          </tr>
-        );
-      });
-    })()}
-  </>
-)}
+                    return (
+                      <tr key={"c" + c.id} className={`border-b border-white/6 text-xs ${bgClass}`}>
+                        {modoEdicaoCompra === c.id ? (
+                          <>
+                            <td className="p-3">
+                              <input
+                                className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
+                                value={compraEditada.local_compras}
+                                onChange={e => setCompraEditada({ ...compraEditada, local_compras: e.target.value })}
+                              />
+                            </td>
+                            <td className="p-3">
+                              <input
+                                className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
+                                value={compraEditada.bancada}
+                                onChange={e => setCompraEditada({ ...compraEditada, bancada: e.target.value })}
+                              />
+                            </td>
+                            <td className="p-3">
+                              <input
+                                className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
+                                value={compraEditada.setor}
+                                onChange={e => setCompraEditada({ ...compraEditada, setor: e.target.value })}
+                              />
+                            </td>
+                            <td className="p-3">
+                              <input
+                                className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
+                                value={compraEditada.fila}
+                                onChange={e => setCompraEditada({ ...compraEditada, fila: e.target.value })}
+                              />
+                            </td>
+                            <td className="p-3">
+                              <input
+                                type="number"
+                                className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
+                                value={compraEditada.quantidade}
+                                onChange={e => setCompraEditada({ ...compraEditada, quantidade: e.target.value })}
+                              />
+                            </td>
+                            <td className="p-3">
+                              <input
+                                type="number"
+                                className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
+                                value={compraEditada.gasto}
+                                onChange={e => setCompraEditada({ ...compraEditada, gasto: e.target.value })}
+                              />
+                            </td>
+                            <td className="p-3" colSpan="2">
+                              <button className="mr-3 text-emerald-300" onClick={() => guardarCompra(compraEditada)}>
+                                Guardar
+                              </button>
+                              <button className="text-white/60" onClick={() => setModoEdicaoCompra(null)}>
+                                Cancelar
+                              </button>
+                            </td>
+                          </>
+                        ) : (
+                          <>
+                            <td className="p-3 text-white/85">{c.local_compras}</td>
+                            <td className="p-3 text-white/85">{c.bancada}</td>
+                            <td className="p-3 text-white/85">{c.setor}</td>
+                            <td className="p-3 max-w-[150px] overflow-hidden text-ellipsis whitespace-nowrap text-white/75" title={c.fila}>
+                              {c.fila}
+                            </td>
+                            <td className="p-3 whitespace-nowrap text-white/90">{c.quantidade}</td>
+                            <td className="p-3 whitespace-nowrap text-right font-medium text-red-300">{c.gasto} €</td>
+                            <td className="p-3">
+                              <CirculoEstado
+                                tipo="compras"
+                                id={c.id}
+                                texto_estado={c.circulo_estado_compra}
+                                nota_estado={c.nota_estado_compra}
+                                setCompras={setCompras}
+                              />
+                            </td>
+                            <td className="p-3 whitespace-nowrap">
+                              {comprasNaoAssociadasSet.has(c.id) && (
+                                <span className="text-yellow-400 mr-2" title="Compra não associada a evento">⚠️</span>
+                              )}
+                              <button
+                                onClick={() => {
+                                  setModoEdicaoCompra(c.id);
+                                  setCompraEditada(c);
+                                }}
+                                className="text-blue-300 hover:text-blue-200"
+                              >
+                                Editar
+                              </button>
+                            </td>
+                          </>
+                        )}
+                      </tr>
+                    );
+                  });
+                })()}
+              </>
+            )}
+          </Fragment>
+        ))}
+    </tbody>
+  </table>
+</div>
           <div className="space-y-5 md:hidden mt-6 px-0 w-full max-w-full">
             {registos
               .filter(r => {
