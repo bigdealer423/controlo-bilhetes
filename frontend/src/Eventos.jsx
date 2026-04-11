@@ -2502,9 +2502,9 @@ return (
           <col className="w-[110px]" />
           <col className="w-[430px]" />
           <col className="w-[85px]" />
-          <col className="w-[95px]" />
-          <col className="w-[170px]" />
           <col className="w-[80px]" />
+          <col className="w-[150px]" />
+          <col className="w-[90px]" />
         </colgroup>
         <thead>
           <tr className="bg-blue-500/10 text-[11px] uppercase tracking-[0.08em] text-white/65">
