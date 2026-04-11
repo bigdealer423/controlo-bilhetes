@@ -486,6 +486,17 @@ const getBadgeBilhetesMeta = (saldo) => {
     };
   }
 
+  // ✅ NOVO: saldo = 0
+  return {
+    valor: 0,
+    title: "Equilíbrio total (sem bilhetes por comprar ou vender)",
+    className:
+      "bg-gray-500/20 text-white ring-1 ring-gray-400/30 " +
+      "shadow-[0_0_10px_rgba(156,163,175,0.15)] " +
+      "before:absolute before:inset-[1px] before:rounded-[10px] before:bg-gray-400/10",
+  };
+};
+
   return null;
 };
 
