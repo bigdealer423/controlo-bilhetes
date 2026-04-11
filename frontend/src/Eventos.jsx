@@ -2130,424 +2130,443 @@ return (
     
 
 
-      <div className="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-md rounded p-4 transition-colors duration-300">
-       <table className="hidden md:table min-w-full table-fixed border border-gray-300 dark:border-gray-600 text-sm transition-colors duration-300">
-  <colgroup>
-    <col className="w-[30px]" />
-    <col className="w-[380px]" />
-    <col className="w-[220px]" />
-    <col className="w-[90px]" />
-    <col className="w-[90px]" />
-    <col className="w-[90px]" />
-    <col className="w-[110px]" />
-    <col className="w-[140px]" />
-  </colgroup>
+      <div className="overflow-hidden rounded-[26px] border border-white/10 bg-white/[0.025] shadow-[0_20px_60px_rgba(0,0,0,0.35)] backdrop-blur-xl">
+  <table className="hidden md:table min-w-full table-fixed text-sm text-white">
+    <colgroup>
+      <col className="w-[34px]" />
+      <col className="w-[420px]" />
+      <col className="w-[280px]" />
+      <col className="w-[95px]" />
+      <col className="w-[95px]" />
+      <col className="w-[95px]" />
+      <col className="w-[120px]" />
+      <col className="w-[170px]" />
+    </colgroup>
 
-  <thead className="bg-gray-100 dark:bg-gray-800 transition-colors duration-300">
-    <tr className="align-middle">
-      <th className="p-2"></th>
-      <th className="p-2 whitespace-nowrap">Evento</th>
-      <th className="p-2 whitespace-nowrap">Estádio</th>
-      <th className="p-2 whitespace-nowrap text-center">Gasto</th>
-      <th className="p-2 whitespace-nowrap text-center">Ganho</th>
-      <th className="p-2 whitespace-nowrap text-left">Lucro</th>
-      <th className="p-2 whitespace-nowrap">Estado</th>
-      <th className="p-2 whitespace-nowrap">Ações</th>
-    </tr>
-  </thead>
+    <thead className="bg-white/[0.045]">
+      <tr className="border-b border-white/10 text-[13px] uppercase tracking-[0.08em] text-white/70">
+        <th className="p-4"></th>
+        <th className="p-4 font-semibold">Evento</th>
+        <th className="p-4 font-semibold">Estádio</th>
+        <th className="p-4 text-center font-semibold">Gasto</th>
+        <th className="p-4 text-center font-semibold">Ganho</th>
+        <th className="p-4 text-left font-semibold">Lucro</th>
+        <th className="p-4 font-semibold">Estado</th>
+        <th className="p-4 font-semibold">Ações</th>
+      </tr>
+    </thead>
 
-  <tbody>
-    {registos
-      .filter(r => {
-        const passaPesquisa = (r.evento || "").toLowerCase().includes(filtroPesquisa.toLowerCase());
-        const filtroAtivo = !!filtroPesquisa.trim();
-        const esconderPago = !filtroAtivo && ocultarPagos && r.estado === "Pago" && modoEdicao !== r.id;
-        const passaEpoca = matchesEpoca(r);
-        return passaPesquisa && !esconderPago && passaEpoca;
-      })
-      .map(r => (
-        <Fragment key={r.id}>
-          <tr
-            ref={(el) => (linhaRefs.current[r.id] = el)}
-            onClick={() => {
-              const novoExpandido = linhaExpandida === r.id ? null : r.id;
-              setLinhaExpandida(novoExpandido);
+    <tbody>
+      {registos
+        .filter(r => {
+          const passaPesquisa = (r.evento || "").toLowerCase().includes(filtroPesquisa.toLowerCase());
+          const filtroAtivo = !!filtroPesquisa.trim();
+          const esconderPago = !filtroAtivo && ocultarPagos && r.estado === "Pago" && modoEdicao !== r.id;
+          const passaEpoca = matchesEpoca(r);
+          return passaPesquisa && !esconderPago && passaEpoca;
+        })
+        .map(r => (
+          <Fragment key={r.id}>
+            <tr
+              ref={(el) => (linhaRefs.current[r.id] = el)}
+              onClick={() => {
+                const novoExpandido = linhaExpandida === r.id ? null : r.id;
+                setLinhaExpandida(novoExpandido);
 
-              if (novoExpandido !== null) {
-                requestAnimationFrame(() => {
-                  setTimeout(() => {
-                    const el = linhaRefs.current[r.id];
-                    if (el) {
-                      el.scrollIntoView({ behavior: "smooth", block: "start" });
-                    }
-                  }, 150);
-                });
-              }
-            }}
-            className={`cursor-pointer ${
-              linhaExpandida === r.id
-                ? "bg-blue-100 dark:bg-blue-800 text-gray-900 dark:text-gray-100 font-semibold"
-                : r.estado === "Pago"
-                ? "bg-green-100 dark:bg-green-700"
-                : r.estado === "Entregue"
-                ? "bg-yellow-100 dark:bg-yellow-700"
-                : r.estado === "Disputa"
-                ? "bg-red-200 dark:bg-red-800"
-                : ""
-            } transition-colors duration-300`}
-          >
-            <td className="p-2 whitespace-nowrap text-center">
-              {(vendas.some(v => v.evento === r.evento && v.data_evento === r.data_evento) ||
-                compras.some(c => c.evento === r.evento && c.data_evento === r.data_evento)) ? (
-                <span
-                  className={`inline-block h-2.5 w-2.5 rounded-full transition-all duration-200 ${
-                    linhaExpandida === r.id
-                      ? "bg-blue-400 shadow-[0_0_10px_rgba(96,165,250,0.7)]"
-                      : "bg-white/20"
-                  }`}
-                  title={linhaExpandida === r.id ? "Expandido" : "Tem detalhe"}
-                />
-              ) : (
-                <span
-                  className="inline-block h-2.5 w-2.5 rounded-full bg-red-500/80"
-                  title="Sem vendas nem compras associadas"
-                />
-              )}
-            </td>
-
-            <td className="p-2 overflow-hidden">
-  {modoEdicao === r.id ? (
-    <div className="flex items-center gap-2 min-w-0">
-      <input
-        type="date"
-        value={toInputDate(r.data_evento)}
-        onChange={(e) => atualizarCampo(r.id, "data_evento", e.target.value)}
-        onClick={(e) => e.stopPropagation()}
-        className="border p-2 rounded shrink-0 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 transition-colors duration-300 [color-scheme:dark]"
-      />
-
-      <select
-        value={r.evento}
-        onChange={(e) => atualizarCampo(r.id, "evento", e.target.value)}
-        onClick={(e) => e.stopPropagation()}
-        className="border p-2 rounded flex-1 min-w-0 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 transition-colors duration-300"
-      >
-        <option value="">-- Selecionar Evento --</option>
-        {eventosDropdown.map(e => (
-          <option key={e.id} value={e.nome}>{e.nome}</option>
-        ))}
-      </select>
-    </div>
-  ) : (
-    (() => {
-      const { saldo } = getTotaisBilhetesEvento(r.evento, r.data_evento, vendas, compras);
-      const badge = getBadgeBilhetesMeta(saldo);
-
-      return (
-        <div className="flex items-center gap-2 min-w-0 overflow-hidden">
-          <span className="shrink-0 tabular-nums text-gray-800 dark:text-gray-100">
-            {formatarDataPt(r.data_evento)}
-          </span>
-
-          {badge && (
-            <span
-              title={badge.title}
-              className={`
-                inline-flex shrink-0 items-center justify-center
-                min-w-[28px] h-[28px] px-2 rounded-[10px]
-                text-[12px] font-bold leading-none
-                shadow-sm
-                ${badge.className}
-              `}
+                if (novoExpandido !== null) {
+                  requestAnimationFrame(() => {
+                    setTimeout(() => {
+                      const el = linhaRefs.current[r.id];
+                      if (el) {
+                        el.scrollIntoView({ behavior: "smooth", block: "start" });
+                      }
+                    }, 150);
+                  });
+                }
+              }}
+              className={`cursor-pointer border-b border-white/6 transition-all duration-200 hover:bg-white/[0.045] ${
+                linhaExpandida === r.id
+                  ? "bg-blue-500/10"
+                  : r.estado === "Pago"
+                  ? "bg-emerald-500/10"
+                  : r.estado === "Entregue"
+                  ? "bg-amber-500/10"
+                  : r.estado === "Disputa"
+                  ? "bg-red-500/12"
+                  : "bg-transparent"
+              }`}
             >
-              {badge.valor}
-            </span>
-          )}
+              <td className="p-4 text-center align-middle">
+                {(vendas.some(v => v.evento === r.evento && v.data_evento === r.data_evento) ||
+                  compras.some(c => c.evento === r.evento && c.data_evento === r.data_evento)) ? (
+                  <span
+                    className={`inline-block h-2.5 w-2.5 rounded-full transition-all duration-200 ${
+                      linhaExpandida === r.id
+                        ? "bg-blue-400 shadow-[0_0_14px_rgba(96,165,250,0.75)]"
+                        : "bg-white/20"
+                    }`}
+                    title={linhaExpandida === r.id ? "Expandido" : "Tem detalhe"}
+                  />
+                ) : (
+                  <span
+                    className="inline-block h-2.5 w-2.5 rounded-full bg-red-400/80"
+                    title="Sem vendas nem compras associadas"
+                  />
+                )}
+              </td>
 
-          <div className="flex items-center gap-1.5 min-w-0 overflow-hidden">
-            <span className="flex items-center gap-1 whitespace-nowrap overflow-hidden text-ellipsis min-w-0">
-              {renderEventoComSimbolos(r.evento)}
-            </span>
+              <td className="p-4 overflow-hidden">
+                {modoEdicao === r.id ? (
+                  <div className="flex items-center gap-2 min-w-0">
+                    <input
+                      type="date"
+                      value={toInputDate(r.data_evento)}
+                      onChange={(e) => atualizarCampo(r.id, "data_evento", e.target.value)}
+                      onClick={(e) => e.stopPropagation()}
+                      className="rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white [color-scheme:dark]"
+                    />
 
-            {r.nota_evento && (
-              <span
-                className="text-yellow-400 animate-pulse shrink-0"
-                title={r.nota_evento}
-              >
-                📝
-              </span>
-            )}
+                    <select
+                      value={r.evento}
+                      onChange={(e) => atualizarCampo(r.id, "evento", e.target.value)}
+                      onClick={(e) => e.stopPropagation()}
+                      className="min-w-0 flex-1 rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
+                    >
+                      <option value="">-- Selecionar Evento --</option>
+                      {eventosDropdown.map(e => (
+                        <option key={e.id} value={e.nome}>{e.nome}</option>
+                      ))}
+                    </select>
+                  </div>
+                ) : (
+                  (() => {
+                    const { saldo } = getTotaisBilhetesEvento(r.evento, r.data_evento, vendas, compras);
+                    const badge = getBadgeBilhetesMeta(saldo);
 
-            {r.url_evento ? (
-              <a
-                href={normalizeUrl(r.url_evento)}
-                target="_blank"
-                rel="noopener noreferrer"
-                title="Abrir link do evento"
-                className="inline-flex items-center hover:opacity-80 shrink-0"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <img
-                  src={viagogoLogo}
-                  alt="Viagogo"
-                  className="w-5 h-5 inline-block align-[-2px]"
-                  loading="lazy"
-                />
-              </a>
-            ) : null}
-          </div>
-        </div>
-      );
-    })()
-  )}
-</td>
+                    return (
+                      <div className="flex items-center gap-3 min-w-0 overflow-hidden">
+                        <span className="shrink-0 rounded-xl bg-white/[0.05] px-2.5 py-1.5 text-[13px] font-semibold tabular-nums text-white/90">
+                          {formatarDataPt(r.data_evento)}
+                        </span>
 
-            <td className="p-2 whitespace-nowrap overflow-hidden truncate">
-              {modoEdicao === r.id
-                ? <input value={r.estadio} onChange={(e) => atualizarCampo(r.id, "estadio", e.target.value)} className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300" />
-                : r.estadio}
-            </td>
+                        {badge && (
+                          <span
+                            title={badge.title}
+                            className={`
+                              inline-flex shrink-0 items-center justify-center
+                              min-w-[30px] h-[30px] px-2 rounded-xl
+                              text-[12px] font-bold leading-none
+                              shadow-sm
+                              ${badge.className}
+                            `}
+                          >
+                            {badge.valor}
+                          </span>
+                        )}
 
-            <td className="p-2 whitespace-nowrap text-center">{r.gasto} €</td>
-            <td className="p-2 whitespace-nowrap text-center">{r.ganho} €</td>
-            <td className="p-2 whitespace-nowrap text-left">{(r.ganho - r.gasto)} €</td>
+                        <div className="flex items-center gap-2 min-w-0 overflow-hidden">
+                          <span className="flex items-center gap-1 whitespace-nowrap overflow-hidden text-ellipsis min-w-0 font-medium text-white">
+                            {renderEventoComSimbolos(r.evento)}
+                          </span>
 
-            <td className="p-2 whitespace-nowrap">
-              {modoEdicao === r.id
-                ? (
-                  <select value={r.estado} onChange={(e) => atualizarCampo(r.id, "estado", e.target.value)} className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300">
+                          {r.nota_evento && (
+                            <span
+                              className="text-yellow-300 shrink-0"
+                              title={r.nota_evento}
+                            >
+                              📝
+                            </span>
+                          )}
+
+                          {r.url_evento ? (
+                            <a
+                              href={normalizeUrl(r.url_evento)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              title="Abrir link do evento"
+                              className="inline-flex items-center opacity-80 transition hover:opacity-100 shrink-0"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <img
+                                src={viagogoLogo}
+                                alt="Viagogo"
+                                className="w-5 h-5 inline-block"
+                                loading="lazy"
+                              />
+                            </a>
+                          ) : null}
+                        </div>
+                      </div>
+                    );
+                  })()
+                )}
+              </td>
+
+              <td className="p-4 whitespace-nowrap overflow-hidden truncate text-white/88">
+                {modoEdicao === r.id ? (
+                  <input
+                    value={r.estadio}
+                    onChange={(e) => atualizarCampo(r.id, "estadio", e.target.value)}
+                    className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
+                  />
+                ) : (
+                  r.estadio
+                )}
+              </td>
+
+              <td className="p-4 whitespace-nowrap text-center font-medium text-red-300">
+                {r.gasto} €
+              </td>
+
+              <td className="p-4 whitespace-nowrap text-center font-medium text-emerald-300">
+                {r.ganho} €
+              </td>
+
+              <td className="p-4 whitespace-nowrap text-left font-semibold text-white">
+                {(r.ganho - r.gasto)} €
+              </td>
+
+              <td className="p-4 whitespace-nowrap">
+                {modoEdicao === r.id ? (
+                  <select
+                    value={r.estado}
+                    onChange={(e) => atualizarCampo(r.id, "estado", e.target.value)}
+                    className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
+                  >
                     <option value="Entregue">Entregue</option>
                     <option value="Por entregar">Por entregar</option>
                     <option value="Disputa">Disputa</option>
                     <option value="Pago">Pago</option>
                   </select>
-                ) : r.estado}
-            </td>
+                ) : (
+                  <span
+                    className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${
+                      r.estado === "Pago"
+                        ? "bg-emerald-500/15 text-emerald-300 ring-1 ring-emerald-400/20"
+                        : r.estado === "Entregue"
+                        ? "bg-amber-500/15 text-amber-300 ring-1 ring-amber-400/20"
+                        : r.estado === "Disputa"
+                        ? "bg-red-500/15 text-red-300 ring-1 ring-red-400/20"
+                        : "bg-white/8 text-white/80 ring-1 ring-white/10"
+                    }`}
+                  >
+                    {r.estado}
+                  </span>
+                )}
+              </td>
 
-            <td className="p-2 align-middle whitespace-nowrap">
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                   if (modoEdicao === r.id) {
-                      guardarEvento(r);
-                    } else {
-                      ativarEdicao(r.id, r);
-                    }
-                  }}
-                  className="flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded leading-none"
-                  title={modoEdicao === r.id ? "Guardar" : "Editar"}
-                >
-                  {modoEdicao === r.id ? "💾" : <FaEdit size={14} />}
-                </button>
+              <td className="p-4 align-middle whitespace-nowrap">
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (modoEdicao === r.id) {
+                        guardarEvento(r);
+                      } else {
+                        ativarEdicao(r.id, r);
+                      }
+                    }}
+                    className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-blue-500 text-white shadow-[0_8px_20px_rgba(59,130,246,0.28)] transition hover:scale-105 hover:bg-blue-400"
+                    title={modoEdicao === r.id ? "Guardar" : "Editar"}
+                  >
+                    {modoEdicao === r.id ? "💾" : <FaEdit size={14} />}
+                  </button>
 
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    confirmarEliminar(r.id);
-                  }}
-                  className="flex items-center justify-center bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded leading-none"
-                  title="Eliminar"
-                >
-                  <FaTrash size={14} />
-                </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      confirmarEliminar(r.id);
+                    }}
+                    className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-red-500 text-white shadow-[0_8px_20px_rgba(239,68,68,0.28)] transition hover:scale-105 hover:bg-red-400"
+                    title="Eliminar"
+                  >
+                    <FaTrash size={14} />
+                  </button>
 
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                
-                    const vendasDoEvento = vendas.filter(
-                      (v) => v.evento === r.evento && v.data_evento === r.data_evento
-                    );
-                
-                    const chaveRegra = getEquipaCasaCanonica(r.evento);
-                    const resumo = getResumoMatchingInteligente(r.evento, r.data_evento, chaveRegra);
-                    const resumoTitulo = getResumoTituloVendas(r.evento, r.data_evento, chaveRegra);
-                
-                    const titulo = `Vendas com Nota (bola vermelha) — ${r.evento} — ${new Date(
-                      r.data_evento
-                    ).toLocaleDateString("pt-PT")}`;
-                
-                    const cabecalhoResumo = `Vendas (${getTotalBilhetesVendas(r.evento, r.data_evento)})${
-                      resumoTitulo ? ` — ${resumoTitulo}` : ""
-                    }`;
-                
-                    imprimirVendasComNotaVermelha(vendasDoEvento, {
-                      tituloEvento: titulo,
-                      cabecalhoResumo,
-                      linhaPorComprar: resumo.porComprarTxt ? `Por comprar: ${resumo.porComprarTxt}` : "",
-                      linhaCoberturaIncerta: resumo.coberturaIncertaTxt
-                        ? `Cobertura incerta: ${resumo.coberturaIncertaTxt}`
-                        : "",
-                      linhaPorVender: resumo.porVenderTxt ? `Por vender: ${resumo.porVenderTxt}` : "",
-                    });
-                  }}
-                  title="Imprimir vendas com Nota (bola vermelha) deste evento"
-                  className="hidden md:flex items-center justify-center px-2 py-1 rounded bg-emerald-600 hover:bg-emerald-700 text-white leading-none"
-                >
-                  <FaPrint size={14} />
-                </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
 
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setMostrarNotaEventoId(r.id);
-                    setNotaEventoTmp(r.nota_evento || "");
-                    setUrlEventoTmp(r.url_evento || "");
-                  }}
-                  className={`flex items-center justify-center px-2 py-1 rounded leading-none
-                    ${r.nota_evento ? "bg-purple-600 text-white neon-glow" : "bg-gray-500 text-white hover:bg-gray-600"}`}
-                  title={r.nota_evento ? "Editar notas do evento" : "Adicionar nota ao evento"}
-                >
-                  📝
-                </button>
-              </div>
-            </td>
-          </tr>
+                      const vendasDoEvento = vendas.filter(
+                        (v) => v.evento === r.evento && v.data_evento === r.data_evento
+                      );
 
-          {linhaExpandida === r.id && (
-            <>
-              <tr className="bg-indigo-50 dark:bg-gray-800 text-sm border-t border-l-4 border-blue-600 transition-colors duration-300">
-                <td colSpan="8" className="p-2 font-semibold">
-                  {(() => {
-                    const chaveRegra = getEquipaCasaCanonica(r.evento);
-                    const resumo = getResumoMatchingInteligente(r.evento, r.data_evento, chaveRegra);
-                    const resumoTitulo = getResumoTituloVendas(r.evento, r.data_evento, chaveRegra);
+                      const chaveRegra = getEquipaCasaCanonica(r.evento);
+                      const resumo = getResumoMatchingInteligente(r.evento, r.data_evento, chaveRegra);
+                      const resumoTitulo = getResumoTituloVendas(r.evento, r.data_evento, chaveRegra);
 
-                    return (
-                      <div>
-                        <div>
-                          Vendas ({getTotalBilhetesVendas(r.evento, r.data_evento)})
-                          {resumoTitulo ? <> — {resumoTitulo}</> : null}
+                      const titulo = `Vendas com Nota (bola vermelha) — ${r.evento} — ${new Date(
+                        r.data_evento
+                      ).toLocaleDateString("pt-PT")}`;
+
+                      const cabecalhoResumo = `Vendas (${getTotalBilhetesVendas(r.evento, r.data_evento)})${
+                        resumoTitulo ? ` — ${resumoTitulo}` : ""
+                      }`;
+
+                      imprimirVendasComNotaVermelha(vendasDoEvento, {
+                        tituloEvento: titulo,
+                        cabecalhoResumo,
+                        linhaPorComprar: resumo.porComprarTxt ? `Por comprar: ${resumo.porComprarTxt}` : "",
+                        linhaCoberturaIncerta: resumo.coberturaIncertaTxt
+                          ? `Cobertura incerta: ${resumo.coberturaIncertaTxt}`
+                          : "",
+                        linhaPorVender: resumo.porVenderTxt ? `Por vender: ${resumo.porVenderTxt}` : "",
+                      });
+                    }}
+                    title="Imprimir vendas com Nota (bola vermelha) deste evento"
+                    className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500 text-white shadow-[0_8px_20px_rgba(16,185,129,0.28)] transition hover:scale-105 hover:bg-emerald-400"
+                  >
+                    <FaPrint size={14} />
+                  </button>
+
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setMostrarNotaEventoId(r.id);
+                      setNotaEventoTmp(r.nota_evento || "");
+                      setUrlEventoTmp(r.url_evento || "");
+                    }}
+                    className={`inline-flex h-9 w-9 items-center justify-center rounded-xl text-white transition hover:scale-105 ${
+                      r.nota_evento
+                        ? "bg-purple-500 shadow-[0_8px_20px_rgba(168,85,247,0.28)] hover:bg-purple-400"
+                        : "bg-white/10 hover:bg-white/15"
+                    }`}
+                    title={r.nota_evento ? "Editar notas do evento" : "Adicionar nota ao evento"}
+                  >
+                    📝
+                  </button>
+                </div>
+              </td>
+            </tr>
+
+            {linhaExpandida === r.id && (
+              <>
+                <tr className="bg-blue-500/6">
+                  <td colSpan="8" className="p-4 border-b border-white/6">
+                    {(() => {
+                      const chaveRegra = getEquipaCasaCanonica(r.evento);
+                      const resumo = getResumoMatchingInteligente(r.evento, r.data_evento, chaveRegra);
+                      const resumoTitulo = getResumoTituloVendas(r.evento, r.data_evento, chaveRegra);
+
+                      return (
+                        <div className="rounded-2xl border border-blue-400/10 bg-blue-500/8 px-4 py-3">
+                          <div className="font-semibold text-white">
+                            Vendas ({getTotalBilhetesVendas(r.evento, r.data_evento)})
+                            {resumoTitulo ? <> — {resumoTitulo}</> : null}
+                          </div>
+
+                          {resumo.porComprarTxt && (
+                            <div className="text-red-300 text-xs mt-1">
+                              🔴 Por comprar: {resumo.porComprarTxt}
+                            </div>
+                          )}
+
+                          {resumo.coberturaIncertaTxt && (
+                            <div className="text-yellow-300 text-xs mt-1">
+                              🟡 Cobertura incerta: {resumo.coberturaIncertaTxt}
+                            </div>
+                          )}
+
+                          {resumo.porVenderTxt && (
+                            <div className="text-emerald-300 text-xs mt-1">
+                              🟢 Por vender: {resumo.porVenderTxt}
+                            </div>
+                          )}
                         </div>
+                      );
+                    })()}
+                  </td>
+                </tr>
 
-                        {resumo.porComprarTxt && (
-                          <div className="text-red-600 dark:text-red-400 text-xs mt-1">
-                            🔴 Por comprar: {resumo.porComprarTxt}
-                          </div>
-                        )}
+                <tr className="bg-blue-500/10 text-[11px] uppercase tracking-[0.08em] text-white/65">
+                  <td className="p-3">ID Venda</td>
+                  <td className="p-3" colSpan="2">Bilhetes</td>
+                  <td className="p-3 text-right">Ganho</td>
+                  <td className="p-3">Estado</td>
+                  <td className="p-3">Nota</td>
+                  <td className="p-3">Ações</td>
+                  <td className="p-3"></td>
+                </tr>
 
-                        {resumo.coberturaIncertaTxt && (
-                          <div className="text-yellow-600 dark:text-yellow-300 text-xs mt-1">
-                            🟡 Cobertura incerta: {resumo.coberturaIncertaTxt}
-                          </div>
-                        )}
+                {(() => {
+                  let lastSetor = null;
+                  let toggle = false;
 
-                        {resumo.porVenderTxt && (
-                          <div className="text-green-600 dark:text-green-400 text-xs mt-1">
-                            🟢 Por vender: {resumo.porVenderTxt}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })()}
-                </td>
-              </tr>
+                  return getVendasOrdenadas(r.evento, r.data_evento).map((v) => {
+                    const setorAtual = setorExato(v.estadio);
 
-              <tr className="border-l-4 border-blue-600 bg-blue-100 dark:bg-blue-800 text-xs font-semibold">
-                <td className="p-2 whitespace-nowrap">ID Venda</td>
-                <td className="p-2" colSpan="2">Bilhetes</td>
-                <td className="p-2 whitespace-nowrap text-right">Ganho</td>
-                <td className="p-2 whitespace-nowrap">Estado</td>
-                <td className="p-2 whitespace-nowrap">Nota</td>
-                <td className="p-2 whitespace-nowrap">Ações</td>
-                <td className="p-2"></td>
-              </tr>
+                    if (setorAtual !== lastSetor) {
+                      toggle = !toggle;
+                      lastSetor = setorAtual;
+                    }
 
-              {(() => {
-                let lastSetor = null;
-                let toggle = false;
+                    const bgClass = toggle ? "bg-white/[0.02]" : "bg-blue-500/[0.05]";
 
-                return getVendasOrdenadas(r.evento, r.data_evento).map((v) => {
-                  const setorAtual = setorExato(v.estadio);
+                    if (modoEdicaoVenda === v.id) {
+                      return (
+                        <tr key={"v" + v.id} className={`border-b border-white/6 text-xs ${bgClass}`}>
+                          <td className="p-3">
+                            <input
+                              type="number"
+                              className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
+                              value={vendaEditada.id_venda}
+                              onChange={(e) =>
+                                setVendaEditada({ ...vendaEditada, id_venda: e.target.value })
+                              }
+                            />
+                          </td>
+                          <td className="p-3" colSpan="2">
+                            <input
+                              className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
+                              value={vendaEditada.estadio}
+                              onChange={(e) =>
+                                setVendaEditada({ ...vendaEditada, estadio: e.target.value })
+                              }
+                            />
+                          </td>
+                          <td className="p-3">
+                            <input
+                              type="number"
+                              className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
+                              value={vendaEditada.ganho}
+                              onChange={(e) =>
+                                setVendaEditada({ ...vendaEditada, ganho: e.target.value })
+                              }
+                            />
+                          </td>
+                          <td className="p-3">
+                            <select
+                              className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
+                              value={vendaEditada.estado}
+                              onChange={(e) =>
+                                setVendaEditada({ ...vendaEditada, estado: e.target.value })
+                              }
+                            >
+                              <option value="Entregue">Entregue</option>
+                              <option value="Por entregar">Por entregar</option>
+                              <option value="Disputa">Disputa</option>
+                              <option value="Pago">Pago</option>
+                            </select>
+                          </td>
+                          <td colSpan="3" className="p-3">
+                            <button className="mr-3 text-emerald-300" onClick={() => guardarVenda(vendaEditada)}>
+                              Guardar
+                            </button>
+                            <button className="text-white/60" onClick={() => setModoEdicaoVenda(null)}>
+                              Cancelar
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    }
 
-                  if (setorAtual !== lastSetor) {
-                    toggle = !toggle;
-                    lastSetor = setorAtual;
-                  }
-
-                  const bgClass = toggle
-                    ? "bg-blue-50 dark:bg-blue-900"
-                    : "bg-blue-100 dark:bg-blue-800";
-
-                  if (modoEdicaoVenda === v.id) {
                     return (
-                      <tr
-                        key={"v" + v.id}
-                        className={`border-l-4 border-blue-600 text-xs border-t ${bgClass}`}
-                      >
-                        <td className="p-2">
-                          <input
-                            type="number"
-                            className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
-                            value={vendaEditada.id_venda}
-                            onChange={(e) =>
-                              setVendaEditada({ ...vendaEditada, id_venda: e.target.value })
-                            }
-                          />
-                        </td>
-                        <td className="p-2" colSpan="2">
-                          <input
-                            className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
-                            value={vendaEditada.estadio}
-                            onChange={(e) =>
-                              setVendaEditada({ ...vendaEditada, estadio: e.target.value })
-                            }
-                          />
-                        </td>
-                        <td className="p-2">
-                          <input
-                            type="number"
-                            className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
-                            value={vendaEditada.ganho}
-                            onChange={(e) =>
-                              setVendaEditada({ ...vendaEditada, ganho: e.target.value })
-                            }
-                          />
-                        </td>
-                        <td className="p-2">
-                          <select
-                            className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
-                            value={vendaEditada.estado}
-                            onChange={(e) =>
-                              setVendaEditada({ ...vendaEditada, estado: e.target.value })
-                            }
-                          >
-                            <option value="Entregue">Entregue</option>
-                            <option value="Por entregar">Por entregar</option>
-                            <option value="Disputa">Disputa</option>
-                            <option value="Pago">Pago</option>
-                          </select>
-                        </td>
-                        <td colSpan="3" className="p-2">
-                          <button
-                            className="text-green-600 mr-2"
-                            onClick={() => guardarVenda(vendaEditada)}
-                          >
-                            Guardar
-                          </button>
-                          <button
-                            className="text-gray-500"
-                            onClick={() => setModoEdicaoVenda(null)}
-                          >
-                            Cancelar
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  } else {
-                    return (
-                      <tr
-                        key={"v" + v.id}
-                        className={`border-l-4 border-blue-600 text-xs border-t ${bgClass}`}
-                      >
-                        <td className="p-2 whitespace-nowrap">{v.id_venda}</td>
-                        <td className="p-2" colSpan="2">
-                          {v.estadio}
-                        </td>
-                        <td className="p-2 whitespace-nowrap text-right">{v.ganho} €</td>
-                        <td className="p-2 whitespace-nowrap">{v.estado}</td>
-                        <td className="p-2">
+                      <tr key={"v" + v.id} className={`border-b border-white/6 text-xs ${bgClass}`}>
+                        <td className="p-3 whitespace-nowrap text-white/90">{v.id_venda}</td>
+                        <td className="p-3 text-white/85" colSpan="2">{v.estadio}</td>
+                        <td className="p-3 whitespace-nowrap text-right font-medium text-emerald-300">{v.ganho} €</td>
+                        <td className="p-3 whitespace-nowrap text-white/80">{v.estado}</td>
+                        <td className="p-3">
                           <CirculoEstado
                             tipo="listagem_vendas"
                             id={v.id}
@@ -2556,12 +2575,9 @@ return (
                             setVendas={setVendas}
                           />
                         </td>
-                        <td className="p-2 whitespace-nowrap">
+                        <td className="p-3 whitespace-nowrap">
                           {vendasNaoAssociadasSet.has(v.id) && (
-                            <span
-                              className="text-yellow-500 mr-2"
-                              title="Venda não associada a evento"
-                            >
+                            <span className="text-yellow-400 mr-2" title="Venda não associada a evento">
                               ⚠️
                             </span>
                           )}
@@ -2570,175 +2586,170 @@ return (
                               setModoEdicaoVenda(v.id);
                               setVendaEditada(v);
                             }}
-                            className="text-blue-600 hover:underline"
+                            className="text-blue-300 hover:text-blue-200"
                           >
                             Editar
                           </button>
                         </td>
-                        <td className="p-2"></td>
+                        <td className="p-3"></td>
                       </tr>
                     );
-                  }
-                });
-              })()}
+                  });
+                })()}
 
-              <tr className="bg-yellow-50 dark:bg-yellow-900 text-sm border-t border-l-4 border-yellow-600">
-                <td colSpan="8" className="p-2 font-semibold">
-                  {(() => {
-                    const chaveRegra = getEquipaCasaCanonica(r.evento);
-                    const totalCompras = compras
-                      .filter(c => c.evento === r.evento && c.data_evento === r.data_evento)
-                      .reduce((acc, c) => acc + Number(c.quantidade || 0), 0);
+                <tr className="bg-amber-500/8">
+                  <td colSpan="8" className="p-4 border-b border-white/6">
+                    {(() => {
+                      const chaveRegra = getEquipaCasaCanonica(r.evento);
+                      const totalCompras = compras
+                        .filter(c => c.evento === r.evento && c.data_evento === r.data_evento)
+                        .reduce((acc, c) => acc + Number(c.quantidade || 0), 0);
 
-                    const resumoCompras = getResumoTituloCompras(
-                      r.evento,
-                      r.data_evento,
-                      chaveRegra
-                    );
+                      const resumoCompras = getResumoTituloCompras(
+                        r.evento,
+                        r.data_evento,
+                        chaveRegra
+                      );
+
+                      return (
+                        <div className="rounded-2xl border border-amber-400/10 bg-amber-500/8 px-4 py-3 font-semibold text-white">
+                          Compras ({totalCompras})
+                          {resumoCompras ? <> — {resumoCompras}</> : null}
+                        </div>
+                      );
+                    })()}
+                  </td>
+                </tr>
+
+                <tr className="bg-amber-500/10 text-[11px] uppercase tracking-[0.08em] text-white/65">
+                  <td className="p-3">Local</td>
+                  <td className="p-3">Bancada</td>
+                  <td className="p-3">Setor</td>
+                  <td className="p-3">Fila</td>
+                  <td className="p-3">Qt</td>
+                  <td className="p-3 text-right">Gasto</td>
+                  <td className="p-3">Nota</td>
+                  <td className="p-3">Ações</td>
+                </tr>
+
+                {(() => {
+                  let lastSetor = null;
+                  let toggle = false;
+                  const chaveRegra = getEquipaCasaCanonica(r.evento);
+
+                  return getComprasOrdenadas(r.evento, r.data_evento).map((c) => {
+                    const setorAtual = compraChaveOperacionalExata(c, chaveRegra);
+
+                    if (setorAtual !== lastSetor) {
+                      toggle = !toggle;
+                      lastSetor = setorAtual;
+                    }
+
+                    const bgClass = toggle ? "bg-white/[0.02]" : "bg-amber-500/[0.05]";
 
                     return (
-                      <div>
-                        Compras ({totalCompras})
-                        {resumoCompras ? <> — {resumoCompras}</> : null}
-                      </div>
+                      <tr key={"c" + c.id} className={`border-b border-white/6 text-xs ${bgClass}`}>
+                        {modoEdicaoCompra === c.id ? (
+                          <>
+                            <td className="p-3">
+                              <input
+                                className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
+                                value={compraEditada.local_compras}
+                                onChange={e => setCompraEditada({ ...compraEditada, local_compras: e.target.value })}
+                              />
+                            </td>
+                            <td className="p-3">
+                              <input
+                                className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
+                                value={compraEditada.bancada}
+                                onChange={e => setCompraEditada({ ...compraEditada, bancada: e.target.value })}
+                              />
+                            </td>
+                            <td className="p-3">
+                              <input
+                                className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
+                                value={compraEditada.setor}
+                                onChange={e => setCompraEditada({ ...compraEditada, setor: e.target.value })}
+                              />
+                            </td>
+                            <td className="p-3">
+                              <input
+                                className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
+                                value={compraEditada.fila}
+                                onChange={e => setCompraEditada({ ...compraEditada, fila: e.target.value })}
+                              />
+                            </td>
+                            <td className="p-3">
+                              <input
+                                type="number"
+                                className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
+                                value={compraEditada.quantidade}
+                                onChange={e => setCompraEditada({ ...compraEditada, quantidade: e.target.value })}
+                              />
+                            </td>
+                            <td className="p-3">
+                              <input
+                                type="number"
+                                className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
+                                value={compraEditada.gasto}
+                                onChange={e => setCompraEditada({ ...compraEditada, gasto: e.target.value })}
+                              />
+                            </td>
+                            <td className="p-3" colSpan="2">
+                              <button className="mr-3 text-emerald-300" onClick={() => guardarCompra(compraEditada)}>
+                                Guardar
+                              </button>
+                              <button className="text-white/60" onClick={() => setModoEdicaoCompra(null)}>
+                                Cancelar
+                              </button>
+                            </td>
+                          </>
+                        ) : (
+                          <>
+                            <td className="p-3 text-white/85">{c.local_compras}</td>
+                            <td className="p-3 text-white/85">{c.bancada}</td>
+                            <td className="p-3 text-white/85">{c.setor}</td>
+                            <td className="p-3 max-w-[150px] overflow-hidden text-ellipsis whitespace-nowrap text-white/75" title={c.fila}>
+                              {c.fila}
+                            </td>
+                            <td className="p-3 whitespace-nowrap text-white/90">{c.quantidade}</td>
+                            <td className="p-3 whitespace-nowrap text-right font-medium text-red-300">{c.gasto} €</td>
+                            <td className="p-3">
+                              <CirculoEstado
+                                tipo="compras"
+                                id={c.id}
+                                texto_estado={c.circulo_estado_compra}
+                                nota_estado={c.nota_estado_compra}
+                                setCompras={setCompras}
+                              />
+                            </td>
+                            <td className="p-3 whitespace-nowrap">
+                              {comprasNaoAssociadasSet.has(c.id) && (
+                                <span className="text-yellow-400 mr-2" title="Compra não associada a evento">⚠️</span>
+                              )}
+                              <button
+                                onClick={() => {
+                                  setModoEdicaoCompra(c.id);
+                                  setCompraEditada(c);
+                                }}
+                                className="text-blue-300 hover:text-blue-200"
+                              >
+                                Editar
+                              </button>
+                            </td>
+                          </>
+                        )}
+                      </tr>
                     );
-                  })()}
-                </td>
-              </tr>
-
-              <tr className="border-l-4 border-yellow-600 bg-yellow-100 dark:bg-yellow-800 text-xs font-semibold">
-                <td className="p-2 whitespace-nowrap">Local</td>
-                <td className="p-2 whitespace-nowrap">Bancada</td>
-                <td className="p-2 whitespace-nowrap">Setor</td>
-                <td className="p-2 whitespace-nowrap">Fila</td>
-                <td className="p-2 whitespace-nowrap">Qt</td>
-                <td className="p-2 whitespace-nowrap text-right">Gasto</td>
-                <td className="p-2 whitespace-nowrap">Nota</td>
-                <td className="p-2 whitespace-nowrap">Ações</td>
-              </tr>
-
-              {(() => {
-                let lastSetor = null;
-                let toggle = false;
-                const chaveRegra = getEquipaCasaCanonica(r.evento);
-
-                return getComprasOrdenadas(r.evento, r.data_evento).map((c) => {
-                  const setorAtual = compraChaveOperacionalExata(c, chaveRegra);
-
-                  if (setorAtual !== lastSetor) {
-                    toggle = !toggle;
-                    lastSetor = setorAtual;
-                  }
-
-                  const bgClass = toggle
-                    ? "bg-yellow-50 dark:bg-yellow-900"
-                    : "bg-yellow-100 dark:bg-yellow-800";
-
-                  return (
-                    <tr
-                      key={"c" + c.id}
-                      className={`border-l-4 border-yellow-600 text-xs border-t ${bgClass}`}
-                    >
-                      {modoEdicaoCompra === c.id ? (
-                        <>
-                          <td className="p-2">
-                            <input
-                              className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
-                              value={compraEditada.local_compras}
-                              onChange={e => setCompraEditada({ ...compraEditada, local_compras: e.target.value })}
-                            />
-                          </td>
-                          <td className="p-2">
-                            <input
-                              className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
-                              value={compraEditada.bancada}
-                              onChange={e => setCompraEditada({ ...compraEditada, bancada: e.target.value })}
-                            />
-                          </td>
-                          <td className="p-2">
-                            <input
-                              className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
-                              value={compraEditada.setor}
-                              onChange={e => setCompraEditada({ ...compraEditada, setor: e.target.value })}
-                            />
-                          </td>
-                          <td className="p-2">
-                            <input
-                              className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
-                              value={compraEditada.fila}
-                              onChange={e => setCompraEditada({ ...compraEditada, fila: e.target.value })}
-                            />
-                          </td>
-                          <td className="p-2">
-                            <input
-                              type="number"
-                              className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
-                              value={compraEditada.quantidade}
-                              onChange={e => setCompraEditada({ ...compraEditada, quantidade: e.target.value })}
-                            />
-                          </td>
-                          <td className="p-2">
-                            <input
-                              type="number"
-                              className="border p-2 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
-                              value={compraEditada.gasto}
-                              onChange={e => setCompraEditada({ ...compraEditada, gasto: e.target.value })}
-                            />
-                          </td>
-                          <td className="p-2" colSpan="2">
-                            <button className="text-green-600 mr-2" onClick={() => guardarCompra(compraEditada)}>
-                              Guardar
-                            </button>
-                            <button className="text-gray-500" onClick={() => setModoEdicaoCompra(null)}>
-                              Cancelar
-                            </button>
-                          </td>
-                        </>
-                      ) : (
-                        <>
-                          <td className="p-2">{c.local_compras}</td>
-                          <td className="p-2">{c.bancada}</td>
-                          <td className="p-2">{c.setor}</td>
-                          <td className="p-2 whitespace-nowrap overflow-hidden text-ellipsis max-w-[150px]" title={c.fila}>
-                            {c.fila}
-                          </td>
-                          <td className="p-2 whitespace-nowrap">{c.quantidade}</td>
-                          <td className="p-2 whitespace-nowrap text-right">{c.gasto} €</td>
-                          <td className="p-2">
-                            <CirculoEstado
-                              tipo="compras"
-                              id={c.id}
-                              texto_estado={c.circulo_estado_compra}
-                              nota_estado={c.nota_estado_compra}
-                              setCompras={setCompras}
-                            />
-                          </td>
-                          <td className="p-2 whitespace-nowrap">
-                            {comprasNaoAssociadasSet.has(c.id) && (
-                              <span className="text-yellow-500 mr-2" title="Compra não associada a evento">⚠️</span>
-                            )}
-                            <button
-                              onClick={() => {
-                                setModoEdicaoCompra(c.id);
-                                setCompraEditada(c);
-                              }}
-                              className="text-blue-600 hover:underline"
-                            >
-                              Editar
-                            </button>
-                          </td>
-                        </>
-                      )}
-                    </tr>
-                  );
-                });
-              })()}
-            </>
-          )}
-        </Fragment>
-      ))}
-  </tbody>
-</table>       
+                  });
+                })()}
+              </>
+            )}
+          </Fragment>
+        ))}
+    </tbody>
+  </table>
+</div>
           <div className="space-y-5 md:hidden mt-6 px-0 w-full max-w-full">
             {registos
               .filter(r => {
