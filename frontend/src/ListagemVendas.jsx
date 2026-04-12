@@ -2,16 +2,21 @@
 
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { FaFileExcel } from "react-icons/fa"
-import * as XLSX from "xlsx";
-import { saveAs } from "file-saver";
 import {
+  FaFileExcel,
   FaEdit,
   FaTrash,
   FaCalendarCheck,
   FaCoins,
   FaChartBar,
+  FaSearch,
+  FaFilter,
+  FaPlus,
+  FaSyncAlt,
+  FaHashtag,
 } from "react-icons/fa";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 import { useMemo } from "react";
 
 
@@ -620,87 +625,96 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
 
 
 
-  {/* Toolbar: tudo numa linha (scroll quando apertado) */}
-<div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-md rounded-xl p-2 md:p-3 mb-4 overflow-x-auto">
-  <div className="inline-flex items-center gap-2 md:gap-3 whitespace-nowrap w-full">
-
+ <div className="mb-5 overflow-x-auto rounded-[22px] border border-white/12 bg-[#111a2e]/90 shadow-[0_12px_34px_rgba(0,0,0,0.26)] backdrop-blur-sm">
+  <div className="flex min-w-max items-center gap-3 px-3 py-3 md:px-4">
     {/* Procurar Equipa */}
     <div className="relative">
+      <FaSearch className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[15px] text-white/45" />
       <input
         type="text"
-        placeholder="🔍 Procurar Equipa"
+        placeholder="Procurar Equipa"
         value={filtroEquipa}
         onChange={(e) => setFiltroEquipa(e.target.value)}
-        className="h-10 w-[16rem] max-w-full pr-10 border border-gray-300 dark:border-gray-600 rounded px-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+        className="h-11 w-[250px] rounded-xl border border-white/14 bg-white/[0.04] pl-11 pr-10 text-[15px] text-white placeholder:text-white/42 outline-none transition focus:border-blue-400/70 focus:bg-white/[0.06]"
       />
       {filtroEquipa && (
         <button
           onClick={() => setFiltroEquipa("")}
-          className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-red-500 text-sm"
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-white/45 transition hover:text-red-400"
           title="Limpar"
         >
-          ❌
+          ✕
         </button>
       )}
     </div>
 
     {/* Procurar ID Venda */}
     <div className="relative">
+      <FaHashtag className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[14px] text-blue-300/80" />
       <input
         type="text"
         inputMode="numeric"
-        placeholder="🔢 ID venda"
+        placeholder="ID venda"
         value={filtroIdVenda}
         onChange={(e) => setFiltroIdVenda(e.target.value)}
-        className="h-10 w-[11rem] max-w-full pr-10 border border-gray-300 dark:border-gray-600 rounded px-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+        className="h-11 w-[175px] rounded-xl border border-white/14 bg-white/[0.04] pl-11 pr-10 text-[15px] text-white placeholder:text-white/42 outline-none transition focus:border-blue-400/70 focus:bg-white/[0.06]"
       />
       {filtroIdVenda && (
         <button
           onClick={() => setFiltroIdVenda("")}
-          className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-red-500 text-sm"
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-white/45 transition hover:text-red-400"
           title="Limpar"
         >
-          ❌
+          ✕
         </button>
       )}
     </div>
 
-    {/* ⚠️ Filtrar só avisos */}
+    {/* Filtro aviso */}
     <button
       onClick={() => setFiltroExclamacao((v) => !v)}
-      className={`h-10 px-3 rounded font-semibold border transition
-        ${filtroExclamacao
-          ? "bg-yellow-500 text-black border-yellow-600"
-          : "bg-white dark:bg-gray-800 text-yellow-600 border-yellow-600 hover:bg-yellow-100 dark:hover:bg-gray-700"}`}
-      title="Mostrar apenas linhas com ⚠️"
+      title="Mostrar apenas linhas com aviso"
+      className={`inline-flex h-11 items-center gap-2 rounded-xl border px-4 font-semibold transition
+        ${
+          filtroExclamacao
+            ? "border-yellow-400/70 bg-yellow-400 text-[#1b1607] shadow-[0_0_20px_rgba(250,204,21,0.16)]"
+            : "border-yellow-500/60 bg-yellow-500/10 text-yellow-300 hover:bg-yellow-500/16"
+        }`}
     >
-      ⚠️ {filtroExclamacao ? "Só com aviso" : "Filtrar"}
+      <FaFilter className="text-[14px]" />
+      <span>{filtroExclamacao ? "Só com aviso" : "Filtrar"}</span>
     </button>
 
-    {/* empurra os botões para a direita */}
-    <div className="grow" />
+    {/* espaçador */}
+    <div className="w-2 md:w-4" />
+    <div className="h-8 w-px bg-white/10" />
+    <div className="flex-1" />
 
-    {/* Ações */}
+    {/* Botão adicionar */}
     <button
       onClick={() => setMostrarFormulario((v) => !v)}
-      className="h-10 px-4 rounded bg-blue-600 text-white hover:bg-blue-700 transition"
+      className="inline-flex h-11 items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-blue-500 px-5 font-semibold text-white shadow-[0_10px_24px_rgba(37,99,235,0.28)] transition hover:brightness-110"
     >
-      {mostrarFormulario ? "✖ Fechar formulário" : "➕ Adicionar registo"}
+      <FaPlus className="text-[14px]" />
+      <span>{mostrarFormulario ? "Fechar formulário" : "Adicionar registo"}</span>
     </button>
 
+    {/* Botão verificar emails */}
     <button
       onClick={forcarAtualizacaoEmail}
-      className="h-10 px-4 rounded bg-green-600 text-white hover:bg-green-700 transition"
+      className="inline-flex h-11 items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-green-500 px-5 font-semibold text-white shadow-[0_10px_24px_rgba(16,185,129,0.24)] transition hover:brightness-110"
     >
-      🔄 Verificar E-mails
+      <FaSyncAlt className="text-[14px]" />
+      <span>Verificar E-mails</span>
     </button>
 
+    {/* Botão excel */}
     <button
       onClick={() => exportarParaExcel(registos)}
-      className="h-10 px-4 rounded bg-green-600 text-white hover:bg-green-700 transition inline-flex items-center gap-2"
+      className="inline-flex h-11 items-center gap-2 rounded-xl bg-gradient-to-r from-green-600 to-emerald-500 px-5 font-semibold text-white shadow-[0_10px_24px_rgba(34,197,94,0.24)] transition hover:brightness-110"
     >
-      <FaFileExcel size={18} />
-      Exportar Excel
+      <FaFileExcel className="text-[16px]" />
+      <span>Exportar Excel</span>
     </button>
   </div>
 </div>
@@ -711,32 +725,59 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
 
       
   
-      <div className="hidden xl:block overflow-x-auto w-full">
-        <table className="min-w-full border border-gray-300 dark:border-gray-600 text-sm text-left text-gray-900 dark:text-gray-100 transition-colors duration-300">
-         <thead className="bg-gray-100 dark:bg-gray-800 transition-colors duration-300">
-          <tr>
-
-    <th className="p-2 cursor-pointer" onClick={() => handleOrdenarPor("id_venda")}>
+      <div className="hidden xl:block overflow-x-auto w-full rounded-[22px] border border-white/10 bg-[#0f1729]/70 shadow-[0_14px_36px_rgba(0,0,0,0.24)]">
+  <table className="min-w-full text-sm text-left text-white transition-colors duration-300">
+         <thead className="bg-white/[0.04] backdrop-blur-sm transition-colors duration-300">
+  <tr className="border-b border-white/10">
+    <th
+      className="px-4 py-4 cursor-pointer text-[15px] font-bold text-white/70 hover:text-white transition"
+      onClick={() => handleOrdenarPor("id_venda")}
+    >
       ID Venda {colunaOrdenacao === "id_venda" && (ordemAscendente ? "▲" : "▼")}
     </th>
-    <th className="p-2 cursor-pointer" onClick={() => handleOrdenarPor("data_venda")}>
-  Data Venda {colunaOrdenacao === "data_venda" && (ordemAscendente ? "▲" : "▼")}
-</th>
 
-    <th className="p-2 cursor-pointer" onClick={() => handleOrdenarPor("data_evento")}>
+    <th
+      className="px-4 py-4 cursor-pointer text-[15px] font-bold text-white/70 hover:text-white transition"
+      onClick={() => handleOrdenarPor("data_venda")}
+    >
+      Data Venda {colunaOrdenacao === "data_venda" && (ordemAscendente ? "▲" : "▼")}
+    </th>
+
+    <th
+      className="px-4 py-4 cursor-pointer text-[15px] font-bold text-white/70 hover:text-white transition"
+      onClick={() => handleOrdenarPor("data_evento")}
+    >
       Data Evento {colunaOrdenacao === "data_evento" && (ordemAscendente ? "▲" : "▼")}
     </th>
-    <th className="p-2 cursor-pointer" onClick={() => handleOrdenarPor("evento")}>
+
+    <th
+      className="px-4 py-4 cursor-pointer text-[15px] font-bold text-white/70 hover:text-white transition"
+      onClick={() => handleOrdenarPor("evento")}
+    >
       Evento {colunaOrdenacao === "evento" && (ordemAscendente ? "▲" : "▼")}
     </th>
-    <th className="p-2">Bilhete</th>
-    <th className="p-2 cursor-pointer" onClick={() => handleOrdenarPor("ganho")}>
+
+    <th className="px-4 py-4 text-[15px] font-bold text-white/70">
+      Bilhete
+    </th>
+
+    <th
+      className="px-4 py-4 cursor-pointer text-[15px] font-bold text-white/70 hover:text-white transition"
+      onClick={() => handleOrdenarPor("ganho")}
+    >
       Ganho (€) {colunaOrdenacao === "ganho" && (ordemAscendente ? "▲" : "▼")}
     </th>
-    <th className="p-2 cursor-pointer" onClick={() => handleOrdenarPor("estado")}>
+
+    <th
+      className="px-4 py-4 cursor-pointer text-[15px] font-bold text-white/70 hover:text-white transition"
+      onClick={() => handleOrdenarPor("estado")}
+    >
       Estado {colunaOrdenacao === "estado" && (ordemAscendente ? "▲" : "▼")}
     </th>
-    <th className="p-2">Ações</th>
+
+    <th className="px-4 py-4 text-[15px] font-bold text-white/70">
+      Ações
+    </th>
   </tr>
 </thead>
           <tbody>
