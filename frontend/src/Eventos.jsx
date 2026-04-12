@@ -2707,11 +2707,11 @@ return (
                     <div className="px-4 pb-2">
                       <table className="w-full table-fixed text-xs text-white">
                         <colgroup>
-                          <col className="w-[170px]" />
-                          <col className="w-[150px]" />
-                          <col className="w-[110px]" />
-                          <col className="w-[70px]" />
+                          <col className="w-[100px]" />
+                          <col className="w-[100px]" />
+                          <col className="w-[85px]" />
                           <col className="w-[55px]" />
+                          <col className="w-[80px]" />
                           <col className="w-[85px]" />
                           <col className="w-[170px]" />
                           <col className="w-[80px]" />
@@ -2719,11 +2719,11 @@ return (
                 
                         <thead>
                           <tr className="bg-amber-500/10 text-[11px] uppercase tracking-[0.08em] text-white/65">
-                            <th className="py-3 pl-3 pr-2 text-left">Local</th>
-                            <th className="py-3 px-2 text-left">Bancada</th>
-                            <th className="py-3 px-2 text-left">Setor</th>
-                            <th className="py-3 px-2 text-left">Fila</th>
-                            <th className="py-3 px-2 text-left">Qt</th>
+                            <th className="py-3 pl-3 pr-1 text-left">Local</th>
+                            <th className="py-3 px-1 text-left">Bancada</th>
+                            <th className="py-3 px-1 text-left">Setor</th>
+                            <th className="py-3 px-1 text-left">Fila</th>
+                            <th className="py-3 px-1 text-left">Qt</th>
                             <th className="py-3 px-2 text-right">Gasto</th>
                             <th className="py-3 px-2 text-left">Nota</th>
                             <th className="py-3 pl-2 pr-3 text-left">Ações</th>
@@ -2753,35 +2753,35 @@ return (
                                 >
                                   {modoEdicaoCompra === c.id ? (
                                     <>
-                                      <td className="py-3 pl-3 pr-2">
+                                      <td className="py-3 pl-3 pr-1">
                                         <input
                                           className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
                                           value={compraEditada.local_compras}
                                           onChange={e => setCompraEditada({ ...compraEditada, local_compras: e.target.value })}
                                         />
                                       </td>
-                                      <td className="py-3 px-2">
+                                      <td className="py-3 px-1">
                                         <input
                                           className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
                                           value={compraEditada.bancada}
                                           onChange={e => setCompraEditada({ ...compraEditada, bancada: e.target.value })}
                                         />
                                       </td>
-                                      <td className="py-3 px-2">
+                                      <td className="py-3 px-1">
                                         <input
                                           className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
                                           value={compraEditada.setor}
                                           onChange={e => setCompraEditada({ ...compraEditada, setor: e.target.value })}
                                         />
                                       </td>
-                                      <td className="py-3 px-2">
+                                      <td className="py-3 px-1">
                                         <input
                                           className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
                                           value={compraEditada.fila}
                                           onChange={e => setCompraEditada({ ...compraEditada, fila: e.target.value })}
                                         />
                                       </td>
-                                      <td className="py-3 px-2">
+                                      <td className="py-3 px-1">
                                         <input
                                           type="number"
                                           className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
@@ -2789,7 +2789,7 @@ return (
                                           onChange={e => setCompraEditada({ ...compraEditada, quantidade: e.target.value })}
                                         />
                                       </td>
-                                      <td className="py-3 px-2">
+                                      <td className="py-3 px-1">
                                         <input
                                           type="number"
                                           className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-right text-white"
@@ -2797,7 +2797,7 @@ return (
                                           onChange={e => setCompraEditada({ ...compraEditada, gasto: e.target.value })}
                                         />
                                       </td>
-                                      <td className="py-3 px-2"></td>
+                                      <td className="py-3 px-2">
                                       <td className="py-3 pl-2 pr-3 whitespace-nowrap">
                                         <button className="mr-3 text-emerald-300" onClick={() => guardarCompra(compraEditada)}>
                                           Guardar
@@ -2809,16 +2809,16 @@ return (
                                     </>
                                   ) : (
                                     <>
-                                      <td className="py-3 pl-3 pr-2 text-white/85">{c.local_compras}</td>
-                                      <td className="py-3 px-2 text-white/85">{c.bancada}</td>
-                                      <td className="py-3 px-2 text-white/85">{c.setor}</td>
+                                      <td className="py-3 pl-3 pr-1 text-white/85">{c.local_compras}</td>
+                                      <td className="py-3 px-1 text-white/85">{c.bancada}</td>
+                                      <td className="py-3 px-1 text-white/85">{c.setor}</td>
                                       <td
-                                        className="py-3 px-2 max-w-[110px] overflow-hidden text-ellipsis whitespace-nowrap text-white/75"
+                                        className="py-3 px-1 max-w-[90px] overflow-hidden text-ellipsis whitespace-nowrap text-white/75"
                                         title={c.fila}
                                       >
                                         {c.fila}
                                       </td>
-                                      <td className="py-3 px-2 whitespace-nowrap text-white/90">{c.quantidade}</td>
+                                      <td className="py-3 px-1 whitespace-nowrap text-white/90">{c.quantidade}</td>
                                       <td className="py-3 px-2 whitespace-nowrap text-right font-medium text-red-300">{c.gasto} €</td>
                                       <td className="py-3 px-2">
                                         <CirculoEstado
