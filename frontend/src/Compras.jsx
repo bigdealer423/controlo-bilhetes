@@ -67,7 +67,7 @@ const TABLE_HEAD =
 const TABLE_CELL = "px-2.5 lg:px-3 py-2 align-middle";
 
 const DATE_INPUT =
-  "w-full min-w-0 max-w-full [-webkit-min-logical-width:0] rounded-xl border border-white/10 bg-[#1a2742] px-3 py-2 text-sm text-white outline-none transition focus:border-blue-400/60 focus:ring-1 focus:ring-blue-400/30 [color-scheme:dark]";
+  "w-full min-w-0 max-w-full [-webkit-min-logical-width:0] rounded-xl border border-white/10 bg-[#1a2742] px-2.5 py-2 text-[13px] text-white outline-none transition focus:border-blue-400/60 focus:ring-1 focus:ring-blue-400/30 [color-scheme:dark]";
 
 const getCompraWarning = (c, eventosChaveSet) =>
   eventosChaveSet.size > 0 &&
