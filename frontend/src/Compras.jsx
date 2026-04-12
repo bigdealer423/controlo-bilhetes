@@ -51,24 +51,23 @@ const CARD_SHELL =
   "rounded-[24px] border border-white/10 bg-white/[0.04] backdrop-blur-xl shadow-[0_10px_40px_rgba(0,0,0,0.35)]";
 
 const INPUT_BASE =
-  "w-full rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-white placeholder:text-white/35 outline-none transition " +
-  "focus:border-blue-400/60 focus:ring-2 focus:ring-blue-500/20";
+  "w-full rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2.5 text-sm text-white placeholder:text-white/35 outline-none transition focus:border-blue-400/60";
 
 const LABEL_BASE = "mb-2 text-[13px] font-semibold tracking-wide text-white/80";
 
 const BTN_PRIMARY =
-  "inline-flex items-center justify-center rounded-xl bg-blue-600 px-5 py-3 font-semibold text-white shadow-lg shadow-blue-900/30 transition hover:bg-blue-500";
+  "inline-flex items-center justify-center rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-blue-900/30 transition hover:bg-blue-500";
 
 const BTN_SECONDARY =
-  "inline-flex items-center justify-center rounded-xl bg-white/10 px-5 py-3 font-semibold text-white/90 transition hover:bg-white/15";
+  "inline-flex items-center justify-center rounded-xl bg-white/10 px-4 py-2 text-sm font-semibold text-white/90 transition hover:bg-white/15";
 
 const BTN_SUCCESS =
-  "inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-5 py-3 font-semibold text-white shadow-lg shadow-emerald-900/30 transition hover:bg-emerald-500";
+  "inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-emerald-900/30 transition hover:bg-emerald-500";
 
 const TABLE_HEAD =
   "bg-white/[0.08] text-white/85 text-[13px] uppercase tracking-[0.08em]";
 
-const TABLE_CELL = "px-4 py-4 align-middle";
+const TABLE_CELL = "px-3 py-2.5 align-middle";
 
 const getCompraWarning = (c, eventosChaveSet) =>
   eventosChaveSet.size > 0 &&
@@ -322,9 +321,9 @@ return (
               onChange={handleFiltroChange}
               className={`${INPUT_BASE} min-w-[260px]`}
             >
-              <option value="">-- Filtrar por Evento --</option>
+              <option value=""className="text-black">-- Filtrar por Evento --</option>
               {eventosDropdown.map((e) => (
-                <option key={e.id} value={e.evento}>
+                <option key={e.id} value={e.evento} className="text-black">
                   {e.evento}
                 </option>
               ))}
@@ -364,9 +363,9 @@ return (
               onChange={handleChange}
               className={INPUT_BASE}
             >
-              <option value="">-- Evento --</option>
+              <option value=""className="text-black">-- Evento --</option>
               {eventosDropdown.map((e) => (
-                <option key={e.id} value={e.evento}>
+                <option key={e.id} value={e.evento} className="text-black">
                   {e.evento}
                 </option>
               ))}
@@ -416,7 +415,7 @@ return (
               onChange={handleChange}
               className={INPUT_BASE}
             >
-              <option value="">-- Local da Compra --</option>
+              <option value=""className="text-black">-- Local da Compra --</option>
               {locaisCompra.map((local) => (
                 <option key={local} value={local}>
                   {local}
@@ -560,9 +559,9 @@ return (
                               }));
                             }}
                           >
-                            <option value="">-- Evento --</option>
+                            <option value=""className="text-black">-- Evento --</option>
                             {eventosDropdown.map((e) => (
-                              <option key={e.id} value={e.evento}>
+                              <option key={e.id} value={e.evento} className="text-black">
                                 {e.evento}
                               </option>
                             ))}
@@ -731,9 +730,9 @@ return (
               setComprasFiltradas(resultado);
             }}
           >
-            <option value="">-- Selecionar Evento --</option>
+            <option value=""className="text-black">-- Selecionar Evento --</option>
             {eventosDropdown.map((e) => (
-              <option key={e.id} value={e.evento}>
+              <option key={e.id} value={e.evento} className="text-black">
                 {e.evento}
               </option>
             ))}
@@ -767,9 +766,9 @@ return (
               value={novaCompra.evento}
               onChange={handleChange}
             >
-              <option value="">-- Selecionar Evento --</option>
+              <option value=""className="text-black">-- Selecionar Evento --</option>
               {eventosDropdown.map((e) => (
-                <option key={e.id} value={e.evento}>
+                <option key={e.id} value={e.evento} className="text-black">
                   {e.evento}
                 </option>
               ))}
@@ -790,7 +789,7 @@ return (
               value={novaCompra.local_compras}
               onChange={handleChange}
             >
-              <option value="">-- Local da Compra --</option>
+              <option value=""className="text-black">-- Local da Compra --</option>
               {locaisCompra.map((local) => (
                 <option key={local} value={local}>
                   {local}
@@ -918,11 +917,11 @@ return (
                       }}
                       className={`${INPUT_BASE} mb-2`}
                     >
-                      <option value="">-- Selecionar Evento --</option>
+                      <option value=""className="text-black">-- Selecionar Evento --</option>
                       {eventosDropdown
                         .sort((a, b) => a.evento.localeCompare(b.evento))
                         .map((e) => (
-                          <option key={e.id} value={e.evento}>
+                          <option key={e.id} value={e.evento} className="text-black">
                             {e.evento}
                           </option>
                         ))}
