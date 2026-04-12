@@ -2703,7 +2703,7 @@ return (
                           <col className="w-[170px]" />
                           <col className="w-[84px]" />
                         </colgroup>
-                      
+                
                         <thead>
                           <tr className="bg-amber-500/10 text-[11px] uppercase tracking-[0.08em] text-white/65">
                             <th className="py-2 pl-2 pr-[2px] text-left">Local</th>
@@ -2716,23 +2716,23 @@ return (
                             <th className="py-2 pl-[10px] pr-2 text-left">Ações</th>
                           </tr>
                         </thead>
-                      
+                
                         <tbody>
                           {(() => {
                             let lastSetor = null;
                             let toggle = false;
                             const chaveRegra = getEquipaCasaCanonica(r.evento);
-                      
+                
                             return getComprasOrdenadas(r.evento, r.data_evento).map((c) => {
                               const setorAtual = compraChaveOperacionalExata(c, chaveRegra);
-                      
+                
                               if (setorAtual !== lastSetor) {
                                 toggle = !toggle;
                                 lastSetor = setorAtual;
                               }
-                      
+                
                               const bgClass = getExpandedCompraRowClass(toggle);
-                      
+                
                               return (
                                 <tr
                                   key={"c" + c.id}
@@ -2740,9 +2740,9 @@ return (
                                 >
                                   {modoEdicaoCompra === c.id ? (
                                     <>
-                                      <td className="py-2 pl-2 pr-[2px] align-middle">
+                                      <td className="py-[6px] pl-2 pr-[2px] align-middle">
                                         <input
-                                          className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-2 py-1.5 text-white"
+                                          className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-2 py-1 text-white"
                                           value={compraEditada.local_compras}
                                           onChange={(e) =>
                                             setCompraEditada({
@@ -2752,10 +2752,10 @@ return (
                                           }
                                         />
                                       </td>
-                      
-                                      <td className="py-2 px-[2px] align-middle">
+                
+                                      <td className="py-[6px] px-[2px] align-middle">
                                         <input
-                                          className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-2 py-1.5 text-white"
+                                          className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-2 py-1 text-white"
                                           value={compraEditada.bancada}
                                           onChange={(e) =>
                                             setCompraEditada({
@@ -2765,10 +2765,10 @@ return (
                                           }
                                         />
                                       </td>
-                      
-                                      <td className="py-2 px-[2px] align-middle">
+                
+                                      <td className="py-[6px] px-[2px] align-middle">
                                         <input
-                                          className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-2 py-1.5 text-white"
+                                          className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-2 py-1 text-white"
                                           value={compraEditada.setor}
                                           onChange={(e) =>
                                             setCompraEditada({
@@ -2778,10 +2778,10 @@ return (
                                           }
                                         />
                                       </td>
-                      
-                                      <td className="py-2 px-[2px] align-middle">
+                
+                                      <td className="py-[6px] px-[2px] align-middle">
                                         <input
-                                          className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-2 py-1.5 text-white"
+                                          className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-2 py-1 text-white"
                                           value={compraEditada.fila}
                                           onChange={(e) =>
                                             setCompraEditada({
@@ -2791,11 +2791,11 @@ return (
                                           }
                                         />
                                       </td>
-                      
-                                      <td className="py-2 px-[2px] align-middle">
+                
+                                      <td className="py-[6px] px-[2px] align-middle">
                                         <input
                                           type="number"
-                                          className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-2 py-1.5 text-white"
+                                          className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-2 py-1 text-white"
                                           value={compraEditada.quantidade}
                                           onChange={(e) =>
                                             setCompraEditada({
@@ -2805,11 +2805,11 @@ return (
                                           }
                                         />
                                       </td>
-                      
-                                      <td className="py-2 px-[4px] align-middle">
+                
+                                      <td className="py-[6px] px-[4px] align-middle">
                                         <input
                                           type="number"
-                                          className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-2 py-1.5 text-right text-white"
+                                          className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-2 py-1 text-right text-white"
                                           value={compraEditada.gasto}
                                           onChange={(e) =>
                                             setCompraEditada({
@@ -2819,10 +2819,10 @@ return (
                                           }
                                         />
                                       </td>
-                      
-                                      <td className="py-2 pl-[8px] pr-[4px] align-middle"></td>
-                      
-                                      <td className="py-2 pl-[10px] pr-2 whitespace-nowrap align-middle">
+                
+                                      <td className="py-[6px] pl-[8px] pr-[4px] align-middle"></td>
+                
+                                      <td className="py-[6px] pl-[10px] pr-2 whitespace-nowrap align-middle">
                                         <button
                                           className="mr-3 text-emerald-300"
                                           onClick={() => guardarCompra(compraEditada)}
@@ -2839,34 +2839,34 @@ return (
                                     </>
                                   ) : (
                                     <>
-                                      <td className="py-2 pl-2 pr-[2px] text-white/85 align-middle truncate">
+                                      <td className="py-[6px] pl-2 pr-[2px] text-white/85 align-middle truncate">
                                         {c.local_compras}
                                       </td>
-                      
-                                      <td className="py-2 px-[2px] text-white/85 align-middle truncate">
+                
+                                      <td className="py-[6px] px-[2px] text-white/85 align-middle truncate">
                                         {c.bancada}
                                       </td>
-                      
-                                      <td className="py-2 px-[2px] text-white/85 align-middle truncate">
+                
+                                      <td className="py-[6px] px-[2px] text-white/85 align-middle truncate">
                                         {c.setor}
                                       </td>
-                      
+                
                                       <td
-                                        className="py-2 px-[2px] text-white/75 align-middle truncate"
+                                        className="py-[6px] px-[2px] text-white/75 align-middle truncate"
                                         title={c.fila}
                                       >
                                         {c.fila}
                                       </td>
-                      
-                                      <td className="py-2 px-[2px] whitespace-nowrap text-white/90 align-middle">
+                
+                                      <td className="py-[6px] px-[2px] whitespace-nowrap text-white/90 align-middle">
                                         {c.quantidade}
                                       </td>
-                      
-                                      <td className="py-2 px-[4px] whitespace-nowrap text-right font-medium text-red-300 align-middle">
+                
+                                      <td className="py-[6px] px-[4px] whitespace-nowrap text-right font-medium text-red-300 align-middle">
                                         {c.gasto} €
                                       </td>
-                      
-                                      <td className="py-2 pl-[6px] pr-[2px] align-middle">
+                
+                                      <td className="py-[6px] pl-[6px] pr-[2px] align-middle">
                                         <div className="w-[170px] min-w-0">
                                           <CirculoEstado
                                             tipo="compras"
@@ -2877,8 +2877,8 @@ return (
                                           />
                                         </div>
                                       </td>
-                      
-                                      <td className="py-2 pl-[6px] pr-2 whitespace-nowrap align-middle text-left">
+                
+                                      <td className="py-[6px] pl-[6px] pr-2 whitespace-nowrap align-middle text-left">
                                         {comprasNaoAssociadasSet.has(c.id) && (
                                           <span
                                             className="text-yellow-400 mr-2"
