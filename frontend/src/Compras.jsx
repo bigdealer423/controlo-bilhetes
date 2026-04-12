@@ -357,7 +357,7 @@ return (
     {modoEdicao ? "Editar Compra" : "Nova Compra"}
   </h2>
 
-  <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-3">
+  <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-3 items-start">
     <div className="flex min-w-0 flex-col">
       <label className={LABEL_BASE}>Evento</label>
       <select
