@@ -2700,7 +2700,7 @@ return (
                           <col className="w-[56px]" />
                           <col className="w-[42px]" />
                           <col className="w-[74px]" />
-                          <col className="w-[200px]" />
+                          <col className="w-[170px]" />
                           <col className="w-[84px]" />
                         </colgroup>
                       
@@ -2866,8 +2866,8 @@ return (
                                         {c.gasto} €
                                       </td>
                       
-                                      <td className="py-2 pl-[8px] pr-[4px] align-middle">
-                                        <div className="max-w-[190px] min-w-0">
+                                      <td className="py-2 pl-[6px] pr-[2px] align-middle">
+                                        <div className="w-[170px] min-w-0">
                                           <CirculoEstado
                                             tipo="compras"
                                             id={c.id}
@@ -2878,7 +2878,7 @@ return (
                                         </div>
                                       </td>
                       
-                                      <td className="py-2 pl-[10px] pr-2 whitespace-nowrap align-middle w-[84px]">
+                                      <td className="py-2 pl-[6px] pr-2 whitespace-nowrap align-middle text-left">
                                         {comprasNaoAssociadasSet.has(c.id) && (
                                           <span
                                             className="text-yellow-400 mr-2"
