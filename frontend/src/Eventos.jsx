@@ -2029,7 +2029,7 @@ return (
   </div>
 </div>
 
-<div className="mb-6 flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
+<div className="mb-6 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
   <div className="flex flex-col gap-3 md:flex-row md:flex-wrap md:items-center">
     {/* Adicionar Evento */}
     <button
@@ -2130,7 +2130,7 @@ return (
   </div>
 
   {/* Exportar */}
-  <div className="flex">
+  <div className="flex shrink-0">
     <button
       onClick={() => exportarEventosParaExcel(registos)}
       className="inline-flex items-center justify-center gap-3 md:gap-1.5 lg:gap-3 rounded-2xl border border-emerald-400/20 bg-gradient-to-r from-emerald-600 to-green-500 px-5 md:px-3 lg:px-5 py-3 md:py-2 lg:py-3 font-semibold text-white shadow-[0_12px_30px_rgba(16,185,129,0.24)] transition hover:scale-[1.01] hover:from-emerald-500 hover:to-green-400 whitespace-nowrap text-sm md:text-[13px] lg:text-base"
