@@ -2753,7 +2753,7 @@ return (
                                 >
                                   {modoEdicaoCompra === c.id ? (
                                     <>
-                                      <td className="py-2 pl-2 pr-[2px] align-middle">
+                                      <td className="py-2 pl-[2px] pr-0 whitespace-nowrap">
                                         <input
                                           className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-2 py-1.5 text-white"
                                           value={compraEditada.local_compras}
@@ -2766,7 +2766,7 @@ return (
                                         />
                                       </td>
                 
-                                      <td className="py-2 px-[2px] align-middle">
+                                      <td className="py-2 px-0 whitespace-nowrap">
                                         <input
                                           className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-2 py-1.5 text-white"
                                           value={compraEditada.bancada}
@@ -2779,7 +2779,7 @@ return (
                                         />
                                       </td>
                 
-                                      <td className="py-2 px-[2px] align-middle">
+                                      <td className="py-2 px-0 whitespace-nowrap">
                                         <input
                                           className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-2 py-1.5 text-white"
                                           value={compraEditada.setor}
@@ -2792,7 +2792,7 @@ return (
                                         />
                                       </td>
                 
-                                      <td className="py-2 px-[2px] align-middle">
+                                      <td className="py-2 px-0 whitespace-nowrap">
                                         <input
                                           className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-2 py-1.5 text-white"
                                           value={compraEditada.fila}
@@ -2805,7 +2805,7 @@ return (
                                         />
                                       </td>
                 
-                                      <td className="py-2 px-[2px] align-middle">
+                                      <td className="py-2 px-0 whitespace-nowrap">
                                         <input
                                           type="number"
                                           className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-2 py-1.5 text-white"
