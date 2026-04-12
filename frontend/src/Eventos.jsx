@@ -2161,7 +2161,7 @@ return (
     <thead className="bg-white/[0.045]">
       <tr className="border-b border-white/10 text-[13px] uppercase tracking-[0.08em] text-white/70">
         <th className="p-4 font-semibold">Evento</th>
-        <th className="hidden lg:table-cell p-4 font-semibold">Estádio</th>
+        <th className="hidden xl:table-cell p-4 font-semibold">Estádio</th>
         <th className="p-4 text-center font-semibold">Gasto</th>
         <th className="p-4 text-center font-semibold">Ganho</th>
         <th className="p-4 text-left font-semibold">Lucro</th>
@@ -2306,7 +2306,7 @@ return (
                 )}
               </td>
 
-              <td className="hidden lg:table-cell p-4 whitespace-nowrap overflow-hidden truncate text-white/88">
+              <td className="hidden xl:table-cell p-4 whitespace-nowrap overflow-hidden truncate text-white/88">
                 {modoEdicao === r.id ? (
                   <input
                     value={r.estadio}
