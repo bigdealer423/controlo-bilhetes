@@ -29,10 +29,9 @@ import viagogoLogo from "./assets/viagogo.svg";
 
 // ---- estilos base para botões (pílula) ----
 const BTN_BASE =
-  "inline-flex items-center gap-2 px-4 py-2 rounded-xl font-semibold shadow-md " +
+  "inline-flex items-center gap-1.5 md:gap-1 px-4 md:px-3 py-2 md:py-1.5 rounded-xl font-semibold shadow-md " +
   "transition focus:outline-none focus:ring-2 focus:ring-offset-2 " +
-  "active:translate-y-[1px] " +
-  "ring-offset-white dark:ring-offset-gray-900";
+  "active:translate-y-[1px]";
 
 const BTN_VARIANTS = {
   blue:   "bg-blue-600 hover:bg-blue-700 text-white focus:ring-blue-400",
