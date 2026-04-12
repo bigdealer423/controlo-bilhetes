@@ -1980,7 +1980,7 @@ return (
           <span className="text-[26px]">↗</span>
         </div>
         <p className="text-sm text-white/65">Lucro</p>
-        <p className="mt-1 text-[32px] font-extrabold leading-none tracking-tight text-emerald-300 md:text-[38px]">
+        <p className="mt-1 text-[32px] md:text-[28px] lg:text-[38px] font-extrabold leading-none tracking-tight text-emerald-300 whitespace-nowrap">
           {formatarNumero(resumoMensal.lucro)} €
         </p>
         <p className="mt-3 text-sm text-white/55">Este mês</p>
