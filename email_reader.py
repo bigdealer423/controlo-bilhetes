@@ -51,16 +51,23 @@ def enviar_para_fastapi(id_venda, evento, ganho, data_venda, data_evento, bilhet
         resp = requests.post(url, json=payload)
         if resp.status_code == 200:
             print(f"✅ Registo {id_venda} inserido com sucesso.")
-            return "inserido"
+            return {
+                "estado": "inserido",
+                "registo": {
+                    "evento": evento,
+                    "estadio": bilhetes,
+                    "ganho": round(float(ganho))
+                }
+            }
         elif resp.status_code == 409:
             print(f"⚠️ Registo {id_venda} já existia.")
-            return "existente"
+            return {"estado": "existente"}
         else:
             print(f"❌ Erro ao inserir registo {id_venda}: {resp.status_code} - {resp.text}")
-            return "erro"
+            return {"estado": "erro"}
     except Exception as e:
         print(f"⚠️ Erro de ligação à API: {e}")
-        return "erro"
+        return {"estado": "erro"}
 
 def connect_email(username, password):
     mail = imaplib.IMAP4_SSL("imap.gmail.com")
@@ -292,20 +299,25 @@ def auto_update_email_data(username, password, date_from=None):
     falha = 0
     ja_existiam = 0
     ids_erro = []
+    novos_registos = []
 
     for msg_id in mensagens:
-        conteudo, data_venda = extract_email_content_and_date(mail, msg_id)
-        resultado = processar_email(conteudo, data_venda)
+    conteudo, data_venda = extract_email_content_and_date(mail, msg_id)
+    resultado = processar_email(conteudo, data_venda)
 
-        if resultado == "inserido":
-            sucesso += 1
-        elif resultado == "existente":
-            ja_existiam += 1
-        else:
-            falha += 1
-            match = re.search(r'(\d{9})', conteudo)
-            if match:
-                ids_erro.append(match.group(1))
+    estado_resultado = resultado.get("estado") if isinstance(resultado, dict) else resultado
+
+    if estado_resultado == "inserido":
+        sucesso += 1
+        if isinstance(resultado, dict) and resultado.get("registo"):
+            novos_registos.append(resultado["registo"])
+    elif estado_resultado == "existente":
+        ja_existiam += 1
+    else:
+        falha += 1
+        match = re.search(r'(\d{9})', conteudo)
+        if match:
+            ids_erro.append(match.group(1))
 
     print("\n📊 Resumo:")
     print(f"   Total de e-mails lidos: {len(mensagens)}")
@@ -318,7 +330,8 @@ def auto_update_email_data(username, password, date_from=None):
         "sucesso": sucesso,
         "existentes": ja_existiam,
         "falhas": falha,
-        "ids_falhados": ids_erro
+        "ids_falhados": ids_erro,
+        "novos_registos": novos_registos[:5]
     }
 
     with open("resumo_leitura.json", "w") as f:
@@ -845,13 +858,19 @@ if __name__ == "__main__":
     
     sucesso_stubhub = 0
     falha_stubhub = 0
+    novos_registos_stubhub = []
     
     for msg_id in mensagens:
         conteudo, data_venda = extract_stubhub_email_content_and_date(mail, msg_id)
         resultado = processar_email_stubhub(conteudo, data_venda)
-        if resultado == "inserido":
+    
+        estado_resultado = resultado.get("estado") if isinstance(resultado, dict) else resultado
+    
+        if estado_resultado == "inserido":
             sucesso_stubhub += 1
-        elif resultado == "erro":
+            if isinstance(resultado, dict) and resultado.get("registo"):
+                novos_registos_stubhub.append(resultado["registo"])
+        elif estado_resultado == "erro":
             falha_stubhub += 1
     
     print(f"✅ StubHub inseridos com sucesso: {sucesso_stubhub}")
@@ -883,6 +902,7 @@ if __name__ == "__main__":
             resumo["ids_entregues"] = entregues_resumo["ids_entregues"]
             resumo["pagos"] = resultado_pagamentos.get("pagos", 0) + resultado_pagamentos_stubhub.get("pagos", 0)
             resumo["disputas"] = resultado_pagamentos.get("disputas", []) + resultado_pagamentos_stubhub.get("disputas", [])
+            resumo["novos_registos"] = (resumo.get("novos_registos", []) + novos_registos_stubhub)[:5]
             f.seek(0)
             json.dump(resumo, f, indent=2)
             f.truncate()
@@ -897,6 +917,7 @@ if __name__ == "__main__":
             "ids_entregues": entregues_resumo.get("ids_entregues", []),
             "pagos": resultado_pagamentos.get("pagos", 0) + resultado_pagamentos_stubhub.get("pagos", 0),
             "disputas": resultado_pagamentos.get("disputas", []) + resultado_pagamentos_stubhub.get("disputas", [])
+            "novos_registos": (novos_registos + novos_registos_stubhub)[:5]
         }
     
     # ✅ Atualiza API
