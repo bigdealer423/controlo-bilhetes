@@ -402,24 +402,23 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
 };
   return (
     <div className="p-4 md:p-6 max-w-7xl mx-auto min-h-screen text-gray-100 transition-colors duration-300">
-      <div className="relative mb-6 overflow-hidden rounded-[30px] border border-white/12 bg-gradient-to-r from-[#151c2f] via-[#1a2748] to-[#2d2463] shadow-[0_20px_60px_rgba(0,0,0,0.35)]">
-  {/* brilhos de fundo */}
-  <div className="pointer-events-none absolute -left-16 top-0 h-40 w-40 rounded-full bg-amber-400/10 blur-3xl" />
-  <div className="pointer-events-none absolute right-0 top-0 h-48 w-48 rounded-full bg-violet-500/20 blur-3xl" />
+     <div className="relative mb-5 overflow-hidden rounded-[26px] border border-white/12 bg-gradient-to-r from-[#151c2f] via-[#1a2748] to-[#2d2463] shadow-[0_16px_45px_rgba(0,0,0,0.30)]">
+  <div className="pointer-events-none absolute -left-14 top-0 h-32 w-32 rounded-full bg-amber-400/10 blur-3xl" />
+  <div className="pointer-events-none absolute right-0 top-0 h-36 w-36 rounded-full bg-violet-500/20 blur-3xl" />
   <div className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent" />
 
-  <div className="relative grid grid-cols-1 gap-5 px-5 py-5 md:px-7 md:py-6 lg:grid-cols-[minmax(240px,1.15fr)_minmax(180px,0.8fr)_minmax(180px,0.8fr)] lg:items-stretch">
+  <div className="relative grid grid-cols-1 gap-4 px-4 py-4 md:px-5 md:py-5 lg:grid-cols-[minmax(220px,1.1fr)_minmax(165px,0.78fr)_minmax(165px,0.78fr)] lg:items-stretch">
     {/* bloco esquerdo */}
-    <div className="flex items-center gap-4">
-      <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full border border-amber-300/30 bg-amber-400/10 shadow-[0_0_35px_rgba(251,191,36,0.18)]">
-        <FaChartBar className="text-[30px] text-amber-300" />
+    <div className="flex items-center gap-3.5">
+      <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full border border-amber-300/30 bg-amber-400/10 shadow-[0_0_28px_rgba(251,191,36,0.16)]">
+        <FaChartBar className="text-[24px] text-amber-300" />
       </div>
 
       <div className="min-w-0">
-        <h2 className="text-[28px] font-extrabold leading-none tracking-tight text-white">
+        <h2 className="text-[22px] md:text-[24px] font-extrabold leading-none tracking-tight text-white">
           Resumo Diário
         </h2>
-        <p className="mt-1 text-[15px] font-semibold text-white/90">
+        <p className="mt-1 text-[13px] md:text-[14px] font-semibold text-white/85">
           {new Date().toLocaleDateString("pt-PT", {
             day: "2-digit",
             month: "long",
@@ -427,37 +426,37 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
           })}
         </p>
 
-        <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/6 px-3 py-1 text-sm text-white/75 backdrop-blur-sm">
+        <div className="mt-2 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/6 px-2.5 py-1 text-xs text-white/70 backdrop-blur-sm">
           <span>📅</span>
-          <span>Atualização diária automática</span>
+          <span>Atualização diária</span>
         </div>
       </div>
     </div>
 
     {/* card vendas */}
-    <div className="rounded-[24px] border border-white/14 bg-white/[0.04] px-5 py-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] backdrop-blur-sm">
-      <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-cyan-400/12">
-        <FaCalendarCheck className="text-[22px] text-cyan-300" />
+    <div className="rounded-[20px] border border-white/14 bg-white/[0.04] px-4 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] backdrop-blur-sm">
+      <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-cyan-400/12">
+        <FaCalendarCheck className="text-[18px] text-cyan-300" />
       </div>
 
-      <p className="text-sm font-medium text-white/65">Vendas de hoje</p>
-      <p className="mt-2 text-[46px] font-extrabold leading-none tracking-tight text-white">
+      <p className="text-xs font-medium text-white/65">Vendas de hoje</p>
+      <p className="mt-2 text-[34px] md:text-[38px] font-extrabold leading-none tracking-tight text-white">
         {resumoDiario.total ?? 0}
       </p>
-      <p className="mt-3 text-sm text-white/55">Registos do dia</p>
+      <p className="mt-2 text-xs text-white/50">Registos do dia</p>
     </div>
 
     {/* card ganho */}
-    <div className="rounded-[24px] border border-white/14 bg-white/[0.04] px-5 py-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] backdrop-blur-sm">
-      <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-emerald-400/12">
-        <FaCoins className="text-[22px] text-emerald-300" />
+    <div className="rounded-[20px] border border-white/14 bg-white/[0.04] px-4 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] backdrop-blur-sm">
+      <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-emerald-400/12">
+        <FaCoins className="text-[18px] text-emerald-300" />
       </div>
 
-      <p className="text-sm font-medium text-white/65">Ganho de hoje</p>
-      <p className="mt-2 text-[46px] font-extrabold leading-none tracking-tight text-emerald-300">
+      <p className="text-xs font-medium text-white/65">Ganho de hoje</p>
+      <p className="mt-2 text-[34px] md:text-[38px] font-extrabold leading-none tracking-tight text-emerald-300">
         {resumoDiario.ganho ?? 0} €
       </p>
-      <p className="mt-3 text-sm text-white/55">Total diário</p>
+      <p className="mt-2 text-xs text-white/50">Total diário</p>
     </div>
   </div>
 </div>
