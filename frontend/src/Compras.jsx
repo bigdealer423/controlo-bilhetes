@@ -352,12 +352,12 @@ return (
       </div>
 
 {/* FORM DESKTOP */}
-<div className={`hidden md:block ${CARD_SHELL} p-6 mb-6`}>
-  <h2 className="text-xl font-bold mb-4">
+<div className={`hidden md:block ${CARD_SHELL} p-4 xl:p-5 2xl:p-6 mb-6`}>
+  <h2 className="text-lg xl:text-xl font-bold mb-4">
     {modoEdicao ? "Editar Compra" : "Nova Compra"}
   </h2>
 
-  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-4">
+  <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-3">
     <div className="flex min-w-0 flex-col">
       <label className={LABEL_BASE}>Evento</label>
       <select
