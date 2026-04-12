@@ -61,37 +61,46 @@ export default function CirculoEstado({ tipo, id, texto_estado, nota_estado, set
 
   const houveAlteracao = cor !== original.cor || nota !== original.nota;
 
-  return (
-    <div className="flex items-center gap-2">
+ return (
+  <div className="flex items-center gap-2 min-w-0 w-full">
+    <button
+      onClick={proximaCor}
+      onContextMenu={(e) => {
+        e.preventDefault();
+        corAnterior();
+      }}
+      className={`shrink-0 w-4 h-4 rounded-full border cursor-pointer ${
+        cor === "verde"
+          ? "bg-green-500"
+          : cor === "vermelho"
+          ? "bg-red-500"
+          : "bg-gray-400"
+      }`}
+      title="Clique para mudar cor (esq: seguinte, dir: anterior)"
+    />
+
+    <input
+      type="text"
+      className="min-w-0 flex-1 border p-1 rounded text-xs h-6 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
+      value={nota}
+      placeholder="Nota..."
+      onClick={(e) => e.stopPropagation()}
+      onChange={(e) => setNota(e.target.value)}
+    />
+
+    {houveAlteracao && (
       <button
-        onClick={proximaCor}
-        onContextMenu={(e) => {
-          e.preventDefault();
-          corAnterior();
-        }}
-        className={`w-4 h-4 rounded-full border cursor-pointer ${
-          cor === "verde" ? "bg-green-500" : cor === "vermelho" ? "bg-red-500" : "bg-gray-400"
-        }`}
-        title="Clique para mudar cor (esq: seguinte, dir: anterior)"
-      />
+        onClick={guardarAlteracoes}
+        title="Guardar alterações"
+        className="shrink-0"
+      >
+        💾
+      </button>
+    )}
 
-      <input
-        type="text"
-        className="border p-1 rounded text-xs w-40 h-6 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
-        value={nota}
-        placeholder="Nota..."
-        onClick={(e) => e.stopPropagation()}  // ⛔ evita recolher cartão
-        onChange={(e) => setNota(e.target.value)}
-      />
-
-
-
-      {houveAlteracao && (
-        <button onClick={guardarAlteracoes} title="Guardar alterações">💾</button>
-      )}
-
-      {mensagem && <span className="text-xs text-gray-500">{mensagem}</span>}
-    </div>
-  );
-}
+    {mensagem && (
+      <span className="shrink-0 text-xs text-gray-500">{mensagem}</span>
+    )}
+  </div>
+);
 
