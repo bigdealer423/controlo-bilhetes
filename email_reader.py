@@ -342,15 +342,11 @@ def auto_update_email_data(username, password, date_from=None):
         print("📡 Resumo enviado para a API FastAPI com sucesso.")
     except Exception as e:
         print(f"❌ Falha ao enviar resumo para API: {e}")
-
+    return resumo
     
    
 
-    try:
-        requests.post("https://controlo-bilhetes.onrender.com/guardar_resumo", json=resumo)
-        print("📡 Resumo enviado para a API FastAPI com sucesso.")
-    except Exception as e:
-        print(f"❌ Falha ao enviar resumo para API: {e}")
+    
 
 def enviar_resumo_email(total_emails, sucesso, falha, ja_existentes, ids_erro=None, entregues=0, ids_entregues=None, pagos=0, disputas=None):
 
@@ -854,7 +850,11 @@ def verificar_emails_pagamento_stubhub(username, password, dias=PERIODO_DIAS):
 # Execução principal do script
 # =============================
 if __name__ == "__main__":
-    auto_update_email_data(username, password, date_from=(datetime.today() - timedelta(days=PERIODO_DIAS)).strftime("%d-%b-%Y"))
+    resumo_base = auto_update_email_data(
+    username,
+    password,
+    date_from=(datetime.today() - timedelta(days=PERIODO_DIAS)).strftime("%d-%b-%Y")
+)
 
       # === Processar emails da StubHub (mesma conta que Viagogo)
     print("\n📥 A processar StubHub...")
@@ -916,15 +916,16 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"❌ Erro ao atualizar resumo com entregues: {e}")
         resumo = {
-            "total_lidos": sucesso_stubhub + falha_stubhub,
-            "sucesso": sucesso_stubhub,
-            "falhas": falha_stubhub,
-            "existentes": 0,
+            "total_lidos": resumo_base.get("total_lidos", 0) + sucesso_stubhub + falha_stubhub,
+            "sucesso": resumo_base.get("sucesso", 0) + sucesso_stubhub,
+            "falhas": resumo_base.get("falhas", 0) + falha_stubhub,
+            "existentes": resumo_base.get("existentes", 0),
+            "ids_falhados": resumo_base.get("ids_falhados", []),
             "entregues": entregues_resumo.get("alterados_para_entregue", 0),
             "ids_entregues": entregues_resumo.get("ids_entregues", []),
             "pagos": resultado_pagamentos.get("pagos", 0) + resultado_pagamentos_stubhub.get("pagos", 0),
             "disputas": resultado_pagamentos.get("disputas", []) + resultado_pagamentos_stubhub.get("disputas", []),
-            "novos_registos": (novos_registos + novos_registos_stubhub)[:5]
+            "novos_registos": (resumo_base.get("novos_registos", []) + novos_registos_stubhub)[:5]
         }
     
     # ✅ Atualiza API
