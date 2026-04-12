@@ -2020,10 +2020,11 @@ return (
       <button
         type="button"
         onClick={buscarLucrosMensais}
-        className="inline-flex w-full items-center justify-center gap-3 rounded-2xl border border-blue-400/25 bg-blue-500/15 px-5 py-4 text-white shadow-[0_10px_30px_rgba(59,130,246,0.20)] transition hover:bg-blue-500/20 md:w-auto"
+        className="inline-flex w-full items-center justify-center gap-2 md:gap-1.5 lg:gap-3 rounded-2xl border border-blue-400/25 bg-blue-500/15 px-5 md:px-3 lg:px-5 py-4 md:py-3 lg:py-4 text-white shadow-[0_10px_30px_rgba(59,130,246,0.20)] transition hover:bg-blue-500/20 md:w-auto whitespace-nowrap"
       >
         <FaChartBar className="text-lg text-blue-300" />
-        <span className="whitespace-nowrap font-semibold">Ver Lucros por Mês</span>
+        <span className="hidden lg:inline font-semibold">Ver Lucros por Mês</span>
+        <span className="lg:hidden font-semibold">Lucros</span>
       </button>
     </div>
   </div>
