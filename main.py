@@ -427,7 +427,18 @@ def guardar_resumo(dados: dict):
 
 @app.get("/resultado_leitura_email")
 def obter_resumo():
-    return resumo_mais_recente or {"mensagem": "Sem resumo disponível ainda."}
+    return resumo_mais_recente or {
+        "total_lidos": 0,
+        "sucesso": 0,
+        "existentes": 0,
+        "falhas": 0,
+        "ids_falhados": [],
+        "entregues": 0,
+        "ids_entregues": [],
+        "pagos": 0,
+        "disputas": [],
+        "novos_registos": []
+    }
 
 # ---------------- RESUMO MENSAL EVENTOS ----------------
 
