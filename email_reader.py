@@ -113,8 +113,8 @@ def extract_email_content_and_date(mail, email_id):
 
 def processar_email(content, data_venda):
     if not content:
-        print("⚠️ Conteúdo vazio.")
-        return "erro"
+        print("❌ ID do pedido não encontrado.")
+        return {"estado": "erro"}
 
     match_id = re.search(r'ID\s*da\s*Encomenda\s*[:\-]?\s*(\d{9})', content, re.IGNORECASE)
     if not match_id:
@@ -286,7 +286,7 @@ def processar_email_stubhub(content, data_venda):
 
     except Exception as e:
         print(f"❌ Erro no processamento StubHub: {e}")
-        return "erro"
+        return {"estado": "erro"}
 
 from email.header import decode_header
 
@@ -315,6 +315,7 @@ def auto_update_email_data(username, password, date_from=None):
             ja_existiam += 1
         else:
             falha += 1
+            print(f"❌ Falha ao processar email Viagogo. Conteúdo inicial: {conteudo[:300]}")
             match = re.search(r'(\d{9})', conteudo)
             if match:
                 ids_erro.append(match.group(1))
@@ -882,7 +883,7 @@ if __name__ == "__main__":
             existentes_stubhub += 1
         elif estado_resultado == "erro":
             falha_stubhub += 1
-            
+            print(f"❌ Falha ao processar email StubHub. Conteúdo inicial: {conteudo[:300]}")
     
     print(f"✅ StubHub inseridos com sucesso: {sucesso_stubhub}")
     print(f"❌ StubHub com erro: {falha_stubhub}")
@@ -909,7 +910,7 @@ if __name__ == "__main__":
             resumo = json.load(f)
             resumo["sucesso"] += sucesso_stubhub
             resumo["existentes"] += existentes_stubhub
-            resumo["total_lidos"] += sucesso_stubhub + falha_stubhub
+            resumo["total_lidos"] += sucesso_stubhub + falha_stubhub + existentes_stubhub
             resumo["entregues"] = entregues_resumo["alterados_para_entregue"]
             resumo["ids_entregues"] = entregues_resumo["ids_entregues"]
             resumo["pagos"] = resultado_pagamentos.get("pagos", 0) + resultado_pagamentos_stubhub.get("pagos", 0)
