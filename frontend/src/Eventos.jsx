@@ -2041,7 +2041,7 @@ return (
     </button>
 
     {/* Pesquisa */}
-    <div className="relative min-w-0 md:w-[380px] xl:w-[420px]">
+    <div className="relative min-w-0 md:w-[240px] lg:w-[300px] xl:w-[420px]">
       <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-lg text-white/45">
         🔍
       </span>
