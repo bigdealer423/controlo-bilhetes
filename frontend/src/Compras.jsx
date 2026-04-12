@@ -307,7 +307,7 @@ return (
   <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(37,99,235,0.15),_transparent_40%),linear-gradient(180deg,#06101f_0%,#081427_50%,#0b1730_100%)] text-white">
     <ToastContainer />
 
-    <div className="max-w-7xl mx-auto px-4 py-6">
+    <div className="max-w-[1180px] xl:max-w-7xl mx-auto px-3 md:px-4 xl:px-4 py-4 md:py-5 xl:py-6">
       {/* FILTROS + EXPORTAR */}
       <div className={`${CARD_SHELL} p-3 md:p-4 xl:p-4 mb-6`}>
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
