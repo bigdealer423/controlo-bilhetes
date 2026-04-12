@@ -39,13 +39,17 @@ export default function ListagemVendas(props) {
   const [mostrarModal, setMostrarModal] = useState(false);
   const [mensagemModal, setMensagemModal] = useState("");
   const [filtroEvento, setFiltroEvento] = useState("");
-  const [filtroIdVenda, setFiltroIdVenda] = useState("");
   const [mostrarFormularioMobile, setMostrarFormularioMobile] = useState(false);
   const [eventosChaveSet, setEventosChaveSet] = useState(new Set());
   const [eventosChaveCarregado, setEventosChaveCarregado] = useState(false);
   const [dadosSincronizados, setDadosSincronizados] = useState(false);
   const [startY, setStartY] = useState(null);
-  const [filtroEquipa, setFiltroEquipa] = useState("");
+  const formatarDataPesquisa = (data) => {
+  if (!data) return "";
+  const d = new Date(data);
+  if (Number.isNaN(d.getTime())) return "";
+  return d.toLocaleDateString("pt-PT");
+};
 
   // Novo estado: filtro de exclamação
   const [filtroExclamacao, setFiltroExclamacao] = useState(false);
@@ -627,48 +631,25 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
 
  <div className="mb-5 overflow-x-auto rounded-[22px] border border-white/12 bg-[#111a2e]/90 shadow-[0_12px_34px_rgba(0,0,0,0.26)] backdrop-blur-sm">
   <div className="flex min-w-max items-center gap-3 px-3 py-3 md:px-4">
-    {/* Procurar Equipa */}
     <div className="relative">
-      <FaSearch className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[15px] text-white/45" />
-      <input
-        type="text"
-        placeholder="Procurar Equipa"
-        value={filtroEquipa}
-        onChange={(e) => setFiltroEquipa(e.target.value)}
-        className="h-11 w-[250px] rounded-xl border border-white/14 bg-white/[0.04] pl-11 pr-10 text-[15px] text-white placeholder:text-white/42 outline-none transition focus:border-blue-400/70 focus:bg-white/[0.06]"
-      />
-      {filtroEquipa && (
-        <button
-          onClick={() => setFiltroEquipa("")}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-white/45 transition hover:text-red-400"
-          title="Limpar"
-        >
-          ✕
-        </button>
-      )}
-    </div>
-
-    {/* Procurar ID Venda */}
-    <div className="relative">
-      <FaHashtag className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[14px] text-blue-300/80" />
-      <input
-        type="text"
-        inputMode="numeric"
-        placeholder="ID venda"
-        value={filtroIdVenda}
-        onChange={(e) => setFiltroIdVenda(e.target.value)}
-        className="h-11 w-[175px] rounded-xl border border-white/14 bg-white/[0.04] pl-11 pr-10 text-[15px] text-white placeholder:text-white/42 outline-none transition focus:border-blue-400/70 focus:bg-white/[0.06]"
-      />
-      {filtroIdVenda && (
-        <button
-          onClick={() => setFiltroIdVenda("")}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-white/45 transition hover:text-red-400"
-          title="Limpar"
-        >
-          ✕
-        </button>
-      )}
-    </div>
+  <FaSearch className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[15px] text-white/45" />
+  <input
+    type="text"
+    placeholder="Pesquisar equipa, ID venda ou data"
+    value={filtroPesquisa}
+    onChange={(e) => setFiltroPesquisa(e.target.value)}
+    className="h-11 w-[320px] md:w-[380px] rounded-xl border border-white/14 bg-white/[0.04] pl-11 pr-10 text-[15px] text-white placeholder:text-white/42 outline-none transition focus:border-blue-400/70 focus:bg-white/[0.06]"
+  />
+  {filtroPesquisa && (
+    <button
+      onClick={() => setFiltroPesquisa("")}
+      className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-white/45 transition hover:text-red-400"
+      title="Limpar"
+    >
+      ✕
+    </button>
+  )}
+</div>
 
     {/* Filtro aviso */}
     <button
@@ -783,13 +764,31 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
           <tbody>
             {registos
               .filter(v => {
-                const correspondeEvento = filtroEvento === "" || v.evento === filtroEvento;
-                const correspondeID = filtroIdVenda === "" || v.id_venda?.toString().includes(filtroIdVenda);
-                const correspondeEquipa =
-                  filtroEquipa === "" ||
-                  (v.evento && v.evento.toLowerCase().includes(filtroEquipa.toLowerCase()));
+                const termo = filtroPesquisa.trim().toLowerCase();
+
+                const dataEventoPT = formatarDataPesquisa(v.data_evento).toLowerCase();
+                const dataVendaPT = formatarDataPesquisa(v.data_venda).toLowerCase();
+                const dataEventoISO = (v.data_evento || "").split("T")[0].toLowerCase();
+                const dataVendaISO = (v.data_venda || "").split("T")[0].toLowerCase();
+                const idVenda = String(v.id_venda || "").toLowerCase();
+                const evento = String(v.evento || "").toLowerCase();
+                const bilhete = String(v.estadio || "").toLowerCase();
+                const estado = String(v.estado || "").toLowerCase();
+                
+                const correspondePesquisa =
+                  termo === "" ||
+                  idVenda.includes(termo) ||
+                  evento.includes(termo) ||
+                  bilhete.includes(termo) ||
+                  estado.includes(termo) ||
+                  dataEventoPT.includes(termo) ||
+                  dataVendaPT.includes(termo) ||
+                  dataEventoISO.includes(termo) ||
+                  dataVendaISO.includes(termo);
+                
                 const correspondeExclamacao = !filtroExclamacao || temAviso(v);
-                return correspondeEvento && correspondeID && correspondeEquipa && correspondeExclamacao;
+                
+                return correspondePesquisa && correspondeExclamacao;
               })
               .map(r => (
 
@@ -909,14 +908,31 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
       >
         {eventosChaveCarregado && registos
           .filter(v => {
-            const correspondeEvento = filtroEvento === "" || v.evento === filtroEvento;
-            const correspondeID = filtroIdVenda === "" || v.id_venda.toString().includes(filtroIdVenda);
-            const correspondeEquipa =
-              filtroEquipa === "" ||
-              (v.evento && v.evento.toLowerCase().includes(filtroEquipa.toLowerCase()));
-            const correspondeExclamacao =
-              !filtroExclamacao || temAviso(v);
-            return correspondeEvento && correspondeID && correspondeEquipa && correspondeExclamacao;
+            const termo = filtroPesquisa.trim().toLowerCase();
+
+            const dataEventoPT = formatarDataPesquisa(v.data_evento).toLowerCase();
+            const dataVendaPT = formatarDataPesquisa(v.data_venda).toLowerCase();
+            const dataEventoISO = (v.data_evento || "").split("T")[0].toLowerCase();
+            const dataVendaISO = (v.data_venda || "").split("T")[0].toLowerCase();
+            const idVenda = String(v.id_venda || "").toLowerCase();
+            const evento = String(v.evento || "").toLowerCase();
+            const bilhete = String(v.estadio || "").toLowerCase();
+            const estado = String(v.estado || "").toLowerCase();
+            
+            const correspondePesquisa =
+              termo === "" ||
+              idVenda.includes(termo) ||
+              evento.includes(termo) ||
+              bilhete.includes(termo) ||
+              estado.includes(termo) ||
+              dataEventoPT.includes(termo) ||
+              dataVendaPT.includes(termo) ||
+              dataEventoISO.includes(termo) ||
+              dataVendaISO.includes(termo);
+            
+            const correspondeExclamacao = !filtroExclamacao || temAviso(v);
+            
+            return correspondePesquisa && correspondeExclamacao;
           })
           .map((r) => {
           const emEdicao = modoEdicao === r.id;
