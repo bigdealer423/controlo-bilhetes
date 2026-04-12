@@ -1980,7 +1980,7 @@ return (
           <span className="text-[26px]">↗</span>
         </div>
         <p className="text-sm text-white/65">Lucro</p>
-        <p className="mt-1 text-[32px] md:text-[24px] lg:text-[38px] font-extrabold leading-none tracking-tight text-emerald-300 whitespace-nowrap">
+        <p className="mt-1 text-[32px] md:text-[22px] lg:text-[38px] font-extrabold leading-none tracking-tight text-emerald-300 whitespace-nowrap">
           {formatarNumero(resumoMensal.lucro)} €
         </p>
         <p className="mt-3 text-sm text-white/55">Este mês</p>
@@ -1991,7 +1991,7 @@ return (
           <span className="text-[24px]">⏳</span>
         </div>
         <p className="text-sm text-white/65">Por Pagar</p>
-        <p className="mt-1 text-[32px] md:text-[24px] lg:text-[38px] font-extrabold leading-none tracking-tight text-amber-300 whitespace-nowrap">
+        <p className="mt-1 text-[32px] md:text-[22px] lg:text-[38px] font-extrabold leading-none tracking-tight text-amber-300 whitespace-nowrap">
           {formatarNumero(resumoMensal.pagamento)} €
         </p>
         {resumoMensal.disputas > 0 ? (
@@ -2008,7 +2008,7 @@ return (
           <span className="text-[24px]">🎟️</span>
         </div>
         <p className="text-sm text-white/65">Bilhetes Vendidos</p>
-        <p className="mt-1 text-[32px] md:text-[24px] lg:text-[38px] font-extrabold leading-none tracking-tight text-fuchsia-300 whitespace-nowrap">
+        <p className="mt-1 text-[32px] md:text-[22px] lg:text-[38px] font-extrabold leading-none tracking-tight text-fuchsia-300 whitespace-nowrap">
           {formatarNumero(resumoMensal.bilhetes_epoca)}
         </p>
         <p className="mt-3 text-sm text-white/55">Nesta época</p>
