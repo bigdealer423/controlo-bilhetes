@@ -45,23 +45,26 @@ const CARD_SHELL =
   "rounded-[24px] border border-white/10 bg-white/[0.04] backdrop-blur-xl shadow-[0_10px_40px_rgba(0,0,0,0.35)]";
 
 const INPUT_BASE =
-  "w-full rounded-xl border border-white/10 bg-[#1a2742] px-3 py-2.5 text-sm text-white placeholder:text-white/35 outline-none transition focus:border-blue-400/60 focus:ring-1 focus:ring-blue-400/30";
+  "w-full rounded-xl border border-white/10 bg-[#1a2742] px-3 py-2 md:py-2 lg:py-2.5 text-sm text-white placeholder:text-white/35 outline-none transition focus:border-blue-400/60 focus:ring-1 focus:ring-blue-400/30";
+
 
 const LABEL_BASE = "mb-2 text-[13px] font-semibold tracking-wide text-white/80";
 
 const BTN_PRIMARY =
-  "inline-flex items-center justify-center rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-blue-900/30 transition hover:bg-blue-500";
+  "inline-flex items-center justify-center rounded-xl bg-blue-600 px-4 py-2 md:px-4 md:py-2 text-sm font-semibold text-white shadow-lg shadow-blue-900/30 transition hover:bg-blue-500";
+
 
 const BTN_SECONDARY =
-  "inline-flex items-center justify-center rounded-xl bg-white/10 px-4 py-2 text-sm font-semibold text-white/90 transition hover:bg-white/15";
+  "inline-flex items-center justify-center rounded-xl bg-white/10 px-4 py-2 md:px-4 md:py-2 text-sm font-semibold text-white/90 transition hover:bg-white/15";
+
 
 const BTN_SUCCESS =
-  "inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-emerald-900/30 transition hover:bg-emerald-500";
+  "inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 md:px-4 md:py-2 text-sm font-semibold text-white shadow-lg shadow-emerald-900/30 transition hover:bg-emerald-500";
 
 const TABLE_HEAD =
   "bg-white/[0.08] text-white/85 text-[13px] uppercase tracking-[0.08em]";
 
-const TABLE_CELL = "px-3 py-2.5 align-middle";
+const TABLE_CELL = "px-2.5 lg:px-3 py-2 align-middle";
 
 const getCompraWarning = (c, eventosChaveSet) =>
   eventosChaveSet.size > 0 &&
@@ -306,7 +309,7 @@ return (
 
     <div className="max-w-7xl mx-auto px-4 py-6">
       {/* FILTROS + EXPORTAR */}
-      <div className={`${CARD_SHELL} p-4 mb-6`}>
+      <div className={`${CARD_SHELL} p-3 md:p-4 xl:p-4 mb-6`}>
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div className="flex flex-col md:flex-row gap-3">
             <select
@@ -349,12 +352,12 @@ return (
       </div>
 
       {/* FORM DESKTOP */}
-      <div className={`hidden md:block ${CARD_SHELL} p-6 mb-6`}>
-        <h2 className="text-xl font-bold mb-4">
+      <div className={`hidden md:block ${CARD_SHELL} p-4 lg:p-5 xl:p-6 mb-6`}>
+        <h2 className="text-lg lg:text-xl font-bold mb-4">
           {modoEdicao ? "Editar Compra" : "Nova Compra"}
         </h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 lg:gap-4">
           <div className="flex flex-col">
             <label className={LABEL_BASE}>Evento</label>
             <select
@@ -526,7 +529,7 @@ return (
       </div>
 
       {/* TABELA DESKTOP */}
-      <div className={`${CARD_SHELL} p-4 mb-6 hidden md:block`}>
+      <div className={`${CARD_SHELL} p-3 lg:p-4 mb-6 hidden md:block`}>
         <div className="overflow-x-auto w-full">
           <table className="min-w-full text-sm text-left text-white/85">
             <thead className="sticky top-0 z-10 backdrop-blur-xl">
