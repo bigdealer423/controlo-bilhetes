@@ -1950,7 +1950,7 @@ return (
   {/* brilho topo */}
   <div className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-amber-300/70 to-blue-300/70" />
 
-  <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+  <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
     {/* lado esquerdo */}
     <div className="flex min-w-0 items-center gap-4 lg:w-[24%] xl:w-[28%]">
       <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full border border-amber-300/30 bg-amber-400/10 shadow-[0_0_35px_rgba(251,191,36,0.16)]">
@@ -2016,15 +2016,15 @@ return (
     </div>
 
     {/* direita */}
-    <div className="flex lg:w-[14%] xl:w-[18%] lg:justify-end">
+    <div className="flex shrink-0 lg:w-[110px] xl:w-[18%] lg:justify-end">
       <button
         type="button"
         onClick={buscarLucrosMensais}
-        className="inline-flex w-full items-center justify-center gap-2 md:gap-1.5 lg:gap-3 rounded-2xl border border-blue-400/25 bg-blue-500/15 px-5 md:px-3 lg:px-5 py-4 md:py-3 lg:py-4 text-white shadow-[0_10px_30px_rgba(59,130,246,0.20)] transition hover:bg-blue-500/20 md:w-auto whitespace-nowrap"
+        className="inline-flex w-full lg:w-auto items-center justify-center gap-2 rounded-2xl border border-blue-400/25 bg-blue-500/15 px-3 lg:px-5 py-3 lg:py-4 text-white shadow-[0_10px_30px_rgba(59,130,246,0.20)] transition hover:bg-blue-500/20 whitespace-nowrap"
       >
         <FaChartBar className="text-lg text-blue-300" />
-        <span className="hidden lg:inline font-semibold">Ver Lucros por Mês</span>
-        <span className="lg:hidden font-semibold">Lucros</span>
+        <span className="hidden xl:inline font-semibold">Ver Lucros por Mês</span>
+        <span className="xl:hidden font-semibold text-sm">Lucros</span>
       </button>
     </div>
   </div>
