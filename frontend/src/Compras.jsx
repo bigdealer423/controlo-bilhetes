@@ -47,7 +47,32 @@ const ordenarEventosDropdown = (data) => {
     });
 };
 
+const CARD_SHELL =
+  "rounded-[24px] border border-white/10 bg-white/[0.04] backdrop-blur-xl shadow-[0_10px_40px_rgba(0,0,0,0.35)]";
 
+const INPUT_BASE =
+  "w-full rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-white placeholder:text-white/35 outline-none transition " +
+  "focus:border-blue-400/60 focus:ring-2 focus:ring-blue-500/20";
+
+const LABEL_BASE = "mb-2 text-[13px] font-semibold tracking-wide text-white/80";
+
+const BTN_PRIMARY =
+  "inline-flex items-center justify-center rounded-xl bg-blue-600 px-5 py-3 font-semibold text-white shadow-lg shadow-blue-900/30 transition hover:bg-blue-500";
+
+const BTN_SECONDARY =
+  "inline-flex items-center justify-center rounded-xl bg-white/10 px-5 py-3 font-semibold text-white/90 transition hover:bg-white/15";
+
+const BTN_SUCCESS =
+  "inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-5 py-3 font-semibold text-white shadow-lg shadow-emerald-900/30 transition hover:bg-emerald-500";
+
+const TABLE_HEAD =
+  "bg-white/[0.08] text-white/85 text-[13px] uppercase tracking-[0.08em]";
+
+const TABLE_CELL = "px-4 py-4 align-middle";
+
+const getCompraWarning = (c, eventosChaveSet) =>
+  eventosChaveSet.size > 0 &&
+  (!c.evento || !c.data_evento || !eventosChaveSet.has(`${(c.evento || "").trim()}|${(c.data_evento || "").split("T")[0]}`));
 
 
 export default function Compras() {
@@ -282,95 +307,97 @@ const adicionarCompra = () => {
     }
   };
   
-  return (
-     <div className="p-6 max-w-7xl mx-auto bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen transition-colors duration-300">
-      <h1 className="text-2xl font-bold mb-4">Compras</h1>
+return (
+  <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(37,99,235,0.15),_transparent_40%),linear-gradient(180deg,#06101f_0%,#081427_50%,#0b1730_100%)] text-white">
+    <ToastContainer />
 
-      <div className="hidden md:block bg-gray-50 dark:bg-gray-800 shadow-sm rounded p-4 mb-4 transition-colors duration-300">
-        <div className="flex justify-between items-end flex-wrap gap-4">
-          
-          {/* Filtros à esquerda */}
-          <div className="flex gap-4 items-end">
+    <div className="max-w-7xl mx-auto px-4 py-6">
+      {/* FILTROS + EXPORTAR */}
+      <div className={`${CARD_SHELL} p-4 mb-6`}>
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div className="flex flex-col md:flex-row gap-3">
             <select
               name="evento"
-              className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
               value={filtros.evento}
               onChange={handleFiltroChange}
+              className={`${INPUT_BASE} min-w-[260px]`}
             >
               <option value="">-- Filtrar por Evento --</option>
-              {eventosDropdown.map(e => (
-                <option key={e.id} value={e.evento}>{e.evento}</option>
+              {eventosDropdown.map((e) => (
+                <option key={e.id} value={e.evento}>
+                  {e.evento}
+                </option>
               ))}
             </select>
-            <button
-              onClick={aplicarFiltros}
-              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-            >
+
+            <button onClick={aplicarFiltros} className={BTN_PRIMARY}>
               Aplicar Filtro
             </button>
-            <button
-              onClick={limparFiltros}
-              className="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500"
-            >
+
+            <button onClick={limparFiltros} className={BTN_SECONDARY}>
               Limpar
             </button>
           </div>
-      
-          {/* Botão Exportar Excel à direita */}
+
           <button
             onClick={() => exportarComprasParaExcel(comprasFiltradas)}
-            className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-xl shadow-md transition"
+            className={BTN_SUCCESS}
           >
             <FaFileExcel size={18} />
             Exportar Excel
           </button>
-          
         </div>
       </div>
 
+      {/* FORM DESKTOP */}
+      <div className={`hidden md:block ${CARD_SHELL} p-6 mb-6`}>
+        <h2 className="text-xl font-bold mb-4">
+          {modoEdicao ? "Editar Compra" : "Nova Compra"}
+        </h2>
 
-
-      {/* Form adicionar */}
-      <div className="hidden md:block bg-white dark:bg-gray-900 shadow-md rounded p-4 mb-6 transition-colors duration-300">
-        <h2 className="text-lg font-semibold mb-2">{modoEdicao ? "Editar Compra" : "Nova Compra"}</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-
-          {/* Evento */}
           <div className="flex flex-col">
-            <label className="text-sm font-medium mb-1">Evento</label>
+            <label className={LABEL_BASE}>Evento</label>
             <select
               name="evento"
-              className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 transition-colors duration-300"
               value={novaCompra.evento}
               onChange={handleChange}
+              className={INPUT_BASE}
             >
               <option value="">-- Evento --</option>
-              {eventosDropdown.map(e => <option key={e.id} value={e.evento}>{e.evento}</option>)}
+              {eventosDropdown.map((e) => (
+                <option key={e.id} value={e.evento}>
+                  {e.evento}
+                </option>
+              ))}
             </select>
           </div>
-        
-          {/* Data Evento */}
-          
+
           <div className="flex flex-col">
-            <label className="text-sm font-medium mb-1">Data do Evento</label>
+            <label className={LABEL_BASE}>Data do Evento</label>
             <input
               type="date"
               name="data_evento"
               value={novaCompra.data_evento || ""}
               onChange={handleChange}
-              className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 transition-colors duration-300"
+              className={INPUT_BASE}
             />
             {datasEvento.length > 0 && (
-              <div className="mt-1 text-xs text-gray-600 dark:text-gray-300">
+              <div className="mt-2 text-xs text-white/70">
                 Datas existentes (clique para preencher):
-                <ul className="list-disc list-inside">
+                <ul className="list-disc list-inside mt-1 space-y-1">
                   {datasEvento.map((d, idx) => {
-                    const dataFormatada = new Date(d).toISOString().split("T")[0]; // formato yyyy-mm-dd
+                    const dataFormatada = new Date(d).toISOString().split("T")[0];
                     return (
                       <li
                         key={idx}
-                        onClick={() => setNovaCompra(prev => ({ ...prev, data_evento: dataFormatada }))}
-                        className="cursor-pointer text-blue-600 hover:underline"
+                        onClick={() =>
+                          setNovaCompra((prev) => ({
+                            ...prev,
+                            data_evento: dataFormatada,
+                          }))
+                        }
+                        className="cursor-pointer text-blue-300 hover:underline"
                       >
                         {new Date(d).toLocaleDateString("pt-PT")}
                       </li>
@@ -378,85 +405,449 @@ const adicionarCompra = () => {
                   })}
                 </ul>
               </div>
-           )}
+            )}
           </div>
 
-        
-          {/* Local da Compra */}
           <div className="flex flex-col">
-            <label className="text-sm font-medium mb-1">Local da Compra</label>
+            <label className={LABEL_BASE}>Local da Compra</label>
             <select
               name="local_compras"
-              className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 transition-colors duration-300"
               value={novaCompra.local_compras}
               onChange={handleChange}
+              className={INPUT_BASE}
             >
               <option value="">-- Local da Compra --</option>
-              {locaisCompra.map(local => <option key={local} value={local}>{local}</option>)}
+              {locaisCompra.map((local) => (
+                <option key={local} value={local}>
+                  {local}
+                </option>
+              ))}
             </select>
           </div>
-        
-          {/* Bancada */}
+
           <div className="flex flex-col">
-            <label className="text-sm font-medium mb-1">Bancada</label>
+            <label className={LABEL_BASE}>Bancada</label>
             <input
               list="bancadas"
               name="bancada"
               placeholder="Bancada"
-              className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 transition-colors duration-300"
               value={novaCompra.bancada}
               onChange={handleChange}
+              className={INPUT_BASE}
             />
-            <datalist id="bancadas">{bancadas.map(b => <option key={b} value={b} />)}</datalist>
+            <datalist id="bancadas">
+              {bancadas.map((b) => (
+                <option key={b} value={b} />
+              ))}
+            </datalist>
           </div>
-        
-          {/* Setor */}
+
           <div className="flex flex-col">
-            <label className="text-sm font-medium mb-1">Setor</label>
+            <label className={LABEL_BASE}>Setor</label>
             <input
               list="setores"
               name="setor"
               placeholder="Setor"
-              className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 transition-colors duration-300"
               value={novaCompra.setor}
               onChange={handleChange}
+              className={INPUT_BASE}
             />
-            <datalist id="setores">{setores.map(s => <option key={s} value={s} />)}</datalist>
+            <datalist id="setores">
+              {setores.map((s) => (
+                <option key={s} value={s} />
+              ))}
+            </datalist>
           </div>
-        
-          {/* Fila */}
+
           <div className="flex flex-col">
-            <label className="text-sm font-medium mb-1">Fila</label>
+            <label className={LABEL_BASE}>Fila</label>
             <input
               name="fila"
               placeholder="Fila"
-              className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 transition-colors duration-300"
               value={novaCompra.fila}
               onChange={handleChange}
+              className={INPUT_BASE}
             />
           </div>
-        
-          {/* Quantidade */}
+
           <div className="flex flex-col">
-            <label className="text-sm font-medium mb-1">Quantidade</label>
+            <label className={LABEL_BASE}>Quantidade</label>
             <input
               name="quantidade"
               type="number"
-              placeholder="Qt."
-              className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 transition-colors duration-300"
+              placeholder="Quantidade"
               value={novaCompra.quantidade}
               onChange={handleChange}
+              className={INPUT_BASE}
             />
           </div>
-        
-          {/* Gasto */}
+
           <div className="flex flex-col">
-            <label className="text-sm font-medium mb-1">Gasto (€)</label>
+            <label className={LABEL_BASE}>Gasto (€)</label>
             <input
               name="gasto"
               type="text"
               placeholder="Gasto (€)"
-              className="input bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 transition-colors duration-300"
+              value={novaCompra.gasto}
+              onChange={handleChange}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  const resultado = calcularExpressao(e.target.value);
+                  setNovaCompra((prev) => ({
+                    ...prev,
+                    gasto: String(resultado),
+                  }));
+                }
+              }}
+              className={INPUT_BASE}
+            />
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={modoEdicao ? atualizarCompra : guardarCompra}
+          className={`mt-5 ${BTN_PRIMARY}`}
+        >
+          {modoEdicao ? "Atualizar" : "Guardar"}
+        </button>
+      </div>
+
+      {/* TABELA DESKTOP */}
+      <div className={`${CARD_SHELL} p-4 mb-6 hidden md:block`}>
+        <div className="overflow-x-auto w-full">
+          <table className="min-w-full text-sm text-left text-white/85">
+            <thead className="sticky top-0 z-10 backdrop-blur-xl">
+              <tr className={TABLE_HEAD}>
+                <th className={TABLE_CELL}>Evento</th>
+                <th className={TABLE_CELL}>Data Evento</th>
+                <th className={TABLE_CELL}>Local Compra</th>
+                <th className={TABLE_CELL}>Bancada</th>
+                <th className={TABLE_CELL}>Setor</th>
+                <th className={TABLE_CELL}>Fila</th>
+                <th className={TABLE_CELL}>Qt.</th>
+                <th className={TABLE_CELL}>Gasto (€)</th>
+                <th className={TABLE_CELL}>Ações</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {[...comprasFiltradas]
+                .sort((a, b) => a.evento.localeCompare(b.evento))
+                .map((c) => (
+                  <tr
+                    key={"c" + c.id}
+                    className="border-t border-white/10 hover:bg-white/[0.04] transition"
+                  >
+                    {modoEdicao === c.id ? (
+                      <>
+                        <td className={TABLE_CELL}>
+                          <select
+                            name="evento"
+                            className={`${INPUT_BASE} !py-2 !px-3`}
+                            value={novaCompra.evento}
+                            onChange={(e) => {
+                              const eventoSelecionado = e.target.value;
+                              const eventoCompleto = eventosDropdown.find(
+                                (ev) => ev.evento === eventoSelecionado
+                              );
+                              setNovaCompra((prev) => ({
+                                ...prev,
+                                evento: eventoCompleto?.evento || eventoSelecionado,
+                                data_evento:
+                                  eventoCompleto?.data_evento?.split("T")[0] || "",
+                              }));
+                            }}
+                          >
+                            <option value="">-- Evento --</option>
+                            {eventosDropdown.map((e) => (
+                              <option key={e.id} value={e.evento}>
+                                {e.evento}
+                              </option>
+                            ))}
+                          </select>
+                        </td>
+
+                        <td className={TABLE_CELL}>
+                          <input
+                            type="date"
+                            name="data_evento"
+                            className={`${INPUT_BASE} !py-2 !px-3`}
+                            value={novaCompra.data_evento || ""}
+                            onChange={handleChange}
+                          />
+                        </td>
+
+                        <td className={TABLE_CELL}>
+                          <input
+                            name="local_compras"
+                            className={`${INPUT_BASE} !py-2 !px-3`}
+                            value={novaCompra.local_compras}
+                            onChange={handleChange}
+                          />
+                        </td>
+
+                        <td className={TABLE_CELL}>
+                          <input
+                            name="bancada"
+                            className={`${INPUT_BASE} !py-2 !px-3`}
+                            value={novaCompra.bancada}
+                            onChange={handleChange}
+                          />
+                        </td>
+
+                        <td className={TABLE_CELL}>
+                          <input
+                            name="setor"
+                            className={`${INPUT_BASE} !py-2 !px-3`}
+                            value={novaCompra.setor}
+                            onChange={handleChange}
+                          />
+                        </td>
+
+                        <td className={TABLE_CELL}>
+                          <input
+                            name="fila"
+                            className={`${INPUT_BASE} !py-2 !px-3`}
+                            value={novaCompra.fila}
+                            onChange={handleChange}
+                          />
+                        </td>
+
+                        <td className={TABLE_CELL}>
+                          <input
+                            type="number"
+                            name="quantidade"
+                            className={`${INPUT_BASE} !py-2 !px-3`}
+                            value={novaCompra.quantidade}
+                            onChange={handleChange}
+                          />
+                        </td>
+
+                        <td className={TABLE_CELL}>
+                          <input
+                            type="text"
+                            name="gasto"
+                            className={`${INPUT_BASE} !py-2 !px-3`}
+                            value={novaCompra.gasto}
+                            onChange={handleChange}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") {
+                                e.preventDefault();
+                                const resultado = calcularExpressao(e.target.value);
+                                setNovaCompra((prev) => ({
+                                  ...prev,
+                                  gasto: String(resultado),
+                                }));
+                              }
+                            }}
+                          />
+                        </td>
+
+                        <td className={TABLE_CELL}>
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={atualizarCompra}
+                              className="px-3 py-1.5 rounded-lg bg-emerald-500/15 text-emerald-300 hover:bg-emerald-500/25 transition"
+                            >
+                              Guardar
+                            </button>
+                            <button
+                              onClick={() => setModoEdicao(null)}
+                              className="px-3 py-1.5 rounded-lg bg-white/10 text-white/80 hover:bg-white/15 transition"
+                            >
+                              Cancelar
+                            </button>
+                          </div>
+                        </td>
+                      </>
+                    ) : (
+                      <>
+                        <td className={TABLE_CELL}>{c.evento}</td>
+                        <td className={TABLE_CELL}>
+                          {c.data_evento
+                            ? new Date(c.data_evento).toLocaleDateString("pt-PT")
+                            : "-"}
+                        </td>
+                        <td className={TABLE_CELL}>{c.local_compras}</td>
+                        <td className={TABLE_CELL}>{c.bancada}</td>
+                        <td className={TABLE_CELL}>{c.setor}</td>
+                        <td className={TABLE_CELL}>{c.fila}</td>
+                        <td className={TABLE_CELL}>{c.quantidade}</td>
+                        <td className={`${TABLE_CELL} text-red-400 font-semibold`}>
+                          -{c.gasto} €
+                        </td>
+                        <td className={TABLE_CELL}>
+                          <div className="flex items-center gap-2">
+                            {getCompraWarning(c, eventosChaveSet) && (
+                              <span
+                                className="text-yellow-400 text-lg"
+                                title="Compra não associada a evento"
+                              >
+                                ⚠️
+                              </span>
+                            )}
+
+                            <button
+                              onClick={() => editarCompra(c)}
+                              className="px-3 py-1.5 rounded-lg bg-blue-500/15 text-blue-300 hover:bg-blue-500/25 transition"
+                            >
+                              Editar
+                            </button>
+
+                            <button
+                              onClick={() => pedirConfirmEliminar(c.id)}
+                              className="px-3 py-1.5 rounded-lg bg-red-500/15 text-red-300 hover:bg-red-500/25 transition"
+                            >
+                              Eliminar
+                            </button>
+                          </div>
+                        </td>
+                      </>
+                    )}
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* MOBILE */}
+      <div className="md:hidden">
+        {/* FILTRO MOBILE */}
+        <div className={`${CARD_SHELL} p-4 mb-4`}>
+          <label className={`${LABEL_BASE} block`}>Filtrar por Evento</label>
+          <select
+            name="evento"
+            className={INPUT_BASE}
+            value={filtros.evento}
+            onChange={(e) => {
+              const eventoSelecionado = e.target.value;
+              setFiltros((prev) => ({ ...prev, evento: eventoSelecionado }));
+              const resultado = eventoSelecionado
+                ? compras.filter((c) => c.evento === eventoSelecionado)
+                : compras;
+              setComprasFiltradas(resultado);
+            }}
+          >
+            <option value="">-- Selecionar Evento --</option>
+            {eventosDropdown.map((e) => (
+              <option key={e.id} value={e.evento}>
+                {e.evento}
+              </option>
+            ))}
+          </select>
+
+          <button
+            onClick={() => {
+              setFiltros({ evento: "" });
+              setComprasFiltradas(compras);
+            }}
+            className={`mt-3 w-full ${BTN_SECONDARY}`}
+          >
+            Limpar
+          </button>
+        </div>
+
+        {/* BOTÃO ADICIONAR MOBILE */}
+        <button
+          onClick={() => setMostrarFormularioMobile(!mostrarFormularioMobile)}
+          className={`mb-4 w-full ${BTN_PRIMARY}`}
+        >
+          {mostrarFormularioMobile ? "Fechar" : "+ Adicionar Compra"}
+        </button>
+
+        {/* FORM MOBILE */}
+        {mostrarFormularioMobile && (
+          <div className={`${CARD_SHELL} p-4 mb-6 space-y-3`}>
+            <select
+              name="evento"
+              className={INPUT_BASE}
+              value={novaCompra.evento}
+              onChange={handleChange}
+            >
+              <option value="">-- Selecionar Evento --</option>
+              {eventosDropdown.map((e) => (
+                <option key={e.id} value={e.evento}>
+                  {e.evento}
+                </option>
+              ))}
+            </select>
+
+            <input
+              type="date"
+              name="data_evento"
+              className={INPUT_BASE}
+              value={novaCompra.data_evento}
+              onChange={handleChange}
+              placeholder="Data Evento"
+            />
+
+            <select
+              name="local_compras"
+              className={INPUT_BASE}
+              value={novaCompra.local_compras}
+              onChange={handleChange}
+            >
+              <option value="">-- Local da Compra --</option>
+              {locaisCompra.map((local) => (
+                <option key={local} value={local}>
+                  {local}
+                </option>
+              ))}
+            </select>
+
+            <input
+              list="bancadas-mobile"
+              name="bancada"
+              placeholder="Bancada"
+              className={INPUT_BASE}
+              value={novaCompra.bancada}
+              onChange={handleChange}
+            />
+            <datalist id="bancadas-mobile">
+              {bancadas.map((b) => (
+                <option key={b} value={b} />
+              ))}
+            </datalist>
+
+            <input
+              list="setores-mobile"
+              name="setor"
+              placeholder="Setor"
+              className={INPUT_BASE}
+              value={novaCompra.setor}
+              onChange={handleChange}
+            />
+            <datalist id="setores-mobile">
+              {setores.map((s) => (
+                <option key={s} value={s} />
+              ))}
+            </datalist>
+
+            <input
+              name="fila"
+              placeholder="Fila"
+              className={INPUT_BASE}
+              value={novaCompra.fila}
+              onChange={handleChange}
+            />
+
+            <input
+              name="quantidade"
+              type="number"
+              placeholder="Quantidade"
+              className={INPUT_BASE}
+              value={novaCompra.quantidade}
+              onChange={handleChange}
+            />
+
+            <input
+              name="gasto"
+              type="text"
+              placeholder="Gasto (€)"
+              className={INPUT_BASE}
               value={novaCompra.gasto}
               onChange={handleChange}
               onKeyDown={(e) => {
@@ -470,345 +861,18 @@ const adicionarCompra = () => {
                 }
               }}
             />
+
+            <button onClick={adicionarCompra} className={`w-full ${BTN_SUCCESS}`}>
+              Guardar Compra
+            </button>
           </div>
-        
-        </div>
+        )}
 
-        <button type="button" onClick={modoEdicao ? atualizarCompra : guardarCompra}
-          className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-          {modoEdicao ? "Atualizar" : "Guardar"}
-        </button>
-      </div>
-        
-
-
-      {/* Tabela */}
-    <div className="bg-white dark:bg-gray-900 shadow-md rounded p-4 relative transition-colors duration-300">
-      <div className="overflow-x-auto w-full"> 
-        <table className="hidden md:table min-w-full border dark:border-gray-700 text-sm text-left text-gray-600 dark:text-gray-300 transition-colors duration-300">
-          <thead className="sticky top-0 z-10 bg-gray-100 dark:bg-gray-700 shadow">
-            <tr className="bg-gray-100 dark:bg-gray-700 transition-colors duration-300">
-              <th className="p-2">Evento</th>
-              <th className="p-2">Data Evento</th>
-              <th className="p-2">Local Compra</th>
-              <th className="p-2">Bancada</th>
-              <th className="p-2">Setor</th>
-              <th className="p-2">Fila</th>
-              <th className="p-2">Qt.</th>
-              <th className="p-2">Gasto (€)</th>
-              <th className="p-2">Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            {[...comprasFiltradas].sort((a, b) => a.evento.localeCompare(b.evento)).map(c => (
-              <tr key={"c" + c.id} className="border-t">
-                {modoEdicao === c.id ? (
-                  <>
-                    {/* Evento */}
-                    <td className="p-2">
-                      <select
-                        name="evento"
-                        className="border p-1 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-                        value={novaCompra.evento}
-                        onChange={(e) => {
-                          const eventoSelecionado = e.target.value;
-                          const eventoCompleto = eventosDropdown.find(ev => ev.evento === eventoSelecionado);
-                          setNovaCompra(prev => ({
-                            ...prev,
-                            evento: eventoCompleto?.evento || eventoSelecionado,
-                            data_evento: eventoCompleto?.data_evento?.split("T")[0] || ""
-                          }));
-                        }}
-                      >
-                        <option value="">-- Evento --</option>
-                        {eventosDropdown.map(e => (
-                          <option key={e.id} value={e.evento}>
-                            {e.evento}
-                          </option>
-                        ))}
-                      </select>
-                    </td>
-
-            
-                    {/* Data Evento */}
-                    <td className="p-2">
-                      <input
-                        type="date"
-                        name="data_evento"
-                        className="border p-1 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-                        value={novaCompra.data_evento || ""}
-                        onChange={handleChange}
-                      />
-                    </td>
-            
-                    {/* Local Compra */}
-                    <td className="p-2">
-                      <input
-                        name="local_compras"
-                        className="border p-1 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-                        value={novaCompra.local_compras}
-                        onChange={handleChange}
-                      />
-                    </td>
-            
-                    {/* Bancada */}
-                    <td className="p-2">
-                      <input
-                        name="bancada"
-                        className="border p-1 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-                        value={novaCompra.bancada}
-                        onChange={handleChange}
-                      />
-                    </td>
-            
-                    {/* Setor */}
-                    <td className="p-2">
-                      <input
-                        name="setor"
-                        className="border p-1 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-                        value={novaCompra.setor}
-                        onChange={handleChange}
-                      />
-                    </td>
-            
-                    {/* Fila */}
-                    <td className="p-2">
-                      <input
-                        name="fila"
-                        className="border p-1 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-                        value={novaCompra.fila}
-                        onChange={handleChange}
-                      />
-                    </td>
-            
-                    {/* Quantidade */}
-                    <td className="p-2">
-                      <input
-                        type="number"
-                        name="quantidade"
-                        className="border p-1 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-                        value={novaCompra.quantidade}
-                        onChange={handleChange}
-                      />
-                    </td>
-            
-                    {/* Gasto */}
-                    <td className="p-2">
-                      <input
-                        type="text"
-                        name="gasto"
-                        className="border p-1 rounded w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-                        value={novaCompra.gasto}
-                        onChange={handleChange}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") {
-                            e.preventDefault();
-                            const resultado = calcularExpressao(e.target.value);
-                            setNovaCompra((prev) => ({
-                              ...prev,
-                              gasto: String(resultado),
-                            }));
-                          }
-                        }}
-                      />
-                    </td>
-            
-                    {/* Ações */}
-                    <td className="p-2 flex gap-2">
-                      <button onClick={atualizarCompra} className="text-green-600 hover:underline">Guardar</button>
-                      <button onClick={() => setModoEdicao(null)} className="text-gray-600 hover:underline">Cancelar</button>
-                    </td>
-                  </>
-                ) : (
-                  <>
-                    <td className="p-2">{c.evento}</td>
-                    <td className="p-2">{c.data_evento ? new Date(c.data_evento).toLocaleDateString("pt-PT") : "-"}</td>
-                    <td className="p-2">{c.local_compras}</td>
-                    <td className="p-2">{c.bancada}</td>
-                    <td className="p-2">{c.setor}</td>
-                    <td className="p-2">{c.fila}</td>
-                    <td className="p-2">{c.quantidade}</td>
-                    <td className="p-2">-{c.gasto} €</td>
-                    <td className="p-2 flex items-center gap-2">
-                      {
-                        eventosChaveSet.size > 0 &&
-                        (!c.evento || !c.data_evento || !eventosChaveSet.has(`${c.evento}|${c.data_evento.split("T")[0]}`)) && (
-                          <span className="text-yellow-500 text-lg" title="Compra não associada a evento">⚠️</span>
-                        )
-                      }
-            
-                      <button onClick={() => editarCompra(c)} className="text-blue-600 hover:underline">Editar</button>
-                      <button onClick={() => pedirConfirmEliminar(c.id)} className="text-red-600 hover:underline">Eliminar</button>
-                    </td>
-                  </>
-                )}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      {/* Botão + formulário apenas no mobile */}
-<div className="md:hidden">
-  {/* Filtro Mobile */}
-  <div className="bg-gray-50 dark:bg-gray-800 shadow-sm rounded p-4 mb-4">
-    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Filtrar por Evento</label>
-    <select
-      name="evento"
-      className="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded px-3 py-2 text-gray-900 dark:text-gray-100"
-      value={filtros.evento}
-      onChange={(e) => {
-        const eventoSelecionado = e.target.value;
-        setFiltros(prev => ({ ...prev, evento: eventoSelecionado }));
-        const resultado = eventoSelecionado
-          ? compras.filter(c => c.evento === eventoSelecionado)
-          : compras;
-        setComprasFiltradas(resultado);
-      }}
-    >
-      <option value="">-- Selecionar Evento --</option>
-      {eventosDropdown.map(e => (
-        <option key={e.id} value={e.evento}>{e.evento}</option>
-      ))}
-    </select>
-
-    <button
-      onClick={() => {
-        setFiltros({ evento: "" });
-        setComprasFiltradas(compras);
-      }}
-      className="mt-2 w-full bg-gray-500 text-white py-2 rounded hover:bg-gray-600"
-    >
-      Limpar
-    </button>
-  </div>
-
-  {/* Botão de Adicionar */}
-  <button
-    onClick={() => setMostrarFormularioMobile(!mostrarFormularioMobile)}
-    className="mb-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-  >
-    {mostrarFormularioMobile ? "Fechar" : "+ Adicionar Compra"}
-  </button>
-
-  {/* Formulário Mobile */}
-  {mostrarFormularioMobile && (
-    <div className="bg-white dark:bg-gray-900 shadow-md rounded p-4 mb-6 space-y-3 transition-colors duration-300 text-black dark:text-white">
-
-      {/* Evento dropdown */}
-      <select
-        name="evento"
-        className="w-full bg-gray-900 border border-gray-500 p-2 rounded text-white"
-        value={novaCompra.evento}
-        onChange={handleChange}
-      >
-        <option value="">-- Selecionar Evento --</option>
-        {eventosDropdown.map((e) => (
-          <option key={e.id} value={e.evento}>{e.evento}</option>
-        ))}
-      </select>
-
-      {/* Data do Evento */}
-      <input
-        type="date"
-        name="data_evento"
-        className="w-full bg-gray-900 border border-gray-500 p-2 rounded text-white"
-        value={novaCompra.data_evento}
-        onChange={handleChange}
-        placeholder="Data Evento"
-      />
-
-      {/* Local da Compra */}
-      <select
-        name="local_compras"
-        className="w-full bg-gray-900 border border-gray-500 p-2 rounded text-white"
-        value={novaCompra.local_compras}
-        onChange={handleChange}
-      >
-        <option value="">-- Local da Compra --</option>
-        {locaisCompra.map((local) => (
-          <option key={local} value={local}>{local}</option>
-        ))}
-      </select>
-
-      {/* Bancada */}
-      <input
-        list="bancadas"
-        name="bancada"
-        placeholder="Bancada"
-        className="w-full bg-gray-900 border border-gray-500 p-2 rounded text-white"
-        value={novaCompra.bancada}
-        onChange={handleChange}
-      />
-      <datalist id="bancadas">{bancadas.map(b => <option key={b} value={b} />)}</datalist>
-
-      {/* Setor */}
-      <input
-        list="setores"
-        name="setor"
-        placeholder="Setor"
-        className="w-full bg-gray-900 border border-gray-500 p-2 rounded text-white"
-        value={novaCompra.setor}
-        onChange={handleChange}
-      />
-      <datalist id="setores">{setores.map(s => <option key={s} value={s} />)}</datalist>
-
-      {/* Fila */}
-      <input
-        name="fila"
-        placeholder="Fila"
-        className="w-full bg-gray-900 border border-gray-500 p-2 rounded text-white"
-        value={novaCompra.fila}
-        onChange={handleChange}
-      />
-
-      {/* Quantidade */}
-      <input
-        name="quantidade"
-        type="number"
-        placeholder="Quantidade"
-        className="w-full bg-gray-900 border border-gray-500 p-2 rounded text-white"
-        value={novaCompra.quantidade}
-        onChange={handleChange}
-      />
-
-      {/* Gasto */}
-      <input
-        name="gasto"
-        type="text"
-        placeholder="Gasto (€)"
-        className="w-full bg-gray-900 border border-gray-500 p-2 rounded text-white"
-        value={novaCompra.gasto}
-        onChange={handleChange}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") {
-            e.preventDefault();
-            const resultado = calcularExpressao(e.target.value);
-            setNovaCompra((prev) => ({
-              ...prev,
-              gasto: String(resultado),
-            }));
-          }
-        }}
-      />
-
-      {/* Botão Guardar */}
-      <button
-        onClick={adicionarCompra}
-        className="w-full bg-green-600 hover:bg-green-500 text-white py-2 rounded-lg font-semibold"
-      >
-        Guardar Compra
-      </button>
-    </div>
-  )}
-</div>
-
-
-      <div className="space-y-5 md:hidden px-2">
-        {/* Mostrar datas sugeridas quando a compra é nova */}
+        {/* DATAS SUGERIDAS MOBILE */}
         {modoEdicao === null && datasEvento.length > 0 && novaCompra.evento && (
-          <div className="mt-2 text-xs text-gray-300 px-2">
+          <div className="mt-2 text-xs text-white/70 px-2 mb-4">
             Datas existentes (clique para preencher):
-            <ul className="list-disc list-inside">
+            <ul className="list-disc list-inside mt-1">
               {datasEvento.map((d, idx) => {
                 const dataFormatada = new Date(d).toISOString().split("T")[0];
                 return (
@@ -827,217 +891,271 @@ const adicionarCompra = () => {
           </div>
         )}
 
-  {comprasFiltradas.map((c) => {
-    const emEdicao = modoEdicao === c.id;
+        {/* CARDS MOBILE */}
+        <div className="space-y-5 px-2">
+          {comprasFiltradas.map((c) => {
+            const emEdicao = modoEdicao === c.id;
 
-    
-    return (
-      <div
-        key={c.id}
-        className="rounded-xl border border-gray-700 bg-gradient-to-br from-zinc-900 to-gray-800 p-4 shadow-xl text-white"
-      >
-        {/* Evento e data */}
-        {emEdicao ? (
-          <>
-            {/* Dropdown de Evento */}
-            <select
-              name="evento"
-              value={novaCompra.evento}
-              onChange={(e) => {
-                const eventoSelecionado = e.target.value;
-                setNovaCompra((prev) => ({ ...prev, evento: eventoSelecionado }));
-        
-                const datasEncontradas = eventosDropdown
-                  .filter(ev => ev.evento === eventoSelecionado)
-                  .map(ev => ev.data_evento);
-        
-                
-                setDatasEvento(datasEncontradas);
-              }}
-              className="w-full mb-2 bg-gray-900 border border-gray-500 p-2 rounded text-white"
-            >
-              <option value="">-- Selecionar Evento --</option>
-              {eventosDropdown
-                .sort((a, b) => a.evento.localeCompare(b.evento))
-                .map((e) => (
-                  <option key={e.id} value={e.evento}>
-                    {e.evento}
-                  </option>
-                ))}
-            </select>
-        
-            {/* Campo de Data com sugestões */}
-            <div className="flex flex-col mb-2">
-              <input
-                type="date"
-                name="data_evento"
-                value={novaCompra.data_evento || ""}
-                onChange={handleChange}
-                className="w-full bg-gray-900 border border-gray-500 p-2 rounded text-white"
-                placeholder="Data Evento"
-              />
-            
-              {datasEvento.length > 0 && (
-                <div className="mt-1 text-xs text-gray-300">
-                  Datas existentes (clique para preencher):
-                  <ul className="list-disc list-inside">
-                    {datasEvento.map((d, idx) => {
-                      const dataFormatada = new Date(d).toISOString().split("T")[0];
-                      return (
-                        <li
-                          key={idx}
-                          onClick={() =>
-                            setNovaCompra((prev) => ({ ...prev, data_evento: dataFormatada }))
-                          }
-                          className="cursor-pointer text-amber-300 hover:underline"
-                        >
-                          {new Date(d).toLocaleDateString("pt-PT")}
-                        </li>
-                      );
-                    })}
-                  </ul>
+            return (
+              <div
+                key={c.id}
+                className="rounded-2xl border border-white/10 bg-gradient-to-br from-[#101a2f] to-[#0b1220] p-4 shadow-[0_10px_35px_rgba(0,0,0,0.35)]"
+              >
+                {emEdicao ? (
+                  <>
+                    <select
+                      name="evento"
+                      value={novaCompra.evento}
+                      onChange={(e) => {
+                        const eventoSelecionado = e.target.value;
+                        setNovaCompra((prev) => ({ ...prev, evento: eventoSelecionado }));
+
+                        const datasEncontradas = eventosDropdown
+                          .filter((ev) => ev.evento === eventoSelecionado)
+                          .map((ev) => ev.data_evento);
+
+                        setDatasEvento(datasEncontradas);
+                      }}
+                      className={`${INPUT_BASE} mb-2`}
+                    >
+                      <option value="">-- Selecionar Evento --</option>
+                      {eventosDropdown
+                        .sort((a, b) => a.evento.localeCompare(b.evento))
+                        .map((e) => (
+                          <option key={e.id} value={e.evento}>
+                            {e.evento}
+                          </option>
+                        ))}
+                    </select>
+
+                    <div className="flex flex-col mb-2">
+                      <input
+                        type="date"
+                        name="data_evento"
+                        value={novaCompra.data_evento || ""}
+                        onChange={handleChange}
+                        className={INPUT_BASE}
+                        placeholder="Data Evento"
+                      />
+
+                      {datasEvento.length > 0 && (
+                        <div className="mt-2 text-xs text-white/70">
+                          Datas existentes (clique para preencher):
+                          <ul className="list-disc list-inside mt-1">
+                            {datasEvento.map((d, idx) => {
+                              const dataFormatada = new Date(d).toISOString().split("T")[0];
+                              return (
+                                <li
+                                  key={idx}
+                                  onClick={() =>
+                                    setNovaCompra((prev) => ({
+                                      ...prev,
+                                      data_evento: dataFormatada,
+                                    }))
+                                  }
+                                  className="cursor-pointer text-amber-300 hover:underline"
+                                >
+                                  {new Date(d).toLocaleDateString("pt-PT")}
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="text-lg font-bold mb-1 text-amber-400">{c.evento}</div>
+                    <div className="text-sm italic text-white/55">
+                      {c.data_evento
+                        ? new Date(c.data_evento).toLocaleDateString("pt-PT")
+                        : "-"}
+                    </div>
+                  </>
+                )}
+
+                <div className="text-sm mb-2 space-y-2 mt-3">
+                  {emEdicao ? (
+                    <>
+                      <input
+                        type="text"
+                        value={novaCompra.local_compras}
+                        onChange={(e) =>
+                          setNovaCompra({ ...novaCompra, local_compras: e.target.value })
+                        }
+                        className={INPUT_BASE}
+                        placeholder="Local da Compra"
+                      />
+
+                      <input
+                        list="bancadas-card"
+                        value={novaCompra.bancada}
+                        onChange={(e) =>
+                          setNovaCompra({ ...novaCompra, bancada: e.target.value })
+                        }
+                        className={INPUT_BASE}
+                        placeholder="Bancada"
+                      />
+                      <datalist id="bancadas-card">
+                        {bancadas.map((b) => (
+                          <option key={b} value={b} />
+                        ))}
+                      </datalist>
+
+                      <input
+                        list="setores-card"
+                        value={novaCompra.setor}
+                        onChange={(e) =>
+                          setNovaCompra({ ...novaCompra, setor: e.target.value })
+                        }
+                        className={INPUT_BASE}
+                        placeholder="Setor"
+                      />
+                      <datalist id="setores-card">
+                        {setores.map((s) => (
+                          <option key={s} value={s} />
+                        ))}
+                      </datalist>
+
+                      <input
+                        type="text"
+                        value={novaCompra.fila}
+                        onChange={(e) => setNovaCompra({ ...novaCompra, fila: e.target.value })}
+                        className={INPUT_BASE}
+                        placeholder="Fila"
+                      />
+
+                      <input
+                        type="number"
+                        value={novaCompra.quantidade}
+                        onChange={(e) =>
+                          setNovaCompra({ ...novaCompra, quantidade: e.target.value })
+                        }
+                        className={INPUT_BASE}
+                        placeholder="Quantidade"
+                      />
+                    </>
+                  ) : (
+                    <>
+                      <div>
+                        <span className="text-white/45">Local:</span> {c.local_compras}
+                      </div>
+                      <div>
+                        <span className="text-white/45">Bancada:</span> {c.bancada}
+                      </div>
+                      <div>
+                        <span className="text-white/45">Setor:</span> {c.setor}
+                      </div>
+                      <div>
+                        <span className="text-white/45">Fila:</span> {c.fila}
+                      </div>
+                      <div>
+                        <span className="text-white/45">Quantidade:</span> {c.quantidade}
+                      </div>
+                    </>
+                  )}
                 </div>
-              )}
-            </div>
-          </>
-        ) : (
-          <>
-            <div className="text-lg font-bold mb-1 text-amber-400">{c.evento}</div>
-            <div className="text-sm italic text-gray-300">
-              {c.data_evento ? new Date(c.data_evento).toLocaleDateString("pt-PT") : "-"}
-            </div>
-          </>
-        )}
 
+                <div className="flex justify-between items-center mt-4">
+                  {emEdicao ? (
+                    <span className="text-red-400 font-bold text-xl">
+                      <input
+                        type="text"
+                        value={novaCompra.gasto}
+                        onChange={(e) =>
+                          setNovaCompra({ ...novaCompra, gasto: e.target.value })
+                        }
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            const resultado = calcularExpressao(e.target.value);
+                            setNovaCompra((prev) => ({
+                              ...prev,
+                              gasto: String(resultado),
+                            }));
+                          }
+                        }}
+                        className="w-28 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-right text-red-400 outline-none"
+                        placeholder="Gasto (€)"
+                      />
+                    </span>
+                  ) : (
+                    <span className="text-red-400 font-bold text-xl">-{c.gasto} €</span>
+                  )}
 
-        {/* Detalhes */}
-        <div className="text-sm mb-2 space-y-2">
-          {emEdicao ? (
-            <>
-              <input
-                type="text"
-                value={novaCompra.local_compras}
-                onChange={(e) => setNovaCompra({ ...novaCompra, local_compras: e.target.value })}
-                className="w-full bg-gray-900 border border-gray-500 p-2 rounded text-white"
-                placeholder="Local da Compra"
-              />
+                  <div className="flex items-center gap-4 text-lg">
+                    {getCompraWarning(c, eventosChaveSet) && (
+                      <span
+                        className="text-yellow-400"
+                        title="Compra não associada a evento"
+                      >
+                        ⚠️
+                      </span>
+                    )}
 
-              <input
-                list="bancadas"
-                value={novaCompra.bancada}
-                onChange={(e) => setNovaCompra({ ...novaCompra, bancada: e.target.value })}
-                className="w-full bg-gray-900 border border-gray-500 p-2 rounded text-white"
-                placeholder="Bancada"
-              />
-              <datalist id="bancadas">{bancadas.map(b => <option key={b} value={b} />)}</datalist>
-
-              <input
-                list="setores"
-                value={novaCompra.setor}
-                onChange={(e) => setNovaCompra({ ...novaCompra, setor: e.target.value })}
-                className="w-full bg-gray-900 border border-gray-500 p-2 rounded text-white"
-                placeholder="Setor"
-              />
-              <datalist id="setores">{setores.map(s => <option key={s} value={s} />)}</datalist>
-
-              <input
-                type="text"
-                value={novaCompra.fila}
-                onChange={(e) => setNovaCompra({ ...novaCompra, fila: e.target.value })}
-                className="w-full bg-gray-900 border border-gray-500 p-2 rounded text-white"
-                placeholder="Fila"
-              />
-
-              <input
-                type="number"
-                value={novaCompra.quantidade}
-                onChange={(e) => setNovaCompra({ ...novaCompra, quantidade: e.target.value })}
-                className="w-full bg-gray-900 border border-gray-500 p-2 rounded text-white"
-                placeholder="Quantidade"
-              />
-            </>
-          ) : (
-            <>
-              <div><span className="text-gray-400">Local:</span> {c.local_compras}</div>
-              <div><span className="text-gray-400">Bancada:</span> {c.bancada}</div>
-              <div><span className="text-gray-400">Setor:</span> {c.setor}</div>
-              <div><span className="text-gray-400">Fila:</span> {c.fila}</div>
-              <div><span className="text-gray-400">Quantidade:</span> {c.quantidade}</div>
-            </>
-          )}
-        </div>
-
-        {/* Gasto + ações */}
-        <div className="flex justify-between items-center mt-3">
-          {emEdicao ? (
-            <span className="text-red-500 font-bold text-xl">
-              <input
-                type="text"
-                value={novaCompra.gasto}
-                onChange={(e) => setNovaCompra({ ...novaCompra, gasto: e.target.value })}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    const resultado = calcularExpressao(e.target.value);
-                    setNovaCompra((prev) => ({
-                      ...prev,
-                      gasto: String(resultado),
-                    }));
-                  }
-                }}
-                className="w-24 bg-gray-900 border border-gray-500 p-1 rounded text-red-400 text-right"
-                placeholder="Gasto (€)"
-              />
-            </span>
-          ) : (
-            <span className="text-red-500 font-bold text-xl animate-pulse">
-              -{c.gasto} €
-            </span>
-          )}
-          <div className="flex items-center gap-4 text-lg">
-            {
-              eventosChaveSet.size > 0 &&
-              (!c.evento || !c.data_evento || !eventosChaveSet.has(`${(c.evento || "").trim()}|${(c.data_evento || "").split("T")[0]}`)) && (
-                <span className="text-yellow-500" title="Compra não associada a evento">⚠️</span>
-              )
-            }
-            {emEdicao ? (
-              <>
-                <button onClick={atualizarCompra} className="text-green-400 hover:text-green-300" title="Guardar">💾</button>
-                <button onClick={() => setModoEdicao(null)} className="text-gray-400 hover:text-gray-300" title="Cancelar">✖️</button>
-              </>
-            ) : (
-              <>
-                <button onClick={() => editarCompra(c)} title="Editar">
-                  <FaEdit className="text-blue-400 hover:text-blue-300" />
-                </button>
-                <button onClick={() => pedirConfirmEliminar(c.id)} title="Eliminar">
-                  <FaTrash className="text-red-400 hover:text-red-300" />
-                </button>
-              </>
-            )}
-          </div>
-        </div>
-      </div>
-    );
-  })}
-</div>
-
-
-
-        {/* Modal de confirmação */}
-        {confirmarEliminarId !== null && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-            <div className="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded p-6 shadow-lg transition-colors duration-300">
-              <p>Tem a certeza que deseja eliminar esta compra?</p>
-              <div className="mt-4 flex justify-end gap-4">
-                <button onClick={() => eliminarCompra(confirmarEliminarId)} className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Sim, eliminar</button>
-                <button onClick={cancelarEliminar} className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400">Cancelar</button>
+                    {emEdicao ? (
+                      <>
+                        <button
+                          onClick={atualizarCompra}
+                          className="text-emerald-300 hover:text-emerald-200"
+                          title="Guardar"
+                        >
+                          💾
+                        </button>
+                        <button
+                          onClick={() => setModoEdicao(null)}
+                          className="text-white/60 hover:text-white/90"
+                          title="Cancelar"
+                        >
+                          ✖️
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <button onClick={() => editarCompra(c)} title="Editar">
+                          <FaEdit className="text-blue-300 hover:text-blue-200" />
+                        </button>
+                        <button onClick={() => pedirConfirmEliminar(c.id)} title="Eliminar">
+                          <FaTrash className="text-red-300 hover:text-red-200" />
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </div>
               </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* MODAL ELIMINAR */}
+      {confirmarEliminarId !== null && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center px-4">
+          <div className={`${CARD_SHELL} w-full max-w-md p-6`}>
+            <p className="text-white text-base">
+              Tem a certeza que deseja eliminar esta compra?
+            </p>
+
+            <div className="mt-5 flex justify-end gap-3">
+              <button
+                onClick={() => eliminarCompra(confirmarEliminarId)}
+                className="px-4 py-2 rounded-xl bg-red-600 text-white hover:bg-red-500 transition"
+              >
+                Sim, eliminar
+              </button>
+
+              <button
+                onClick={cancelarEliminar}
+                className="px-4 py-2 rounded-xl bg-white/10 text-white hover:bg-white/15 transition"
+              >
+                Cancelar
+              </button>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
-  );
-}
+  </div>
+);
+          
