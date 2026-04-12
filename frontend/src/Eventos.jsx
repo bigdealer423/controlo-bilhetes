@@ -2526,41 +2526,41 @@ return (
                     key={"v" + v.id}
                     className={`border-b border-emerald-400/10 transition-colors ${bgClass}`}
                   >
-                    <td className="py-3 pl-3 pr-2 align-top">
+                    <td className="py-[6px] pl-3 pr-2 align-top">
                       <input
                         type="number"
-                        className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
+                        className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-2 py-1 text-white"
                         value={vendaEditada.id_venda}
                         onChange={(e) =>
                           setVendaEditada({ ...vendaEditada, id_venda: e.target.value })
                         }
                       />
                     </td>
-
-                    <td className="py-3 px-2 align-top">
+              
+                    <td className="py-[6px] px-2 align-top">
                       <input
-                        className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
+                        className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-2 py-1 text-white"
                         value={vendaEditada.estadio}
                         onChange={(e) =>
                           setVendaEditada({ ...vendaEditada, estadio: e.target.value })
                         }
                       />
                     </td>
-
-                    <td className="py-3 px-2 align-top">
+              
+                    <td className="py-[6px] px-2 align-top">
                       <input
                         type="number"
-                        className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-right text-white"
+                        className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-2 py-1 text-right text-white"
                         value={vendaEditada.ganho}
                         onChange={(e) =>
                           setVendaEditada({ ...vendaEditada, ganho: e.target.value })
                         }
                       />
                     </td>
-
-                    <td className="py-3 px-2 align-top">
+              
+                    <td className="py-[6px] px-2 align-top">
                       <select
-                        className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
+                        className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-2 py-1 text-white"
                         value={vendaEditada.estado}
                         onChange={(e) =>
                           setVendaEditada({ ...vendaEditada, estado: e.target.value })
@@ -2572,10 +2572,10 @@ return (
                         <option value="Pago">Pago</option>
                       </select>
                     </td>
-
-                   <td className="py-3 px-2 align-top"></td>
-
-                    <td className="py-3 pl-2 pr-3 align-top whitespace-nowrap">
+              
+                    <td className="py-[6px] px-2 align-top"></td>
+              
+                    <td className="py-[6px] pl-2 pr-3 align-top whitespace-nowrap">
                       <button
                         className="mr-3 text-emerald-300"
                         onClick={() => guardarVenda(vendaEditada)}
@@ -2592,27 +2592,27 @@ return (
                   </tr>
                 );
               }
-
+              
               return (
                 <tr
                   key={"v" + v.id}
                   className={`border-b border-emerald-400/10 transition-colors ${bgClass}`}
                 >
-                  <td className="py-3 pl-3 pr-2 whitespace-nowrap text-white/90 align-top">
+                  <td className="py-[6px] pl-3 pr-2 whitespace-nowrap text-white/90 align-middle">
                     {v.id_venda}
                   </td>
-
-                  <td className="py-3 px-2 text-white/85 align-top">
+              
+                  <td className="py-[6px] px-2 text-white/85 align-middle">
                     {v.estadio}
                   </td>
-
-                  <td className="py-3 px-2 whitespace-nowrap text-right font-medium text-emerald-300 align-top">
+              
+                  <td className="py-[6px] px-2 whitespace-nowrap text-right font-medium text-emerald-300 align-middle">
                     {v.ganho} €
                   </td>
-
-                  <td className="py-3 pl-2 pr-1 whitespace-nowrap align-middle">
+              
+                  <td className="py-[6px] pl-2 pr-1 whitespace-nowrap align-middle">
                     <span
-                      className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${
+                      className={`inline-flex rounded-full px-2.5 py-[3px] text-xs font-semibold ${
                         v.estado === "Pago"
                           ? "bg-emerald-500/15 text-emerald-300 ring-1 ring-emerald-400/20"
                           : v.estado === "Entregue"
@@ -2626,7 +2626,7 @@ return (
                     </span>
                   </td>
                   
-                  <td className="py-3 pl-1 pr-1 align-middle">
+                  <td className="py-[6px] pl-1 pr-1 align-middle">
                     <CirculoEstado
                       tipo="listagem_vendas"
                       id={v.id}
@@ -2636,7 +2636,7 @@ return (
                     />
                   </td>
                   
-                  <td className="py-3 pl-1 pr-3 whitespace-nowrap align-middle">
+                  <td className="py-[6px] pl-1 pr-3 whitespace-nowrap align-middle">
                     {vendasNaoAssociadasSet.has(v.id) && (
                       <span
                         className="text-yellow-400 mr-2"
