@@ -302,22 +302,22 @@ def auto_update_email_data(username, password, date_from=None):
     novos_registos = []
 
     for msg_id in mensagens:
-    conteudo, data_venda = extract_email_content_and_date(mail, msg_id)
-    resultado = processar_email(conteudo, data_venda)
+        conteudo, data_venda = extract_email_content_and_date(mail, msg_id)
+        resultado = processar_email(conteudo, data_venda)
 
-    estado_resultado = resultado.get("estado") if isinstance(resultado, dict) else resultado
+        estado_resultado = resultado.get("estado") if isinstance(resultado, dict) else resultado
 
-    if estado_resultado == "inserido":
-        sucesso += 1
-        if isinstance(resultado, dict) and resultado.get("registo"):
-            novos_registos.append(resultado["registo"])
-    elif estado_resultado == "existente":
-        ja_existiam += 1
-    else:
-        falha += 1
-        match = re.search(r'(\d{9})', conteudo)
-        if match:
-            ids_erro.append(match.group(1))
+        if estado_resultado == "inserido":
+            sucesso += 1
+            if isinstance(resultado, dict) and resultado.get("registo"):
+                novos_registos.append(resultado["registo"])
+        elif estado_resultado == "existente":
+            ja_existiam += 1
+        else:
+            falha += 1
+            match = re.search(r'(\d{9})', conteudo)
+            if match:
+                ids_erro.append(match.group(1))
 
     print("\n📊 Resumo:")
     print(f"   Total de e-mails lidos: {len(mensagens)}")
@@ -337,6 +337,13 @@ def auto_update_email_data(username, password, date_from=None):
     with open("resumo_leitura.json", "w") as f:
         json.dump(resumo, f, indent=2)
 
+    try:
+        requests.post("https://controlo-bilhetes.onrender.com/guardar_resumo", json=resumo)
+        print("📡 Resumo enviado para a API FastAPI com sucesso.")
+    except Exception as e:
+        print(f"❌ Falha ao enviar resumo para API: {e}")
+
+    
    
 
     try:
@@ -916,7 +923,7 @@ if __name__ == "__main__":
             "entregues": entregues_resumo.get("alterados_para_entregue", 0),
             "ids_entregues": entregues_resumo.get("ids_entregues", []),
             "pagos": resultado_pagamentos.get("pagos", 0) + resultado_pagamentos_stubhub.get("pagos", 0),
-            "disputas": resultado_pagamentos.get("disputas", []) + resultado_pagamentos_stubhub.get("disputas", [])
+            "disputas": resultado_pagamentos.get("disputas", []) + resultado_pagamentos_stubhub.get("disputas", []),
             "novos_registos": (novos_registos + novos_registos_stubhub)[:5]
         }
     
