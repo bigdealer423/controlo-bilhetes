@@ -2707,26 +2707,26 @@ return (
                     <div className="px-4 pb-2">
                       <table className="w-full table-fixed text-xs text-white">
                         <colgroup>
-                          <col className="w-[100px]" />
-                          <col className="w-[100px]" />
-                          <col className="w-[85px]" />
-                          <col className="w-[55px]" />
-                          <col className="w-[80px]" />
-                          <col className="w-[85px]" />
-                          <col className="w-[170px]" />
-                          <col className="w-[80px]" />
+                          <col className="w-[108px]" />
+                          <col className="w-[112px]" />
+                          <col className="w-[98px]" />
+                          <col className="w-[62px]" />
+                          <col className="w-[42px]" />
+                          <col className="w-[78px]" />
+                          <col className="w-[178px]" />
+                          <col className="w-[72px]" />
                         </colgroup>
                 
                         <thead>
                           <tr className="bg-amber-500/10 text-[11px] uppercase tracking-[0.08em] text-white/65">
-                            <th className="py-3 pl-3 pr-1 text-left">Local</th>
-                            <th className="py-3 px-1 text-left">Bancada</th>
-                            <th className="py-3 px-1 text-left">Setor</th>
-                            <th className="py-3 px-1 text-left">Fila</th>
-                            <th className="py-3 px-1 text-left">Qt</th>
-                            <th className="py-3 px-2 text-right">Gasto</th>
-                            <th className="py-3 px-2 text-left">Nota</th>
-                            <th className="py-3 pl-2 pr-3 text-left">Ações</th>
+                            <th className="py-3 pl-2 pr-0 text-left">Local</th>
+                            <th className="py-3 px-[6px] text-left">Bancada</th>
+                            <th className="py-3 px-[6px] text-left">Setor</th>
+                            <th className="py-3 px-[6px] text-left">Fila</th>
+                            <th className="py-3 px-[4px] text-left">Qt</th>
+                            <th className="py-3 px-[6px] text-right">Gasto</th>
+                            <th className="py-3 px-[8px] text-left">Nota</th>
+                            <th className="py-3 pl-2 pr-2 text-left">Ações</th>
                           </tr>
                         </thead>
                 
@@ -2753,7 +2753,7 @@ return (
                                 >
                                   {modoEdicaoCompra === c.id ? (
                                     <>
-                                      <td className="py-3 pl-3 pr-1">
+                                      <td className="py-3 pl-2 pr-0">
                                         <input
                                           className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
                                           value={compraEditada.local_compras}
@@ -2761,7 +2761,7 @@ return (
                                         />
                                       </td>
                               
-                                      <td className="py-3 px-1">
+                                      <td className="py-3 px-[6px]">
                                         <input
                                           className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
                                           value={compraEditada.bancada}
@@ -2769,7 +2769,7 @@ return (
                                         />
                                       </td>
                               
-                                      <td className="py-3 px-1">
+                                      <td className="py-3 px-[6px]">
                                         <input
                                           className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
                                           value={compraEditada.setor}
@@ -2777,7 +2777,7 @@ return (
                                         />
                                       </td>
                               
-                                      <td className="py-3 px-1">
+                                      <td className="py-3 px-[6px]">
                                         <input
                                           className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
                                           value={compraEditada.fila}
@@ -2785,7 +2785,7 @@ return (
                                         />
                                       </td>
                               
-                                      <td className="py-3 px-1">
+                                      <td className="py-3 px-[4px]">
                                         <input
                                           type="number"
                                           className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
@@ -2794,7 +2794,7 @@ return (
                                         />
                                       </td>
                               
-                                      <td className="py-3 px-2">
+                                      <td className="py-3 px-[6px]">
                                         <input
                                           type="number"
                                           className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-right text-white"
@@ -2803,9 +2803,9 @@ return (
                                         />
                                       </td>
                               
-                                      <td className="py-3 px-2"></td>
+                                      <td className="py-3 px-[8px]"></td>
                               
-                                      <td className="py-3 pl-2 pr-3 whitespace-nowrap">
+                                      <td className="py-3 pl-2 pr-2 whitespace-nowrap">
                                         <button
                                           className="mr-3 text-emerald-300"
                                           onClick={() => guardarCompra(compraEditada)}
@@ -2822,28 +2822,28 @@ return (
                                     </>
                                   ) : (
                                     <>
-                                      <td className="py-3 pl-3 pr-1 text-white/85">{c.local_compras}</td>
-                              
-                                      <td className="py-3 px-1 text-white/85">{c.bancada}</td>
-                              
-                                      <td className="py-3 px-1 text-white/85">{c.setor}</td>
-                              
+                                      <td className="py-3 pl-2 pr-0 text-white/85">{c.local_compras}</td>
+
+                                      <td className="py-3 px-[6px] text-white/85">{c.bancada}</td>
+                                      
+                                      <td className="py-3 px-[6px] text-white/85">{c.setor}</td>
+                                      
                                       <td
-                                        className="py-3 px-1 max-w-[90px] overflow-hidden text-ellipsis whitespace-nowrap text-white/75"
+                                        className="py-3 px-[6px] max-w-[70px] overflow-hidden text-ellipsis whitespace-nowrap text-white/75"
                                         title={c.fila}
                                       >
                                         {c.fila}
                                       </td>
-                              
-                                      <td className="py-3 px-1 whitespace-nowrap text-white/90">
+                                      
+                                      <td className="py-3 px-[4px] whitespace-nowrap text-white/90">
                                         {c.quantidade}
                                       </td>
-                              
-                                      <td className="py-3 px-2 whitespace-nowrap text-right font-medium text-red-300">
+                                      
+                                      <td className="py-3 px-[6px] whitespace-nowrap text-right font-medium text-red-300">
                                         {c.gasto} €
                                       </td>
-                              
-                                      <td className="py-3 px-2">
+                                      
+                                      <td className="py-3 px-[8px]">
                                         <CirculoEstado
                                           tipo="compras"
                                           id={c.id}
@@ -2852,8 +2852,8 @@ return (
                                           setCompras={setCompras}
                                         />
                                       </td>
-                              
-                                      <td className="py-3 pl-2 pr-3 whitespace-nowrap">
+                                      
+                                      <td className="py-3 pl-2 pr-2 whitespace-nowrap">
                                         {comprasNaoAssociadasSet.has(c.id) && (
                                           <span
                                             className="text-yellow-400 mr-2"
