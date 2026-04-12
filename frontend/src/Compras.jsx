@@ -1,10 +1,4 @@
 
-
-
-
-
-
-
 import { useEffect, useState } from "react";
 import { FaFileExcel } from "react-icons/fa";
 import { FaEdit, FaTrash } from "react-icons/fa";
@@ -321,9 +315,15 @@ return (
               onChange={handleFiltroChange}
               className={`${INPUT_BASE} min-w-[260px] appearance-none [color-scheme:dark]`}
             >
-              <option value=""className="text-black">-- Filtrar por Evento --</option>
+              <option value="" className="bg-[#0f172a] text-white">
+                -- Filtrar por Evento --
+              </option>
               {eventosDropdown.map((e) => (
-                <option key={e.id} value={e.evento} className="text-black">
+                <option
+                  key={e.id}
+                  value={e.evento}
+                  className="bg-[#0f172a] text-white"
+                >
                   {e.evento}
                 </option>
               ))}
@@ -363,9 +363,15 @@ return (
               onChange={handleChange}
               className={`${INPUT_BASE} appearance-none [color-scheme:dark]`}
             >
-              <option value=""className="text-black">-- Evento --</option>
+              <option value="" className="bg-[#0f172a] text-white">
+                -- Evento --
+              </option>
               {eventosDropdown.map((e) => (
-                <option key={e.id} value={e.evento} className="text-black">
+                <option
+                  key={e.id}
+                  value={e.evento}
+                  className="bg-[#0f172a] text-white"
+                >
                   {e.evento}
                 </option>
               ))}
@@ -415,9 +421,15 @@ return (
               onChange={handleChange}
               className={`${INPUT_BASE} appearance-none [color-scheme:dark]`}
             >
-              <option value=""className="text-black">-- Local da Compra --</option>
+              <option value="" className="bg-[#0f172a] text-white">
+                -- Local da Compra --
+              </option>
               {locaisCompra.map((local) => (
-                <option key={local} value={local}>
+                <option
+                  key={local}
+                  value={local}
+                  className="bg-[#0f172a] text-white"
+                >
                   {local}
                 </option>
               ))}
@@ -544,7 +556,7 @@ return (
                         <td className={TABLE_CELL}>
                           <select
                             name="evento"
-                            className={`${INPUT_BASE} !py-2 !px-3`}
+                            className={`${INPUT_BASE} !py-2 !px-3 appearance-none [color-scheme:dark]`}
                             value={novaCompra.evento}
                             onChange={(e) => {
                               const eventoSelecionado = e.target.value;
@@ -559,9 +571,15 @@ return (
                               }));
                             }}
                           >
-                            <option value=""className="text-black">-- Evento --</option>
+                            <option value="" className="bg-[#0f172a] text-white">
+                              -- Evento --
+                            </option>
                             {eventosDropdown.map((e) => (
-                              <option key={e.id} value={e.evento} className="text-black">
+                              <option
+                                key={e.id}
+                                value={e.evento}
+                                className="bg-[#0f172a] text-white"
+                              >
                                 {e.evento}
                               </option>
                             ))}
@@ -730,9 +748,15 @@ return (
               setComprasFiltradas(resultado);
             }}
           >
-            <option value=""className="text-black">-- Selecionar Evento --</option>
+            <option value="" className="bg-[#0f172a] text-white">
+              -- Selecionar Evento --
+            </option>
             {eventosDropdown.map((e) => (
-              <option key={e.id} value={e.evento} className="text-black">
+              <option
+                key={e.id}
+                value={e.evento}
+                className="bg-[#0f172a] text-white"
+              >
                 {e.evento}
               </option>
             ))}
@@ -766,9 +790,15 @@ return (
               value={novaCompra.evento}
               onChange={handleChange}
             >
-              <option value=""className="text-black">-- Selecionar Evento --</option>
+              <option value="" className="bg-[#0f172a] text-white">
+                -- Selecionar Evento --
+              </option>
               {eventosDropdown.map((e) => (
-                <option key={e.id} value={e.evento} className="text-black">
+                <option
+                  key={e.id}
+                  value={e.evento}
+                  className="bg-[#0f172a] text-white"
+                >
                   {e.evento}
                 </option>
               ))}
@@ -789,9 +819,15 @@ return (
               value={novaCompra.local_compras}
               onChange={handleChange}
             >
-              <option value=""className="text-black">-- Local da Compra --</option>
+              <option value="" className="bg-[#0f172a] text-white">
+                -- Local da Compra --
+              </option>
               {locaisCompra.map((local) => (
-                <option key={local} value={local}>
+                <option
+                  key={local}
+                  value={local}
+                  className="bg-[#0f172a] text-white"
+                >
                   {local}
                 </option>
               ))}
@@ -915,13 +951,19 @@ return (
 
                         setDatasEvento(datasEncontradas);
                       }}
-                      className={`${INPUT_BASE} mb-2`}
+                      className={`${INPUT_BASE} mb-2 appearance-none [color-scheme:dark]`}
                     >
-                      <option value=""className="text-black">-- Selecionar Evento --</option>
+                      <option value="" className="bg-[#0f172a] text-white">
+                        -- Selecionar Evento --
+                      </option>
                       {eventosDropdown
                         .sort((a, b) => a.evento.localeCompare(b.evento))
                         .map((e) => (
-                          <option key={e.id} value={e.evento} className="text-black">
+                          <option
+                            key={e.id}
+                            value={e.evento}
+                            className="bg-[#0f172a] text-white"
+                          >
                             {e.evento}
                           </option>
                         ))}
