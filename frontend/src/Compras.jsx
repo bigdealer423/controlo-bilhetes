@@ -45,7 +45,7 @@ const CARD_SHELL =
   "rounded-[24px] border border-white/10 bg-white/[0.04] backdrop-blur-xl shadow-[0_10px_40px_rgba(0,0,0,0.35)]";
 
 const INPUT_BASE =
-  "w-full rounded-xl border border-white/10 bg-[#1a2742] px-3 py-2 md:py-2 lg:py-2.5 text-sm text-white placeholder:text-white/35 outline-none transition focus:border-blue-400/60 focus:ring-1 focus:ring-blue-400/30";
+  "w-full rounded-xl border border-white/10 bg-[#1a2742] px-3 py-2 text-[14px] text-white placeholder:text-white/35 outline-none transition focus:border-blue-400/60 focus:ring-1 focus:ring-blue-400/30";
 
 
 const LABEL_BASE = "mb-2 text-[13px] font-semibold tracking-wide text-white/80";
@@ -307,7 +307,7 @@ return (
   <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(37,99,235,0.15),_transparent_40%),linear-gradient(180deg,#06101f_0%,#081427_50%,#0b1730_100%)] text-white">
     <ToastContainer />
 
-    <div className="max-w-[1180px] xl:max-w-7xl mx-auto px-3 md:px-4 xl:px-4 py-4 md:py-5 xl:py-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
       {/* FILTROS + EXPORTAR */}
       <div className={`${CARD_SHELL} p-3 md:p-4 xl:p-4 mb-6`}>
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
