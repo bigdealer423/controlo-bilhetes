@@ -865,6 +865,7 @@ if __name__ == "__main__":
     
     sucesso_stubhub = 0
     falha_stubhub = 0
+    existentes_stubhub = 0
     novos_registos_stubhub = []
     
     for msg_id in mensagens:
@@ -877,8 +878,11 @@ if __name__ == "__main__":
             sucesso_stubhub += 1
             if isinstance(resultado, dict) and resultado.get("registo"):
                 novos_registos_stubhub.append(resultado["registo"])
+        elif estado_resultado == "existente":
+            existentes_stubhub += 1
         elif estado_resultado == "erro":
             falha_stubhub += 1
+            
     
     print(f"✅ StubHub inseridos com sucesso: {sucesso_stubhub}")
     print(f"❌ StubHub com erro: {falha_stubhub}")
@@ -904,6 +908,7 @@ if __name__ == "__main__":
         with open("resumo_leitura.json", "r+") as f:
             resumo = json.load(f)
             resumo["sucesso"] += sucesso_stubhub
+            resumo["existentes"] += existentes_stubhub
             resumo["total_lidos"] += sucesso_stubhub + falha_stubhub
             resumo["entregues"] = entregues_resumo["alterados_para_entregue"]
             resumo["ids_entregues"] = entregues_resumo["ids_entregues"]
@@ -916,10 +921,10 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"❌ Erro ao atualizar resumo com entregues: {e}")
         resumo = {
-            "total_lidos": resumo_base.get("total_lidos", 0) + sucesso_stubhub + falha_stubhub,
+            "total_lidos": resumo_base.get("total_lidos", 0) + sucesso_stubhub + falha_stubhub + existentes_stubhub,
             "sucesso": resumo_base.get("sucesso", 0) + sucesso_stubhub,
             "falhas": resumo_base.get("falhas", 0) + falha_stubhub,
-            "existentes": resumo_base.get("existentes", 0),
+            "existentes": resumo_base.get("existentes", 0) + existentes_stubhub,
             "ids_falhados": resumo_base.get("ids_falhados", []),
             "entregues": entregues_resumo.get("alterados_para_entregue", 0),
             "ids_entregues": entregues_resumo.get("ids_entregues", []),
