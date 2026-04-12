@@ -2707,26 +2707,26 @@ return (
                     <div className="px-4 pb-2">
                       <table className="w-full table-fixed text-xs text-white">
                         <colgroup>
-                          <col className="w-[108px]" />
-                          <col className="w-[112px]" />
-                          <col className="w-[98px]" />
-                          <col className="w-[62px]" />
-                          <col className="w-[42px]" />
-                          <col className="w-[78px]" />
-                          <col className="w-[178px]" />
-                          <col className="w-[72px]" />
+                          <col className="w-[86px]" />
+                          <col className="w-[92px]" />
+                          <col className="w-[82px]" />
+                          <col className="w-[48px]" />
+                          <col className="w-[34px]" />
+                          <col className="w-[74px]" />
+                          <col className="w-[188px]" />
+                          <col className="w-[84px]" />
                         </colgroup>
                 
                         <thead>
                           <tr className="bg-amber-500/10 text-[11px] uppercase tracking-[0.08em] text-white/65">
-                            <th className="py-3 pl-2 pr-0 text-left">Local</th>
-                            <th className="py-3 px-[6px] text-left">Bancada</th>
-                            <th className="py-3 px-[6px] text-left">Setor</th>
-                            <th className="py-3 px-[6px] text-left">Fila</th>
-                            <th className="py-3 px-[4px] text-left">Qt</th>
-                            <th className="py-3 px-[6px] text-right">Gasto</th>
-                            <th className="py-3 px-[8px] text-left">Nota</th>
-                            <th className="py-3 pl-2 pr-2 text-left">Ações</th>
+                            <th className="py-2 pl-2 pr-[2px] text-left">Local</th>
+                            <th className="py-2 px-[2px] text-left">Bancada</th>
+                            <th className="py-2 px-[2px] text-left">Setor</th>
+                            <th className="py-2 px-[2px] text-left">Fila</th>
+                            <th className="py-2 px-[2px] text-left">Qt</th>
+                            <th className="py-2 px-[4px] text-right">Gasto</th>
+                            <th className="py-2 pl-[18px] pr-[6px] text-left">Nota</th>
+                            <th className="py-2 pl-[18px] pr-2 text-left">Ações</th>
                           </tr>
                         </thead>
                 
@@ -2753,59 +2753,89 @@ return (
                                 >
                                   {modoEdicaoCompra === c.id ? (
                                     <>
-                                      <td className="py-3 pl-2 pr-0">
+                                      <td className="py-2 pl-2 pr-[2px] align-middle">
                                         <input
-                                          className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
+                                          className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-2 py-1.5 text-white"
                                           value={compraEditada.local_compras}
-                                          onChange={e => setCompraEditada({ ...compraEditada, local_compras: e.target.value })}
+                                          onChange={(e) =>
+                                            setCompraEditada({
+                                              ...compraEditada,
+                                              local_compras: e.target.value,
+                                            })
+                                          }
                                         />
                                       </td>
-                              
-                                      <td className="py-3 px-[6px]">
+                
+                                      <td className="py-2 px-[2px] align-middle">
                                         <input
-                                          className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
+                                          className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-2 py-1.5 text-white"
                                           value={compraEditada.bancada}
-                                          onChange={e => setCompraEditada({ ...compraEditada, bancada: e.target.value })}
+                                          onChange={(e) =>
+                                            setCompraEditada({
+                                              ...compraEditada,
+                                              bancada: e.target.value,
+                                            })
+                                          }
                                         />
                                       </td>
-                              
-                                      <td className="py-3 px-[6px]">
+                
+                                      <td className="py-2 px-[2px] align-middle">
                                         <input
-                                          className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
+                                          className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-2 py-1.5 text-white"
                                           value={compraEditada.setor}
-                                          onChange={e => setCompraEditada({ ...compraEditada, setor: e.target.value })}
+                                          onChange={(e) =>
+                                            setCompraEditada({
+                                              ...compraEditada,
+                                              setor: e.target.value,
+                                            })
+                                          }
                                         />
                                       </td>
-                              
-                                      <td className="py-3 px-[6px]">
+                
+                                      <td className="py-2 px-[2px] align-middle">
                                         <input
-                                          className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
+                                          className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-2 py-1.5 text-white"
                                           value={compraEditada.fila}
-                                          onChange={e => setCompraEditada({ ...compraEditada, fila: e.target.value })}
+                                          onChange={(e) =>
+                                            setCompraEditada({
+                                              ...compraEditada,
+                                              fila: e.target.value,
+                                            })
+                                          }
                                         />
                                       </td>
-                              
-                                      <td className="py-3 px-[4px]">
+                
+                                      <td className="py-2 px-[2px] align-middle">
                                         <input
                                           type="number"
-                                          className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
+                                          className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-2 py-1.5 text-white"
                                           value={compraEditada.quantidade}
-                                          onChange={e => setCompraEditada({ ...compraEditada, quantidade: e.target.value })}
+                                          onChange={(e) =>
+                                            setCompraEditada({
+                                              ...compraEditada,
+                                              quantidade: e.target.value,
+                                            })
+                                          }
                                         />
                                       </td>
-                              
-                                      <td className="py-3 px-[6px]">
+                
+                                      <td className="py-2 px-[4px] align-middle">
                                         <input
                                           type="number"
-                                          className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-right text-white"
+                                          className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-2 py-1.5 text-right text-white"
                                           value={compraEditada.gasto}
-                                          onChange={e => setCompraEditada({ ...compraEditada, gasto: e.target.value })}
+                                          onChange={(e) =>
+                                            setCompraEditada({
+                                              ...compraEditada,
+                                              gasto: e.target.value,
+                                            })
+                                          }
                                         />
                                       </td>
-                              
-                                      <td className="py-3 px-[8px]"></td>
-                              
-                                      <td className="py-3 pl-2 pr-2 whitespace-nowrap">
+                
+                                      <td className="py-2 pl-[18px] pr-[6px] align-middle"></td>
+                
+                                      <td className="py-2 pl-[18px] pr-2 whitespace-nowrap align-middle">
                                         <button
                                           className="mr-3 text-emerald-300"
                                           onClick={() => guardarCompra(compraEditada)}
@@ -2822,28 +2852,34 @@ return (
                                     </>
                                   ) : (
                                     <>
-                                      <td className="py-3 pl-2 pr-0 text-white/85">{c.local_compras}</td>
-
-                                      <td className="py-3 px-[6px] text-white/85">{c.bancada}</td>
-                                      
-                                      <td className="py-3 px-[6px] text-white/85">{c.setor}</td>
-                                      
+                                      <td className="py-2 pl-2 pr-[2px] text-white/85 align-middle">
+                                        {c.local_compras}
+                                      </td>
+                
+                                      <td className="py-2 px-[2px] text-white/85 align-middle">
+                                        {c.bancada}
+                                      </td>
+                
+                                      <td className="py-2 px-[2px] text-white/85 align-middle">
+                                        {c.setor}
+                                      </td>
+                
                                       <td
-                                        className="py-3 px-[6px] max-w-[70px] overflow-hidden text-ellipsis whitespace-nowrap text-white/75"
+                                        className="py-2 px-[2px] max-w-[50px] overflow-hidden text-ellipsis whitespace-nowrap text-white/75 align-middle"
                                         title={c.fila}
                                       >
                                         {c.fila}
                                       </td>
-                                      
-                                      <td className="py-3 px-[4px] whitespace-nowrap text-white/90">
+                
+                                      <td className="py-2 px-[2px] whitespace-nowrap text-white/90 align-middle">
                                         {c.quantidade}
                                       </td>
-                                      
-                                      <td className="py-3 px-[6px] whitespace-nowrap text-right font-medium text-red-300">
+                
+                                      <td className="py-2 px-[4px] whitespace-nowrap text-right font-medium text-red-300 align-middle">
                                         {c.gasto} €
                                       </td>
-                                      
-                                      <td className="py-3 px-[8px]">
+                
+                                      <td className="py-2 pl-[18px] pr-[6px] align-middle">
                                         <CirculoEstado
                                           tipo="compras"
                                           id={c.id}
@@ -2852,8 +2888,8 @@ return (
                                           setCompras={setCompras}
                                         />
                                       </td>
-                                      
-                                      <td className="py-3 pl-2 pr-2 whitespace-nowrap">
+                
+                                      <td className="py-2 pl-[18px] pr-2 whitespace-nowrap align-middle">
                                         {comprasNaoAssociadasSet.has(c.id) && (
                                           <span
                                             className="text-yellow-400 mr-2"
@@ -2862,7 +2898,6 @@ return (
                                             ⚠️
                                           </span>
                                         )}
-                              
                                         <button
                                           onClick={() => {
                                             setModoEdicaoCompra(c.id);
