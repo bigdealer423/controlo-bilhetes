@@ -2133,10 +2133,11 @@ return (
   <div className="flex">
     <button
       onClick={() => exportarEventosParaExcel(registos)}
-      className="inline-flex items-center justify-center gap-3 rounded-2xl border border-emerald-400/20 bg-gradient-to-r from-emerald-600 to-green-500 px-5 py-3 font-semibold text-white shadow-[0_12px_30px_rgba(16,185,129,0.24)] transition hover:scale-[1.01] hover:from-emerald-500 hover:to-green-400"
+      className="inline-flex items-center justify-center gap-3 md:gap-1.5 lg:gap-3 rounded-2xl border border-emerald-400/20 bg-gradient-to-r from-emerald-600 to-green-500 px-5 md:px-3 lg:px-5 py-3 md:py-2 lg:py-3 font-semibold text-white shadow-[0_12px_30px_rgba(16,185,129,0.24)] transition hover:scale-[1.01] hover:from-emerald-500 hover:to-green-400 whitespace-nowrap text-sm md:text-[13px] lg:text-base"
     >
-      <FaFileExcel className="h-4 w-4" />
-      <span>Exportar Excel</span>
+      <FaFileExcel className="h-4 w-4 md:h-3.5 md:w-3.5 lg:h-4 lg:w-4" />
+      <span className="hidden lg:inline">Exportar Excel</span>
+      <span className="lg:hidden">Excel</span>
     </button>
   </div>
 </div>
