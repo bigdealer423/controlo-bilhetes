@@ -51,7 +51,7 @@ const CARD_SHELL =
   "rounded-[24px] border border-white/10 bg-white/[0.04] backdrop-blur-xl shadow-[0_10px_40px_rgba(0,0,0,0.35)]";
 
 const INPUT_BASE =
-  "w-full rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2.5 text-sm text-white placeholder:text-white/35 outline-none transition focus:border-blue-400/60";
+  "w-full rounded-xl border border-white/10 bg-[#1a2742] px-3 py-2.5 text-sm text-white placeholder:text-white/35 outline-none transition focus:border-blue-400/60 focus:ring-1 focus:ring-blue-400/30";
 
 const LABEL_BASE = "mb-2 text-[13px] font-semibold tracking-wide text-white/80";
 
@@ -319,7 +319,7 @@ return (
               name="evento"
               value={filtros.evento}
               onChange={handleFiltroChange}
-              className={`${INPUT_BASE} min-w-[260px]`}
+              className={`${INPUT_BASE} min-w-[260px] appearance-none [color-scheme:dark]`}
             >
               <option value=""className="text-black">-- Filtrar por Evento --</option>
               {eventosDropdown.map((e) => (
@@ -361,7 +361,7 @@ return (
               name="evento"
               value={novaCompra.evento}
               onChange={handleChange}
-              className={INPUT_BASE}
+              className={`${INPUT_BASE} appearance-none [color-scheme:dark]`}
             >
               <option value=""className="text-black">-- Evento --</option>
               {eventosDropdown.map((e) => (
@@ -413,7 +413,7 @@ return (
               name="local_compras"
               value={novaCompra.local_compras}
               onChange={handleChange}
-              className={INPUT_BASE}
+              className={`${INPUT_BASE} appearance-none [color-scheme:dark]`}
             >
               <option value=""className="text-black">-- Local da Compra --</option>
               {locaisCompra.map((local) => (
@@ -719,7 +719,7 @@ return (
           <label className={`${LABEL_BASE} block`}>Filtrar por Evento</label>
           <select
             name="evento"
-            className={INPUT_BASE}
+            className={`${INPUT_BASE} appearance-none [color-scheme:dark]`}
             value={filtros.evento}
             onChange={(e) => {
               const eventoSelecionado = e.target.value;
@@ -762,7 +762,7 @@ return (
           <div className={`${CARD_SHELL} p-4 mb-6 space-y-3`}>
             <select
               name="evento"
-              className={INPUT_BASE}
+              className={`${INPUT_BASE} appearance-none [color-scheme:dark]`}
               value={novaCompra.evento}
               onChange={handleChange}
             >
@@ -785,7 +785,7 @@ return (
 
             <select
               name="local_compras"
-              className={INPUT_BASE}
+              className={`${INPUT_BASE} appearance-none [color-scheme:dark]`}
               value={novaCompra.local_compras}
               onChange={handleChange}
             >
