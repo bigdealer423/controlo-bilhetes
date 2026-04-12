@@ -381,40 +381,7 @@ return (
       </select>
     </div>
 
-    <div className="flex min-w-0 flex-col">
-      <label className={LABEL_BASE}>Data do Evento</label>
-      <input
-        type="date"
-        name="data_evento"
-        value={novaCompra.data_evento || ""}
-        onChange={handleChange}
-        className={`${INPUT_BASE} w-full min-w-0`}
-      />
-      {datasEvento.length > 0 && (
-        <div className="mt-2 text-xs text-white/70">
-          Datas existentes (clique para preencher):
-          <ul className="list-disc list-inside mt-1 space-y-1">
-            {datasEvento.map((d, idx) => {
-              const dataFormatada = new Date(d).toISOString().split("T")[0];
-              return (
-                <li
-                  key={idx}
-                  onClick={() =>
-                    setNovaCompra((prev) => ({
-                      ...prev,
-                      data_evento: dataFormatada,
-                    }))
-                  }
-                  className="cursor-pointer text-blue-300 hover:underline"
-                >
-                  {new Date(d).toLocaleDateString("pt-PT")}
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-      )}
-    </div>
+    <label className={LABEL_BASE}>Data do Evento</label>
 
     <div className="flex min-w-0 flex-col">
       <label className={LABEL_BASE}>Local da Compra</label>
