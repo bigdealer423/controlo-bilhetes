@@ -1,11 +1,9 @@
-
 import { useNavigate, useLocation } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import EventoModal from "./EventoModal";
 import { FiSettings } from "react-icons/fi";
 import { useAuth } from "./AuthContext";
 import ThemeToggle from "./components/ThemeToggle";
-
 
 export default function Dashboard({ onAtualizarEventos }) {
   const navigate = useNavigate();
@@ -15,77 +13,85 @@ export default function Dashboard({ onAtualizarEventos }) {
 
   const [mostrarModal, setMostrarModal] = useState(false);
 
-  // Função para logout
   const handleLogout = () => {
     logout();
     navigate("/login");
   };
 
-  // Menus de navegação
   const menus = [
     { nome: "Listagem de Vendas", rota: "/listagem-vendas" },
     { nome: "Eventos", rota: "/eventos" },
     { nome: "Info Clubes", rota: "/info-clubes" },
     { nome: "Disputas", rota: "/disputas" },
     { nome: "Compras", rota: "/compras" },
-    { nome: "Outro Menu", rota: "/outro" }
+    { nome: "Outro Menu", rota: "/outro" },
   ];
 
-  // Função de clique nos menus
   const handleMenuClick = (e, menuRota) => {
-    e.stopPropagation(); // Impede a navegação imediata
-    navigate(menuRota);  // Navega para a página
+    e.stopPropagation();
+    navigate(menuRota);
   };
 
-  // Função que abre o modal da roda dentada sem fechar a navegação
   const handleRodaDentadaClick = (e) => {
-    e.stopPropagation(); // Impede que a navegação aconteça imediatamente
-    setMostrarModal(true);  // Abre o modal
+    e.stopPropagation();
+    setMostrarModal(true);
   };
 
-
- 
   return (
     <>
-      <div className="bg-gray-100 dark:bg-gray-800 p-3 flex justify-between items-center border-b border-gray-300 dark:border-gray-700 mb-4 transition-colors duration-300">
-        <div className="hidden md:flex gap-2 flex-wrap">
-          {menus.map((menu) => (
+      <div className="sticky top-0 z-50 border-b border-white/10 bg-[#0b1220]/95 backdrop-blur-md shadow-[0_10px_30px_rgba(0,0,0,0.28)]">
+        <div className="flex items-center justify-between px-3 py-2 md:px-4">
+          {/* Menus topo */}
+          <div className="hidden md:flex items-center gap-2 flex-wrap">
+            {menus.map((menu) => {
+              const ativo = rotaAtual === menu.rota;
+
+              return (
+                <button
+                  key={menu.rota}
+                  onClick={(e) => handleMenuClick(e, menu.rota)}
+                  className={`group relative overflow-hidden rounded-xl px-4 py-2 text-[14px] font-semibold transition-all duration-300 border ${
+                    ativo
+                      ? "border-blue-400/40 bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-[0_0_20px_rgba(59,130,246,0.35)]"
+                      : "border-white/10 bg-white/[0.04] text-white/85 hover:bg-white/[0.08] hover:border-white/20"
+                  }`}
+                >
+                  <span className="relative z-10">{menu.nome}</span>
+
+                  {!ativo && (
+                    <span className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 bg-gradient-to-r from-blue-500/10 via-indigo-500/10 to-purple-500/10" />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Lado direito */}
+          <div className="flex items-center gap-3 ml-4">
+            <div className="scale-90 origin-center">
+              <ThemeToggle />
+            </div>
+
             <button
-              key={menu.rota}
-              onClick={(e) => handleMenuClick(e, menu.rota)}
-              className={`px-3 py-1 text-sm rounded transition-colors duration-300 ${
-                rotaAtual === menu.rota
-                  ? "bg-blue-600 text-white"
-                  : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-100 border border-gray-300 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-gray-600"
-              }`}
+              onClick={handleRodaDentadaClick}
+              className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] text-white/80 transition-all duration-300 hover:bg-white/[0.08] hover:text-white hover:border-white/20"
+              title="Definições"
             >
-              {menu.nome}
+              <FiSettings size={18} />
             </button>
-          ))}
+
+            <button
+              onClick={handleLogout}
+              className="rounded-xl border border-red-500/40 bg-red-500/10 px-3 py-2 text-sm font-semibold text-red-400 transition-all duration-300 hover:bg-red-500/15 hover:text-red-300 hover:shadow-[0_0_18px_rgba(239,68,68,0.22)]"
+            >
+              Logout
+            </button>
+          </div>
         </div>
 
-  
-        <div className="flex items-center space-x-4 ml-4">
-          <ThemeToggle />  {/* Aqui, alinhado com os botões de topo */}
-          <button
-            onClick={(e) => handleRodaDentadaClick(e)}  // Garante que a roda dentada apenas abre o modal
-            className="text-gray-700 hover:text-black dark:text-white dark:hover:text-gray-300 transition-colors"
-            title="Definições"
-          >
-            <FiSettings size={20} />
-          </button>
-  
-          <button
-            onClick={handleLogout}
-            className="text-red-600 hover:text-red-800 text-sm border border-red-600 dark:border-red-400 px-2 py-1 rounded bg-white dark:bg-gray-700 dark:text-red-400 transition-colors duration-300"
-          >
-            Logout
-          </button>
-        </div>
-  
-                <EventoModal
+        <EventoModal
           visivel={mostrarModal}
-          fechar={() => setMostrarModal(false)}  // Garante que o modal pode ser fechado
+          fechar={() => setMostrarModal(false)}
           onAtualizar={onAtualizarEventos}
         />
       </div>
