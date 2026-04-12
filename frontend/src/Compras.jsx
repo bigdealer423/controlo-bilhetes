@@ -351,182 +351,182 @@ return (
         </div>
       </div>
 
-      {/* FORM DESKTOP */}
-      <div className={`hidden md:block ${CARD_SHELL} p-4 lg:p-5 xl:p-6 mb-6`}>
-        <h2 className="text-lg lg:text-xl font-bold mb-4">
-          {modoEdicao ? "Editar Compra" : "Nova Compra"}
-        </h2>
+{/* FORM DESKTOP */}
+<div className={`hidden md:block ${CARD_SHELL} p-6 mb-6`}>
+  <h2 className="text-xl font-bold mb-4">
+    {modoEdicao ? "Editar Compra" : "Nova Compra"}
+  </h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 lg:gap-4">
-          <div className="flex flex-col">
-            <label className={LABEL_BASE}>Evento</label>
-            <select
-              name="evento"
-              value={novaCompra.evento}
-              onChange={handleChange}
-              className={`${INPUT_BASE} appearance-none [color-scheme:dark]`}
-            >
-              <option value="" className="bg-[#0f172a] text-white">
-                -- Evento --
-              </option>
-              {eventosDropdown.map((e) => (
-                <option
-                  key={e.id}
-                  value={e.evento}
-                  className="bg-[#0f172a] text-white"
+  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-4">
+    <div className="flex min-w-0 flex-col">
+      <label className={LABEL_BASE}>Evento</label>
+      <select
+        name="evento"
+        value={novaCompra.evento}
+        onChange={handleChange}
+        className={`${INPUT_BASE} min-w-0 appearance-none [color-scheme:dark]`}
+      >
+        <option value="" className="bg-[#0f172a] text-white">
+          -- Evento --
+        </option>
+        {eventosDropdown.map((e) => (
+          <option
+            key={e.id}
+            value={e.evento}
+            className="bg-[#0f172a] text-white"
+          >
+            {e.evento}
+          </option>
+        ))}
+      </select>
+    </div>
+
+    <div className="flex min-w-0 flex-col">
+      <label className={LABEL_BASE}>Data do Evento</label>
+      <input
+        type="date"
+        name="data_evento"
+        value={novaCompra.data_evento || ""}
+        onChange={handleChange}
+        className={INPUT_BASE}
+      />
+      {datasEvento.length > 0 && (
+        <div className="mt-2 text-xs text-white/70">
+          Datas existentes (clique para preencher):
+          <ul className="list-disc list-inside mt-1 space-y-1">
+            {datasEvento.map((d, idx) => {
+              const dataFormatada = new Date(d).toISOString().split("T")[0];
+              return (
+                <li
+                  key={idx}
+                  onClick={() =>
+                    setNovaCompra((prev) => ({
+                      ...prev,
+                      data_evento: dataFormatada,
+                    }))
+                  }
+                  className="cursor-pointer text-blue-300 hover:underline"
                 >
-                  {e.evento}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="flex flex-col">
-            <label className={LABEL_BASE}>Data do Evento</label>
-            <input
-              type="date"
-              name="data_evento"
-              value={novaCompra.data_evento || ""}
-              onChange={handleChange}
-              className={INPUT_BASE}
-            />
-            {datasEvento.length > 0 && (
-              <div className="mt-2 text-xs text-white/70">
-                Datas existentes (clique para preencher):
-                <ul className="list-disc list-inside mt-1 space-y-1">
-                  {datasEvento.map((d, idx) => {
-                    const dataFormatada = new Date(d).toISOString().split("T")[0];
-                    return (
-                      <li
-                        key={idx}
-                        onClick={() =>
-                          setNovaCompra((prev) => ({
-                            ...prev,
-                            data_evento: dataFormatada,
-                          }))
-                        }
-                        className="cursor-pointer text-blue-300 hover:underline"
-                      >
-                        {new Date(d).toLocaleDateString("pt-PT")}
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
-            )}
-          </div>
-
-          <div className="flex flex-col">
-            <label className={LABEL_BASE}>Local da Compra</label>
-            <select
-              name="local_compras"
-              value={novaCompra.local_compras}
-              onChange={handleChange}
-              className={`${INPUT_BASE} appearance-none [color-scheme:dark]`}
-            >
-              <option value="" className="bg-[#0f172a] text-white">
-                -- Local da Compra --
-              </option>
-              {locaisCompra.map((local) => (
-                <option
-                  key={local}
-                  value={local}
-                  className="bg-[#0f172a] text-white"
-                >
-                  {local}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="flex flex-col">
-            <label className={LABEL_BASE}>Bancada</label>
-            <input
-              list="bancadas"
-              name="bancada"
-              placeholder="Bancada"
-              value={novaCompra.bancada}
-              onChange={handleChange}
-              className={INPUT_BASE}
-            />
-            <datalist id="bancadas">
-              {bancadas.map((b) => (
-                <option key={b} value={b} />
-              ))}
-            </datalist>
-          </div>
-
-          <div className="flex flex-col">
-            <label className={LABEL_BASE}>Setor</label>
-            <input
-              list="setores"
-              name="setor"
-              placeholder="Setor"
-              value={novaCompra.setor}
-              onChange={handleChange}
-              className={INPUT_BASE}
-            />
-            <datalist id="setores">
-              {setores.map((s) => (
-                <option key={s} value={s} />
-              ))}
-            </datalist>
-          </div>
-
-          <div className="flex flex-col">
-            <label className={LABEL_BASE}>Fila</label>
-            <input
-              name="fila"
-              placeholder="Fila"
-              value={novaCompra.fila}
-              onChange={handleChange}
-              className={INPUT_BASE}
-            />
-          </div>
-
-          <div className="flex flex-col">
-            <label className={LABEL_BASE}>Quantidade</label>
-            <input
-              name="quantidade"
-              type="number"
-              placeholder="Quantidade"
-              value={novaCompra.quantidade}
-              onChange={handleChange}
-              className={INPUT_BASE}
-            />
-          </div>
-
-          <div className="flex flex-col">
-            <label className={LABEL_BASE}>Gasto (€)</label>
-            <input
-              name="gasto"
-              type="text"
-              placeholder="Gasto (€)"
-              value={novaCompra.gasto}
-              onChange={handleChange}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  const resultado = calcularExpressao(e.target.value);
-                  setNovaCompra((prev) => ({
-                    ...prev,
-                    gasto: String(resultado),
-                  }));
-                }
-              }}
-              className={INPUT_BASE}
-            />
-          </div>
+                  {new Date(d).toLocaleDateString("pt-PT")}
+                </li>
+              );
+            })}
+          </ul>
         </div>
+      )}
+    </div>
 
-        <button
-          type="button"
-          onClick={modoEdicao ? atualizarCompra : guardarCompra}
-          className={`mt-5 ${BTN_PRIMARY}`}
-        >
-          {modoEdicao ? "Atualizar" : "Guardar"}
-        </button>
-      </div>
+    <div className="flex min-w-0 flex-col">
+      <label className={LABEL_BASE}>Local da Compra</label>
+      <select
+        name="local_compras"
+        value={novaCompra.local_compras}
+        onChange={handleChange}
+        className={`${INPUT_BASE} min-w-0 appearance-none [color-scheme:dark]`}
+      >
+        <option value="" className="bg-[#0f172a] text-white">
+          -- Local da Compra --
+        </option>
+        {locaisCompra.map((local) => (
+          <option
+            key={local}
+            value={local}
+            className="bg-[#0f172a] text-white"
+          >
+            {local}
+          </option>
+        ))}
+      </select>
+    </div>
+
+    <div className="flex min-w-0 flex-col">
+      <label className={LABEL_BASE}>Bancada</label>
+      <input
+        list="bancadas"
+        name="bancada"
+        placeholder="Bancada"
+        value={novaCompra.bancada}
+        onChange={handleChange}
+        className={INPUT_BASE}
+      />
+      <datalist id="bancadas">
+        {bancadas.map((b) => (
+          <option key={b} value={b} />
+        ))}
+      </datalist>
+    </div>
+
+    <div className="flex min-w-0 flex-col">
+      <label className={LABEL_BASE}>Setor</label>
+      <input
+        list="setores"
+        name="setor"
+        placeholder="Setor"
+        value={novaCompra.setor}
+        onChange={handleChange}
+        className={INPUT_BASE}
+      />
+      <datalist id="setores">
+        {setores.map((s) => (
+          <option key={s} value={s} />
+        ))}
+      </datalist>
+    </div>
+
+    <div className="flex min-w-0 flex-col">
+      <label className={LABEL_BASE}>Fila</label>
+      <input
+        name="fila"
+        placeholder="Fila"
+        value={novaCompra.fila}
+        onChange={handleChange}
+        className={INPUT_BASE}
+      />
+    </div>
+
+    <div className="flex min-w-0 flex-col">
+      <label className={LABEL_BASE}>Quantidade</label>
+      <input
+        name="quantidade"
+        type="number"
+        placeholder="Quantidade"
+        value={novaCompra.quantidade}
+        onChange={handleChange}
+        className={INPUT_BASE}
+      />
+    </div>
+
+    <div className="flex min-w-0 flex-col">
+      <label className={LABEL_BASE}>Gasto (€)</label>
+      <input
+        name="gasto"
+        type="text"
+        placeholder="Gasto (€)"
+        value={novaCompra.gasto}
+        onChange={handleChange}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            const resultado = calcularExpressao(e.target.value);
+            setNovaCompra((prev) => ({
+              ...prev,
+              gasto: String(resultado),
+            }));
+          }
+        }}
+        className={INPUT_BASE}
+      />
+    </div>
+  </div>
+
+  <button
+    type="button"
+    onClick={modoEdicao ? atualizarCompra : guardarCompra}
+    className={`mt-5 ${BTN_PRIMARY}`}
+  >
+    {modoEdicao ? "Atualizar" : "Guardar"}
+  </button>
+</div>
 
       {/* TABELA DESKTOP */}
       <div className={`${CARD_SHELL} p-3 lg:p-4 mb-6 hidden md:block`}>
