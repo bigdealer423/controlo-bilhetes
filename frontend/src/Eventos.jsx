@@ -2819,7 +2819,7 @@ return (
                                         />
                                       </td>
                 
-                                      <td className="py-2 px-[4px] align-middle">
+                                      <td className="py-2 pl-[6px] pr-[2px] align-middle">
                                         <input
                                           type="number"
                                           className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-2 py-1.5 text-right text-white"
@@ -2832,10 +2832,10 @@ return (
                                           }
                                         />
                                       </td>
-                
-                                      <td className="py-2 pl-[18px] pr-[6px] align-middle"></td>
-                
-                                      <td className="py-2 pl-[18px] pr-2 whitespace-nowrap align-middle">
+                                      
+                                      <td className="py-2 pl-[8px] pr-[4px] align-middle"></td>
+                                      
+                                      <td className="py-2 pl-[10px] pr-2 whitespace-nowrap align-middle">
                                         <button
                                           className="mr-3 text-emerald-300"
                                           onClick={() => guardarCompra(compraEditada)}
@@ -2875,11 +2875,11 @@ return (
                                         {c.quantidade}
                                       </td>
                 
-                                      <td className="py-2 px-[4px] whitespace-nowrap text-right font-medium text-red-300 align-middle">
+                                      <td className="py-2 pl-[6px] pr-[2px] whitespace-nowrap text-right font-medium text-red-300 align-middle">
                                         {c.gasto} €
                                       </td>
-                
-                                      <td className="py-2 pl-[18px] pr-[6px] align-middle">
+                                      
+                                      <td className="py-2 pl-[8px] pr-[4px] align-middle">
                                         <CirculoEstado
                                           tipo="compras"
                                           id={c.id}
@@ -2888,8 +2888,8 @@ return (
                                           setCompras={setCompras}
                                         />
                                       </td>
-                
-                                      <td className="py-2 pl-[18px] pr-2 whitespace-nowrap align-middle">
+                                      
+                                      <td className="py-2 pl-[10px] pr-2 whitespace-nowrap align-middle">
                                         {comprasNaoAssociadasSet.has(c.id) && (
                                           <span
                                             className="text-yellow-400 mr-2"
