@@ -2705,7 +2705,7 @@ return (
                 <tr className="bg-amber-500/6">
                   <td colSpan="7" className="p-0 border-b border-white/6">
                     <div className="px-4 pb-2">
-                      <table className="w-full table-fixed text-xs text-white">
+                      <table className="w-full text-xs text-white">
                         <colgroup>
                           <col className="w-[86px]" />
                           <col className="w-[92px]" />
