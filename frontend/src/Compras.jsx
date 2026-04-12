@@ -381,7 +381,40 @@ return (
       </select>
     </div>
 
-    <label className={LABEL_BASE}>Data do Evento</label>
+    <div className="flex min-w-0 flex-col">
+  <label className={LABEL_BASE}>Data do Evento</label>
+  <input
+    type="date"
+    name="data_evento"
+    value={novaCompra.data_evento || ""}
+    onChange={handleChange}
+    className="w-full rounded-xl border border-white/10 bg-[#1a2742] px-3 py-2 text-sm text-white outline-none transition focus:border-blue-400/60 focus:ring-1 focus:ring-blue-400/30 [color-scheme:dark]"
+  />
+  {datasEvento.length > 0 && (
+    <div className="mt-2 text-xs text-white/70">
+      Datas existentes (clique para preencher):
+      <ul className="list-disc list-inside mt-1 space-y-1">
+        {datasEvento.map((d, idx) => {
+          const dataFormatada = new Date(d).toISOString().split("T")[0];
+          return (
+            <li
+              key={idx}
+              onClick={() =>
+                setNovaCompra((prev) => ({
+                  ...prev,
+                  data_evento: dataFormatada,
+                }))
+              }
+              className="cursor-pointer text-blue-300 hover:underline"
+            >
+              {new Date(d).toLocaleDateString("pt-PT")}
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  )}
+</div>
 
     <div className="flex min-w-0 flex-col">
       <label className={LABEL_BASE}>Local da Compra</label>
