@@ -1952,7 +1952,7 @@ return (
 
   <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
     {/* lado esquerdo */}
-    <div className="flex min-w-0 items-center gap-4 lg:w-[28%]">
+    <div className="flex min-w-0 items-center gap-4 lg:w-[24%] xl:w-[28%]">
       <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full border border-amber-300/30 bg-amber-400/10 shadow-[0_0_35px_rgba(251,191,36,0.16)]">
         <FaChartBar className="text-[30px] text-amber-300" />
       </div>
@@ -1974,8 +1974,8 @@ return (
     </div>
 
     {/* centro */}
-    <div className="grid flex-1 grid-cols-1 gap-4 sm:grid-cols-3 lg:px-4">
-      <div className="relative rounded-2xl border border-white/8 bg-white/[0.03] px-4 py-4 backdrop-blur-sm">
+    <div className="grid flex-1 grid-cols-1 gap-4 sm:grid-cols-3 md:gap-5 lg:gap-4 md:min-w-0 xl:px-4">
+      <div className="relative rounded-2xl border border-white/8 bg-white/[0.03] px-4 md:px-5 lg:px-4 py-4 backdrop-blur-sm min-w-0">
         <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-emerald-400/10 text-emerald-300">
           <span className="text-[26px]">↗</span>
         </div>
@@ -2016,7 +2016,7 @@ return (
     </div>
 
     {/* direita */}
-    <div className="flex lg:w-[18%] lg:justify-end">
+    <div className="flex lg:w-[14%] xl:w-[18%] lg:justify-end">
       <button
         type="button"
         onClick={buscarLucrosMensais}
