@@ -19,82 +19,97 @@ html, body {
   }
 }
 
-/* Modo claro */
-.react-calendar {
-    background-color: white;
-    color: black;
-    border: none;
-    border-radius: 0.5rem;
-    padding: 0.5rem;
+.dashboard-calendar-premium {
+  width: 100%;
+  background: transparent !important;
+  border: none !important;
+  color: white !important;
+  font-family: inherit;
 }
 
-/* Modo escuro */
-.dark .react-calendar {
-    background-color: #1f2937; /* gray-800 */
-    color: #f9fafb;            /* gray-50 */
+.dashboard-calendar-premium .react-calendar__navigation {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+  gap: 0.35rem;
 }
 
-/* Tiles (dias) */
-.react-calendar__tile {
-    /* REMOVE a cor forçada */
-    /* color: #111; */
-}
-
-
-.dark .react-calendar__tile {
-  /* color: #f9fafb; */ /* REMOVE esta linha */
-}
-
-
-/* ✅ Remove alterações de fundo e cor no tile ativo */
-.react-calendar__tile--active {
-  background: none !important;
-  color: inherit !important;
+.dashboard-calendar-premium .react-calendar__navigation button {
+  min-width: 40px;
+  background: transparent !important;
+  color: white !important;
   border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 18px;
+  transition: 0.2s ease;
+}
+
+.dashboard-calendar-premium .react-calendar__navigation button:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+.dashboard-calendar-premium .react-calendar__month-view__weekdays {
+  text-transform: uppercase;
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.72);
+  margin-bottom: 8px;
+}
+
+.dashboard-calendar-premium .react-calendar__month-view__weekdays__weekday {
+  padding: 8px 0;
+}
+
+.dashboard-calendar-premium .react-calendar__month-view__days__day {
+  color: white;
+  font-weight: 500;
+}
+
+.dashboard-calendar-premium .react-calendar__tile {
   position: relative;
-}
-
-/* 💥 Flash mais forte e visível */
-.react-calendar__tile--active::after {
-  content: "";
-  position: absolute;
-  inset: 0;
+  height: 52px;
+  background: transparent !important;
   border-radius: 9999px;
-  background-color: rgba(255, 255, 255, 0.35); /* camada branca visível */
-  animation: flashBorder 1.2s ease-in-out infinite;
-  z-index: 1;
-  pointer-events: none;
+  color: white !important;
+  transition: all 0.2s ease;
 }
 
-/* 🔁 Animação mais visível: fundo branco translúcido que expande */
-@keyframes flashBorder {
-  0% {
-    opacity: 0;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.12);
-  }
-  100% {
-    opacity: 0;
-    transform: scale(1);
-  }
+.dashboard-calendar-premium .react-calendar__tile:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
 }
 
-
-
-/* Tile hoje */
-.react-calendar__tile--now {
-    background: #4b5563 !important; /* gray-600 */
-    color: #ffffff !important;
+.dashboard-calendar-premium .react-calendar__tile--now {
+  background: rgba(250, 204, 21, 0.16) !important;
+  color: white !important;
+  box-shadow: inset 0 0 0 1px rgba(250, 204, 21, 0.25);
 }
 
-/* Hover */
-.react-calendar__tile:enabled:hover, 
-.react-calendar__tile:enabled:focus {
-    background-color: #2563eb; /* blue-600 */
-    color: #ffffff;
+.dashboard-calendar-premium .react-calendar__tile--active {
+  background: rgba(255, 255, 255, 0.14) !important;
+  color: white !important;
+}
+
+.dashboard-calendar-premium .react-calendar__month-view__days__day--neighboringMonth {
+  color: rgba(255, 255, 255, 0.28) !important;
+}
+
+.custom-dark-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.custom-dark-scroll::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 9999px;
+}
+
+.custom-dark-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.22);
+  border-radius: 9999px;
+}
+
+.custom-dark-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.32);
 }
 
 
