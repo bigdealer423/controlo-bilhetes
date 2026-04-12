@@ -388,7 +388,7 @@ return (
         name="data_evento"
         value={novaCompra.data_evento || ""}
         onChange={handleChange}
-        className={INPUT_BASE}
+        className={`${INPUT_BASE} w-full min-w-0`}
       />
       {datasEvento.length > 0 && (
         <div className="mt-2 text-xs text-white/70">
