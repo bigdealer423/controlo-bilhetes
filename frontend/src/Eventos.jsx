@@ -2700,7 +2700,7 @@ return (
                           <col className="w-[56px]" />
                           <col className="w-[42px]" />
                           <col className="w-[74px]" />
-                          <col className="w-[170px]" />
+                          <col className="w-[200px]" />
                           <col className="w-[84px]" />
                         </colgroup>
                       
@@ -2867,7 +2867,7 @@ return (
                                       </td>
                       
                                       <td className="py-2 pl-[8px] pr-[4px] align-middle">
-                                        <div className="w-[160px] max-w-[160px] overflow-hidden">
+                                        <div className="max-w-[190px] min-w-0">
                                           <CirculoEstado
                                             tipo="compras"
                                             id={c.id}
