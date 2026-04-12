@@ -13,7 +13,6 @@ import {
   FaFilter,
   FaPlus,
   FaSyncAlt,
-  FaHashtag,
 } from "react-icons/fa";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
@@ -38,7 +37,7 @@ export default function ListagemVendas(props) {
   const [datasEventoVendas, setDatasEventoVendas] = useState([]);
   const [mostrarModal, setMostrarModal] = useState(false);
   const [mensagemModal, setMensagemModal] = useState("");
-  const [filtroEvento, setFiltroEvento] = useState("");
+  const [filtroPesquisa, setFiltroPesquisa] = useState("");
   const [mostrarFormularioMobile, setMostrarFormularioMobile] = useState(false);
   const [eventosChaveSet, setEventosChaveSet] = useState(new Set());
   const [eventosChaveCarregado, setEventosChaveCarregado] = useState(false);
