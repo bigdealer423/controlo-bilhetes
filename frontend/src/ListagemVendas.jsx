@@ -37,6 +37,7 @@ export default function ListagemVendas(props) {
   const [datasEventoVendas, setDatasEventoVendas] = useState([]);
   const [mostrarModal, setMostrarModal] = useState(false);
   const [mensagemModal, setMensagemModal] = useState("");
+  const [resumoNovosEmails, setResumoNovosEmails] = useState([]);
   const [filtroPesquisa, setFiltroPesquisa] = useState("");
   const [mostrarFormularioMobile, setMostrarFormularioMobile] = useState(false);
   const [eventosChaveSet, setEventosChaveSet] = useState(new Set());
@@ -137,6 +138,7 @@ useEffect(() => {
 
    const forcarAtualizacaoEmail = async () => {
   setMensagemModal("⏳ A processar leitura de e-mails...");
+  setResumoNovosEmails([]);
   setMostrarModal(true);
 
   try {
@@ -167,8 +169,18 @@ useEffect(() => {
         const entregues = json.entregues || 0;
         const pagos = json.pagos || 0;
         const disputas = json.disputas ? json.disputas.length : 0;
-
+      
         const mensagem = `✅ Concluído: ${json.sucesso} novos, ${json.existentes} existentes, ${json.falhas} falhados, ${entregues} entregues, ${pagos} pagos, ${disputas} disputas.`;
+      
+        const novosMinimos = Array.isArray(json.novos_registos)
+          ? json.novos_registos.slice(0, 5).map((r) => ({
+              evento: r.evento || "-",
+              bilhete: r.estadio || r.bilhete || "-",
+              ganho: r.ganho ?? "-"
+            }))
+          : [];
+      
+        setResumoNovosEmails(novosMinimos);
         setMensagemModal(mensagem);
         toast.success(mensagem);
       } else {
@@ -333,7 +345,7 @@ function exportarParaExcel(registos) {
           data_venda: "",
           data_evento: "",
           evento: "",
-          bilhetes: "",
+          estadio: "",
           ganho: "",
           estado: "Por entregar"
         });
@@ -1162,11 +1174,59 @@ const [ordemAscendente, setOrdemAscendente] = useState(false);
   </div>
 )}
       {mostrarModal && (
-  <div className="fixed top-4 right-4 bg-white dark:bg-gray-800 border border-blue-200 dark:border-blue-700 shadow-xl px-4 py-3 rounded-lg z-50 transition-colors duration-300">
-    <p className="text-sm text-gray-700 dark:text-gray-100">{mensagemModal}</p>
-  </div>
-
-)}
+        <div className="fixed top-4 right-4 z-50 w-[360px] max-w-[92vw] overflow-hidden rounded-2xl border border-white/12 bg-[#121a2b]/95 shadow-[0_20px_60px_rgba(0,0,0,0.35)] backdrop-blur-xl">
+          <div className="h-1 w-full bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400" />
+      
+          <div className="p-4">
+            <div className="flex items-start gap-3">
+              <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-500/15 text-lg">
+                {mensagemModal.includes("⏳") ? "⏳" : mensagemModal.includes("❌") ? "❌" : "✅"}
+              </div>
+      
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-semibold text-white">
+                  {mensagemModal.includes("⏳")
+                    ? "Leitura de e-mails"
+                    : mensagemModal.includes("❌")
+                    ? "Erro na leitura"
+                    : "Leitura concluída"}
+                </p>
+      
+                <p className="mt-1 text-sm leading-5 text-white/75">
+                  {mensagemModal}
+                </p>
+              </div>
+            </div>
+      
+            {resumoNovosEmails.length > 0 && (
+              <div className="mt-4 rounded-xl border border-white/10 bg-white/[0.04] p-3">
+                <p className="mb-2 text-xs font-bold uppercase tracking-[0.14em] text-white/45">
+                  Novos registos
+                </p>
+      
+                <div className="space-y-2">
+                  {resumoNovosEmails.map((item, idx) => (
+                    <div
+                      key={idx}
+                      className="rounded-lg border border-white/8 bg-black/10 px-3 py-2"
+                    >
+                      <div className="truncate text-sm font-semibold text-amber-300">
+                        {item.evento}
+                      </div>
+                      <div className="truncate text-xs text-white/65">
+                        {item.bilhete}
+                      </div>
+                      <div className="mt-1 text-sm font-bold text-emerald-300">
+                        {item.ganho} €
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
     </div> 
   );
