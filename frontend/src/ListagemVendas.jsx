@@ -182,14 +182,13 @@ useEffect(() => {
       
         setResumoNovosEmails(novosMinimos);
         setMensagemModal(mensagem);
-        toast.success(mensagem);
       } else {
         setMensagemModal("⚠️ Concluído, mas sem dados detalhados.");
-        toast.warning("⚠️ Concluído, mas sem dados detalhados.");
+        setResumoNovosEmails([]);
       }
     } catch (error) {
       setMensagemModal("⚠️ Concluído, mas não foi possível obter o resumo.");
-      toast.error("⚠️ Concluído, mas falhou ao obter o resumo.");
+      setResumoNovosEmails([]);
     }
 
     setTimeout(() => {
