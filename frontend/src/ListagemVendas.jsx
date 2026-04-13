@@ -194,7 +194,7 @@ useEffect(() => {
     setTimeout(() => {
       setMostrarModal(false);
       setMensagemModal("");
-    }, 8000);
+    }, 12000);
   }, 60000);
 };
 
