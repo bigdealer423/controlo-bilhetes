@@ -569,59 +569,9 @@ export default function Eventos() {
   const [comprasNaoAssociadasSet, setComprasNaoAssociadasSet] = useState(new Set());
   const [mesesExpandidos, setMesesExpandidos] = useState({});
   const [mostrarModalNovaCompra, setMostrarModalNovaCompra] = useState(false);
-const [novaCompraEvento, setNovaCompraEvento] = useState({
-  evento: "",
-  data_evento: "",
-  local_compras: "",
-  bancada: "",
-  setor: "",
-  fila: "",
-  quantidade: "",
-  gasto: "",
-});
-
-const locaisCompra = [
-  "Benfica Viagens",
-  "Site Benfica",
-  "Site Clube",
-  "Odisseias",
-  "Continente",
-  "Site clube adversário",
-  "Smartfans",
-  "Outro",
-  "Viagogo",
-  "Stubhub",
-  "Facebook"
-];
-
-const bancadas = ["Emirates", "BTV", "Sagres", "Mais vantagens"];
-
-const setores = [
-  ...Array.from({ length: 32 }, (_, i) => "lower " + (i + 1)),
-  ...Array.from({ length: 43 }, (_, i) => "middle " + (i + 1)),
-  ...Array.from({ length: 44 }, (_, i) => "upper " + (i + 1))
-];
-
-const calcularExpressao = (valor) => {
-  try {
-    const limpo = String(valor).replace(/\s/g, "");
-
-    if (!/^[0-9+\-*/.]+$/.test(limpo)) return valor;
-
-    const resultado = eval(limpo);
-
-    if (isNaN(resultado) || !isFinite(resultado)) return valor;
-
-    return resultado;
-  } catch {
-    return valor;
-  }
-};
-
-const abrirModalNovaCompra = (eventoItem) => {
-  setNovaCompraEvento({
-    evento: eventoItem.evento || "",
-    data_evento: (eventoItem.data_evento || "").split("T")[0],
+  const [novaCompraEvento, setNovaCompraEvento] = useState({
+    evento: "",
+    data_evento: "",
     local_compras: "",
     bancada: "",
     setor: "",
@@ -629,51 +579,49 @@ const abrirModalNovaCompra = (eventoItem) => {
     quantidade: "",
     gasto: "",
   });
-
-  setMostrarModalNovaCompra(true);
-};
-
-const guardarNovaCompraNoEvento = async () => {
-  const camposObrigatorios = {
-    evento: "Evento",
-    data_evento: "Data do Evento",
-    gasto: "Gasto (€)",
-    quantidade: "Quantidade",
+  
+  const locaisCompra = [
+    "Benfica Viagens",
+    "Site Benfica",
+    "Site Clube",
+    "Odisseias",
+    "Continente",
+    "Site clube adversário",
+    "Smartfans",
+    "Outro",
+    "Viagogo",
+    "Stubhub",
+    "Facebook"
+  ];
+  
+  const bancadas = ["Emirates", "BTV", "Sagres", "Mais vantagens"];
+  
+  const setores = [
+    ...Array.from({ length: 32 }, (_, i) => "lower " + (i + 1)),
+    ...Array.from({ length: 43 }, (_, i) => "middle " + (i + 1)),
+    ...Array.from({ length: 44 }, (_, i) => "upper " + (i + 1))
+  ];
+  
+  const calcularExpressao = (valor) => {
+    try {
+      const limpo = String(valor).replace(/\s/g, "");
+  
+      if (!/^[0-9+\-*/.]+$/.test(limpo)) return valor;
+  
+      const resultado = eval(limpo);
+  
+      if (isNaN(resultado) || !isFinite(resultado)) return valor;
+  
+      return resultado;
+    } catch {
+      return valor;
+    }
   };
-
-  for (const campo in camposObrigatorios) {
-    if (!novaCompraEvento[campo] || novaCompraEvento[campo].toString().trim() === "") {
-      toast.error(`Preencher campo ${camposObrigatorios[campo]}`, {
-        toastId: `erro-evento-${campo}`,
-      });
-      return;
-    }
-  }
-
-  try {
-    const response = await fetch("https://controlo-bilhetes.onrender.com/compras", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        ...novaCompraEvento,
-        quantidade: parseInt(novaCompraEvento.quantidade),
-        gasto: parseFloat(String(novaCompraEvento.gasto).replace(",", ".")),
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error("Erro ao guardar compra");
-    }
-
-    const compraCriada = await response.json();
-
-    toast.success("Compra guardada com sucesso!");
-
-    setCompras((prev) => [...prev, compraCriada]);
-
+  
+  const abrirModalNovaCompra = (eventoItem) => {
     setNovaCompraEvento({
-      evento: "",
-      data_evento: "",
+      evento: eventoItem.evento || "",
+      data_evento: (eventoItem.data_evento || "").split("T")[0],
       local_compras: "",
       bancada: "",
       setor: "",
@@ -681,13 +629,65 @@ const guardarNovaCompraNoEvento = async () => {
       quantidade: "",
       gasto: "",
     });
-
-    setMostrarModalNovaCompra(false);
-  } catch (error) {
-    console.error(error);
-    toast.error("Erro ao guardar a compra");
-  }
-};
+  
+    setMostrarModalNovaCompra(true);
+  };
+  
+  const guardarNovaCompraNoEvento = async () => {
+    const camposObrigatorios = {
+      evento: "Evento",
+      data_evento: "Data do Evento",
+      gasto: "Gasto (€)",
+      quantidade: "Quantidade",
+    };
+  
+    for (const campo in camposObrigatorios) {
+      if (!novaCompraEvento[campo] || novaCompraEvento[campo].toString().trim() === "") {
+        toast.error(`Preencher campo ${camposObrigatorios[campo]}`, {
+          toastId: `erro-evento-${campo}`,
+        });
+        return;
+      }
+    }
+  
+    try {
+      const response = await fetch("https://controlo-bilhetes.onrender.com/compras", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...novaCompraEvento,
+          quantidade: parseInt(novaCompraEvento.quantidade),
+          gasto: parseFloat(String(novaCompraEvento.gasto).replace(",", ".")),
+        }),
+      });
+  
+      if (!response.ok) {
+        throw new Error("Erro ao guardar compra");
+      }
+  
+      const compraCriada = await response.json();
+  
+      toast.success("Compra guardada com sucesso!");
+  
+      setCompras((prev) => [...prev, compraCriada]);
+  
+      setNovaCompraEvento({
+        evento: "",
+        data_evento: "",
+        local_compras: "",
+        bancada: "",
+        setor: "",
+        fila: "",
+        quantidade: "",
+        gasto: "",
+      });
+  
+      setMostrarModalNovaCompra(false);
+    } catch (error) {
+      console.error(error);
+      toast.error("Erro ao guardar a compra");
+    }
+  };
 
   const toggleMesExpandido = (mes) => {
     setMesesExpandidos((prev) => ({
@@ -3854,7 +3854,7 @@ return (
         </button>
 
         <button
-          onClick={guardarNovaCompraEvento}
+          onClick={guardarNovaCompraNoEvento}
           className="rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-blue-900/30 transition hover:bg-blue-500"
         >
           Guardar
