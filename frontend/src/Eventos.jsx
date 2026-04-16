@@ -569,6 +569,172 @@ export default function Eventos() {
   const [comprasNaoAssociadasSet, setComprasNaoAssociadasSet] = useState(new Set());
   const [mesesExpandidos, setMesesExpandidos] = useState({});
   const [mostrarModalNovaCompra, setMostrarModalNovaCompra] = useState(false);
+  const [mostrarModalNovaVenda, setMostrarModalNovaVenda] = useState(false);
+  const [novaVendaEvento, setNovaVendaEvento] = useState({
+    id_venda: "",
+    data_venda: new Date().toISOString().split("T")[0],
+    data_evento: "",
+    evento: "",
+    estadio: "",
+    ganho: "",
+    estado: "Por entregar",
+  });
+  
+  const [datasEventoVendasModal, setDatasEventoVendasModal] = useState([]);
+  const [idVendaModalEmUso, setIdVendaModalEmUso] = useState(false);
+  const [idVendaModalEmVerificacao, setIdVendaModalEmVerificacao] = useState(false);
+  const abrirModalNovaVenda = async (eventoItem) => {
+    const dataEvento = String(eventoItem.data_evento || "").slice(0, 10);
+  
+    setNovaVendaEvento({
+      id_venda: "",
+      data_venda: new Date().toISOString().split("T")[0],
+      data_evento: dataEvento,
+      evento: eventoItem.evento || "",
+      estadio: "",
+      ganho: "",
+      estado: "Por entregar",
+    });
+  
+    setIdVendaModalEmUso(false);
+    setIdVendaModalEmVerificacao(false);
+  
+    if (eventoItem.evento) {
+      await buscarDatasEventoVendasModal(eventoItem.evento);
+    } else {
+      setDatasEventoVendasModal([]);
+    }
+  
+    setMostrarModalNovaVenda(true);
+  };
+  const buscarDatasEventoVendasModal = async (nomeEvento) => {
+    if (!nomeEvento) {
+      setDatasEventoVendasModal([]);
+      return;
+    }
+  
+    try {
+      const res = await fetch(
+        `https://controlo-bilhetes.onrender.com/datas_evento/${encodeURIComponent(nomeEvento)}`
+      );
+      const data = await res.json();
+      setDatasEventoVendasModal(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error("Erro ao carregar datas do evento:", error);
+      setDatasEventoVendasModal([]);
+    }
+  };
+  const verificarIdVendaModal = (valor) => {
+    const idLimpo = String(valor || "").trim();
+  
+    if (!idLimpo) {
+      setIdVendaModalEmUso(false);
+      setIdVendaModalEmVerificacao(false);
+      return;
+    }
+  
+    setIdVendaModalEmVerificacao(true);
+  
+    const existe = vendas.some(
+      (v) => String(v.id_venda || "").trim() === idLimpo
+    );
+  
+    setIdVendaModalEmUso(existe);
+    setIdVendaModalEmVerificacao(false);
+  };
+  const handleNovaVendaEventoChange = async (e) => {
+    const { name, value } = e.target;
+  
+    if (name === "id_venda") {
+      setNovaVendaEvento((prev) => ({ ...prev, id_venda: value }));
+      verificarIdVendaModal(value);
+      return;
+    }
+  
+    if (name === "evento") {
+      setNovaVendaEvento((prev) => ({
+        ...prev,
+        evento: value,
+        data_evento: "",
+      }));
+      await buscarDatasEventoVendasModal(value);
+      return;
+    }
+  
+    setNovaVendaEvento((prev) => ({ ...prev, [name]: value }));
+  };
+  const guardarNovaVendaNoEvento = async () => {
+    const camposObrigatorios = {
+      id_venda: "ID Venda",
+      data_venda: "Data Venda",
+      data_evento: "Data Evento",
+      evento: "Evento",
+      estadio: "Bilhete",
+      ganho: "Ganho (€)",
+    };
+  
+    for (const campo in camposObrigatorios) {
+      if (!novaVendaEvento[campo] || String(novaVendaEvento[campo]).trim() === "") {
+        toast.error(`Preencher campo ${camposObrigatorios[campo]}`);
+        return;
+      }
+    }
+  
+    if (idVendaModalEmUso) {
+      toast.error("Este ID já existe.");
+      return;
+    }
+  
+    try {
+      const res = await fetch("https://controlo-bilhetes.onrender.com/listagem_vendas", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...novaVendaEvento,
+          id_venda: parseInt(novaVendaEvento.id_venda),
+          ganho: parseFloat(String(novaVendaEvento.ganho).replace(",", ".")),
+          data_venda: String(novaVendaEvento.data_venda || "").slice(0, 10),
+          data_evento: String(novaVendaEvento.data_evento || "").slice(0, 10),
+        }),
+      });
+  
+      if (!res.ok) {
+        throw new Error("Erro ao guardar venda");
+      }
+  
+      const vendaCriada = await res.json();
+  
+      setVendas((prev) => [
+        ...prev,
+        {
+          ...vendaCriada,
+          data_evento: String(vendaCriada.data_evento || "").slice(0, 10),
+        },
+      ]);
+  
+      await buscarResumoMensal();
+  
+      setNovaVendaEvento({
+        id_venda: "",
+        data_venda: new Date().toISOString().split("T")[0],
+        data_evento: "",
+        evento: "",
+        estadio: "",
+        ganho: "",
+        estado: "Por entregar",
+      });
+  
+      setDatasEventoVendasModal([]);
+      setIdVendaModalEmUso(false);
+      setIdVendaModalEmVerificacao(false);
+      setMostrarModalNovaVenda(false);
+  
+      toast.success("Venda adicionada com sucesso.");
+    } catch (error) {
+      console.error(error);
+      toast.error("Erro ao adicionar venda.");
+    }
+  };
   const [novaCompraEvento, setNovaCompraEvento] = useState({
     evento: "",
     data_evento: "",
@@ -2571,32 +2737,49 @@ return (
                       const resumo = getResumoMatchingInteligente(r.evento, r.data_evento, chaveRegra);
                       const resumoTitulo = getResumoTituloVendas(r.evento, r.data_evento, chaveRegra);
 
-                      return (
-                        <div className="rounded-2xl border border-blue-400/10 bg-blue-500/8 px-4 py-3">
-                          <div className="font-semibold text-white">
-                            Vendas ({getTotalBilhetesVendas(r.evento, r.data_evento)})
-                            {resumoTitulo ? <> — {resumoTitulo}</> : null}
-                          </div>
-
-                          {resumo.porComprarTxt && (
-                            <div className="text-red-300 text-xs mt-1">
-                              🔴 Por comprar: {resumo.porComprarTxt}
-                            </div>
-                          )}
-
-                          {resumo.coberturaIncertaTxt && (
-                            <div className="text-yellow-300 text-xs mt-1">
-                              🟡 Cobertura incerta: {resumo.coberturaIncertaTxt}
-                            </div>
-                          )}
-
-                          {resumo.porVenderTxt && (
-                            <div className="text-emerald-300 text-xs mt-1">
-                              🟢 Por vender: {resumo.porVenderTxt}
-                            </div>
-                          )}
+                  return (
+                    <div className="rounded-2xl border border-blue-400/10 bg-blue-500/8 px-4 py-3">
+                      
+                      {/* 🔵 HEADER COM BOTÃO */}
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="font-semibold text-white">
+                          Vendas ({getTotalBilhetesVendas(r.evento, r.data_evento)})
+                          {resumoTitulo ? <> — {resumoTitulo}</> : null}
                         </div>
-                      );
+                  
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            abrirModalNovaVenda(r);
+                          }}
+                          className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-blue-500 text-white shadow-[0_8px_20px_rgba(59,130,246,0.28)] transition hover:scale-105 hover:bg-blue-400"
+                          title="Adicionar venda"
+                        >
+                          <FaPlus size={12} />
+                        </button>
+                      </div>
+                  
+                      {/* 🔽 RESTO DO RESUMO */}
+                      {resumo.porComprarTxt && (
+                        <div className="text-red-300 text-xs mt-1">
+                          🔴 Por comprar: {resumo.porComprarTxt}
+                        </div>
+                      )}
+                  
+                      {resumo.coberturaIncertaTxt && (
+                        <div className="text-yellow-300 text-xs mt-1">
+                          🟡 Cobertura incerta: {resumo.coberturaIncertaTxt}
+                        </div>
+                      )}
+                  
+                      {resumo.porVenderTxt && (
+                        <div className="text-emerald-300 text-xs mt-1">
+                          🟢 Por vender: {resumo.porVenderTxt}
+                        </div>
+                      )}
+                    </div>
+                  );
                     })()}
                   </td>
                 </tr>
