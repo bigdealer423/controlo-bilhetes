@@ -583,11 +583,28 @@ export default function Eventos() {
   const [datasEventoVendasModal, setDatasEventoVendasModal] = useState([]);
   const [idVendaModalEmUso, setIdVendaModalEmUso] = useState(false);
   const [idVendaModalEmVerificacao, setIdVendaModalEmVerificacao] = useState(false);
+  const getProximoIdVendaDisponivel = () => {
+    const idsExistentes = (vendas || [])
+      .map((v) => Number(v.id_venda))
+      .filter((n) => Number.isFinite(n) && n > 0);
+  
+    if (idsExistentes.length === 0) return "1";
+  
+    const idsSet = new Set(idsExistentes);
+    let candidato = 1;
+  
+    while (idsSet.has(candidato)) {
+      candidato += 1;
+    }
+  
+    return String(candidato);
+  };
   const abrirModalNovaVenda = async (eventoItem) => {
     const dataEvento = String(eventoItem.data_evento || "").slice(0, 10);
+    const proximoId = getProximoIdVendaDisponivel();
   
     setNovaVendaEvento({
-      id_venda: "",
+      id_venda: proximoId,
       data_venda: new Date().toISOString().split("T")[0],
       data_evento: dataEvento,
       evento: eventoItem.evento || "",
