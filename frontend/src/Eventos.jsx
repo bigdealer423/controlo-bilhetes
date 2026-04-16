@@ -719,16 +719,9 @@ export default function Eventos() {
         throw new Error("Erro ao guardar venda");
       }
   
-      const vendaCriada = await res.json();
+      await res.json();
   
-      setVendas((prev) => [
-        ...prev,
-        {
-          ...vendaCriada,
-          data_evento: String(vendaCriada.data_evento || "").slice(0, 10),
-        },
-      ]);
-  
+      await buscarVendas();
       await buscarResumoMensal();
   
       setNovaVendaEvento({
