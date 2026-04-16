@@ -25,8 +25,6 @@ import viagogoLogo from "./assets/viagogo.svg";
 
 
 
-
-
 // ---- estilos base para botões (pílula) ----
 const BTN_BASE =
   "inline-flex items-center gap-1.5 md:gap-1 px-4 md:px-3 py-2 md:py-1.5 rounded-xl font-semibold shadow-md " +
@@ -570,6 +568,126 @@ export default function Eventos() {
   const [vendasNaoAssociadasSet, setVendasNaoAssociadasSet] = useState(new Set());
   const [comprasNaoAssociadasSet, setComprasNaoAssociadasSet] = useState(new Set());
   const [mesesExpandidos, setMesesExpandidos] = useState({});
+  const [mostrarModalNovaCompra, setMostrarModalNovaCompra] = useState(false);
+const [novaCompraEvento, setNovaCompraEvento] = useState({
+  evento: "",
+  data_evento: "",
+  local_compras: "",
+  bancada: "",
+  setor: "",
+  fila: "",
+  quantidade: "",
+  gasto: "",
+});
+
+const locaisCompra = [
+  "Benfica Viagens",
+  "Site Benfica",
+  "Site Clube",
+  "Odisseias",
+  "Continente",
+  "Site clube adversário",
+  "Smartfans",
+  "Outro",
+  "Viagogo",
+  "Stubhub",
+  "Facebook"
+];
+
+const bancadas = ["Emirates", "BTV", "Sagres", "Mais vantagens"];
+
+const setores = [
+  ...Array.from({ length: 32 }, (_, i) => "lower " + (i + 1)),
+  ...Array.from({ length: 43 }, (_, i) => "middle " + (i + 1)),
+  ...Array.from({ length: 44 }, (_, i) => "upper " + (i + 1))
+];
+
+const calcularExpressao = (valor) => {
+  try {
+    const limpo = String(valor).replace(/\s/g, "");
+
+    if (!/^[0-9+\-*/.]+$/.test(limpo)) return valor;
+
+    const resultado = eval(limpo);
+
+    if (isNaN(resultado) || !isFinite(resultado)) return valor;
+
+    return resultado;
+  } catch {
+    return valor;
+  }
+};
+
+const abrirModalNovaCompra = (eventoItem) => {
+  setNovaCompraEvento({
+    evento: eventoItem.evento || "",
+    data_evento: (eventoItem.data_evento || "").split("T")[0],
+    local_compras: "",
+    bancada: "",
+    setor: "",
+    fila: "",
+    quantidade: "",
+    gasto: "",
+  });
+
+  setMostrarModalNovaCompra(true);
+};
+
+const guardarNovaCompraNoEvento = async () => {
+  const camposObrigatorios = {
+    evento: "Evento",
+    data_evento: "Data do Evento",
+    gasto: "Gasto (€)",
+    quantidade: "Quantidade",
+  };
+
+  for (const campo in camposObrigatorios) {
+    if (!novaCompraEvento[campo] || novaCompraEvento[campo].toString().trim() === "") {
+      toast.error(`Preencher campo ${camposObrigatorios[campo]}`, {
+        toastId: `erro-evento-${campo}`,
+      });
+      return;
+    }
+  }
+
+  try {
+    const response = await fetch("https://controlo-bilhetes.onrender.com/compras", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ...novaCompraEvento,
+        quantidade: parseInt(novaCompraEvento.quantidade),
+        gasto: parseFloat(String(novaCompraEvento.gasto).replace(",", ".")),
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Erro ao guardar compra");
+    }
+
+    const compraCriada = await response.json();
+
+    toast.success("Compra guardada com sucesso!");
+
+    setCompras((prev) => [...prev, compraCriada]);
+
+    setNovaCompraEvento({
+      evento: "",
+      data_evento: "",
+      local_compras: "",
+      bancada: "",
+      setor: "",
+      fila: "",
+      quantidade: "",
+      gasto: "",
+    });
+
+    setMostrarModalNovaCompra(false);
+  } catch (error) {
+    console.error(error);
+    toast.error("Erro ao guardar a compra");
+  }
+};
 
   const toggleMesExpandido = (mes) => {
     setMesesExpandidos((prev) => ({
@@ -2681,9 +2799,25 @@ return (
                       );
 
                       return (
-                        <div className="rounded-2xl border border-amber-400/10 bg-amber-500/8 px-4 py-3 font-semibold text-white">
-                          Compras ({totalCompras})
-                          {resumoCompras ? <> — {resumoCompras}</> : null}
+                        <div className="rounded-2xl border border-amber-400/10 bg-amber-500/8 px-4 py-3">
+                          <div className="flex items-center justify-between gap-3">
+                            <div className="font-semibold text-white">
+                              Compras ({totalCompras})
+                              {resumoCompras ? <> — {resumoCompras}</> : null}
+                            </div>
+                        
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                abrirModalNovaCompra(r);
+                              }}
+                              className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-amber-500 text-white shadow-[0_8px_20px_rgba(245,158,11,0.28)] transition hover:scale-105 hover:bg-amber-400"
+                              title="Adicionar compra"
+                            >
+                              <FaPlus size={12} />
+                            </button>
+                          </div>
                         </div>
                       );
                     })()}
@@ -3531,6 +3665,205 @@ return (
           </div>
         )}
 
+{mostrarModalNovaCompra && (
+  <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center px-4">
+    <div
+      className="w-full max-w-5xl rounded-[24px] border border-white/10 bg-[#0f1b3d] p-5 md:p-6 shadow-[0_20px_60px_rgba(0,0,0,0.45)]"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <div className="mb-5 flex items-center justify-between">
+        <h3 className="text-xl font-bold text-white">Nova Compra</h3>
+        <button
+          onClick={() => setMostrarModalNovaCompra(false)}
+          className="rounded-xl bg-white/10 px-3 py-2 text-white/80 transition hover:bg-white/15 hover:text-white"
+        >
+          Fechar
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 items-start">
+        <div className="flex min-w-0 flex-col">
+          <label className="mb-2 text-[13px] font-semibold tracking-wide text-white/80">
+            Evento
+          </label>
+          <input
+            value={novaCompraEvento.evento}
+            readOnly
+            className="w-full rounded-xl border border-white/10 bg-[#1a2742] px-3 py-2.5 text-sm text-white/80 outline-none"
+          />
+        </div>
+
+        <div className="flex min-w-0 flex-col">
+          <label className="mb-2 text-[13px] font-semibold tracking-wide text-white/80">
+            Data do Evento
+          </label>
+          <input
+            type="date"
+            value={novaCompraEvento.data_evento}
+            onChange={(e) =>
+              setNovaCompraEvento((prev) => ({
+                ...prev,
+                data_evento: e.target.value,
+              }))
+            }
+            className="w-full rounded-xl border border-white/10 bg-[#1a2742] px-3 py-2.5 text-sm text-white outline-none [color-scheme:dark]"
+          />
+        </div>
+
+        <div className="flex min-w-0 flex-col">
+          <label className="mb-2 text-[13px] font-semibold tracking-wide text-white/80">
+            Local da Compra
+          </label>
+          <select
+            value={novaCompraEvento.local_compras}
+            onChange={(e) =>
+              setNovaCompraEvento((prev) => ({
+                ...prev,
+                local_compras: e.target.value,
+              }))
+            }
+            className="w-full rounded-xl border border-white/10 bg-[#1a2742] px-3 py-2.5 text-sm text-white outline-none appearance-none [color-scheme:dark]"
+          >
+            <option value="" className="bg-[#0f172a] text-white">
+              -- Local da Compra --
+            </option>
+            {locaisCompra.map((local) => (
+              <option key={local} value={local} className="bg-[#0f172a] text-white">
+                {local}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="flex min-w-0 flex-col">
+          <label className="mb-2 text-[13px] font-semibold tracking-wide text-white/80">
+            Bancada
+          </label>
+          <input
+            list="bancadas-evento-modal"
+            value={novaCompraEvento.bancada}
+            onChange={(e) =>
+              setNovaCompraEvento((prev) => ({
+                ...prev,
+                bancada: e.target.value,
+              }))
+            }
+            className="w-full rounded-xl border border-white/10 bg-[#1a2742] px-3 py-2.5 text-sm text-white outline-none"
+            placeholder="Bancada"
+          />
+          <datalist id="bancadas-evento-modal">
+            {bancadas.map((b) => (
+              <option key={b} value={b} />
+            ))}
+          </datalist>
+        </div>
+
+        <div className="flex min-w-0 flex-col">
+          <label className="mb-2 text-[13px] font-semibold tracking-wide text-white/80">
+            Setor
+          </label>
+          <input
+            list="setores-evento-modal"
+            value={novaCompraEvento.setor}
+            onChange={(e) =>
+              setNovaCompraEvento((prev) => ({
+                ...prev,
+                setor: e.target.value,
+              }))
+            }
+            className="w-full rounded-xl border border-white/10 bg-[#1a2742] px-3 py-2.5 text-sm text-white outline-none"
+            placeholder="Setor"
+          />
+          <datalist id="setores-evento-modal">
+            {setores.map((s) => (
+              <option key={s} value={s} />
+            ))}
+          </datalist>
+        </div>
+
+        <div className="flex min-w-0 flex-col">
+          <label className="mb-2 text-[13px] font-semibold tracking-wide text-white/80">
+            Fila
+          </label>
+          <input
+            value={novaCompraEvento.fila}
+            onChange={(e) =>
+              setNovaCompraEvento((prev) => ({
+                ...prev,
+                fila: e.target.value,
+              }))
+            }
+            className="w-full rounded-xl border border-white/10 bg-[#1a2742] px-3 py-2.5 text-sm text-white outline-none"
+            placeholder="Fila"
+          />
+        </div>
+
+        <div className="flex min-w-0 flex-col">
+          <label className="mb-2 text-[13px] font-semibold tracking-wide text-white/80">
+            Quantidade
+          </label>
+          <input
+            type="number"
+            value={novaCompraEvento.quantidade}
+            onChange={(e) =>
+              setNovaCompraEvento((prev) => ({
+                ...prev,
+                quantidade: e.target.value,
+              }))
+            }
+            className="w-full rounded-xl border border-white/10 bg-[#1a2742] px-3 py-2.5 text-sm text-white outline-none"
+            placeholder="Quantidade"
+          />
+        </div>
+
+        <div className="flex min-w-0 flex-col">
+          <label className="mb-2 text-[13px] font-semibold tracking-wide text-white/80">
+            Gasto (€)
+          </label>
+          <input
+            type="text"
+            value={novaCompraEvento.gasto}
+            onChange={(e) =>
+              setNovaCompraEvento((prev) => ({
+                ...prev,
+                gasto: e.target.value,
+              }))
+            }
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                const resultado = calcularExpressaoCompraEvento(e.target.value);
+                setNovaCompraEvento((prev) => ({
+                  ...prev,
+                  gasto: String(resultado),
+                }));
+              }
+            }}
+            className="w-full rounded-xl border border-white/10 bg-[#1a2742] px-3 py-2.5 text-sm text-white outline-none"
+            placeholder="Gasto (€)"
+          />
+        </div>
+      </div>
+
+      <div className="mt-6 flex justify-end gap-3">
+        <button
+          onClick={() => setMostrarModalNovaCompra(false)}
+          className="rounded-xl bg-white/10 px-4 py-2 text-sm font-semibold text-white/90 transition hover:bg-white/15"
+        >
+          Cancelar
+        </button>
+
+        <button
+          onClick={guardarNovaCompraEvento}
+          className="rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-blue-900/30 transition hover:bg-blue-500"
+        >
+          Guardar
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+     
       {/* Modal de Nota do Evento */}
       {mostrarNotaEventoId && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
