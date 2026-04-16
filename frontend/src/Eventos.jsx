@@ -3832,7 +3832,7 @@ return (
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 e.preventDefault();
-                const resultado = calcularExpressaoCompraEvento(e.target.value);
+                const resultado = calcularExpressao(e.target.value);
                 setNovaCompraEvento((prev) => ({
                   ...prev,
                   gasto: String(resultado),
