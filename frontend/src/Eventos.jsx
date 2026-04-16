@@ -4046,7 +4046,175 @@ return (
     </div>
   </div>
 )}
-     
+     {mostrarModalNovaVenda && (
+  <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center px-4">
+    <div
+      className="w-full max-w-5xl rounded-[24px] border border-white/10 bg-[#0f1b3d] p-5 md:p-6 shadow-[0_20px_60px_rgba(0,0,0,0.45)]"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <div className="mb-5 flex items-center justify-between">
+        <h3 className="text-xl font-bold text-white">Nova Venda</h3>
+        <button
+          onClick={() => setMostrarModalNovaVenda(false)}
+          className="rounded-xl bg-white/10 px-3 py-2 text-white/80 transition hover:bg-white/15 hover:text-white"
+        >
+          Fechar
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 items-start">
+        <div className="flex flex-col">
+          <label className="text-sm font-medium text-white/80">ID Venda</label>
+          <input
+            name="id_venda"
+            type="number"
+            inputMode="numeric"
+            placeholder="ID Venda"
+            className={`h-10 w-full rounded-xl border px-3 py-2 bg-[#1a2742] text-sm text-white outline-none ${
+              idVendaModalEmUso
+                ? "border-red-500 focus:ring-2 focus:ring-red-400"
+                : "border-white/10 focus:ring-2 focus:ring-blue-400"
+            }`}
+            value={novaVendaEvento.id_venda}
+            onChange={handleNovaVendaEventoChange}
+          />
+          <div className="mt-1 text-xs min-h-5">
+            {idVendaModalEmVerificacao && <span className="text-white/60">A verificar…</span>}
+            {!idVendaModalEmVerificacao && idVendaModalEmUso && (
+              <span className="text-red-400">⚠️ Este ID já existe.</span>
+            )}
+            {!idVendaModalEmVerificacao && !idVendaModalEmUso && novaVendaEvento.id_venda && (
+              <span className="text-emerald-400">✅ ID disponível.</span>
+            )}
+          </div>
+        </div>
+
+        <div className="flex flex-col">
+          <label className="text-sm font-medium text-white/80">Data Venda</label>
+          <input
+            name="data_venda"
+            type="date"
+            className="border border-white/10 p-2 rounded-xl w-full bg-[#1a2742] text-white [color-scheme:dark]"
+            value={novaVendaEvento.data_venda}
+            onChange={handleNovaVendaEventoChange}
+          />
+        </div>
+
+        <div className="flex flex-col">
+          <label className="text-sm font-medium text-white/80">Data Evento</label>
+          <input
+            name="data_evento"
+            type="date"
+            className="border border-white/10 p-2 rounded-xl w-full bg-[#1a2742] text-white [color-scheme:dark]"
+            value={novaVendaEvento.data_evento}
+            onChange={handleNovaVendaEventoChange}
+          />
+          {datasEventoVendasModal.length > 0 && (
+            <div className="mt-1 text-xs text-white/70">
+              Datas existentes (clique para preencher):
+              <ul className="list-disc list-inside">
+                {datasEventoVendasModal.map((d, idx) => {
+                  const yyyyMMdd = new Date(d).toISOString().split("T")[0];
+                  return (
+                    <li
+                      key={idx}
+                      onClick={() =>
+                        setNovaVendaEvento((prev) => ({
+                          ...prev,
+                          data_evento: yyyyMMdd,
+                        }))
+                      }
+                      className="cursor-pointer text-blue-300 hover:underline"
+                    >
+                      {new Date(d).toLocaleDateString("pt-PT")}
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          )}
+        </div>
+
+        <div className="flex flex-col">
+          <label className="text-sm font-medium text-white/80">Evento</label>
+          <select
+            name="evento"
+            className="border border-white/10 p-2 rounded-xl w-full bg-[#1a2742] text-white"
+            value={novaVendaEvento.evento}
+            onChange={handleNovaVendaEventoChange}
+          >
+            <option value="">-- Selecionar Evento --</option>
+            {eventosDropdown.map((e) => (
+              <option key={e.id} value={e.nome}>
+                {e.nome}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="flex flex-col md:col-span-2 xl:col-span-1">
+          <label className="text-sm font-medium text-white/80">Bilhete</label>
+          <input
+            name="estadio"
+            placeholder="Bilhete"
+            className="border border-white/10 p-2 rounded-xl w-full bg-[#1a2742] text-white"
+            value={novaVendaEvento.estadio}
+            onChange={handleNovaVendaEventoChange}
+          />
+        </div>
+
+        <div className="flex flex-col">
+          <label className="text-sm font-medium text-white/80">Ganho (€)</label>
+          <input
+            name="ganho"
+            type="text"
+            placeholder="Ganho (€)"
+            className="border border-white/10 p-2 rounded-xl w-full bg-[#1a2742] text-white"
+            value={novaVendaEvento.ganho}
+            onChange={handleNovaVendaEventoChange}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                const resultado = calcularExpressao(e.target.value);
+                setNovaVendaEvento((prev) => ({
+                  ...prev,
+                  ganho: String(resultado),
+                }));
+              }
+            }}
+          />
+        </div>
+
+        <div className="flex flex-col">
+          <label className="text-sm font-medium text-white/80">Estado</label>
+          <select
+            name="estado"
+            className="border border-white/10 p-2 rounded-xl w-full bg-[#1a2742] text-white"
+            value={novaVendaEvento.estado}
+            onChange={handleNovaVendaEventoChange}
+          >
+            <option value="Entregue">Entregue</option>
+            <option value="Por entregar">Por entregar</option>
+            <option value="Disputa">Disputa</option>
+            <option value="Pago">Pago</option>
+          </select>
+        </div>
+      </div>
+
+      <button
+        onClick={guardarNovaVendaNoEvento}
+        disabled={idVendaModalEmUso || !novaVendaEvento.id_venda}
+        className={`mt-4 px-4 py-2 rounded-xl transition-colors duration-300 text-white ${
+          idVendaModalEmUso || !novaVendaEvento.id_venda
+            ? "bg-gray-500 cursor-not-allowed"
+            : "bg-blue-600 hover:bg-blue-700"
+        }`}
+      >
+        Guardar Registo
+      </button>
+    </div>
+  </div>
+)}
       {/* Modal de Nota do Evento */}
       {mostrarNotaEventoId && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
