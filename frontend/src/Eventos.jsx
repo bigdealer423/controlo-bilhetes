@@ -569,6 +569,91 @@ export default function Eventos() {
   const [comprasNaoAssociadasSet, setComprasNaoAssociadasSet] = useState(new Set());
   const [mesesExpandidos, setMesesExpandidos] = useState({});
   const [mostrarModalNovaCompra, setMostrarModalNovaCompra] = useState(false);
+  const [mostrarModalNovaVenda, setMostrarModalNovaVenda] = useState(false);
+  const [novaVendaEvento, setNovaVendaEvento] = useState({
+    id_venda: "",
+    data_venda: new Date().toISOString().split("T")[0],
+    data_evento: "",
+    evento: "",
+    estadio: "",
+    ganho: "",
+    estado: "Por entregar",
+  });
+  const abrirModalNovaVenda = (eventoItem) => {
+    setNovaVendaEvento({
+      id_venda: "",
+      data_venda: new Date().toISOString().split("T")[0],
+      data_evento: String(eventoItem.data_evento || "").slice(0, 10),
+      evento: eventoItem.evento || "",
+      estadio: "",
+      ganho: "",
+      estado: "Por entregar",
+    });
+  
+    setMostrarModalNovaVenda(true);
+  };
+
+  const guardarNovaVendaNoEvento = async () => {
+    const camposObrigatorios = {
+      id_venda: "ID Venda",
+      data_evento: "Data do Evento",
+      evento: "Evento",
+      estadio: "Bilhetes",
+      ganho: "Ganho (€)",
+    };
+  
+    for (const campo in camposObrigatorios) {
+      if (!novaVendaEvento[campo] || String(novaVendaEvento[campo]).trim() === "") {
+        toast.error(`Preencher campo ${camposObrigatorios[campo]}`);
+        return;
+      }
+    }
+  
+    try {
+      const res = await fetch("https://controlo-bilhetes.onrender.com/listagem_vendas", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...novaVendaEvento,
+          id_venda: parseInt(novaVendaEvento.id_venda),
+          ganho: parseFloat(String(novaVendaEvento.ganho).replace(",", ".")),
+          data_venda: String(novaVendaEvento.data_venda || "").slice(0, 10),
+          data_evento: String(novaVendaEvento.data_evento || "").slice(0, 10),
+        }),
+      });
+  
+      if (!res.ok) throw new Error("Erro ao guardar venda");
+  
+      const vendaCriada = await res.json();
+  
+      setVendas((prev) => [
+        ...prev,
+        {
+          ...vendaCriada,
+          data_evento: String(vendaCriada.data_evento || "").slice(0, 10),
+        },
+      ]);
+  
+      await buscarResumoMensal();
+  
+      setNovaVendaEvento({
+        id_venda: "",
+        data_venda: new Date().toISOString().split("T")[0],
+        data_evento: "",
+        evento: "",
+        estadio: "",
+        ganho: "",
+        estado: "Por entregar",
+      });
+  
+      setMostrarModalNovaVenda(false);
+  
+      toast.success("Venda adicionada com sucesso.");
+    } catch (error) {
+      console.error(error);
+      toast.error("Erro ao adicionar venda.");
+    }
+  };
   const [novaCompraEvento, setNovaCompraEvento] = useState({
     evento: "",
     data_evento: "",
@@ -2573,9 +2658,23 @@ return (
 
                       return (
                         <div className="rounded-2xl border border-blue-400/10 bg-blue-500/8 px-4 py-3">
-                          <div className="font-semibold text-white">
-                            Vendas ({getTotalBilhetesVendas(r.evento, r.data_evento)})
-                            {resumoTitulo ? <> — {resumoTitulo}</> : null}
+                          <div className="flex items-center justify-between gap-3">
+                            <div className="font-semibold text-white">
+                              Vendas ({getTotalBilhetesVendas(r.evento, r.data_evento)})
+                              {resumoTitulo ? <> — {resumoTitulo}</> : null}
+                            </div>
+                          
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                abrirModalNovaVenda(r);
+                              }}
+                              className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-blue-500 text-white shadow-[0_8px_20px_rgba(59,130,246,0.28)] transition hover:scale-105 hover:bg-blue-400"
+                              title="Adicionar venda"
+                            >
+                              <FaPlus size={12} />
+                            </button>
                           </div>
 
                           {resumo.porComprarTxt && (
