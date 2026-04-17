@@ -719,9 +719,27 @@ export default function Eventos() {
         throw new Error("Erro ao guardar venda");
       }
   
-      await res.json();
-  
-      await buscarVendas();
+      const vendaCriada = await res.json();
+
+      const vendaNormalizada = {
+        ...vendaCriada,
+        data_venda: String(vendaCriada.data_venda || "").slice(0, 10),
+        data_evento: String(vendaCriada.data_evento || "").slice(0, 10),
+      };
+      
+      setVendas(prev => {
+        const next = [...prev, vendaNormalizada];
+      
+        atualizarTotaisEventoLocal(
+          vendaNormalizada.evento,
+          vendaNormalizada.data_evento,
+          next,
+          compras
+        );
+      
+        return next;
+      });
+      
       await buscarResumoMensal();
   
       setNovaVendaEvento({
@@ -842,10 +860,28 @@ export default function Eventos() {
       }
   
       const compraCriada = await response.json();
-  
+
+      const compraNormalizada = {
+        ...compraCriada,
+        data_evento: String(compraCriada.data_evento || "").slice(0, 10),
+      };
+      
+      setCompras((prev) => {
+        const next = [...prev, compraNormalizada];
+      
+        atualizarTotaisEventoLocal(
+          compraNormalizada.evento,
+          compraNormalizada.data_evento,
+          vendas,
+          next
+        );
+      
+        return next;
+      });
+      
+      await buscarResumoMensal();
+      
       toast.success("Compra guardada com sucesso!");
-  
-      setCompras((prev) => [...prev, compraCriada]);
   
       setNovaCompraEvento({
         evento: "",
@@ -2046,6 +2082,39 @@ const imprimirVendasComNotaVermelha = (
       )
     );
   };
+
+  const atualizarTotaisEventoLocal = (eventoNome, dataEvento, listaVendas, listaCompras) => {
+  const ganhoTotal = (listaVendas || [])
+    .filter(v =>
+      String(v.evento || "") === String(eventoNome || "") &&
+      String(v.data_evento || "").slice(0, 10) === String(dataEvento || "").slice(0, 10)
+    )
+    .reduce((acc, v) => acc + (parseFloat(v.ganho) || 0), 0);
+
+  const gastoTotal = (listaCompras || [])
+    .filter(c =>
+      String(c.evento || "") === String(eventoNome || "") &&
+      String(c.data_evento || "").slice(0, 10) === String(dataEvento || "").slice(0, 10)
+    )
+    .reduce((acc, c) => acc + (parseFloat(c.gasto) || 0), 0);
+
+  setRegistos(prev =>
+    prev.map(r => {
+      const mesmoEvento =
+        String(r.evento || "") === String(eventoNome || "") &&
+        String(r.data_evento || "").slice(0, 10) === String(dataEvento || "").slice(0, 10);
+
+      if (!mesmoEvento) return r;
+
+      return {
+        ...r,
+        ganho: ganhoTotal,
+        gasto: gastoTotal,
+        lucro: ganhoTotal - gastoTotal,
+      };
+    })
+  );
+};
 
   // helper para “recarregar de raiz”
 const hardReloadEventos = () => {
