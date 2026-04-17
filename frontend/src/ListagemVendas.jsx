@@ -137,66 +137,74 @@ useEffect(() => {
 }, [eventosChaveCarregado, registos]);
 
    const forcarAtualizacaoEmail = async () => {
-  setMensagemModal("⏳ A processar leitura de e-mails...");
-  setResumoNovosEmails([]);
-  setMostrarModal(true);
-
-  try {
-    const res = await fetch("https://controlo-bilhetes.onrender.com/forcar_leitura_email", {
-      method: "POST"
-    });
-
-    if (!res.ok) {
-      throw new Error("Falha na resposta");
-    }
-
-    const data = await res.json();
-    setMensagemModal(`✅ ${data.mensagem}`);
-    buscarRegistos();
-    buscarResumoDiario();
-  } catch (err) {
-    setMensagemModal("❌ Erro ao tentar iniciar a leitura dos e-mails.");
-    return; // evita correr o setTimeout se falhar
-  }
-
-  // ⏳ Após 60 segundos, buscar o resultado da leitura
-  setTimeout(async () => {
+    setMensagemModal("⏳ A processar leitura de e-mails...");
+    setResumoNovosEmails([]);
+    setMostrarModal(true);
+  
     try {
-      const res = await fetch("https://controlo-bilhetes.onrender.com/resultado_leitura_email");
-      const json = await res.json();
-
-      if (json.sucesso !== undefined) {
-        const entregues = json.entregues || 0;
-        const pagos = json.pagos || 0;
-        const disputas = json.disputas ? json.disputas.length : 0;
-      
-        const mensagem = `✅ Concluído: ${json.sucesso} novos, ${json.existentes} existentes, ${json.falhas} falhados, ${entregues} entregues, ${pagos} pagos, ${disputas} disputas.`;
-      
-        const novosMinimos = Array.isArray(json.novos_registos)
-          ? json.novos_registos.slice(0, 5).map((r) => ({
-              evento: r.evento || "-",
-              bilhete: r.estadio || r.bilhete || "-",
-              ganho: r.ganho ?? "-"
-            }))
-          : [];
-      
-        setResumoNovosEmails(novosMinimos);
-        setMensagemModal(mensagem);
-      } else {
-        setMensagemModal("⚠️ Concluído, mas sem dados detalhados.");
+      const res = await fetch("https://controlo-bilhetes.onrender.com/forcar_leitura_email", {
+        method: "POST"
+      });
+  
+      if (!res.ok) {
+        throw new Error("Falha na resposta");
+      }
+  
+      const data = await res.json();
+      setMensagemModal(`✅ ${data.mensagem}`);
+    } catch (err) {
+      setMensagemModal("❌ Erro ao tentar iniciar a leitura dos e-mails.");
+      return;
+    }
+  
+    setTimeout(async () => {
+      try {
+        const res = await fetch("https://controlo-bilhetes.onrender.com/resultado_leitura_email");
+        const json = await res.json();
+  
+        if (json.sucesso !== undefined) {
+          const entregues = json.entregues || 0;
+          const pagos = json.pagos || 0;
+          const disputas = json.disputas ? json.disputas.length : 0;
+  
+          const mensagem = `✅ Concluído: ${json.sucesso} novos, ${json.existentes} existentes, ${json.falhas} falhados, ${entregues} entregues, ${pagos} pagos, ${disputas} disputas.`;
+  
+          const novosMinimos = Array.isArray(json.novos_registos)
+            ? json.novos_registos.slice(0, 5).map((r) => ({
+                evento: r.evento || "-",
+                bilhete: r.estadio || r.bilhete || "-",
+                ganho: r.ganho ?? "-"
+              }))
+            : [];
+  
+          setResumoNovosEmails(novosMinimos);
+          setMensagemModal(mensagem);
+  
+          // 🔥 atualizar logo a tabela e o resumo após concluir
+          await Promise.all([
+            buscarRegistos(),
+            buscarResumoDiario(),
+          ]);
+        } else {
+          setMensagemModal("⚠️ Concluído, mas sem dados detalhados.");
+          setResumoNovosEmails([]);
+  
+          await Promise.all([
+            buscarRegistos(),
+            buscarResumoDiario(),
+          ]);
+        }
+      } catch (error) {
+        setMensagemModal("⚠️ Concluído, mas não foi possível obter o resumo.");
         setResumoNovosEmails([]);
       }
-    } catch (error) {
-      setMensagemModal("⚠️ Concluído, mas não foi possível obter o resumo.");
-      setResumoNovosEmails([]);
-    }
-
-    setTimeout(() => {
-      setMostrarModal(false);
-      setMensagemModal("");
-    }, 12000);
-  }, 60000);
-};
+  
+      setTimeout(() => {
+        setMostrarModal(false);
+        setMensagemModal("");
+      }, 12000);
+    }, 60000);
+  };
 
 
 
@@ -257,20 +265,25 @@ function exportarParaExcel(registos) {
 
 
   const [erroIDExistente, setErroIDExistente] = useState(false);
-  const buscarRegistos = () => {
-  fetch("https://controlo-bilhetes.onrender.com/listagem_vendas")
-    .then(res => res.json())
-    .then(data => {
+  const buscarRegistos = async () => {
+    try {
+      const res = await fetch("https://controlo-bilhetes.onrender.com/listagem_vendas");
+      const data = await res.json();
       const ordenado = ordenarRegistos(data, colunaOrdenacao, ordemAscendente);
       setRegistos(ordenado);
-    })
-    .catch(err => console.error("Erro ao buscar registos:", err));
-};
-  const buscarResumoDiario = () => {
-    fetch("https://controlo-bilhetes.onrender.com/resumo_diario")
-      .then(res => res.json())
-      .then(data => setResumoDiario(data))
-      .catch(err => console.error("Erro ao buscar resumo diário:", err));
+    } catch (err) {
+      console.error("Erro ao buscar registos:", err);
+    }
+  };
+  
+  const buscarResumoDiario = async () => {
+    try {
+      const res = await fetch("https://controlo-bilhetes.onrender.com/resumo_diario");
+      const data = await res.json();
+      setResumoDiario(data);
+    } catch (err) {
+      console.error("Erro ao buscar resumo diário:", err);
+    }
   };
 
   const buscarEventosDropdown = () => {
