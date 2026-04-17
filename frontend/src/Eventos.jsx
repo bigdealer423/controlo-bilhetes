@@ -720,9 +720,8 @@ export default function Eventos() {
       }
   
       await res.json();
-
+  
       await buscarVendas();
-      hardReloadEventos();
       await buscarResumoMensal();
   
       setNovaVendaEvento({
@@ -833,7 +832,6 @@ export default function Eventos() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...novaCompraEvento,
-          data_evento: String(novaCompraEvento.data_evento || "").slice(0, 10),
           quantidade: parseInt(novaCompraEvento.quantidade),
           gasto: parseFloat(String(novaCompraEvento.gasto).replace(",", ".")),
         }),
@@ -843,13 +841,11 @@ export default function Eventos() {
         throw new Error("Erro ao guardar compra");
       }
   
-      await response.json();
-  
-      await buscarCompras();
-      hardReloadEventos();
-      await buscarResumoMensal();
+      const compraCriada = await response.json();
   
       toast.success("Compra guardada com sucesso!");
+  
+      setCompras((prev) => [...prev, compraCriada]);
   
       setNovaCompraEvento({
         evento: "",
@@ -2128,7 +2124,7 @@ const guardarEvento = async (evento) => {
     });
     if (res.ok) {
       await buscarCompras();
-      hardReloadEventos();
+      await buscarEventos();
       await buscarResumoMensal();
       setModoEdicaoCompra(null);
     }
@@ -2147,7 +2143,7 @@ const guardarEvento = async (evento) => {
     });
     if (res.ok) {
       await buscarVendas();
-      hardReloadEventos();
+      await buscarEventos();
       await buscarResumoMensal();
       setModoEdicaoVenda(null);
     }
