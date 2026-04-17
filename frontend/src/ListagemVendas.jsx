@@ -143,7 +143,7 @@ useEffect(() => {
   
     try {
       const res = await fetch("https://controlo-bilhetes.onrender.com/forcar_leitura_email", {
-        method: "POST"
+        method: "POST",
       });
   
       if (!res.ok) {
@@ -157,53 +157,51 @@ useEffect(() => {
       return;
     }
   
-    setTimeout(async () => {
-      try {
-        const res = await fetch("https://controlo-bilhetes.onrender.com/resultado_leitura_email");
-        const json = await res.json();
+    const json = await esperarResultadoLeitura();
   
-        if (json.sucesso !== undefined) {
-          const entregues = json.entregues || 0;
-          const pagos = json.pagos || 0;
-          const disputas = json.disputas ? json.disputas.length : 0;
+    try {
+      if (json && json.sucesso !== undefined) {
+        const entregues = json.entregues || 0;
+        const pagos = json.pagos || 0;
+        const disputas = Array.isArray(json.disputas) ? json.disputas.length : 0;
   
-          const mensagem = `✅ Concluído: ${json.sucesso} novos, ${json.existentes} existentes, ${json.falhas} falhados, ${entregues} entregues, ${pagos} pagos, ${disputas} disputas.`;
+        const mensagem = `✅ Concluído: ${json.sucesso} novos, ${json.existentes} existentes, ${json.falhas} falhados, ${entregues} entregues, ${pagos} pagos, ${disputas} disputas.`;
   
-          const novosMinimos = Array.isArray(json.novos_registos)
-            ? json.novos_registos.slice(0, 5).map((r) => ({
-                evento: r.evento || "-",
-                bilhete: r.estadio || r.bilhete || "-",
-                ganho: r.ganho ?? "-"
-              }))
-            : [];
+        const novosMinimos = Array.isArray(json.novos_registos)
+          ? json.novos_registos.slice(0, 5).map((r) => ({
+              evento: r.evento || "-",
+              bilhete: r.estadio || r.bilhete || "-",
+              ganho: r.ganho ?? "-",
+            }))
+          : [];
   
-          setResumoNovosEmails(novosMinimos);
-          setMensagemModal(mensagem);
-  
-          // 🔥 atualizar logo a tabela e o resumo após concluir
-          await Promise.all([
-            buscarRegistos(),
-            buscarResumoDiario(),
-          ]);
-        } else {
-          setMensagemModal("⚠️ Concluído, mas sem dados detalhados.");
-          setResumoNovosEmails([]);
-  
-          await Promise.all([
-            buscarRegistos(),
-            buscarResumoDiario(),
-          ]);
-        }
-      } catch (error) {
-        setMensagemModal("⚠️ Concluído, mas não foi possível obter o resumo.");
+        setResumoNovosEmails(novosMinimos);
+        setMensagemModal(mensagem);
+      } else {
+        setMensagemModal("⚠️ Concluído, mas sem dados detalhados.");
         setResumoNovosEmails([]);
       }
   
-      setTimeout(() => {
-        setMostrarModal(false);
-        setMensagemModal("");
-      }, 12000);
-    }, 60000);
+      // ✅ aqui sim atualiza a tabela e os ganhos, quando já terminou
+      await Promise.all([
+        buscarRegistos(),
+        buscarResumoDiario(),
+      ]);
+    } catch (error) {
+      console.error("Erro ao tratar resultado final:", error);
+      setMensagemModal("⚠️ Concluído, mas não foi possível obter o resumo.");
+  
+      // mesmo em erro, tenta pelo menos refrescar os dados
+      await Promise.all([
+        buscarRegistos(),
+        buscarResumoDiario(),
+      ]);
+    }
+  
+    setTimeout(() => {
+      setMostrarModal(false);
+      setMensagemModal("");
+    }, 12000);
   };
 
 
@@ -284,6 +282,28 @@ function exportarParaExcel(registos) {
     } catch (err) {
       console.error("Erro ao buscar resumo diário:", err);
     }
+  };
+
+  const esperarResultadoLeitura = async () => {
+    const MAX_TENTATIVAS = 30; // 30 x 4s = até 120 segundos
+    const INTERVALO_MS = 4000;
+  
+    for (let tentativa = 0; tentativa < MAX_TENTATIVAS; tentativa++) {
+      try {
+        const res = await fetch("https://controlo-bilhetes.onrender.com/resultado_leitura_email");
+        const json = await res.json();
+  
+        if (json && json.sucesso !== undefined) {
+          return json;
+        }
+      } catch (error) {
+        console.error("Erro ao verificar resultado da leitura:", error);
+      }
+  
+      await new Promise(resolve => setTimeout(resolve, INTERVALO_MS));
+    }
+  
+    return null;
   };
 
   const buscarEventosDropdown = () => {
