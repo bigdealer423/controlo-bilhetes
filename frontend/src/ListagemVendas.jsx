@@ -187,6 +187,14 @@ useEffect(() => {
         buscarRegistos(),
         buscarResumoDiario(),
       ]);
+      
+      // segunda leitura curta para garantir dados já persistidos no backend
+      setTimeout(async () => {
+        await Promise.all([
+          buscarRegistos(),
+          buscarResumoDiario(),
+        ]);
+      }, 1500);
     } catch (error) {
       console.error("Erro ao tratar resultado final:", error);
       setMensagemModal("⚠️ Concluído, mas não foi possível obter o resumo.");
@@ -264,47 +272,83 @@ function exportarParaExcel(registos) {
 
   const [erroIDExistente, setErroIDExistente] = useState(false);
   const buscarRegistos = async () => {
-    try {
-      const res = await fetch("https://controlo-bilhetes.onrender.com/listagem_vendas");
-      const data = await res.json();
-      const ordenado = ordenarRegistos(data, colunaOrdenacao, ordemAscendente);
-      setRegistos(ordenado);
-    } catch (err) {
-      console.error("Erro ao buscar registos:", err);
-    }
-  };
-  
-  const buscarResumoDiario = async () => {
-    try {
-      const res = await fetch("https://controlo-bilhetes.onrender.com/resumo_diario");
-      const data = await res.json();
-      setResumoDiario(data);
-    } catch (err) {
-      console.error("Erro ao buscar resumo diário:", err);
-    }
-  };
-
-  const esperarResultadoLeitura = async () => {
-    const MAX_TENTATIVAS = 30; // 30 x 4s = até 120 segundos
-    const INTERVALO_MS = 4000;
-  
-    for (let tentativa = 0; tentativa < MAX_TENTATIVAS; tentativa++) {
-      try {
-        const res = await fetch("https://controlo-bilhetes.onrender.com/resultado_leitura_email");
-        const json = await res.json();
-  
-        if (json && json.sucesso !== undefined) {
-          return json;
-        }
-      } catch (error) {
-        console.error("Erro ao verificar resultado da leitura:", error);
+  try {
+    const ts = Date.now();
+    const res = await fetch(
+      `https://controlo-bilhetes.onrender.com/listagem_vendas?_ts=${ts}`,
+      {
+        cache: "no-store",
+        headers: {
+          "Cache-Control": "no-cache, no-store, must-revalidate",
+          Pragma: "no-cache",
+          Expires: "0",
+        },
       }
-  
-      await new Promise(resolve => setTimeout(resolve, INTERVALO_MS));
+    );
+
+    const data = await res.json();
+    const ordenado = ordenarRegistos([...data], colunaOrdenacao, ordemAscendente);
+    setRegistos(ordenado);
+  } catch (err) {
+    console.error("Erro ao buscar registos:", err);
+  }
+};
+
+const buscarResumoDiario = async () => {
+  try {
+    const ts = Date.now();
+    const res = await fetch(
+      `https://controlo-bilhetes.onrender.com/resumo_diario?_ts=${ts}`,
+      {
+        cache: "no-store",
+        headers: {
+          "Cache-Control": "no-cache, no-store, must-revalidate",
+          Pragma: "no-cache",
+          Expires: "0",
+        },
+      }
+    );
+
+    const data = await res.json();
+    setResumoDiario({ ...data });
+  } catch (err) {
+    console.error("Erro ao buscar resumo diário:", err);
+  }
+};
+
+const esperarResultadoLeitura = async () => {
+  const MAX_TENTATIVAS = 30;
+  const INTERVALO_MS = 4000;
+
+  for (let tentativa = 0; tentativa < MAX_TENTATIVAS; tentativa++) {
+    try {
+      const ts = Date.now();
+      const res = await fetch(
+        `https://controlo-bilhetes.onrender.com/resultado_leitura_email?_ts=${ts}`,
+        {
+          cache: "no-store",
+          headers: {
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+            Pragma: "no-cache",
+            Expires: "0",
+          },
+        }
+      );
+
+      const json = await res.json();
+
+      if (json && json.sucesso !== undefined) {
+        return json;
+      }
+    } catch (error) {
+      console.error("Erro ao verificar resultado da leitura:", error);
     }
-  
-    return null;
-  };
+
+    await new Promise((resolve) => setTimeout(resolve, INTERVALO_MS));
+  }
+
+  return null;
+};
 
   const buscarEventosDropdown = () => {
   fetch("https://controlo-bilhetes.onrender.com/eventos_dropdown")
