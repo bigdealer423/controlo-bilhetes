@@ -88,13 +88,13 @@ export default function Dashboard({ onAtualizarEventos }) {
             </button>
           </div>
         </div>
-
-        <EventoModal
-          visivel={mostrarModal}
-          fechar={() => setMostrarModal(false)}
-          onAtualizar={onAtualizarEventos}
-        />
       </div>
+
+      <EventoModal
+        visivel={mostrarModal}
+        fechar={() => setMostrarModal(false)}
+        onAtualizar={onAtualizarEventos}
+      />
     </>
   );
 }
