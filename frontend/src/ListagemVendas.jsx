@@ -337,7 +337,7 @@ const esperarResultadoLeitura = async () => {
 
       const json = await res.json();
 
-      if (json && json.sucesso !== undefined) {
+      if (json && json.em_execucao === false && json.sucesso !== undefined) {
         return json;
       }
     } catch (error) {
