@@ -388,6 +388,22 @@ def resumo_diario(db: Session = Depends(get_db)):
 
 @app.post("/forcar_leitura_email")
 def forcar_execucao_workflow():
+    global resumo_mais_recente
+
+    resumo_mais_recente = {
+        "em_execucao": True,
+        "total_lidos": 0,
+        "sucesso": 0,
+        "existentes": 0,
+        "falhas": 0,
+        "ids_falhados": [],
+        "entregues": 0,
+        "ids_entregues": [],
+        "pagos": 0,
+        "disputas": [],
+        "novos_registos": []
+    }
+
     token = os.getenv("GH_WEBHOOK_TOKEN")
     owner = "bigdealer423"
     repo = "controlo-bilhetes"
@@ -408,6 +424,7 @@ def forcar_execucao_workflow():
             "detalhe": "O sistema está a verificar os e-mails. Aguarde 30 segundos e recarregue a tabela de vendas."
         }
     else:
+        resumo_mais_recente["em_execucao"] = False
         raise HTTPException(status_code=500, detail=f"Erro ao disparar workflow: {response.status_code}, {response.text}")
 
 import json
@@ -417,28 +434,43 @@ from fastapi.responses import JSONResponse
 
 
 # ---------------- RESUMO DA LEITURA ----------------
-resumo_mais_recente = {}
+# ---------------- RESUMO DA LEITURA ----------------
+resumo_mais_recente = {
+    "em_execucao": False,
+    "total_lidos": 0,
+    "sucesso": 0,
+    "existentes": 0,
+    "falhas": 0,
+    "ids_falhados": [],
+    "entregues": 0,
+    "ids_entregues": [],
+    "pagos": 0,
+    "disputas": [],
+    "novos_registos": []
+}
 
 @app.post("/guardar_resumo")
 def guardar_resumo(dados: dict):
     global resumo_mais_recente
-    resumo_mais_recente = dados
+
+    resumo_mais_recente = {
+        "em_execucao": False,
+        "total_lidos": dados.get("total_lidos", 0),
+        "sucesso": dados.get("sucesso", 0),
+        "existentes": dados.get("existentes", 0),
+        "falhas": dados.get("falhas", 0),
+        "ids_falhados": dados.get("ids_falhados", []),
+        "entregues": dados.get("entregues", 0),
+        "ids_entregues": dados.get("ids_entregues", []),
+        "pagos": dados.get("pagos", 0),
+        "disputas": dados.get("disputas", []),
+        "novos_registos": dados.get("novos_registos", []),
+    }
     return {"status": "Resumo guardado com sucesso"}
 
 @app.get("/resultado_leitura_email")
 def obter_resumo():
-    return resumo_mais_recente or {
-        "total_lidos": 0,
-        "sucesso": 0,
-        "existentes": 0,
-        "falhas": 0,
-        "ids_falhados": [],
-        "entregues": 0,
-        "ids_entregues": [],
-        "pagos": 0,
-        "disputas": [],
-        "novos_registos": []
-    }
+    return resumo_mais_recente
 
 # ---------------- RESUMO MENSAL EVENTOS ----------------
 
