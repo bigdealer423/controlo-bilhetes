@@ -2236,18 +2236,23 @@ const renderEventoComSimbolos = (eventoNome) => {
     .filter(p => p.length > 0);
 
   return partes.map((parte, idx) => {
-    const parteNorm = normalizarTextoClube(parte);
+    const parteBase = parte
+      .split(" - ")[0]
+      .split(" | ")[0]
+      .split("(")[0]
+      .trim();
+    
+    const parteNorm = normalizarTextoClube(parteBase);
 
     // 1) match exato normalizado
     let clubeMatch = clubesInfo.find(
       clube => normalizarTextoClube(clube.nome) === parteNorm
     );
-
-    // 2) match parcial controlado
+    
     if (!clubeMatch) {
       clubeMatch = clubesInfo.find(clube => {
         const clubeNorm = normalizarTextoClube(clube.nome);
-        return parteNorm.includes(clubeNorm) || clubeNorm.includes(parteNorm);
+        return parteNorm.startsWith(clubeNorm + " ");
       });
     }
 
