@@ -4398,6 +4398,40 @@ return (
           </div>
         </div>
       )}
+{/* ✅ MODAL ESTÁDIO */}
+{mostrarEstadioId && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+    <div
+      className="w-full max-w-md rounded-2xl bg-gray-900 p-5 text-white"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <h3 className="mb-4 text-lg font-bold">Editar Estádio</h3>
+
+      <input
+        value={estadioTmp}
+        onChange={(e) => setEstadioTmp(e.target.value)}
+        className="mb-4 w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
+        placeholder="Nome do estádio"
+      />
+
+      <div className="flex justify-end gap-3">
+        <button onClick={() => setMostrarEstadioId(null)}>
+          Cancelar
+        </button>
+
+        <button
+          onClick={() => {
+            atualizarCampo(mostrarEstadioId, "estadio", estadioTmp);
+            setMostrarEstadioId(null);
+          }}
+          className="rounded-xl bg-blue-500 px-4 py-2 text-white"
+        >
+          Guardar
+        </button>
+      </div>
+    </div>
+  </div>
+)}
 
      
       {/* Modal de confirmação */}
@@ -4419,3 +4453,5 @@ return (
    </div>
   );
 }
+
+
