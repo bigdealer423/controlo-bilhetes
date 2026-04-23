@@ -2675,7 +2675,7 @@ return (
                 )}
               </td>
 
-              <td className="hidden xl:table-cell p-4 whitespace-nowrap overflow-hidden truncate text-white/88">
+              <td className="p-4 whitespace-nowrap overflow-hidden truncate text-white/88">
                 {modoEdicao === r.id ? (
                   <input
                     value={r.estadio}
