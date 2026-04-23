@@ -2539,7 +2539,7 @@ return (
       </tr>
     </thead>
 
-    
+    <tbody>
       {registos
         .filter(r => {
           const passaPesquisa = (r.evento || "").toLowerCase().includes(filtroPesquisa.toLowerCase());
@@ -2549,7 +2549,7 @@ return (
           return passaPesquisa && !esconderPago && passaEpoca;
         })
         .map(r => (
-          <tbody key={r.id}>
+          <Fragment key={r.id}>
             <tr
               ref={(el) => (linhaRefs.current[r.id] = el)}
               onClick={() => {
@@ -3045,6 +3045,7 @@ return (
               );
             });
           })()}
+        </tbody>
       </table>
     </div>
   </td>
@@ -3311,8 +3312,9 @@ return (
                 </tr>
               </>
             )}
-          </tbody>
+          </Fragment>
         ))}
+    </tbody>
   </table>
 </div>
           <div className="space-y-5 md:hidden mt-6 px-0 w-full max-w-full">
