@@ -2539,7 +2539,7 @@ return (
       </tr>
     </thead>
 
-    <tbody>
+    
       {registos
         .filter(r => {
           const passaPesquisa = (r.evento || "").toLowerCase().includes(filtroPesquisa.toLowerCase());
@@ -3045,7 +3045,6 @@ return (
               );
             });
           })()}
-        </tbody>
       </table>
     </div>
   </td>
