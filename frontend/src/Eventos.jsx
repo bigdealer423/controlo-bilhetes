@@ -3313,7 +3313,6 @@ return (
             )}
           </tbody>
         ))}
-    </tbody>
   </table>
 </div>
           <div className="space-y-5 md:hidden mt-6 px-0 w-full max-w-full">
