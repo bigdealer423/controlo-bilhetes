@@ -544,6 +544,8 @@ function listarEpocasFixas({ inicio = 2020, incluirProxima = true } = {}) {
 
 export default function Eventos() {
   const [registos, setRegistos] = useState([]);
+  const [mostrarEstadioId, setMostrarEstadioId] = useState(null);
+  const [estadioTmp, setEstadioTmp] = useState("");
   const [urlEventoTmp, setUrlEventoTmp] = useState("");
   const [mostrarNotaEventoId, setMostrarNotaEventoId] = useState(null);
   const [notaEventoTmp, setNotaEventoTmp] = useState("");
@@ -2518,19 +2520,17 @@ return (
       <div className="overflow-hidden rounded-[26px] border border-white/10 bg-white/[0.025] shadow-[0_20px_60px_rgba(0,0,0,0.35)] backdrop-blur-xl">
   <table className="hidden md:table min-w-full table-fixed text-sm text-white">
     <colgroup>
-      <col className="w-[390px]" />
-      <col className="w-[250px]" />
+      <col className="w-[470px]" />
       <col className="w-[95px]" />
       <col className="w-[95px]" />
       <col className="w-[95px]" />
       <col className="w-[120px]" />
-      <col className="w-[230px]" />
+      <col className="w-[240px]" />
     </colgroup>
 
     <thead className="bg-white/[0.045]">
       <tr className="border-b border-white/10 text-[13px] uppercase tracking-[0.08em] text-white/70">
         <th className="p-4 font-semibold">Evento</th>
-        <th className="p-4 font-semibold">Estádio</th>
         <th className="p-4 text-center font-semibold">Gasto</th>
         <th className="p-4 text-center font-semibold">Ganho</th>
         <th className="p-4 text-left font-semibold">Lucro</th>
@@ -2675,17 +2675,7 @@ return (
                 )}
               </td>
 
-              <td className="p-4 whitespace-nowrap overflow-hidden truncate text-white/88">
-                {modoEdicao === r.id ? (
-                  <input
-                    value={r.estadio}
-                    onChange={(e) => atualizarCampo(r.id, "estadio", e.target.value)}
-                    className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2 text-white"
-                  />
-                ) : (
-                  r.estadio
-                )}
-              </td>
+              
 
               <td className="p-4 whitespace-nowrap text-center font-medium text-red-300">
                 {r.gasto} €
@@ -2808,6 +2798,22 @@ return (
                   >
                     📝
                   </button>
+
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setMostrarEstadioId(r.id);
+                      setEstadioTmp(r.estadio || "");
+                    }}
+                    className={`inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-white transition hover:scale-105 ${
+                      r.estadio
+                        ? "bg-sky-500 shadow-[0_8px_20px_rgba(56,189,248,0.28)] hover:bg-sky-400"
+                        : "bg-white/10 hover:bg-white/15"
+                    }`}
+                    title={r.estadio || "Adicionar estádio"}
+                  >
+                    🏟️
+                  </button>
                 </div>
               </td>
             </tr>
@@ -2815,7 +2821,7 @@ return (
             {linhaExpandida === r.id && (
               <>
                 <tr className="bg-blue-500/6">
-                  <td colSpan="7" className="p-4 border-b border-white/6">
+                  <td colSpan="6" className="p-4 border-b border-white/6">
                     {(() => {
                       const chaveRegra = getEquipaCasaCanonica(r.evento);
                       const resumo = getResumoMatchingInteligente(r.evento, r.data_evento, chaveRegra);
@@ -2869,7 +2875,7 @@ return (
                 </tr>
 
                 <tr className="bg-blue-500/6">
-  <td colSpan="7" className="p-0 border-b border-white/6">
+  <td colSpan="6" className="p-0 border-b border-white/6">
     <div className="px-4 pb-2">
       <table className="w-full table-fixed text-xs text-white">
         <colgroup>
@@ -3052,7 +3058,7 @@ return (
 </tr>
 
                 <tr className="bg-amber-500/8">
-                  <td colSpan="7" className="p-4 border-b border-white/6">
+                  <td colSpan="6" className="p-4 border-b border-white/6">
                     {(() => {
                       const chaveRegra = getEquipaCasaCanonica(r.evento);
                       const totalCompras = compras
@@ -3092,7 +3098,7 @@ return (
                 </tr>
 
                 <tr className="bg-amber-500/6">
-                  <td colSpan="7" className="p-0 border-b border-white/6">
+                  <td colSpan="6" className="p-0 border-b border-white/6">
                     <div className="px-4 pb-2">
                       <table className="w-full table-fixed text-xs text-white">
                         <colgroup>
