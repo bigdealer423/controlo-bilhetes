@@ -2549,7 +2549,7 @@ return (
           return passaPesquisa && !esconderPago && passaEpoca;
         })
         .map(r => (
-          <Fragment key={r.id}>
+          <tbody key={r.id}>
             <tr
               ref={(el) => (linhaRefs.current[r.id] = el)}
               onClick={() => {
@@ -3312,7 +3312,7 @@ return (
                 </tr>
               </>
             )}
-          </Fragment>
+          </tbody>
         ))}
     </tbody>
   </table>
