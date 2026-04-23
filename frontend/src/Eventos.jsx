@@ -2518,13 +2518,13 @@ return (
       <div className="overflow-hidden rounded-[26px] border border-white/10 bg-white/[0.025] shadow-[0_20px_60px_rgba(0,0,0,0.35)] backdrop-blur-xl">
   <table className="hidden md:table min-w-full table-fixed text-sm text-white">
     <colgroup>
-      <col className="w-[420px]" />
-      <col className="w-[280px]" />
+      <col className="w-[390px]" />
+      <col className="w-[250px]" />
       <col className="w-[95px]" />
       <col className="w-[95px]" />
       <col className="w-[95px]" />
       <col className="w-[120px]" />
-      <col className="w-[170px]" />
+      <col className="w-[230px]" />
     </colgroup>
 
     <thead className="bg-white/[0.045]">
@@ -2535,7 +2535,7 @@ return (
         <th className="p-4 text-center font-semibold">Ganho</th>
         <th className="p-4 text-left font-semibold">Lucro</th>
         <th className="p-4 font-semibold">Estado</th>
-        <th className="p-4 font-semibold">Ações</th>
+        <th className="p-4 text-center font-semibold">Ações</th>
       </tr>
     </thead>
 
@@ -2728,8 +2728,8 @@ return (
                 )}
               </td>
 
-              <td className="p-4 align-middle whitespace-nowrap">
-                <div className="flex items-center gap-2">
+              <td className="p-4 align-middle">
+                <div className="flex items-center justify-center gap-3 whitespace-nowrap">
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -2739,7 +2739,7 @@ return (
                         ativarEdicao(r.id, r);
                       }
                     }}
-                    className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-blue-500 text-white shadow-[0_8px_20px_rgba(59,130,246,0.28)] transition hover:scale-105 hover:bg-blue-400"
+                    className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-blue-500 text-white shadow-[0_8px_20px_rgba(59,130,246,0.28)] transition hover:scale-105 hover:bg-blue-400"
                     title={modoEdicao === r.id ? "Guardar" : "Editar"}
                   >
                     {modoEdicao === r.id ? "💾" : <FaEdit size={14} />}
@@ -2750,7 +2750,7 @@ return (
                       e.stopPropagation();
                       confirmarEliminar(r.id);
                     }}
-                    className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-red-500 text-white shadow-[0_8px_20px_rgba(239,68,68,0.28)] transition hover:scale-105 hover:bg-red-400"
+                    className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-red-500 text-white shadow-[0_8px_20px_rgba(239,68,68,0.28)] transition hover:scale-105 hover:bg-red-400"
                     title="Eliminar"
                   >
                     <FaTrash size={14} />
@@ -2787,7 +2787,7 @@ return (
                       });
                     }}
                     title="Imprimir vendas com Nota (bola vermelha) deste evento"
-                    className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500 text-white shadow-[0_8px_20px_rgba(16,185,129,0.28)] transition hover:scale-105 hover:bg-emerald-400"
+                    className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-500 text-white shadow-[0_8px_20px_rgba(16,185,129,0.28)] transition hover:scale-105 hover:bg-emerald-400"
                   >
                     <FaPrint size={14} />
                   </button>
@@ -2799,7 +2799,7 @@ return (
                       setNotaEventoTmp(r.nota_evento || "");
                       setUrlEventoTmp(r.url_evento || "");
                     }}
-                    className={`inline-flex h-9 w-9 items-center justify-center rounded-xl text-white transition hover:scale-105 ${
+                    className={`inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-white transition hover:scale-105 ${
                       r.nota_evento
                         ? "bg-purple-500 shadow-[0_8px_20px_rgba(168,85,247,0.28)] hover:bg-purple-400"
                         : "bg-white/10 hover:bg-white/15"
@@ -2837,7 +2837,7 @@ return (
                             e.stopPropagation();
                             abrirModalNovaVenda(r);
                           }}
-                          className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-blue-500 text-white shadow-[0_8px_20px_rgba(59,130,246,0.28)] transition hover:scale-105 hover:bg-blue-400"
+                          className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-blue-500 text-white shadow-[0_8px_20px_rgba(59,130,246,0.28)] transition hover:scale-105 hover:bg-blue-400"
                           title="Adicionar venda"
                         >
                           <FaPlus size={12} />
