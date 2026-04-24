@@ -4102,6 +4102,13 @@ return (
                 gasto: e.target.value,
               }))
             }
+            onBlur={(e) => {
+              const resultado = calcularExpressao(e.target.value);
+              setNovaCompraEvento((prev) => ({
+                ...prev,
+                gasto: String(resultado),
+              }));
+            }}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 e.preventDefault();
@@ -4112,8 +4119,6 @@ return (
                 }));
               }
             }}
-            className="w-full rounded-xl border border-white/10 bg-[#1a2742] px-3 py-2.5 text-sm text-white outline-none"
-            placeholder="Gasto (€)"
           />
         </div>
       </div>
@@ -4258,10 +4263,15 @@ return (
           <input
             name="ganho"
             type="text"
-            placeholder="Ganho (€)"
-            className="border border-white/10 p-2 rounded-xl w-full bg-[#1a2742] text-white"
             value={novaVendaEvento.ganho}
             onChange={handleNovaVendaEventoChange}
+            onBlur={(e) => {
+              const resultado = calcularExpressao(e.target.value);
+              setNovaVendaEvento((prev) => ({
+                ...prev,
+                ganho: String(resultado),
+              }));
+            }}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 e.preventDefault();
