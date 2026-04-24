@@ -711,7 +711,7 @@ export default function Eventos() {
         body: JSON.stringify({
           ...novaVendaEvento,
           id_venda: parseInt(novaVendaEvento.id_venda),
-          ganho: parseFloat(String(novaVendaEvento.ganho).replace(",", ".")),
+          ganho: Math.ceil(parseFloat(String(novaVendaEvento.ganho).replace(",", "."))),
           data_venda: String(novaVendaEvento.data_venda || "").slice(0, 10),
           data_evento: String(novaVendaEvento.data_evento || "").slice(0, 10),
         }),
@@ -808,7 +808,7 @@ export default function Eventos() {
   
       if (isNaN(resultado) || !isFinite(resultado)) return valor;
   
-      return resultado;
+      return Math.ceil(resultado);
     } catch {
       return valor;
     }
@@ -853,7 +853,7 @@ export default function Eventos() {
         body: JSON.stringify({
           ...novaCompraEvento,
           quantidade: parseInt(novaCompraEvento.quantidade),
-          gasto: parseFloat(String(novaCompraEvento.gasto).replace(",", ".")),
+          gasto: Math.ceil(parseFloat(String(novaCompraEvento.gasto).replace(",", "."))),
         }),
       });
   
