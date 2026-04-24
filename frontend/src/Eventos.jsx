@@ -4119,7 +4119,7 @@ return (
                 }));
               }
             }}
-            className={INPUT_BASE}
+            className="w-full rounded-xl border border-white/10 bg-[#1a2742] px-3 py-2.5 text-sm text-white outline-none placeholder:text-white/40 focus:border-blue-400 focus:ring-2 focus:ring-blue-400/30"
           />
         </div>
       </div>
@@ -4283,7 +4283,7 @@ return (
                 }));
               }
             }}
-            className={INPUT_BASE}
+            className="w-full rounded-xl border border-white/10 bg-[#1a2742] px-3 py-2.5 text-sm text-white outline-none placeholder:text-white/40 focus:border-blue-400 focus:ring-2 focus:ring-blue-400/30"
           />
         </div>
 
