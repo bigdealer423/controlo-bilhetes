@@ -4119,6 +4119,7 @@ return (
                 }));
               }
             }}
+            className={INPUT_BASE}
           />
         </div>
       </div>
@@ -4282,6 +4283,7 @@ return (
                 }));
               }
             }}
+            className={INPUT_BASE}
           />
         </div>
 
