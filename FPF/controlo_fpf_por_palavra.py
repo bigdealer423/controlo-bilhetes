@@ -51,27 +51,24 @@ MATCH_MODE = "any"
 
 def obter_texto_url_simples(page, url):
     try:
-        resp = page.request.get(
+        req = urllib.request.Request(
             url,
             headers={
-                "Accept": "application/xml,text/xml,text/plain,*/*",
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+                "Accept": "application/xml,text/xml,text/plain,*/*",
                 "Accept-Language": "pt-PT,pt;q=0.9,en;q=0.8",
-            },
-            timeout=30000
+                "Referer": "https://bilheteira.fpf.pt/",
+            }
         )
 
-        print(f"Status pedido direto: {resp.status}")
-
-        if resp.ok:
-            txt = resp.text()
+        with urllib.request.urlopen(req, timeout=30) as response:
+            print(f"Status pedido direto urllib: {response.status}")
+            txt = response.read().decode("utf-8", errors="ignore")
             print(txt[:3000])
             return normalizar_texto(txt)
 
-        return ""
-
     except Exception as e:
-        print(f"Erro no pedido direto: {e}")
+        print(f"Erro no pedido direto urllib: {e}")
         return ""
 
 def garantir_pasta():
