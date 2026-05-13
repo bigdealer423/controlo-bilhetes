@@ -246,7 +246,13 @@ def main():
     with sync_playwright() as p:
         browser = p.chromium.launch(
             headless=True,
-            args=["--no-sandbox", "--disable-setuid-sandbox"]
+            args=[
+                "--no-sandbox",
+                "--disable-setuid-sandbox",
+                "--disable-dev-shm-usage",
+                "--disable-blink-features=AutomationControlled",
+                "--window-size=1440,2200",
+            ]
         )
 
         for item in URLS:
@@ -258,6 +264,19 @@ def main():
                 user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
             )
 
+            page.add_init_script("""
+            Object.defineProperty(navigator, 'webdriver', {
+              get: () => undefined
+            });
+            
+            Object.defineProperty(navigator, 'languages', {
+              get: () => ['pt-PT', 'pt', 'en-US', 'en']
+            });
+            
+            Object.defineProperty(navigator, 'plugins', {
+              get: () => [1, 2, 3, 4, 5]
+            });
+            """)
             try:
                 page.set_extra_http_headers({
                     "Accept-Language": "pt-PT,pt;q=0.9,en;q=0.8"
