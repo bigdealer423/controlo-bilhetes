@@ -255,7 +255,7 @@ def main():
 
             page = browser.new_page(
                 viewport={"width": 1440, "height": 2200},
-                user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
+                user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
             )
 
             try:
@@ -263,17 +263,28 @@ def main():
                     "Accept-Language": "pt-PT,pt;q=0.9,en;q=0.8"
                 })
 
+                
+                page.on("console", lambda msg: print(f"CONSOLE {msg.type}: {msg.text}"))
+                page.on("pageerror", lambda exc: print(f"PAGE ERROR: {exc}"))
+                
                 print(f"\nA verificar: {url}")
-                page.goto(url, wait_until="domcontentloaded", timeout=90000)
-                page.wait_for_timeout(7000)
-
-                aceitar_cookies(page)
-
+                
+                page.goto(url, wait_until="load", timeout=90000)
+                
                 try:
-                    page.wait_for_load_state("networkidle", timeout=15000)
+                    page.wait_for_load_state("networkidle", timeout=30000)
                 except PlaywrightTimeoutError:
                     print("Network idle não atingido, continuo na mesma.")
-
+                
+                try:
+                    page.wait_for_function(
+                        "() => document.body && document.body.innerText.trim().length > 50",
+                        timeout=30000
+                    )
+                    print("Página já tem texto no body.")
+                except PlaywrightTimeoutError:
+                    print("Body continua sem texto suficiente.")
+                
                 page.wait_for_timeout(5000)
 
                 screenshot_path = os.path.join(
@@ -284,6 +295,9 @@ def main():
                 print(f"Screenshot guardado: {screenshot_path}")
 
                 texto = obter_texto_pagina(page)
+                print("\n========= TEXTO EXTRAÍDO =========\n")
+                print(texto[:5000])
+                print("\n==================================\n")
                 match, encontradas, em_falta = verificar_keywords(texto, keywords)
 
                 print(f"Palavras encontradas: {encontradas}")
