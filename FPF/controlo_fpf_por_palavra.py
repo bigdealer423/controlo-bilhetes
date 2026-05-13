@@ -279,9 +279,16 @@ def main():
                 page.on("console", lambda msg: print(f"CONSOLE {msg.type}: {msg.text}"))
                 page.on("pageerror", lambda exc: print(f"PAGE ERROR: {exc}"))
                 
-                print(f"\nA verificar: {url}")
+                page.on("response", lambda response: (
+                    print(f"RESPONSE {response.status}: {response.url}")
+                    if response.status in [400, 401, 403, 404, 500]
+                    else None
+                ))
                 
+                print(f"\nA verificar: {url}")
                 page.goto(url, wait_until="load", timeout=90000)
+                
+           
                 
                 try:
                     page.wait_for_load_state("networkidle", timeout=30000)
