@@ -48,6 +48,26 @@ MATCH_MODE = "any"
 # =========================
 # FUNÇÕES AUXILIARES
 # =========================
+def obter_texto_html_simples(url):
+    try:
+        req = urllib.request.Request(
+            url,
+            headers={
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/124.0.0.0 Safari/537.36",
+                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                "Accept-Language": "pt-PT,pt;q=0.9,en;q=0.8",
+            }
+        )
+
+        with urllib.request.urlopen(req, timeout=30) as response:
+            print(f"Status HTML simples: {response.status}")
+            html = response.read().decode("utf-8", errors="ignore")
+            print(html[:3000])
+            return normalizar_texto(html)
+
+    except Exception as e:
+        print(f"Erro ao obter HTML simples: {e}")
+        return ""
 
 def obter_texto_url_simples(page, url):
     try:
@@ -336,6 +356,57 @@ def main():
                     else:
                         print("Já tinha sido detetado antes. Não envio novo alerta.")
 
+                    continue
+
+                if "estorilpraia.pt/bilheteira" in url:
+                    print(f"\nA verificar HTML Estoril: {url}")
+                
+                    texto = obter_texto_html_simples(url)
+                
+                    print("\n========= HTML ESTORIL =========\n")
+                    print(texto[:5000])
+                    print("\n================================\n")
+                
+                    match, encontradas, em_falta = verificar_keywords(texto, keywords)
+                
+                    print(f"Palavras encontradas: {encontradas}")
+                    print(f"Palavras em falta: {em_falta}")
+                
+                    url_key = normalizar_texto(url)
+                    anteriormente_detetado = estado.get(url_key, False)
+                
+                    if match and not anteriormente_detetado:
+                        mensagem = (
+                            f"⚡ Palavra(s) detetada(s) no site do Estoril\n\n"
+                            f"URL: {url}\n"
+                            f"Modo de pesquisa: {MATCH_MODE}\n"
+                            f"Encontradas: {', '.join(encontradas) if encontradas else '-'}\n"
+                            f"Em falta: {', '.join(em_falta) if em_falta else '-'}"
+                        )
+                
+                        enviar_email_com_screenshot(
+                            mensagem,
+                            None,
+                            assunto="ALERTA - palavras detetadas no Estoril"
+                        )
+                        enviar_telegram_texto(mensagem)
+                        estado[url_key] = True
+                
+                    elif not match:
+                        print("Nenhuma palavra detetada no HTML do Estoril.")
+                        estado[url_key] = False
+                
+                        mensagem_debug = (
+                            f"❌ Palavra NÃO encontrada no Estoril\n\n"
+                            f"URL: {url}\n"
+                            f"Keywords: {', '.join(keywords)}\n"
+                            f"Tamanho texto extraído: {len(texto)} caracteres"
+                        )
+                        enviar_telegram_texto(mensagem_debug)
+                
+                    else:
+                        print("Já tinha sido detetado antes. Não envio novo alerta.")
+                
                     continue
 
                 page.set_extra_http_headers({
