@@ -315,6 +315,14 @@ def main():
                 elif not match:
                     print("Nenhuma palavra detetada nesta execução.")
                     estado[url_key] = False
+                
+                    mensagem_debug = (
+                        f"❌ Palavra NÃO encontrada\n\n"
+                        f"URL: {url}\n"
+                        f"Keywords: {', '.join(keywords)}"
+                    )
+                
+                    enviar_telegram_com_screenshot(mensagem_debug, screenshot_path)
 
                 else:
                     print("Já tinha sido detetado antes. Não envio novo alerta.")
