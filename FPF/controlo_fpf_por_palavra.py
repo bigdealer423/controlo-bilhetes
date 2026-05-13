@@ -244,15 +244,8 @@ def main():
     estado = carregar_estado()
 
     with sync_playwright() as p:
-        browser = p.chromium.launch(
-            headless=True,
-            args=[
-                "--no-sandbox",
-                "--disable-setuid-sandbox",
-                "--disable-dev-shm-usage",
-                "--disable-blink-features=AutomationControlled",
-                "--window-size=1440,2200",
-            ]
+        browser = p.firefox.launch(
+            headless=True
         )
 
         for item in URLS:
