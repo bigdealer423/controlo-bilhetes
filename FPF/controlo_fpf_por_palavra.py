@@ -16,7 +16,7 @@ from email.mime.application import MIMEApplication
 
 URLS = [
     {
-        "url": "https://bilheteira.fpf.pt/",
+        "url": "https://bilheteira.fpf.pt/public/Event",
         "keywords": ["Nigéria", "Nigeria", "SCU Torreense", "FC PORTO"]
     },
     {
@@ -48,6 +48,31 @@ MATCH_MODE = "any"
 # =========================
 # FUNÇÕES AUXILIARES
 # =========================
+
+def obter_texto_url_simples(page, url):
+    try:
+        resp = page.request.get(
+            url,
+            headers={
+                "Accept": "application/xml,text/xml,text/plain,*/*",
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+                "Accept-Language": "pt-PT,pt;q=0.9,en;q=0.8",
+            },
+            timeout=30000
+        )
+
+        print(f"Status pedido direto: {resp.status}")
+
+        if resp.ok:
+            txt = resp.text()
+            print(txt[:3000])
+            return normalizar_texto(txt)
+
+        return ""
+
+    except Exception as e:
+        print(f"Erro no pedido direto: {e}")
+        return ""
 
 def garantir_pasta():
     os.makedirs(SCREENSHOT_DIR, exist_ok=True)
@@ -244,8 +269,15 @@ def main():
     estado = carregar_estado()
 
     with sync_playwright() as p:
-        browser = p.firefox.launch(
-            headless=True
+        browser = p.chromium.launch(
+            headless=True,
+            args=[
+                "--no-sandbox",
+                "--disable-setuid-sandbox",
+                "--disable-dev-shm-usage",
+                "--disable-blink-features=AutomationControlled",
+                "--window-size=1440,2200",
+            ]
         )
 
         for item in URLS:
@@ -257,44 +289,74 @@ def main():
                 user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
             )
 
-            page.add_init_script("""
-            Object.defineProperty(navigator, 'webdriver', {
-              get: () => undefined
-            });
-            
-            Object.defineProperty(navigator, 'languages', {
-              get: () => ['pt-PT', 'pt', 'en-US', 'en']
-            });
-            
-            Object.defineProperty(navigator, 'plugins', {
-              get: () => [1, 2, 3, 4, 5]
-            });
-            """)
             try:
+                if "bilheteira.fpf.pt/public/Event" in url:
+                    print(f"\nA verificar API FPF: {url}")
+
+                    texto = obter_texto_url_simples(page, url)
+
+                    print("\n========= TEXTO API FPF =========\n")
+                    print(texto[:5000])
+                    print("\n=================================\n")
+
+                    match, encontradas, em_falta = verificar_keywords(texto, keywords)
+
+                    print(f"Palavras encontradas: {encontradas}")
+                    print(f"Palavras em falta: {em_falta}")
+
+                    url_key = normalizar_texto(url)
+                    anteriormente_detetado = estado.get(url_key, False)
+
+                    if match and not anteriormente_detetado:
+                        mensagem = (
+                            f"⚡ Palavra(s) detetada(s) na API FPF\n\n"
+                            f"URL: {url}\n"
+                            f"Modo de pesquisa: {MATCH_MODE}\n"
+                            f"Encontradas: {', '.join(encontradas) if encontradas else '-'}\n"
+                            f"Em falta: {', '.join(em_falta) if em_falta else '-'}"
+                        )
+
+                        enviar_email_com_screenshot(
+                            mensagem,
+                            None,
+                            assunto="ALERTA - palavras detetadas na FPF"
+                        )
+                        enviar_telegram_texto(mensagem)
+                        estado[url_key] = True
+
+                    elif not match:
+                        print("Nenhuma palavra detetada na API FPF.")
+                        estado[url_key] = False
+
+                        mensagem_debug = (
+                            f"❌ Palavra NÃO encontrada na API FPF\n\n"
+                            f"URL: {url}\n"
+                            f"Keywords: {', '.join(keywords)}\n"
+                            f"Tamanho texto extraído: {len(texto)} caracteres"
+                        )
+                        enviar_telegram_texto(mensagem_debug)
+
+                    else:
+                        print("Já tinha sido detetado antes. Não envio novo alerta.")
+
+                    continue
+
                 page.set_extra_http_headers({
                     "Accept-Language": "pt-PT,pt;q=0.9,en;q=0.8"
                 })
 
-                
                 page.on("console", lambda msg: print(f"CONSOLE {msg.type}: {msg.text}"))
                 page.on("pageerror", lambda exc: print(f"PAGE ERROR: {exc}"))
-                
-                page.on("response", lambda response: (
-                    print(f"RESPONSE {response.status}: {response.url}")
-                    if response.status in [400, 401, 403, 404, 500]
-                    else None
-                ))
-                
+
                 print(f"\nA verificar: {url}")
+
                 page.goto(url, wait_until="load", timeout=90000)
-                
-           
-                
+
                 try:
                     page.wait_for_load_state("networkidle", timeout=30000)
                 except PlaywrightTimeoutError:
                     print("Network idle não atingido, continuo na mesma.")
-                
+
                 try:
                     page.wait_for_function(
                         "() => document.body && document.body.innerText.trim().length > 50",
@@ -303,7 +365,7 @@ def main():
                     print("Página já tem texto no body.")
                 except PlaywrightTimeoutError:
                     print("Body continua sem texto suficiente.")
-                
+
                 page.wait_for_timeout(5000)
 
                 screenshot_path = os.path.join(
@@ -314,9 +376,11 @@ def main():
                 print(f"Screenshot guardado: {screenshot_path}")
 
                 texto = obter_texto_pagina(page)
+
                 print("\n========= TEXTO EXTRAÍDO =========\n")
                 print(texto[:5000])
                 print("\n==================================\n")
+
                 match, encontradas, em_falta = verificar_keywords(texto, keywords)
 
                 print(f"Palavras encontradas: {encontradas}")
@@ -348,13 +412,14 @@ def main():
                 elif not match:
                     print("Nenhuma palavra detetada nesta execução.")
                     estado[url_key] = False
-                
+
                     mensagem_debug = (
                         f"❌ Palavra NÃO encontrada\n\n"
                         f"URL: {url}\n"
-                        f"Keywords: {', '.join(keywords)}"
+                        f"Keywords: {', '.join(keywords)}\n"
+                        f"Tamanho texto extraído: {len(texto)} caracteres"
                     )
-                
+
                     enviar_telegram_com_screenshot(mensagem_debug, screenshot_path)
 
                 else:
