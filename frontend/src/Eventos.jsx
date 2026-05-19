@@ -566,7 +566,7 @@ export default function Eventos() {
   const [mostrarResumoDetalhado, setMostrarResumoDetalhado] = useState(false);
   const [lucrosMensais, setLucrosMensais] = useState([]);
   const linhaRefs = useRef({});
-  const ready = vendas.length > 0 && compras.length > 0;
+  const dadosAuxiliaresCarregados = vendas.length > 0 && compras.length > 0;
   const [vendasNaoAssociadasSet, setVendasNaoAssociadasSet] = useState(new Set());
   const [comprasNaoAssociadasSet, setComprasNaoAssociadasSet] = useState(new Set());
   const [mesesExpandidos, setMesesExpandidos] = useState({});
@@ -1098,10 +1098,9 @@ const matchesEpoca = (r) => {
   }, []);
 
   useEffect(() => {
-  if (!ready) return;                     // 👈 só depois de compras+vendas carregarem
   if (epocaSelecionada === "Todas") return;
-  if (registos.some(matchesEpoca)) return; // já tens algo dessa época visível
-  if (!isLoading && hasMore) setSkip(s => s + limit); // puxa mais páginas
+  if (registos.some(matchesEpoca)) return;
+  if (!isLoading && hasMore) setSkip(s => s + limit);
 }, [registos, epocaSelecionada, isLoading, hasMore, limit]);
 
 
@@ -1115,12 +1114,7 @@ const matchesEpoca = (r) => {
     carregarDados();
   }, []);
 
-  useEffect(() => {
-  if (!ready) return;
-  setRegistos([]);
-  setSkip(0);
-  setHasMore(true);
-}, [ready]);
+ 
 
   useEffect(() => {
     buscarDropdown();
@@ -1157,9 +1151,8 @@ const matchesEpoca = (r) => {
 
 
  useEffect(() => {
-  if (!ready) return;
   buscarEventos();
-}, [skip, epocaSelecionada]); // 👈 adiciona aqui
+}, [skip, epocaSelecionada]);
 
 
 
