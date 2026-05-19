@@ -1097,12 +1097,7 @@ const matchesEpoca = (r) => {
       fetchClubes();
   }, []);
 
-  useEffect(() => {
-  if (epocaSelecionada === "Todas") return;
-  if (registos.some(matchesEpoca)) return;
-  if (!isLoading && hasMore) setSkip(s => s + limit);
-}, [registos, epocaSelecionada, isLoading, hasMore, limit]);
-
+  
 
   
 
@@ -1984,29 +1979,19 @@ const imprimirVendasComNotaVermelha = (
     };
 
     let acumulados = [];
-    let s = skip;
-    let acabou = false;
 
-    if (epocaSelecionada === "Todas") {
-      const pagina0 = await fetchPage(s); // ← declara aqui
-      if (controller.signal.aborted || myReqId !== reqIdRef.current) return;
-      if (pagina0.length < pageLimit) setHasMore(false);
-      acumulados = pagina0;
-      // NÃO alterar skip aqui; o IntersectionObserver trata disso
-    } else {
-      // carrega páginas até compor uma página “limpa” da época selecionada
-      while (acumulados.length < pageLimit && !acabou) {
-        const pagina = await fetchPage(s);
-        if (controller.signal.aborted || myReqId !== reqIdRef.current) return;
-        if (!pagina.length) { setHasMore(false); break; }
-
-        const filtrados = pagina.filter(matchesEpoca);
-        acumulados = acumulados.concat(filtrados);
-
-        s += pageLimit;
-        if (pagina.length < pageLimit) { setHasMore(false); acabou = true; }
-      }
+    const pagina = await fetchPage(skip);
+    
+    if (controller.signal.aborted || myReqId !== reqIdRef.current) return;
+    
+    if (!pagina.length || pagina.length < pageLimit) {
+      setHasMore(false);
     }
+    
+    acumulados =
+      epocaSelecionada === "Todas"
+        ? pagina
+        : pagina.filter(matchesEpoca);
 
     if (controller.signal.aborted || myReqId !== reqIdRef.current) return;
 
