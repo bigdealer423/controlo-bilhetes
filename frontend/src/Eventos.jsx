@@ -2609,8 +2609,15 @@ return (
                   </div>
                 ) : (
                   (() => {
-                    const { saldo } = getTotaisBilhetesEvento(r.evento, r.data_evento, vendas, compras);
-                    const badge = getBadgeBilhetesMeta(saldo);
+                    const dadosBilhetesProntos = vendas.length > 0 && compras.length > 0;
+
+                    const totaisBilhetes = dadosBilhetesProntos
+                      ? getTotaisBilhetesEvento(r.evento, r.data_evento, vendas, compras)
+                      : null;
+                    
+                    const badge = totaisBilhetes
+                      ? getBadgeBilhetesMeta(totaisBilhetes.saldo)
+                      : null;
 
                     return (
                       <div className="flex items-center gap-3 min-w-0 overflow-hidden">
