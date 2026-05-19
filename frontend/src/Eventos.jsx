@@ -1098,6 +1098,16 @@ const matchesEpoca = (r) => {
   return eR === eSel;
 };
 
+const isLinhaEventoPronta = (r) => {
+  const temSaldoBackend = typeof r?.saldo_bilhetes !== "undefined" && r?.saldo_bilhetes !== null;
+  const dadosBilhetesProntos = temSaldoBackend || (vendas.length > 0 && compras.length > 0);
+  return clubesInfo.length > 0 && dadosBilhetesProntos;
+};
+
+const SkeletonTexto = ({ className = "h-4 w-14" }) => (
+  <span className={`inline-block rounded bg-white/10 animate-pulse ${className}`} />
+);
+
 
 
   useEffect(() => {
@@ -2623,7 +2633,7 @@ return (
                       ? getBadgeBilhetesMeta(saldoBilhetes)
                       : null;
 
-                    const linhaPronta = clubesInfo.length > 0 && dadosBilhetesProntos;
+                    const linhaPronta = isLinhaEventoPronta(r);
 
                     return (
                       <div className="flex items-center gap-3 min-w-0 overflow-hidden">
@@ -2710,15 +2720,27 @@ return (
               
 
               <td className="p-4 whitespace-nowrap text-center font-medium text-red-300">
-                {r.gasto} €
+                {isLinhaEventoPronta(r) || modoEdicao === r.id ? (
+                  `${r.gasto} €`
+                ) : (
+                  <SkeletonTexto className="h-4 w-14" />
+                )}
               </td>
 
               <td className="p-4 whitespace-nowrap text-center font-medium text-emerald-300">
-                {r.ganho} €
+                {isLinhaEventoPronta(r) || modoEdicao === r.id ? (
+                  `${r.ganho} €`
+                ) : (
+                  <SkeletonTexto className="h-4 w-14" />
+                )}
               </td>
 
               <td className="p-4 whitespace-nowrap text-left font-semibold text-white">
-                {(r.ganho - r.gasto)} €
+                {isLinhaEventoPronta(r) || modoEdicao === r.id ? (
+                  `${(r.ganho - r.gasto)} €`
+                ) : (
+                  <SkeletonTexto className="h-4 w-14" />
+                )}
               </td>
 
               <td className="p-4 whitespace-nowrap">
@@ -2733,7 +2755,7 @@ return (
                     <option value="Disputa">Disputa</option>
                     <option value="Pago">Pago</option>
                   </select>
-                ) : (
+                ) : isLinhaEventoPronta(r) ? (
                   <span
                     className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${
                       r.estado === "Pago"
@@ -2747,6 +2769,8 @@ return (
                   >
                     {r.estado}
                   </span>
+                ) : (
+                  <SkeletonTexto className="h-6 w-20 rounded-full" />
                 )}
               </td>
 
@@ -3381,7 +3405,7 @@ return (
                   ? getBadgeBilhetesMeta(saldoBilhetes)
                   : null;
 
-                const linhaPronta = clubesInfo.length > 0 && dadosBilhetesProntos;
+                const linhaPronta = isLinhaEventoPronta(r);
                 return (
                   <div
                     key={r.id}
@@ -3465,7 +3489,7 @@ return (
                         <option value="Disputa">Disputa</option>
                         <option value="Por entregar">Por entregar</option>
                       </select>
-                    ) : (
+                    ) : linhaPronta ? (
                       <span
                         className={`font-bold px-3 py-1 rounded-full text-xs ${
                           r.estado === "Pago"
@@ -3479,6 +3503,8 @@ return (
                       >
                         {r.estado}
                       </span>
+                    ) : (
+                      <SkeletonTexto className="h-6 w-20 rounded-full" />
                     )}
                   </div>
           
@@ -3499,7 +3525,7 @@ return (
                           </option>
                         ))}
                       </select>
-                   ) : (
+                   ) : linhaPronta ? (
                     <>
                       <div className="flex flex-wrap items-center gap-1">
                         {renderEventoComSimbolos(r.evento)}
@@ -3511,6 +3537,11 @@ return (
                         </div>
                       )}
                     </>
+                    ) : (
+                      <div className="flex items-center gap-2 animate-pulse">
+                        <span className="w-5 h-5 rounded-full bg-white/10 shrink-0" />
+                        <span className="h-5 w-[240px] max-w-[70vw] rounded bg-white/10" />
+                      </div>
                     )}
                   </div>
           
@@ -3534,8 +3565,10 @@ return (
                             }
                             className="w-20 bg-gray-900 border border-gray-500 p-1 rounded text-right text-red-400 text-lg"
                           />
-                        ) : (
+                        ) : linhaPronta ? (
                           <span>{r.gasto || 0} €</span>
+                        ) : (
+                          <SkeletonTexto className="h-5 w-16" />
                         )}
                       </div>
                   
@@ -3551,8 +3584,10 @@ return (
                             }
                             className="w-20 bg-gray-900 border border-gray-500 p-1 rounded text-right text-green-400 text-lg"
                           />
-                        ) : (
+                        ) : linhaPronta ? (
                           <span>{r.ganho || 0} €</span>
+                        ) : (
+                          <SkeletonTexto className="h-5 w-16" />
                         )}
                       </div>
                   
@@ -3562,7 +3597,7 @@ return (
                           <span className="text-yellow-300 text-lg">
                             {(eventoEditado.ganho || 0) - (eventoEditado.gasto || 0)} €
                           </span>
-                        ) : (
+                        ) : linhaPronta ? (
                           <span
                             className={
                               (r.ganho || 0) - (r.gasto || 0) < 0
@@ -3572,6 +3607,8 @@ return (
                           >
                             {(r.ganho || 0) - (r.gasto || 0)} €
                           </span>
+                        ) : (
+                          <SkeletonTexto className="h-5 w-16" />
                         )}
                       </div>
                     </div>
