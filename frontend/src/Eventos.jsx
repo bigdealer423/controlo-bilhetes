@@ -573,6 +573,7 @@ export default function Eventos() {
   const [mesesExpandidos, setMesesExpandidos] = useState({});
   const [mostrarModalNovaCompra, setMostrarModalNovaCompra] = useState(false);
   const [mostrarModalNovaVenda, setMostrarModalNovaVenda] = useState(false);
+  
   const [novaVendaEvento, setNovaVendaEvento] = useState({
     id_venda: "",
     data_venda: new Date().toISOString().split("T")[0],
@@ -2644,11 +2645,16 @@ return (
                           {badge ? badge.valor : "0"}
                         </span>
 
-                        <div className="flex items-center gap-2 min-w-0 overflow-hidden">
-                          <span className="flex items-center gap-1 whitespace-nowrap overflow-hidden text-ellipsis min-w-0 font-medium text-white">
+                        {linhaPronta ? (
+                          <div className="flex items-center gap-2 min-w-0 transition-opacity duration-300 opacity-100">
                             {renderEventoComSimbolos(r.evento)}
-                          </span>
-
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2 min-w-0 animate-pulse">
+                            <span className="w-5 h-5 rounded-full bg-white/10" />
+                            <span className="h-4 w-[220px] rounded bg-white/10" />
+                          </div>
+                        )}
                           {r.nota_evento && (
                             <span
                               className="text-yellow-300 shrink-0"
@@ -3344,6 +3350,9 @@ return (
                 const d = parseDataPt(r.data_evento); // ✅ usar helper para datas
                 const saldo = Number(r.saldo_bilhetes || 0);
                 const badge = getBadgeBilhetesMeta(saldo);
+                const linhaPronta =
+                  clubesInfo.length > 0 &&
+                  typeof r.saldo_bilhetes !== "undefined";
                 return (
                   <div
                     key={r.id}
@@ -3384,20 +3393,22 @@ return (
                             </div>
                           </div>
                       
-                          <span
-                            title={badge.title}
-                            className={`
-                              inline-flex shrink-0 items-center justify-center
-                              min-w-[28px] h-[28px] px-2 rounded-[10px]
-                              text-[12px] font-bold leading-none
-                              shadow-sm
-                              ${badge.className}
-                            `}
-                          >
-                            {badge.valor}
-                          </span>
-                        </div>
-                      )}
+                          {linhaPronta ? (
+                            <span
+                              title={badge.title}
+                              className={`
+                                inline-flex shrink-0 items-center justify-center
+                                min-w-[30px] h-[30px] px-2 rounded-xl
+                                text-[12px] font-bold leading-none shadow-sm
+                                transition-opacity duration-300 opacity-100
+                                ${badge.className}
+                              `}
+                            >
+                              {badge.valor}
+                            </span>
+                          ) : (
+                            <span className="inline-flex shrink-0 min-w-[30px] h-[30px] rounded-xl bg-white/10 animate-pulse" />
+                          )}
 
 
           
