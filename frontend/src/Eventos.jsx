@@ -3342,12 +3342,7 @@ return (
               .map((r) => {
                 const emEdicao = modoEdicao === r.id;
                 const d = parseDataPt(r.data_evento); // ✅ usar helper para datas
-                const { saldo } = getTotaisBilhetesEvento(
-                  r.evento,
-                  r.data_evento,
-                  vendas,
-                  compras
-                );
+                const saldo = Number(r.saldo_bilhetes || 0);
                 const badge = getBadgeBilhetesMeta(saldo);
                 return (
                   <div
