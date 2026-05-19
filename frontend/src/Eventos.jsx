@@ -2609,15 +2609,21 @@ return (
                   </div>
                 ) : (
                   (() => {
-                    const dadosBilhetesProntos = vendas.length > 0 && compras.length > 0;
+                    const temSaldoBackend = typeof r.saldo_bilhetes !== "undefined" && r.saldo_bilhetes !== null;
+                    const dadosBilhetesProntos =
+                      temSaldoBackend || (vendas.length > 0 && compras.length > 0);
 
-                    const totaisBilhetes = dadosBilhetesProntos
-                      ? getTotaisBilhetesEvento(r.evento, r.data_evento, vendas, compras)
+                    const saldoBilhetes = temSaldoBackend
+                      ? Number(r.saldo_bilhetes || 0)
+                      : dadosBilhetesProntos
+                        ? getTotaisBilhetesEvento(r.evento, r.data_evento, vendas, compras).saldo
+                        : null;
+
+                    const badge = saldoBilhetes !== null
+                      ? getBadgeBilhetesMeta(saldoBilhetes)
                       : null;
-                    
-                    const badge = totaisBilhetes
-                      ? getBadgeBilhetesMeta(totaisBilhetes.saldo)
-                      : null;
+
+                    const linhaPronta = clubesInfo.length > 0 && dadosBilhetesProntos;
 
                     return (
                       <div className="flex items-center gap-3 min-w-0 overflow-hidden">
@@ -2627,54 +2633,73 @@ return (
                           {formatarDataPt(r.data_evento)}
                         </span>
 
-                        <span
-                          title={badge?.title || "A calcular bilhetes"}
-                          className={`
-                            inline-flex shrink-0 items-center justify-center
-                            min-w-[30px] h-[30px] px-2 rounded-xl
-                            text-[12px] font-bold leading-none
-                            shadow-sm transition-all duration-300
-                            ${
-                              badge
-                                ? badge.className
-                                : "bg-white/5 text-transparent border border-white/10"
-                            }
-                          `}
-                        >
-                          {badge ? badge.valor : "0"}
-                        </span>
+                        {linhaPronta ? (
+                          <span
+                            title={badge.title}
+                            className={`
+                              inline-flex shrink-0 items-center justify-center
+                              min-w-[30px] h-[30px] px-2 rounded-xl
+                              text-[12px] font-bold leading-none
+                              shadow-sm transition-opacity duration-300
+                              ${badge.className}
+                            `}
+                          >
+                            {badge.valor}
+                          </span>
+                        ) : (
+                          <span
+                            title="A calcular bilhetes"
+                            className="
+                              inline-flex shrink-0 items-center justify-center
+                              min-w-[30px] h-[30px] px-2 rounded-xl
+                              text-[12px] font-bold leading-none
+                              shadow-sm bg-white/5 border border-white/10 animate-pulse
+                            "
+                          >
+                            &nbsp;
+                          </span>
+                        )}
 
                         <div className="flex items-center gap-2 min-w-0 overflow-hidden">
-                          <span className="flex items-center gap-1 whitespace-nowrap overflow-hidden text-ellipsis min-w-0 font-medium text-white">
-                            {renderEventoComSimbolos(r.evento)}
-                          </span>
+                          {linhaPronta ? (
+                            <>
+                              <span className="flex items-center gap-1 whitespace-nowrap overflow-hidden text-ellipsis min-w-0 font-medium text-white transition-opacity duration-300">
+                                {renderEventoComSimbolos(r.evento)}
+                              </span>
 
-                          {r.nota_evento && (
-                            <span
-                              className="text-yellow-300 shrink-0"
-                              title={r.nota_evento}
-                            >
-                              📝
-                            </span>
+                              {r.nota_evento && (
+                                <span
+                                  className="text-yellow-300 shrink-0"
+                                  title={r.nota_evento}
+                                >
+                                  📝
+                                </span>
+                              )}
+
+                              {r.url_evento ? (
+                                <a
+                                  href={normalizeUrl(r.url_evento)}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  title="Abrir link do evento"
+                                  className="inline-flex items-center opacity-80 transition hover:opacity-100 shrink-0"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  <img
+                                    src={viagogoLogo}
+                                    alt="Viagogo"
+                                    className="w-5 h-5 inline-block"
+                                    loading="lazy"
+                                  />
+                                </a>
+                              ) : null}
+                            </>
+                          ) : (
+                            <div className="flex items-center gap-2 min-w-0 animate-pulse">
+                              <span className="w-5 h-5 rounded-full bg-white/10 shrink-0" />
+                              <span className="h-4 w-[220px] max-w-[45vw] rounded bg-white/10" />
+                            </div>
                           )}
-
-                          {r.url_evento ? (
-                            <a
-                              href={normalizeUrl(r.url_evento)}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              title="Abrir link do evento"
-                              className="inline-flex items-center opacity-80 transition hover:opacity-100 shrink-0"
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              <img
-                                src={viagogoLogo}
-                                alt="Viagogo"
-                                className="w-5 h-5 inline-block"
-                                loading="lazy"
-                              />
-                            </a>
-                          ) : null}
                         </div>
                       </div>
                     );
@@ -3342,8 +3367,21 @@ return (
               .map((r) => {
                 const emEdicao = modoEdicao === r.id;
                 const d = parseDataPt(r.data_evento); // ✅ usar helper para datas
-                const saldo = Number(r.saldo_bilhetes || 0);
-                const badge = getBadgeBilhetesMeta(saldo);
+                const temSaldoBackend = typeof r.saldo_bilhetes !== "undefined" && r.saldo_bilhetes !== null;
+                const dadosBilhetesProntos =
+                  temSaldoBackend || (vendas.length > 0 && compras.length > 0);
+
+                const saldoBilhetes = temSaldoBackend
+                  ? Number(r.saldo_bilhetes || 0)
+                  : dadosBilhetesProntos
+                    ? getTotaisBilhetesEvento(r.evento, r.data_evento, vendas, compras).saldo
+                    : null;
+
+                const badge = saldoBilhetes !== null
+                  ? getBadgeBilhetesMeta(saldoBilhetes)
+                  : null;
+
+                const linhaPronta = clubesInfo.length > 0 && dadosBilhetesProntos;
                 return (
                   <div
                     key={r.id}
@@ -3384,18 +3422,32 @@ return (
                             </div>
                           </div>
                       
-                          <span
-                            title={badge.title}
-                            className={`
-                              inline-flex shrink-0 items-center justify-center
-                              min-w-[28px] h-[28px] px-2 rounded-[10px]
-                              text-[12px] font-bold leading-none
-                              shadow-sm
-                              ${badge.className}
-                            `}
-                          >
-                            {badge.valor}
-                          </span>
+                          {linhaPronta ? (
+                            <span
+                              title={badge.title}
+                              className={`
+                                inline-flex shrink-0 items-center justify-center
+                                min-w-[28px] h-[28px] px-2 rounded-[10px]
+                                text-[12px] font-bold leading-none
+                                shadow-sm transition-opacity duration-300
+                                ${badge.className}
+                              `}
+                            >
+                              {badge.valor}
+                            </span>
+                          ) : (
+                            <span
+                              title="A calcular bilhetes"
+                              className="
+                                inline-flex shrink-0 items-center justify-center
+                                min-w-[28px] h-[28px] px-2 rounded-[10px]
+                                text-[12px] font-bold leading-none
+                                shadow-sm bg-white/5 border border-white/10 animate-pulse
+                              "
+                            >
+                              &nbsp;
+                            </span>
+                          )}
                         </div>
                       )}
 
