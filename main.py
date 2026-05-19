@@ -232,22 +232,75 @@ def atualizar_ganhos_gastos_eventos(db: Session):
 
 
 # ✅ Endpoint para listar eventos já atualizados
-@app.get("/eventos_completos2", response_model=List[EventoCompletoOut])
+@app.get("/eventos_completos2")
 def listar_eventos_completos2(
     skip: int = Query(0, ge=0),
     limit: int = Query(10, ge=1),
     db: Session = Depends(get_db)
 ):
     atualizar_ganhos_gastos_eventos(db)
+
     eventos = (
         db.query(EventoCompletoModel)
-        .order_by(EventoCompletoModel.data_evento, EventoCompletoModel.id)  # <- adiciona o .id
+        .order_by(EventoCompletoModel.data_evento, EventoCompletoModel.id)
         .offset(skip)
         .limit(limit)
         .all()
     )
 
-    return eventos
+    resultado = []
+
+    for evento in eventos:
+        vendas_evento = db.query(ListagemVendas).filter(
+            ListagemVendas.evento == evento.evento,
+            ListagemVendas.data_evento == evento.data_evento
+        ).all()
+
+        compras_evento = db.query(Compra).filter(
+            Compra.evento == evento.evento,
+            Compra.data_evento == evento.data_evento
+        ).all()
+
+        total_vendas_bilhetes = 0
+        for v in vendas_evento:
+            texto = (v.estadio or "").strip()
+
+            if texto.lower().startswith("devolu"):
+                continue
+
+            if texto.isdigit():
+                total_vendas_bilhetes += int(texto)
+            else:
+                match = re.search(r"\((\d+)\s*Bilhetes?\)", texto, re.IGNORECASE)
+                if match:
+                    total_vendas_bilhetes += int(match.group(1))
+
+        total_compras_bilhetes = sum(
+            int(c.quantidade or 0) for c in compras_evento
+        )
+
+        saldo_bilhetes = total_compras_bilhetes - total_vendas_bilhetes
+
+        item = {
+            "id": evento.id,
+            "evento": evento.evento,
+            "data_evento": evento.data_evento,
+            "estadio": evento.estadio,
+            "gasto": evento.gasto,
+            "ganho": evento.ganho,
+            "estado": evento.estado,
+            "nota_estado_evento": getattr(evento, "nota_estado_evento", None),
+            "circulo_estado_evento": getattr(evento, "circulo_estado_evento", None),
+            "url": getattr(evento, "url", None),
+
+            "total_vendas_bilhetes": total_vendas_bilhetes,
+            "total_compras_bilhetes": total_compras_bilhetes,
+            "saldo_bilhetes": saldo_bilhetes,
+        }
+
+        resultado.append(item)
+
+    return resultado
 
 # ✅ Criação de novo evento
 @app.post("/eventos_completos2", response_model=EventoCompletoOut)
