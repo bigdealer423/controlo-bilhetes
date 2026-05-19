@@ -1024,6 +1024,16 @@ useEffect(() => {
   localStorage.setItem("eventos_epoca", epocaSelecionada);
 }, [epocaSelecionada]);
 
+useEffect(() => {
+  const cache = localStorage.getItem(`eventos_cache_${epocaSelecionada}`);
+
+  if (cache) {
+    try {
+      setRegistos(JSON.parse(cache));
+    } catch {}
+  }
+}, []);  
+
 // 👉 reinicia paginação quando muda a época
 useEffect(() => {
   setRegistos([]);
@@ -1102,12 +1112,9 @@ const matchesEpoca = (r) => {
   
 
   useEffect(() => {
-    const carregarDados = async () => {
-      await buscarVendas();
-      await buscarCompras();
-    };
-    carregarDados();
-  }, []);
+  buscarVendas();
+  buscarCompras();
+}, []);
 
  
 
@@ -1250,7 +1257,7 @@ const inferRulesFromAll = () => {
   }
   return byStadium;
 };
-
+/*
 // Sempre que compras/vendas/registos mudam, funde o que foi aprendido
 useEffect(() => {
   if (!registos.length) return;
@@ -1266,7 +1273,7 @@ useEffect(() => {
     return next;
   });
 }, [compras, vendas, registos]);
-
+*/
 const getRulesForStadium = (estadioTxt = "", evento = "", data_evento = "") => {
   const base = STADIUM_RULES.default;
   const nome = (estadioTxt || "").trim();
@@ -2010,7 +2017,10 @@ const imprimirVendasComNotaVermelha = (
         const diff = (da?.getTime() || 0) - (db?.getTime() || 0); // ASC
         return diff !== 0 ? diff : (a.id || 0) - (b.id || 0);
       });
-
+      localStorage.setItem(
+          `eventos_cache_${epocaSelecionada}`,
+          JSON.stringify(visiveis)
+        );
       return visiveis;
     });
 
