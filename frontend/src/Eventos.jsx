@@ -2646,7 +2646,7 @@ return (
                 ) : (
                   (() => {
                     const { saldo } = getTotaisBilhetesEvento(r.evento, r.data_evento, vendas, compras);
-                    const badge = cacheResumoEventos[r.id]?.badge;
+                    const badge = getBadgeBilhetesMeta(saldo);
 
                     return (
                       <div className="flex items-center gap-3 min-w-0 overflow-hidden">
@@ -2789,8 +2789,8 @@ return (
                       );
 
                       const chaveRegra = getEquipaCasaCanonica(r.evento);
-                      const resumo = cacheResumoEventos[r.id]?.matching;
-                      const resumoTitulo = cacheResumoEventos[r.id]?.resumoVendas || "";
+                      const resumo = getResumoMatchingInteligente(r.evento, r.data_evento, chaveRegra);
+                      const resumoTitulo = getResumoTituloVendas(r.evento, r.data_evento, chaveRegra);
 
                       const titulo = `Vendas com Nota (bola vermelha) — ${r.evento} — ${new Date(
                         r.data_evento
@@ -2858,8 +2858,8 @@ return (
                   <td colSpan="6" className="p-4 border-b border-white/6">
                     {(() => {
                       const chaveRegra = getEquipaCasaCanonica(r.evento);
-                      const resumo = cacheResumoEventos[r.id]?.matching;
-                      const resumoTitulo = cacheResumoEventos[r.id]?.resumoVendas || "";
+                      const resumo = getResumoMatchingInteligente(r.evento, r.data_evento, chaveRegra);
+                      const resumoTitulo = getResumoTituloVendas(r.evento, r.data_evento, chaveRegra);
 
                   return (
                     <div className="rounded-2xl border border-blue-400/10 bg-blue-500/8 px-4 py-3">
@@ -3375,7 +3375,7 @@ return (
                   vendas,
                   compras
                 );
-                const badge = cacheResumoEventos[r.id]?.badge;
+                const badge = getBadgeBilhetesMeta(saldo);
                 return (
                   <div
                     key={r.id}
@@ -4499,5 +4499,3 @@ return (
    </div>
   );
 }
-
-
