@@ -2261,13 +2261,17 @@ const renderEventoComSimbolos = (eventoNome) => {
 
     return (
       <span key={idx} className="inline-flex items-center gap-1 mr-1">
-        {clubeMatch?.simbolo && (
-          <img
-            src={clubeMatch.simbolo}
-            alt={clubeMatch.nome}
-            className="w-5 h-5 object-contain inline-block"
-          />
-        )}
+        <span className="w-5 h-5 inline-flex items-center justify-center shrink-0">
+          {clubeMatch?.simbolo ? (
+            <img
+              src={clubeMatch.simbolo}
+              alt={clubeMatch.nome}
+              className="w-5 h-5 object-contain inline-block"
+            />
+          ) : (
+            <span className="w-5 h-5 rounded-full bg-white/5 opacity-40" />
+          )}
+        </span>
         {parte}
         {idx === 0 && partes.length > 1 && <span className="mx-1">vs</span>}
       </span>
