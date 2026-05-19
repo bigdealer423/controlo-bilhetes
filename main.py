@@ -94,7 +94,7 @@ def criar_venda(venda: ListagemVendasCreate, db: Session = Depends(get_db)):
         db.add(nova_venda)
         db.commit()
         db.refresh(nova_venda)
-        atualizar_ganhos_gastos_eventos(db)
+       atualizar_ganhos_gastos_eventos(db)
         return nova_venda
     
     except HTTPException:
@@ -238,7 +238,7 @@ def listar_eventos_completos2(
     limit: int = Query(10, ge=1),
     db: Session = Depends(get_db)
 ):
-    atualizar_ganhos_gastos_eventos(db)
+    #atualizar_ganhos_gastos_eventos(db)
 
     eventos = (
         db.query(EventoCompletoModel)
