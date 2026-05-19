@@ -561,6 +561,7 @@ export default function Eventos() {
   const [skip, setSkip] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const observerRef = useRef();
+  const primeiraVezEpocaRef = useRef(true);
   const limit = 15;
   const location = useLocation();
   const [mostrarResumoDetalhado, setMostrarResumoDetalhado] = useState(false);
@@ -1032,10 +1033,15 @@ useEffect(() => {
       setRegistos(JSON.parse(cache));
     } catch {}
   }
-}, [epocaSelecionada]);  
+}, [epocaSelecionada]);
 
-// 👉 reinicia paginação quando muda a época
+
 useEffect(() => {
+  if (primeiraVezEpocaRef.current) {
+    primeiraVezEpocaRef.current = false;
+    return;
+  }
+
   setRegistos([]);
   setSkip(0);
   setHasMore(true);
