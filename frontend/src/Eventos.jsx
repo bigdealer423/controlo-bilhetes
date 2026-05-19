@@ -1477,6 +1477,46 @@ const getResumoPorComprar = (evento, data_evento) => {
   return faltas.sort((a,b)=>a.localeCompare(b,"pt",{numeric:true,sensitivity:"base"})).join(" • ");
 };
 
+const cacheResumoEventos = useMemo(() => {
+  const mapa = {};
+
+  for (const r of registos) {
+    const chaveRegra = getEquipaCasaCanonica(r.evento);
+
+    const totais = getTotaisBilhetesEvento(
+      r.evento,
+      r.data_evento,
+      vendas,
+      compras
+    );
+
+    mapa[r.id] = {
+      totais,
+      badge: getBadgeBilhetesMeta(totais.saldo),
+
+      resumoVendas: getResumoTituloVendas(
+        r.evento,
+        r.data_evento,
+        chaveRegra
+      ),
+
+      resumoCompras: getResumoTituloCompras(
+        r.evento,
+        r.data_evento,
+        chaveRegra
+      ),
+
+      matching: getResumoMatchingInteligente(
+        r.evento,
+        r.data_evento,
+        chaveRegra
+      ),
+    };
+  }
+
+  return mapa;
+}, [registos, vendas, compras]);  
+
 
 // Título-resumo: "Setor X (N) • Lower 32 (M) ..."
 const getResumoTituloVendas = (evento, data_evento, chaveRegra = "") => {
