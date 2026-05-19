@@ -2620,19 +2620,22 @@ return (
                           {formatarDataPt(r.data_evento)}
                         </span>
 
-                        {badge && (
-                          <span
-                            title={badge.title}
-                            className={`
-                              inline-flex shrink-0 items-center justify-center
-                              min-w-[30px] h-[30px] px-2 rounded-xl
-                              text-[12px] font-bold leading-none
-                              shadow-sm
-                              ${badge.className}
-                            `}
-                          >
-                            {badge.valor}
-                          </span>
+                        <span
+                          title={badge?.title || "A calcular bilhetes"}
+                          className={`
+                            inline-flex shrink-0 items-center justify-center
+                            min-w-[30px] h-[30px] px-2 rounded-xl
+                            text-[12px] font-bold leading-none
+                            shadow-sm transition-all duration-300
+                            ${
+                              badge
+                                ? badge.className
+                                : "bg-white/5 text-transparent border border-white/10"
+                            }
+                          `}
+                        >
+                          {badge ? badge.valor : "0"}
+                        </span>
                         )}
 
                         <div className="flex items-center gap-2 min-w-0 overflow-hidden">
