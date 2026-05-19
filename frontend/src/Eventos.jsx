@@ -1032,7 +1032,7 @@ useEffect(() => {
       setRegistos(JSON.parse(cache));
     } catch {}
   }
-}, []);  
+}, [epocaSelecionada]);  
 
 // 👉 reinicia paginação quando muda a época
 useEffect(() => {
