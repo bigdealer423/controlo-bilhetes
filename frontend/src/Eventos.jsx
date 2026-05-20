@@ -2090,25 +2090,45 @@ const imprimirVendasComNotaVermelha = (
   };
 
   const atualizarTotaisEventoLocal = (eventoNome, dataEvento, listaVendas, listaCompras) => {
-  const ganhoTotal = (listaVendas || [])
-    .filter(v =>
-      String(v.evento || "") === String(eventoNome || "") &&
-      String(v.data_evento || "").slice(0, 10) === String(dataEvento || "").slice(0, 10)
-    )
-    .reduce((acc, v) => acc + (parseFloat(v.ganho) || 0), 0);
+  const dataKey = String(dataEvento || "").slice(0, 10);
 
-  const gastoTotal = (listaCompras || [])
-    .filter(c =>
-      String(c.evento || "") === String(eventoNome || "") &&
-      String(c.data_evento || "").slice(0, 10) === String(dataEvento || "").slice(0, 10)
-    )
-    .reduce((acc, c) => acc + (parseFloat(c.gasto) || 0), 0);
+  const vendasEvento = (listaVendas || []).filter(v =>
+    String(v.evento || "") === String(eventoNome || "") &&
+    String(v.data_evento || "").slice(0, 10) === dataKey
+  );
 
-  setRegistos(prev =>
-    prev.map(r => {
+  const comprasEvento = (listaCompras || []).filter(c =>
+    String(c.evento || "") === String(eventoNome || "") &&
+    String(c.data_evento || "").slice(0, 10) === dataKey
+  );
+
+  const ganhoTotal = vendasEvento.reduce(
+    (acc, v) => acc + (parseFloat(v.ganho) || 0),
+    0
+  );
+
+  const gastoTotal = comprasEvento.reduce(
+    (acc, c) => acc + (parseFloat(c.gasto) || 0),
+    0
+  );
+
+  const totalVendasBilhetes = vendasEvento.reduce((acc, v) => {
+    if (setorExato(v.estadio) === "Devolução") return acc;
+    return acc + (qtdBilhetes(v.estadio) || 0);
+  }, 0);
+
+  const totalComprasBilhetes = comprasEvento.reduce(
+    (acc, c) => acc + (Number(c.quantidade) || 0),
+    0
+  );
+
+  const saldoBilhetes = totalComprasBilhetes - totalVendasBilhetes;
+
+  setRegistos(prev => {
+    const next = prev.map(r => {
       const mesmoEvento =
         String(r.evento || "") === String(eventoNome || "") &&
-        String(r.data_evento || "").slice(0, 10) === String(dataEvento || "").slice(0, 10);
+        String(r.data_evento || "").slice(0, 10) === dataKey;
 
       if (!mesmoEvento) return r;
 
@@ -2116,10 +2136,19 @@ const imprimirVendasComNotaVermelha = (
         ...r,
         ganho: ganhoTotal,
         gasto: gastoTotal,
-        lucro: ganhoTotal - gastoTotal,
+        total_vendas_bilhetes: totalVendasBilhetes,
+        total_compras_bilhetes: totalComprasBilhetes,
+        saldo_bilhetes: saldoBilhetes,
       };
-    })
-  );
+    });
+
+    localStorage.setItem(
+      `eventos_cache_${epocaSelecionada}`,
+      JSON.stringify(next)
+    );
+
+    return next;
+  });
 };
 
   // helper para “recarregar de raiz”
