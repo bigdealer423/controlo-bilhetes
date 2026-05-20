@@ -2019,9 +2019,35 @@ const imprimirVendasComNotaVermelha = (
     if (controller.signal.aborted || myReqId !== reqIdRef.current) return;
 
     setRegistos(prev => {
-      const vistos = new Set(prev.map(e => e.id));
-      const novos = acumulados.filter(e => !vistos.has(e.id));
-      const merged = [...prev, ...novos];
+      const porId = new Map(prev.map(e => [e.id, e]));
+    
+      for (const eventoNovo of acumulados) {
+        porId.set(eventoNovo.id, {
+          ...(porId.get(eventoNovo.id) || {}),
+          ...eventoNovo,
+        });
+      }
+    
+      const merged = Array.from(porId.values());
+    
+      const visiveis = epocaSelecionada === "Todas"
+        ? merged
+        : merged.filter(matchesEpoca);
+    
+      visiveis.sort((a, b) => {
+        const da = parseDataPt(a.data_evento);
+        const db = parseDataPt(b.data_evento);
+        const diff = (da?.getTime() || 0) - (db?.getTime() || 0);
+        return diff !== 0 ? diff : (a.id || 0) - (b.id || 0);
+      });
+    
+      localStorage.setItem(
+        `eventos_cache_${epocaSelecionada}`,
+        JSON.stringify(visiveis)
+      );
+    
+      return visiveis;
+    });
 
       const visiveis = epocaSelecionada === "Todas"
         ? merged
