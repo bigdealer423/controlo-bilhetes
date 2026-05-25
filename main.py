@@ -32,7 +32,10 @@ from models import (
     ClubesInfo,
     ClubesInfoCreate,
     ClubesInfoOut,
-    Disputa
+    Disputa,
+    Nota,
+    NotaCreate,
+    NotaUpdate
 )
 resumo_mais_recente = {}
 Base.metadata.create_all(bind=engine)
