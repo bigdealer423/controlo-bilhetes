@@ -74,10 +74,42 @@ class Compra(Base):
     # Novos campos
     circulo_estado_compra = Column(String, default="cinzento")
     nota_estado_compra = Column(String, default="")
+
+class Nota(Base):
+    __tablename__ = "notas"
+
+    id = Column(Integer, primary_key=True, index=True)
+    titulo = Column(String, nullable=False)
+    descricao = Column(Text, nullable=True)
+    categoria = Column(String, default="Geral")
+    prioridade = Column(String, default="Média")
+    estado = Column(String, default="Pendente")
+    data_limite = Column(String, nullable=True)
+    fixada = Column(Boolean, default=False)
+    criado_em = Column(DateTime, default=datetime.utcnow)
     
     
 
 # -------------------- SCHEMAS Pydantic --------------------
+
+class NotaCreate(BaseModel):
+    titulo: str
+    descricao: Optional[str] = None
+    categoria: str = "Geral"
+    prioridade: str = "Média"
+    estado: str = "Pendente"
+    data_limite: Optional[str] = None
+    fixada: bool = False
+
+
+class NotaUpdate(BaseModel):
+    titulo: str
+    descricao: Optional[str] = None
+    categoria: str = "Geral"
+    prioridade: str = "Média"
+    estado: str = "Pendente"
+    data_limite: Optional[str] = None
+    fixada: bool = False
 
 class ListagemVendasBase(BaseModel):
     id_venda: int
