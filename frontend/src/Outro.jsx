@@ -1,159 +1,343 @@
+import React, { useMemo, useState } from "react";
+import {
+  FaPlus,
+  FaSearch,
+  FaEdit,
+  FaTrash,
+  FaCheck,
+  FaThumbtack,
+  FaRegStickyNote,
+} from "react-icons/fa";
 
-import { useState } from "react";
-import Papa from "papaparse";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+export default function Outro() {
+  const [notas, setNotas] = useState([]);
+  const [pesquisa, setPesquisa] = useState("");
+  const [filtroEstado, setFiltroEstado] = useState("Todos");
+  const [modalAberto, setModalAberto] = useState(false);
+  const [notaEditando, setNotaEditando] = useState(null);
 
-export default function ComparadorViagogo() {
-  const [dadosCSV, setDadosCSV] = useState([]);
-  const [comparacoes, setComparacoes] = useState([]);
-
-  const handleFicheiro = (e) => {
-  const ficheiro = e.target.files[0];
-  if (!ficheiro) return;
-
-  const reader = new FileReader();
-
-  reader.onload = () => {
-    try {
-      const uint8Array = new Uint8Array(reader.result);
-
-      // ✅ usar utf-16le explicitamente!
-      const text = new TextDecoder("utf-16le").decode(uint8Array);
-
-      Papa.parse(text, {
-        header: true,
-        skipEmptyLines: true,
-        delimiter: ",",
-        complete: (resultado) => {
-          const limpos = resultado.data.map((linha) => {
-            const keys = Object.keys(linha);
-            if (keys.length === 1) {
-              try {
-                const jsonStr = linha[keys[0]];
-                const obj = JSON.parse(jsonStr);
-                return obj;
-              } catch (erro) {
-                console.error("Erro ao fazer parse JSON de linha:", linha);
-                return {};
-              }
-            }
-            return linha;
-          });
-
-
-          console.log("CORRIGIDO:", limpos);
-          setDadosCSV(limpos);
-        },
-      });
-    } catch (erro) {
-      console.error("Erro ao processar ficheiro:", erro);
-    }
+  const notaVazia = {
+    titulo: "",
+    descricao: "",
+    categoria: "Geral",
+    prioridade: "Média",
+    estado: "Pendente",
+    data_limite: "",
+    fixada: false,
   };
 
-  reader.readAsArrayBuffer(ficheiro); // ← essencial!
-};
+  const [form, setForm] = useState(notaVazia);
 
+  const abrirNovaNota = () => {
+    setNotaEditando(null);
+    setForm(notaVazia);
+    setModalAberto(true);
+  };
 
-  const enviarParaComparacao = async () => {
-  const resposta = await fetch("https://controlo-bilhetes.onrender.com/api/comparar_listagens", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ listagens: dadosCSV }),
-  });
+  const abrirEditar = (nota) => {
+    setNotaEditando(nota.id);
+    setForm(nota);
+    setModalAberto(true);
+  };
 
+  const guardarNota = () => {
+    if (!form.titulo.trim()) return;
 
-  if (!resposta.ok) {
-    console.error("Erro na resposta:", resposta.status);
-    return;
-  }
+    if (notaEditando) {
+      setNotas((prev) =>
+        prev.map((n) =>
+          n.id === notaEditando ? { ...form, id: notaEditando } : n
+        )
+      );
+    } else {
+      setNotas((prev) => [
+        {
+          ...form,
+          id: Date.now(),
+          criado_em: new Date().toISOString(),
+        },
+        ...prev,
+      ]);
+    }
 
-  const texto = await resposta.text();
-  if (!texto) {
-    console.warn("Resposta vazia");
-    return;
-  }
+    setModalAberto(false);
+  };
 
-  try {
-    const resultado = JSON.parse(texto);
-    setComparacoes(resultado);
-  } catch (erro) {
-    console.error("Erro ao fazer parse do JSON:", erro);
-    console.log("Conteúdo recebido:", texto);
-  }
-};
+  const eliminarNota = (id) => {
+    if (!window.confirm("Eliminar esta nota?")) return;
+    setNotas((prev) => prev.filter((n) => n.id !== id));
+  };
 
+  const concluirNota = (id) => {
+    setNotas((prev) =>
+      prev.map((n) =>
+        n.id === id ? { ...n, estado: "Concluído" } : n
+      )
+    );
+  };
+
+  const alternarFixada = (id) => {
+    setNotas((prev) =>
+      prev.map((n) =>
+        n.id === id ? { ...n, fixada: !n.fixada } : n
+      )
+    );
+  };
+
+  const notasFiltradas = useMemo(() => {
+    return notas
+      .filter((n) => {
+        const texto = `${n.titulo} ${n.descricao} ${n.categoria}`.toLowerCase();
+        const passaPesquisa = texto.includes(pesquisa.toLowerCase());
+        const passaEstado =
+          filtroEstado === "Todos" || n.estado === filtroEstado;
+
+        return passaPesquisa && passaEstado;
+      })
+      .sort((a, b) => {
+        if (a.fixada !== b.fixada) return b.fixada - a.fixada;
+        return new Date(b.criado_em || 0) - new Date(a.criado_em || 0);
+      });
+  }, [notas, pesquisa, filtroEstado]);
+
+  const getPrioridadeClass = (prioridade) => {
+    if (prioridade === "Alta") return "bg-red-500/15 text-red-300 border-red-400/30";
+    if (prioridade === "Média") return "bg-yellow-500/15 text-yellow-300 border-yellow-400/30";
+    return "bg-emerald-500/15 text-emerald-300 border-emerald-400/30";
+  };
+
+  const getEstadoClass = (estado) => {
+    if (estado === "Concluído") return "bg-emerald-500/15 text-emerald-300";
+    if (estado === "Em curso") return "bg-blue-500/15 text-blue-300";
+    return "bg-slate-500/20 text-slate-300";
+  };
 
   return (
-    <div className="p-4 space-y-4">
-      <h1 className="text-xl font-bold">Comparador de Listagens Viagogo</h1>
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white p-4 md:p-8">
+      <div className="max-w-7xl mx-auto space-y-6">
 
-      <input type="file" accept=".csv" onChange={handleFicheiro} className="mb-2" />
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold flex items-center gap-3">
+              <FaRegStickyNote className="text-blue-400" />
+              Notas e Tarefas
+            </h1>
+            <p className="text-slate-400 mt-1">
+              Organiza lembretes, tarefas pendentes e assuntos importantes.
+            </p>
+          </div>
 
-      {dadosCSV.length > 0 && (
-        <>
-          <Button onClick={enviarParaComparacao}>Comparar com Viagogo</Button>
+          <button
+            onClick={abrirNovaNota}
+            className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 px-5 py-3 rounded-2xl font-semibold shadow-lg shadow-blue-900/30 transition"
+          >
+            <FaPlus />
+            Nova Nota
+          </button>
+        </div>
 
-          <Card className="mt-4">
-            <CardContent className="overflow-x-auto">
-              <table className="min-w-full text-sm">
-                <thead>
-                  <tr>
-                    <th className="text-left p-2 border-b dark:border-gray-700">Evento</th>
-                    <th className="text-left p-2 border-b dark:border-gray-700">Setor</th>
-                    <th className="text-left p-2 border-b dark:border-gray-700">Qtd</th>
-                    <th className="text-left p-2 border-b dark:border-gray-700">Preço (€)</th>
-                    <th className="text-left p-2 border-b dark:border-gray-700">Ganho (€)</th>
-                    <th className="text-left p-2 border-b dark:border-gray-700">Venda termina</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {dadosCSV.map((linha, idx) => (
-                    <tr key={idx} className="border-b dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800">
-                      <td className="p-2">{linha.EventName}</td>
-                      <td className="p-2">{linha.Section}</td>
-                      <td className="p-2">{linha.Qty}</td>
-                      <td className="p-2">{linha.PricePerTicketAmount}</td>
-                      <td className="p-2">{linha.PayoutPerTicketAmount}</td>
-                      <td className="p-2">{linha.SaleEnds?.split("T")[0]}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </CardContent>
-          </Card>
-        </>
-      )}
+        <div className="bg-white/5 border border-white/10 rounded-3xl p-4 shadow-xl">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div className="relative md:col-span-2">
+              <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input
+                value={pesquisa}
+                onChange={(e) => setPesquisa(e.target.value)}
+                placeholder="Pesquisar por título, descrição ou categoria..."
+                className="w-full bg-slate-950/70 border border-white/10 rounded-2xl pl-11 pr-4 py-3 outline-none focus:border-blue-400"
+              />
+            </div>
 
-      {comparacoes.length > 0 && (
-        <div className="mt-6">
-          <h2 className="text-lg font-semibold">Resultados da Comparação</h2>
-          <Card className="mt-2">
-            <CardContent className="overflow-x-auto">
-              <table className="min-w-full text-sm">
-                <thead>
-                  <tr>
-                    <th className="text-left p-2 border-b dark:border-gray-700">Evento</th>
-                    <th className="text-left p-2 border-b dark:border-gray-700">Setor</th>
-                    <th className="text-left p-2 border-b dark:border-gray-700">Teu Preço (€)</th>
-                    <th className="text-left p-2 border-b dark:border-gray-700">Concorrência (€)</th>
-                    <th className="text-left p-2 border-b dark:border-gray-700">Sugestão</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {comparacoes.map((item, idx) => (
-                    <tr key={idx} className="border-b dark:border-gray-700">
-                      <td className="p-2">{item.evento}</td>
-                      <td className="p-2">{item.setor}</td>
-                      <td className="p-2">{item.teu_preco}</td>
-                      <td className="p-2">{item.concorrente_preco}</td>
-                      <td className="p-2">{item.sugestao}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </CardContent>
-          </Card>
+            <select
+              value={filtroEstado}
+              onChange={(e) => setFiltroEstado(e.target.value)}
+              className="bg-slate-950/70 border border-white/10 rounded-2xl px-4 py-3 outline-none focus:border-blue-400"
+            >
+              <option>Todos</option>
+              <option>Pendente</option>
+              <option>Em curso</option>
+              <option>Concluído</option>
+            </select>
+          </div>
+        </div>
+
+        {notasFiltradas.length === 0 ? (
+          <div className="border border-dashed border-white/15 rounded-3xl p-10 text-center bg-white/5">
+            <div className="text-5xl mb-4">📝</div>
+            <h2 className="text-xl font-semibold">Ainda não tens notas</h2>
+            <p className="text-slate-400 mt-2">
+              Cria a primeira nota para começares a organizar tarefas.
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+            {notasFiltradas.map((nota) => (
+              <div
+                key={nota.id}
+                className="bg-white/7 border border-white/10 rounded-3xl p-5 shadow-xl hover:border-blue-400/40 transition"
+              >
+                <div className="flex justify-between items-start gap-3">
+                  <div className="flex flex-wrap gap-2">
+                    <span className={`text-xs px-3 py-1 rounded-full border ${getPrioridadeClass(nota.prioridade)}`}>
+                      {nota.prioridade}
+                    </span>
+                    <span className={`text-xs px-3 py-1 rounded-full ${getEstadoClass(nota.estado)}`}>
+                      {nota.estado}
+                    </span>
+                  </div>
+
+                  <button
+                    onClick={() => alternarFixada(nota.id)}
+                    className={`p-2 rounded-xl ${
+                      nota.fixada
+                        ? "text-yellow-300 bg-yellow-500/10"
+                        : "text-slate-500 hover:text-yellow-300"
+                    }`}
+                  >
+                    <FaThumbtack />
+                  </button>
+                </div>
+
+                <h3 className="text-xl font-bold mt-4">{nota.titulo}</h3>
+
+                <p className="text-slate-300 mt-3 whitespace-pre-wrap min-h-[70px]">
+                  {nota.descricao || "Sem descrição."}
+                </p>
+
+                <div className="mt-4 flex flex-wrap gap-2 text-sm text-slate-400">
+                  <span className="bg-slate-950/60 px-3 py-1 rounded-full">
+                    {nota.categoria}
+                  </span>
+
+                  {nota.data_limite && (
+                    <span className="bg-slate-950/60 px-3 py-1 rounded-full">
+                      Até {nota.data_limite}
+                    </span>
+                  )}
+                </div>
+
+                <div className="flex justify-end gap-2 mt-5 pt-4 border-t border-white/10">
+                  {nota.estado !== "Concluído" && (
+                    <button
+                      onClick={() => concluirNota(nota.id)}
+                      className="p-3 rounded-xl bg-emerald-500/15 text-emerald-300 hover:bg-emerald-500/25"
+                      title="Concluir"
+                    >
+                      <FaCheck />
+                    </button>
+                  )}
+
+                  <button
+                    onClick={() => abrirEditar(nota)}
+                    className="p-3 rounded-xl bg-blue-500/15 text-blue-300 hover:bg-blue-500/25"
+                    title="Editar"
+                  >
+                    <FaEdit />
+                  </button>
+
+                  <button
+                    onClick={() => eliminarNota(nota.id)}
+                    className="p-3 rounded-xl bg-red-500/15 text-red-300 hover:bg-red-500/25"
+                    title="Eliminar"
+                  >
+                    <FaTrash />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {modalAberto && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-slate-950 border border-white/10 rounded-3xl shadow-2xl w-full max-w-2xl p-6 space-y-4">
+            <h2 className="text-2xl font-bold">
+              {notaEditando ? "Editar Nota" : "Nova Nota"}
+            </h2>
+
+            <input
+              value={form.titulo}
+              onChange={(e) => setForm({ ...form, titulo: e.target.value })}
+              placeholder="Título"
+              className="w-full bg-slate-900 border border-white/10 rounded-2xl px-4 py-3 outline-none focus:border-blue-400"
+            />
+
+            <textarea
+              value={form.descricao}
+              onChange={(e) => setForm({ ...form, descricao: e.target.value })}
+              placeholder="Descrição / detalhes da tarefa..."
+              rows={5}
+              className="w-full bg-slate-900 border border-white/10 rounded-2xl px-4 py-3 outline-none focus:border-blue-400 resize-none"
+            />
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <select
+                value={form.categoria}
+                onChange={(e) => setForm({ ...form, categoria: e.target.value })}
+                className="bg-slate-900 border border-white/10 rounded-2xl px-4 py-3"
+              >
+                <option>Geral</option>
+                <option>Vendas</option>
+                <option>Compras</option>
+                <option>Viagogo</option>
+                <option>StubHub</option>
+                <option>Urgente</option>
+              </select>
+
+              <select
+                value={form.prioridade}
+                onChange={(e) => setForm({ ...form, prioridade: e.target.value })}
+                className="bg-slate-900 border border-white/10 rounded-2xl px-4 py-3"
+              >
+                <option>Baixa</option>
+                <option>Média</option>
+                <option>Alta</option>
+              </select>
+
+              <select
+                value={form.estado}
+                onChange={(e) => setForm({ ...form, estado: e.target.value })}
+                className="bg-slate-900 border border-white/10 rounded-2xl px-4 py-3"
+              >
+                <option>Pendente</option>
+                <option>Em curso</option>
+                <option>Concluído</option>
+              </select>
+            </div>
+
+            <input
+              type="date"
+              value={form.data_limite}
+              onChange={(e) => setForm({ ...form, data_limite: e.target.value })}
+              className="w-full bg-slate-900 border border-white/10 rounded-2xl px-4 py-3"
+            />
+
+            <label className="flex items-center gap-3 text-slate-300">
+              <input
+                type="checkbox"
+                checked={form.fixada}
+                onChange={(e) => setForm({ ...form, fixada: e.target.checked })}
+              />
+              Fixar nota no topo
+            </label>
+
+            <div className="flex justify-end gap-3 pt-4">
+              <button
+                onClick={() => setModalAberto(false)}
+                className="px-5 py-3 rounded-2xl bg-slate-800 hover:bg-slate-700"
+              >
+                Cancelar
+              </button>
+
+              <button
+                onClick={guardarNota}
+                className="px-5 py-3 rounded-2xl bg-blue-600 hover:bg-blue-500 font-semibold"
+              >
+                Guardar
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
