@@ -24,7 +24,7 @@ export default function Dashboard({ onAtualizarEventos }) {
     { nome: "Info Clubes", rota: "/info-clubes" },
     { nome: "Disputas", rota: "/disputas" },
     { nome: "Compras", rota: "/compras" },
-    { nome: "Outro Menu", rota: "/outro" },
+    { nome: "Notas", rota: "/outro" },
   ];
 
   const handleMenuClick = (e, menuRota) => {
