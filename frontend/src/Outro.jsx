@@ -9,6 +9,7 @@ import {
   FaRegStickyNote,
 } from "react-icons/fa";
 
+const API_URL = "https://controlo-bilhetes.onrender.com";
 export default function Outro() {
   const [notas, setNotas] = useState([]);
 
@@ -18,7 +19,7 @@ useEffect(() => {
 
 const carregarNotas = async () => {
   try {
-    const res = await fetch("/notas");
+    const res = await fetch(`${API_URL}/notas`);
     const data = await res.json();
     setNotas(data);
   } catch (err) {
@@ -58,7 +59,9 @@ const carregarNotas = async () => {
   if (!form.titulo.trim()) return;
 
   try {
-    const url = notaEditando ? `/notas/${notaEditando}` : "/notas";
+    const url = notaEditando
+      ? `${API_URL}/notas/${notaEditando}`
+      : `${API_URL}/notas`;
     const method = notaEditando ? "PUT" : "POST";
 
     const res = await fetch(url, {
@@ -70,6 +73,8 @@ const carregarNotas = async () => {
     });
 
     if (!res.ok) {
+      const erro = await res.text();
+      console.error("ERRO BACKEND:", erro);
       throw new Error("Erro ao guardar nota");
     }
 
@@ -84,7 +89,7 @@ const carregarNotas = async () => {
   if (!window.confirm("Eliminar esta nota?")) return;
 
   try {
-    const res = await fetch(`/notas/${id}`, {
+    const res = await fetch(`${API_URL}/notas/${id}`, {
       method: "DELETE",
     });
 
@@ -103,7 +108,7 @@ const carregarNotas = async () => {
   if (!nota) return;
 
   try {
-    await fetch(`/notas/${id}`, {
+    await fetch(`${API_URL}/notas/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -125,7 +130,7 @@ const carregarNotas = async () => {
   if (!nota) return;
 
   try {
-    await fetch(`/notas/${id}`, {
+    await fetch(`${API_URL}/notas/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
