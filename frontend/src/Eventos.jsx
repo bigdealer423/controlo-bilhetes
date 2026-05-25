@@ -1951,7 +1951,63 @@ const imprimirVendasComNotaVermelha = (
   w.print();
 };
 
+const getResumoOperacaoEvento = (r) => {
+  const totalComprado = compras
+    .filter(c => c.evento === r.evento && c.data_evento === r.data_evento)
+    .reduce((acc, c) => acc + Number(c.quantidade || 0), 0);
 
+  const totalVendido = vendas
+    .filter(v => v.evento === r.evento && v.data_evento === r.data_evento)
+    .reduce((acc, v) => {
+      if (setorExato(v.estadio) === "Devolução") return acc;
+      return acc + (qtdBilhetes(v.estadio) || 0);
+    }, 0);
+
+  const gasto = Number(r.gasto || 0);
+  const ganho = Number(r.ganho || 0);
+  const lucroAtual = ganho - gasto;
+  const stock = totalComprado - totalVendido;
+
+  const precoMedioVenda = totalVendido > 0 ? ganho / totalVendido : 0;
+  const valorPotencialStock = stock > 0 ? stock * precoMedioVenda : 0;
+  const lucroPotencial = ganho + valorPotencialStock - gasto;
+
+  const faltaRecuperar = Math.max(gasto - ganho, 0);
+  const bilhetesParaEmpatar =
+    precoMedioVenda > 0 ? Math.ceil(faltaRecuperar / precoMedioVenda) : null;
+
+  const percentagemVendida =
+    totalComprado > 0 ? Math.round((totalVendido / totalComprado) * 100) : 0;
+
+  let estado = "Sem dados";
+  let estadoClass = "text-white/60 bg-white/10";
+
+  if (totalComprado === 0) {
+    estado = "Sem compras";
+  } else if (lucroAtual >= 0) {
+    estado = "Já está em lucro";
+    estadoClass = "text-emerald-300 bg-emerald-500/15";
+  } else if (lucroPotencial >= 0) {
+    estado = "Saudável";
+    estadoClass = "text-blue-300 bg-blue-500/15";
+  } else {
+    estado = "Risco";
+    estadoClass = "text-red-300 bg-red-500/15";
+  }
+
+  return {
+    totalComprado,
+    totalVendido,
+    stock,
+    precoMedioVenda,
+    valorPotencialStock,
+    lucroPotencial,
+    bilhetesParaEmpatar,
+    percentagemVendida,
+    estado,
+    estadoClass,
+  };
+};
   
   const ordenarEventosDropdown = (data) => {
     return [...data].sort((a, b) => {
@@ -2923,29 +2979,67 @@ return (
                       const chaveRegra = getEquipaCasaCanonica(r.evento);
                       const resumo = getResumoMatchingInteligente(r.evento, r.data_evento, chaveRegra);
                       const resumoTitulo = getResumoTituloVendas(r.evento, r.data_evento, chaveRegra);
+                      const operacao = getResumoOperacaoEvento(r);
 
                   return (
-                    <div className="rounded-2xl border border-blue-400/10 bg-blue-500/8 px-4 py-3">
-                      
-                      {/* 🔵 HEADER COM BOTÃO */}
-                      <div className="flex items-center justify-between gap-3">
-                        <div className="font-semibold text-white">
-                          Vendas ({getTotalBilhetesVendas(r.evento, r.data_evento)})
-                          {resumoTitulo ? <> — {resumoTitulo}</> : null}
+                    <div className="space-y-3">
+                      <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+                        <div className="mb-3 flex items-center justify-between">
+                          <div className="font-semibold text-white">Estado da operação</div>
+                          <span className={`rounded-full px-3 py-1 text-xs font-bold ${operacao.estadoClass}`}>
+                            {operacao.estado}
+                          </span>
                         </div>
                   
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            abrirModalNovaVenda(r);
-                          }}
-                          className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-blue-500 text-white shadow-[0_8px_20px_rgba(59,130,246,0.28)] transition hover:scale-105 hover:bg-blue-400"
-                          title="Adicionar venda"
-                        >
-                          <FaPlus size={12} />
-                        </button>
+                        <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+                          <div className="rounded-xl bg-white/5 px-3 py-2">
+                            <div className="text-[10px] text-white/50 uppercase">Comprados</div>
+                            <div className="text-white font-bold">{operacao.totalComprado}</div>
+                          </div>
+                  
+                          <div className="rounded-xl bg-white/5 px-3 py-2">
+                            <div className="text-[10px] text-white/50 uppercase">Vendidos</div>
+                            <div className="text-emerald-300 font-bold">{operacao.totalVendido}</div>
+                          </div>
+                  
+                          <div className="rounded-xl bg-white/5 px-3 py-2">
+                            <div className="text-[10px] text-white/50 uppercase">Stock</div>
+                            <div className="text-amber-300 font-bold">{operacao.stock}</div>
+                          </div>
+                  
+                          <div className="rounded-xl bg-white/5 px-3 py-2">
+                            <div className="text-[10px] text-white/50 uppercase">Vendidos</div>
+                            <div className="text-blue-300 font-bold">{operacao.percentagemVendida}%</div>
+                          </div>
+                  
+                          <div className="rounded-xl bg-white/5 px-3 py-2">
+                            <div className="text-[10px] text-white/50 uppercase">Lucro Potencial</div>
+                            <div className={`font-bold ${operacao.lucroPotencial >= 0 ? "text-emerald-300" : "text-red-300"}`}>
+                              {formatarNumero(operacao.lucroPotencial)} €
+                            </div>
+                          </div>
+                        </div>
                       </div>
+                  
+                      <div className="rounded-2xl border border-blue-400/10 bg-blue-500/8 px-4 py-3">
+                        <div className="flex items-center justify-between gap-3">
+                          <div className="font-semibold text-white">
+                            Vendas ({getTotalBilhetesVendas(r.evento, r.data_evento)})
+                            {resumoTitulo ? <> — {resumoTitulo}</> : null}
+                          </div>
+                  
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              abrirModalNovaVenda(r);
+                            }}
+                            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-blue-500 text-white shadow-[0_8px_20px_rgba(59,130,246,0.28)] transition hover:scale-105 hover:bg-blue-400"
+                            title="Adicionar venda"
+                          >
+                            <FaPlus size={12} />
+                          </button>
+                        </div>
                   
                       {/* 🔽 RESTO DO RESUMO */}
                       {resumo.porComprarTxt && (
@@ -2965,6 +3059,7 @@ return (
                           🟢 Por vender: {resumo.porVenderTxt}
                         </div>
                       )}
+                      </div>
                     </div>
                   );
                     })()}
