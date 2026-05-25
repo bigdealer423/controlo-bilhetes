@@ -420,6 +420,47 @@ def atualizar_compra(compra_id: int, compra: CompraCreate, db: Session = Depends
     atualizar_ganhos_gastos_eventos(db)
     return compra_existente
 
+@app.get("/notas")
+def listar_notas(db: Session = Depends(get_db)):
+    return db.query(Nota).order_by(Nota.fixada.desc(), Nota.criado_em.desc()).all()
+
+
+@app.post("/notas")
+def criar_nota(nota: NotaCreate, db: Session = Depends(get_db)):
+    nova = Nota(**nota.dict())
+    db.add(nova)
+    db.commit()
+    db.refresh(nova)
+    return nova
+
+
+@app.put("/notas/{nota_id}")
+def atualizar_nota(nota_id: int, nota: NotaUpdate, db: Session = Depends(get_db)):
+    existente = db.query(Nota).filter(Nota.id == nota_id).first()
+
+    if not existente:
+        raise HTTPException(status_code=404, detail="Nota não encontrada")
+
+    for campo, valor in nota.dict().items():
+        setattr(existente, campo, valor)
+
+    db.commit()
+    db.refresh(existente)
+    return existente
+
+
+@app.delete("/notas/{nota_id}")
+def eliminar_nota(nota_id: int, db: Session = Depends(get_db)):
+    existente = db.query(Nota).filter(Nota.id == nota_id).first()
+
+    if not existente:
+        raise HTTPException(status_code=404, detail="Nota não encontrada")
+
+    db.delete(existente)
+    db.commit()
+
+    return {"ok": True}
+
 # ---------------- HEALTH CHECK ----------------
 @app.get("/ping")
 def ping():
