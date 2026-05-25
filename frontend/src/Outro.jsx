@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   FaPlus,
   FaSearch,
@@ -11,6 +11,20 @@ import {
 
 export default function Outro() {
   const [notas, setNotas] = useState([]);
+
+useEffect(() => {
+  carregarNotas();
+}, []);
+
+const carregarNotas = async () => {
+  try {
+    const res = await fetch("/notas");
+    const data = await res.json();
+    setNotas(data);
+  } catch (err) {
+    console.error("Erro ao carregar notas:", err);
+  }
+};
   const [pesquisa, setPesquisa] = useState("");
   const [filtroEstado, setFiltroEstado] = useState("Todos");
   const [modalAberto, setModalAberto] = useState(false);
@@ -40,49 +54,93 @@ export default function Outro() {
     setModalAberto(true);
   };
 
-  const guardarNota = () => {
-    if (!form.titulo.trim()) return;
+  const guardarNota = async () => {
+  if (!form.titulo.trim()) return;
 
-    if (notaEditando) {
-      setNotas((prev) =>
-        prev.map((n) =>
-          n.id === notaEditando ? { ...form, id: notaEditando } : n
-        )
-      );
-    } else {
-      setNotas((prev) => [
-        {
-          ...form,
-          id: Date.now(),
-          criado_em: new Date().toISOString(),
-        },
-        ...prev,
-      ]);
+  try {
+    const url = notaEditando ? `/notas/${notaEditando}` : "/notas";
+    const method = notaEditando ? "PUT" : "POST";
+
+    const res = await fetch(url, {
+      method,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(form),
+    });
+
+    if (!res.ok) {
+      throw new Error("Erro ao guardar nota");
     }
 
+    await carregarNotas();
     setModalAberto(false);
-  };
+  } catch (err) {
+    console.error("Erro ao guardar nota:", err);
+  }
+};
 
-  const eliminarNota = (id) => {
-    if (!window.confirm("Eliminar esta nota?")) return;
-    setNotas((prev) => prev.filter((n) => n.id !== id));
-  };
+  const eliminarNota = async (id) => {
+  if (!window.confirm("Eliminar esta nota?")) return;
 
-  const concluirNota = (id) => {
-    setNotas((prev) =>
-      prev.map((n) =>
-        n.id === id ? { ...n, estado: "Concluído" } : n
-      )
-    );
-  };
+  try {
+    const res = await fetch(`/notas/${id}`, {
+      method: "DELETE",
+    });
 
-  const alternarFixada = (id) => {
-    setNotas((prev) =>
-      prev.map((n) =>
-        n.id === id ? { ...n, fixada: !n.fixada } : n
-      )
-    );
-  };
+    if (!res.ok) {
+      throw new Error("Erro ao eliminar nota");
+    }
+
+    await carregarNotas();
+  } catch (err) {
+    console.error("Erro ao eliminar nota:", err);
+  }
+};
+
+  const concluirNota = async (id) => {
+  const nota = notas.find((n) => n.id === id);
+  if (!nota) return;
+
+  try {
+    await fetch(`/notas/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...nota,
+        estado: "Concluído",
+      }),
+    });
+
+    await carregarNotas();
+  } catch (err) {
+    console.error("Erro ao concluir nota:", err);
+  }
+};
+
+  const alternarFixada = async (id) => {
+  const nota = notas.find((n) => n.id === id);
+  if (!nota) return;
+
+  try {
+    await fetch(`/notas/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...nota,
+        fixada: !nota.fixada,
+      }),
+    });
+
+    await carregarNotas();
+  } catch (err) {
+    console.error("Erro ao fixar nota:", err);
+  }
+};
 
   const notasFiltradas = useMemo(() => {
     return notas
