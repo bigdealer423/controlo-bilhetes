@@ -1,7 +1,7 @@
-from sqlalchemy import Column, Integer, String, Float, Date, Enum, Boolean, Text
+from sqlalchemy import Column, Integer, String, Float, Date, Enum, Boolean, Text, DateTime
+from datetime import date, datetime
 from sqlalchemy.ext.declarative import declarative_base
 from pydantic import BaseModel
-from datetime import date
 from typing import Optional
 import enum
 
