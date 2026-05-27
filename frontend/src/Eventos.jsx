@@ -1968,9 +1968,20 @@ const getResumoOperacaoEvento = (r) => {
   const lucroAtual = ganho - gasto;
   const stock = totalComprado - totalVendido;
 
-  const precoMedioVenda = totalVendido > 0 ? ganho / totalVendido : 0;
+  const ganhoValido = vendas
+  .filter(v => v.evento === r.evento && v.data_evento === r.data_evento)
+  .reduce((acc, v) => {
+    const qtd = qtdBilhetes(v.estadio);
+
+    if (setorExato(v.estadio) === "Devolução") return acc;
+    if (!qtd || qtd <= 0) return acc;
+
+    return acc + Number(v.ganho || 0);
+  }, 0);
+
+const precoMedioVenda = totalVendido > 0 ? ganhoValido / totalVendido : 0;
   const valorPotencialStock = stock > 0 ? stock * precoMedioVenda : 0;
-  const lucroPotencial = ganho + valorPotencialStock - gasto;
+  const lucroPotencial = ganhoValido + valorPotencialStock - gasto;
 
   const faltaRecuperar = Math.max(gasto - ganho, 0);
   const bilhetesParaEmpatar =
