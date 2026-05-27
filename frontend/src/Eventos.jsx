@@ -3002,7 +3002,7 @@ return (
                           </span>
                         </div>
                   
-                        <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+                        <div className="grid grid-cols-2 md:grid-cols-6 gap-2">
                           <div className="rounded-xl bg-white/5 px-3 py-2">
                             <div className="text-[10px] text-white/50 uppercase">Comprados</div>
                             <div className="text-white font-bold">{operacao.totalComprado}</div>
@@ -3021,6 +3021,13 @@ return (
                           <div className="rounded-xl bg-white/5 px-3 py-2">
                             <div className="text-[10px] text-white/50 uppercase">Vendidos</div>
                             <div className="text-blue-300 font-bold">{operacao.percentagemVendida}%</div>
+                          </div>
+
+                          <div className="rounded-xl bg-white/5 px-3 py-2">
+                            <div className="text-[10px] text-white/50 uppercase">Média / Bilhete</div>
+                            <div className="text-purple-300 font-bold">
+                              {formatarNumero(operacao.precoMedioVenda)} €
+                            </div>
                           </div>
                   
                           <div className="rounded-xl bg-white/5 px-3 py-2">
