@@ -1979,13 +1979,23 @@ const getResumoOperacaoEvento = (r) => {
     return acc + Number(v.ganho || 0);
   }, 0);
 
-const precoMedioVenda = totalVendido > 0 ? ganhoValido / totalVendido : 0;
-  const valorPotencialStock = stock > 0 ? stock * precoMedioVenda : 0;
-  const lucroPotencial = ganhoValido + valorPotencialStock - gasto;
+const ganhoTotal = Number(r.ganho || 0);
 
-  const faltaRecuperar = Math.max(gasto - ganho, 0);
-  const bilhetesParaEmpatar =
-    precoMedioVenda > 0 ? Math.ceil(faltaRecuperar / precoMedioVenda) : null;
+const precoMedioVenda =
+  totalVendido > 0 ? ganhoValido / totalVendido : 0;
+
+const valorPotencialStock =
+  stock > 0 ? stock * precoMedioVenda : 0;
+
+const lucroAtual = ganhoTotal - gasto;
+
+const lucroPotencial =
+  lucroAtual + valorPotencialStock;
+
+  const faltaRecuperar = Math.max(-lucroAtual, 0);
+
+const bilhetesParaEmpatar =
+  precoMedioVenda > 0 ? Math.ceil(faltaRecuperar / precoMedioVenda) : null;
 
   const percentagemVendida =
     totalComprado > 0 ? Math.round((totalVendido / totalComprado) * 100) : 0;
