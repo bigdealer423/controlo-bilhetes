@@ -1965,7 +1965,6 @@ const getResumoOperacaoEvento = (r) => {
 
   const gasto = Number(r.gasto || 0);
   const ganho = Number(r.ganho || 0);
-  const lucroAtual = ganho - gasto;
   const stock = totalComprado - totalVendido;
 
   const ganhoValido = vendas
