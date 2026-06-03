@@ -292,19 +292,21 @@ def listar_eventos_completos2(
             "gasto": sum(float(c.gasto or 0) for c in compras_evento),
             "ganho": sum(float(v.ganho or 0) for v in vendas_evento),
             "estado": evento.estado,
-            "nota_estado_evento": getattr(evento, "nota_estado_evento", None),
+        
+            # campos certos do models.py
+            "nota_evento": evento.nota_evento,
+            "url_evento": evento.url_evento,
+        
+            # aliases, se quiseres manter compatibilidade
+            "nota_estado_evento": evento.nota_evento,
+            "url": evento.url_evento,
+        
             "circulo_estado_evento": getattr(evento, "circulo_estado_evento", None),
-            "url": getattr(evento, "url", None),
-            
-            # aliases para o frontend atual
-            "nota_evento": getattr(evento, "nota_estado_evento", None),
-            "url_evento": getattr(evento, "url", None),
-
+        
             "total_vendas_bilhetes": total_vendas_bilhetes,
             "total_compras_bilhetes": total_compras_bilhetes,
             "saldo_bilhetes": saldo_bilhetes,
         }
-
         resultado.append(item)
 
     return resultado
