@@ -295,6 +295,10 @@ def listar_eventos_completos2(
             "nota_estado_evento": getattr(evento, "nota_estado_evento", None),
             "circulo_estado_evento": getattr(evento, "circulo_estado_evento", None),
             "url": getattr(evento, "url", None),
+            
+            # aliases para o frontend atual
+            "nota_evento": getattr(evento, "nota_estado_evento", None),
+            "url_evento": getattr(evento, "url", None),
 
             "total_vendas_bilhetes": total_vendas_bilhetes,
             "total_compras_bilhetes": total_compras_bilhetes,
