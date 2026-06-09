@@ -11,6 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from datetime import datetime, date, timedelta
+from pydantic import BaseModel
 from sqlalchemy import func, desc, and_
 from io import BytesIO
 from database import engine, get_db
@@ -320,6 +321,101 @@ def criar_evento_completo(evento: EventoCompletoCreate, db: Session = Depends(ge
     db.refresh(novo_evento)
     atualizar_ganhos_gastos_eventos(db)
     return novo_evento
+
+class EventoCalendarioImportado(BaseModel):
+    data_evento: date
+    evento: str
+
+
+@app.post("/importar_calendario_eventos")
+def importar_calendario_eventos(
+    eventos: List[EventoCalendarioImportado],
+    db: Session = Depends(get_db)
+):
+    nomes_criados = []
+    nomes_existentes = []
+    eventos_criados = []
+    eventos_existentes = []
+    erros = []
+
+    for item in eventos:
+        nome_evento = (item.evento or "").strip()
+        data_evento = item.data_evento
+
+        if not nome_evento or not data_evento:
+            erros.append({
+                "data_evento": str(data_evento) if data_evento else None,
+                "evento": nome_evento,
+                "erro": "Evento ou data inválida"
+            })
+            continue
+
+        # 1. Verificar primeiro se o nome já existe no Gerir Eventos
+        evento_dropdown = db.query(EventoDropdown).filter(
+            func.lower(EventoDropdown.nome) == nome_evento.lower()
+        ).first()
+
+        # 2. Se não existir, criar no Gerir Eventos
+        if not evento_dropdown:
+            novo_dropdown = EventoDropdown(nome=nome_evento)
+            db.add(novo_dropdown)
+            db.flush()
+
+            nomes_criados.append(nome_evento)
+        else:
+            nomes_existentes.append(nome_evento)
+
+        # 3. Verificar se já existe na tabela principal com a mesma data
+        evento_com_data = db.query(EventoCompletoModel).filter(
+            func.lower(EventoCompletoModel.evento) == nome_evento.lower(),
+            EventoCompletoModel.data_evento == data_evento
+        ).first()
+
+        # 4. Se já existir, ignorar
+        if evento_com_data:
+            eventos_existentes.append({
+                "data_evento": str(data_evento),
+                "evento": nome_evento
+            })
+            continue
+
+        # 5. Se não existir, criar evento com data
+        novo_evento = EventoCompletoModel(
+            data_evento=data_evento,
+            evento=nome_evento,
+            estadio="",
+            gasto=0,
+            ganho=0,
+            estado="Por entregar",
+            nota_evento=None,
+            url_evento=None
+        )
+
+        db.add(novo_evento)
+
+        eventos_criados.append({
+            "data_evento": str(data_evento),
+            "evento": nome_evento
+        })
+
+    db.commit()
+
+    atualizar_ganhos_gastos_eventos(db)
+
+    return {
+        "nomes_criados_gerir_eventos": len(nomes_criados),
+        "nomes_existentes_gerir_eventos": len(nomes_existentes),
+        "eventos_criados_com_data": len(eventos_criados),
+        "eventos_ja_existentes_com_data": len(eventos_existentes),
+        "erros": len(erros),
+        "detalhe": {
+            "nomes_criados": nomes_criados,
+            "nomes_existentes": nomes_existentes,
+            "eventos_criados": eventos_criados,
+            "eventos_existentes": eventos_existentes,
+            "erros": erros
+        }
+    }
 
 # ✅ Eliminação de evento
 @app.delete("/eventos_completos2/{evento_id}")
