@@ -22,7 +22,7 @@ import saveAs from "file-saver";
 import CirculoEstado from "./CirculoEstado";
 import { epocaAtualHoje, epocaDeData } from "@/utils/epocas";
 import viagogoLogo from "./assets/viagogo.svg";
-import ImportarCalendarioModal from "./ImportarCalendarioModal";
+import ImportarCalendarioModal from "./components/ImportarCalendarioModal";
 
 
 
