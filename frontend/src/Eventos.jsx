@@ -2527,8 +2527,8 @@ return (
   </div>
 </div>
 
-<div className="mb-6 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-  <div className="flex flex-col gap-3 md:flex-row md:flex-wrap md:items-center">
+<div className="mb-6 flex flex-col gap-3 2xl:flex-row 2xl:items-center 2xl:justify-between">
+  <div className="flex flex-col gap-3 md:flex-row md:flex-wrap md:items-center 2xl:flex-nowrap">
     {/* Adicionar Evento */}
     <button
       onClick={adicionarLinha}
@@ -2539,7 +2539,7 @@ return (
     </button>
 
     {/* Pesquisa */}
-    <div className="relative min-w-0 md:w-[240px] lg:w-[300px] xl:w-[420px]">
+    <div className="relative min-w-0 md:w-[240px] lg:w-[280px] xl:w-[320px]">
       <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-lg text-white/45">
         🔍
       </span>
@@ -2632,20 +2632,19 @@ return (
     <button
       type="button"
       onClick={() => setMostrarImportarCalendario(true)}
-      className="inline-flex items-center justify-center gap-2 rounded-2xl border border-purple-400/20 bg-gradient-to-r from-purple-600 to-fuchsia-500 px-4 py-3 font-semibold text-white shadow-[0_12px_30px_rgba(168,85,247,0.24)] transition hover:scale-[1.01] hover:from-purple-500 hover:to-fuchsia-400 whitespace-nowrap text-sm xl:text-base"
+      className="inline-flex items-center justify-center gap-2 rounded-2xl border border-purple-400/20 bg-gradient-to-r from-purple-600 to-fuchsia-500 px-4 py-3 font-semibold text-white shadow-[0_12px_30px_rgba(168,85,247,0.24)] transition hover:scale-[1.01] hover:from-purple-500 hover:to-fuchsia-400 whitespace-nowrap text-sm"
     >
       <FaCalendarAlt className="h-4 w-4 shrink-0" />
-      <span className="hidden 2xl:inline">Importar Calendário</span>
-      <span className="2xl:hidden">Importar</span>
+      <span>Importar</span>
     </button>
   
     <button
+      type="button"
       onClick={() => exportarEventosParaExcel(registos)}
-      className="inline-flex items-center justify-center gap-2 rounded-2xl border border-emerald-400/20 bg-gradient-to-r from-emerald-600 to-green-500 px-4 py-3 font-semibold text-white shadow-[0_12px_30px_rgba(16,185,129,0.24)] transition hover:scale-[1.01] hover:from-emerald-500 hover:to-green-400 whitespace-nowrap text-sm xl:text-base"
+      className="inline-flex items-center justify-center gap-2 rounded-2xl border border-emerald-400/20 bg-gradient-to-r from-emerald-600 to-green-500 px-4 py-3 font-semibold text-white shadow-[0_12px_30px_rgba(16,185,129,0.24)] transition hover:scale-[1.01] hover:from-emerald-500 hover:to-green-400 whitespace-nowrap text-sm"
     >
       <FaFileExcel className="h-4 w-4 shrink-0" />
-      <span className="hidden 2xl:inline">Exportar Excel</span>
-      <span className="2xl:hidden">Excel</span>
+      <span>Excel</span>
     </button>
   </div>
 </div>
