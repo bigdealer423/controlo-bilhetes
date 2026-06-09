@@ -22,6 +22,7 @@ import saveAs from "file-saver";
 import CirculoEstado from "./CirculoEstado";
 import { epocaAtualHoje, epocaDeData } from "@/utils/epocas";
 import viagogoLogo from "./assets/viagogo.svg";
+import ImportarCalendarioModal from "./ImportarCalendarioModal";
 
 
 
@@ -573,6 +574,7 @@ export default function Eventos() {
   const [mesesExpandidos, setMesesExpandidos] = useState({});
   const [mostrarModalNovaCompra, setMostrarModalNovaCompra] = useState(false);
   const [mostrarModalNovaVenda, setMostrarModalNovaVenda] = useState(false);
+  const [mostrarImportarCalendario, setMostrarImportarCalendario] = useState(false);
   const [novaVendaEvento, setNovaVendaEvento] = useState({
     id_venda: "",
     data_venda: new Date().toISOString().split("T")[0],
@@ -2625,6 +2627,16 @@ return (
     </button>
   </div>
 
+  <button
+    type="button"
+    onClick={() => setMostrarImportarCalendario(true)}
+    className="inline-flex items-center justify-center gap-3 md:gap-1.5 lg:gap-3 rounded-2xl border border-purple-400/20 bg-gradient-to-r from-purple-600 to-fuchsia-500 px-5 md:px-3 lg:px-5 py-3 md:py-2 lg:py-3 font-semibold text-white shadow-[0_12px_30px_rgba(168,85,247,0.24)] transition hover:scale-[1.01] hover:from-purple-500 hover:to-fuchsia-400 whitespace-nowrap text-sm md:text-[13px] lg:text-base"
+  >
+    <FaCalendarAlt className="h-4 w-4 md:h-3.5 md:w-3.5 lg:h-4 lg:w-4" />
+    <span className="hidden lg:inline">Importar Calendário</span>
+    <span className="lg:hidden">Importar</span>
+  </button>
+
   {/* Exportar */}
   <div className="flex shrink-0">
     <button
@@ -4664,6 +4676,16 @@ return (
           </div>
         </div>
       )}
+
+<ImportarCalendarioModal
+  aberto={mostrarImportarCalendario}
+  onFechar={() => setMostrarImportarCalendario(false)}
+  onImportado={async () => {
+    await buscarDropdown();
+    hardReloadEventos();
+    await buscarResumoMensal();
+  }}
+/>     
 {/* ✅ MODAL ESTÁDIO */}
 {mostrarEstadioId && (
   <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
