@@ -2630,11 +2630,11 @@ return (
   <button
     type="button"
     onClick={() => setMostrarImportarCalendario(true)}
-    className="inline-flex items-center justify-center gap-3 md:gap-1.5 lg:gap-3 rounded-2xl border border-purple-400/20 bg-gradient-to-r from-purple-600 to-fuchsia-500 px-5 md:px-3 lg:px-5 py-3 md:py-2 lg:py-3 font-semibold text-white shadow-[0_12px_30px_rgba(168,85,247,0.24)] transition hover:scale-[1.01] hover:from-purple-500 hover:to-fuchsia-400 whitespace-nowrap text-sm md:text-[13px] lg:text-base"
+    className="inline-flex items-center justify-center gap-2 rounded-2xl border border-purple-400/20 bg-gradient-to-r from-purple-600 to-fuchsia-500 px-4 py-3 font-semibold text-white shadow-[0_12px_30px_rgba(168,85,247,0.24)] transition hover:scale-[1.01] hover:from-purple-500 hover:to-fuchsia-400 whitespace-nowrap text-sm xl:text-base"
   >
-    <FaCalendarAlt className="h-4 w-4 md:h-3.5 md:w-3.5 lg:h-4 lg:w-4" />
-    <span className="hidden lg:inline">Importar Calendário</span>
-    <span className="lg:hidden">Importar</span>
+    <FaCalendarAlt className="h-4 w-4 shrink-0" />
+    <span className="hidden 2xl:inline">Importar Calendário</span>
+    <span className="2xl:hidden">Importar</span>
   </button>
 
   {/* Exportar */}
