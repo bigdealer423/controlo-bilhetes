@@ -2628,26 +2628,26 @@ return (
   </div>
 
   {/* Importar + Exportar */}
-<div className="flex shrink-0 gap-3">
-  <button
-    type="button"
-    onClick={() => setMostrarImportarCalendario(true)}
-    className="inline-flex items-center justify-center gap-2 rounded-2xl border border-purple-400/20 bg-gradient-to-r from-purple-600 to-fuchsia-500 px-4 py-3 font-semibold text-white shadow-[0_12px_30px_rgba(168,85,247,0.24)] transition hover:scale-[1.01] hover:from-purple-500 hover:to-fuchsia-400 whitespace-nowrap text-sm xl:text-base"
-  >
-    <FaCalendarAlt className="h-4 w-4 shrink-0" />
-    <span className="hidden 2xl:inline">Importar Calendário</span>
-    <span className="2xl:hidden">Importar</span>
-  </button>
-
-  <button
-    onClick={() => exportarEventosParaExcel(registos)}
-    className="inline-flex items-center justify-center gap-2 rounded-2xl border border-emerald-400/20 bg-gradient-to-r from-emerald-600 to-green-500 px-4 py-3 font-semibold text-white shadow-[0_12px_30px_rgba(16,185,129,0.24)] transition hover:scale-[1.01] hover:from-emerald-500 hover:to-green-400 whitespace-nowrap text-sm xl:text-base"
-  >
-    <FaFileExcel className="h-4 w-4 shrink-0" />
-    <span className="hidden 2xl:inline">Exportar Excel</span>
-    <span className="2xl:hidden">Excel</span>
-  </button>
-</div>
+  <div className="flex shrink-0 gap-3">
+    <button
+      type="button"
+      onClick={() => setMostrarImportarCalendario(true)}
+      className="inline-flex items-center justify-center gap-2 rounded-2xl border border-purple-400/20 bg-gradient-to-r from-purple-600 to-fuchsia-500 px-4 py-3 font-semibold text-white shadow-[0_12px_30px_rgba(168,85,247,0.24)] transition hover:scale-[1.01] hover:from-purple-500 hover:to-fuchsia-400 whitespace-nowrap text-sm xl:text-base"
+    >
+      <FaCalendarAlt className="h-4 w-4 shrink-0" />
+      <span className="hidden 2xl:inline">Importar Calendário</span>
+      <span className="2xl:hidden">Importar</span>
+    </button>
+  
+    <button
+      onClick={() => exportarEventosParaExcel(registos)}
+      className="inline-flex items-center justify-center gap-2 rounded-2xl border border-emerald-400/20 bg-gradient-to-r from-emerald-600 to-green-500 px-4 py-3 font-semibold text-white shadow-[0_12px_30px_rgba(16,185,129,0.24)] transition hover:scale-[1.01] hover:from-emerald-500 hover:to-green-400 whitespace-nowrap text-sm xl:text-base"
+    >
+      <FaFileExcel className="h-4 w-4 shrink-0" />
+      <span className="hidden 2xl:inline">Exportar Excel</span>
+      <span className="2xl:hidden">Excel</span>
+    </button>
+  </div>
 
 
     
