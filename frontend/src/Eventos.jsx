@@ -2561,72 +2561,79 @@ return (
       )}
     </div>
 
-    {/* Época */}
-    <div ref={epocaRef} className="relative">
-      <button
-        type="button"
-        onClick={() => setEpocaAberta(v => !v)}
-        className="inline-flex min-w-[190px] items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/[0.05] px-5 py-3 font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] transition hover:bg-white/[0.08]"
-        aria-expanded={epocaAberta}
-        aria-haspopup="listbox"
-      >
-        <span className="truncate">Época {epocaSelecionada}</span>
-        <svg
-          className={`h-4 w-4 shrink-0 text-white/70 transition-transform ${epocaAberta ? "rotate-180" : ""}`}
-          viewBox="0 0 20 20"
-          fill="currentColor"
-        >
-          <path d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 011.08 1.04l-4.25 4.25a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z"/>
-        </svg>
-      </button>
+    {/* Época + Ocultar Pagos */}
+<div className="grid grid-cols-[minmax(0,1fr)_auto] items-stretch gap-3 md:flex md:items-center">
 
-      {epocaAberta && (
-        <div
-          role="listbox"
-          className="absolute left-0 top-full z-50 mt-2 w-full min-w-[220px] overflow-hidden rounded-2xl border border-white/10 bg-[#0f172a]/95 p-2 shadow-2xl backdrop-blur-xl"
-        >
-          <div className="max-h-64 overflow-y-auto">
-            {opcoesEpoca.map((opt) => {
-              const ativo = epocaSelecionada === opt;
-              return (
-                <button
-                  key={opt}
-                  role="option"
-                  aria-selected={ativo}
-                  onClick={() => {
-                    setEpocaSelecionada(opt);
-                    setEpocaAberta(false);
-                  }}
-                  className={`w-full rounded-xl px-3 py-2 text-left text-sm transition ${
-                    ativo
-                      ? "bg-blue-500/15 font-semibold text-blue-200"
-                      : "text-white/80 hover:bg-white/8 hover:text-white"
-                  }`}
-                >
-                  {opt}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
-    </div>
-
-    {/* Ocultar Pagos */}
+  {/* Época */}
+  <div ref={epocaRef} className="relative min-w-0">
     <button
-      onClick={() => setOcultarPagos(v => !v)}
-      title={ocultarPagos ? "A ocultar eventos pagos" : "A mostrar eventos pagos"}
-      className={`inline-flex items-center justify-center gap-3 rounded-2xl px-5 py-3 font-semibold text-white transition ${
-        ocultarPagos
-          ? "border border-amber-400/20 bg-amber-500/12 shadow-[0_12px_30px_rgba(245,158,11,0.18)] hover:bg-amber-500/18"
-          : "border border-emerald-400/20 bg-emerald-500/12 shadow-[0_12px_30px_rgba(16,185,129,0.18)] hover:bg-emerald-500/18"
-      }`}
+      type="button"
+      onClick={() => setEpocaAberta(v => !v)}
+      className="inline-flex h-full w-full min-w-0 items-center justify-between gap-2 rounded-2xl border border-white/10 bg-white/[0.05] px-4 py-3 font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] transition hover:bg-white/[0.08] md:min-w-[190px] md:px-5"
+      aria-expanded={epocaAberta}
+      aria-haspopup="listbox"
     >
-      <span className="text-base">💰</span>
-      <span>Ocultar Pagos: {ocultarPagos ? "ON" : "OFF"}</span>
+      <span className="truncate">Época {epocaSelecionada}</span>
+      <svg
+        className={`h-4 w-4 shrink-0 text-white/70 transition-transform ${epocaAberta ? "rotate-180" : ""}`}
+        viewBox="0 0 20 20"
+        fill="currentColor"
+      >
+        <path d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 011.08 1.04l-4.25 4.25a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z"/>
+      </svg>
     </button>
+
+    {epocaAberta && (
+      <div
+        role="listbox"
+        className="absolute left-0 top-full z-50 mt-2 w-full min-w-[220px] overflow-hidden rounded-2xl border border-white/10 bg-[#0f172a]/95 p-2 shadow-2xl backdrop-blur-xl"
+      >
+        <div className="max-h-64 overflow-y-auto">
+          {opcoesEpoca.map((opt) => {
+            const ativo = epocaSelecionada === opt;
+            return (
+              <button
+                key={opt}
+                role="option"
+                aria-selected={ativo}
+                onClick={() => {
+                  setEpocaSelecionada(opt);
+                  setEpocaAberta(false);
+                }}
+                className={`w-full rounded-xl px-3 py-2 text-left text-sm transition ${
+                  ativo
+                    ? "bg-blue-500/15 font-semibold text-blue-200"
+                    : "text-white/80 hover:bg-white/8 hover:text-white"
+                }`}
+              >
+                {opt}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    )}
   </div>
 
+  {/* Ocultar Pagos */}
+  <button
+    onClick={() => setOcultarPagos(v => !v)}
+    title={ocultarPagos ? "A ocultar eventos pagos" : "A mostrar eventos pagos"}
+    className={`inline-flex h-full shrink-0 items-center justify-center gap-2 rounded-2xl px-4 py-3 font-semibold text-white transition md:px-5 ${
+      ocultarPagos
+        ? "border border-amber-400/20 bg-amber-500/12 shadow-[0_12px_30px_rgba(245,158,11,0.18)] hover:bg-amber-500/18"
+        : "border border-emerald-400/20 bg-emerald-500/12 shadow-[0_12px_30px_rgba(16,185,129,0.18)] hover:bg-emerald-500/18"
+    }`}
+  >
+    <span className="text-base">💰</span>
+    <span className="hidden sm:inline">
+      Ocultar Pagos: {ocultarPagos ? "ON" : "OFF"}
+    </span>
+    <span className="sm:hidden">
+      {ocultarPagos ? "ON" : "OFF"}
+    </span>
+  </button>
+</div>
   {/* Importar + Exportar */}
   <div className="hidden md:flex shrink-0 gap-3">
     <button
