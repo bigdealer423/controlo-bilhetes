@@ -144,7 +144,23 @@ export default function App() {
                 )
               }
             />
-              <Route path="/monitor" element={<Monitor />} />
+            
+            <Route
+              path="/notas"
+              element={
+                isAuthenticated ? (
+                  <>
+                    <Dashboard onAtualizarEventos={forcarAtualizacaoEventos} />
+                    <Outro />
+                    <NavbarInferior />
+                  </>
+                ) : (
+                  <Navigate to="/" replace />
+                )
+              }
+            />
+            
+            <Route path="/monitor" element={<Monitor />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </ErrorBoundary>
