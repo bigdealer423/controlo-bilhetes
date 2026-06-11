@@ -2634,6 +2634,8 @@ return (
     </span>
   </button>
 </div>
+</div>
+    
   {/* Importar + Exportar */}
   <div className="hidden md:flex shrink-0 gap-3">
     <button
