@@ -2628,7 +2628,7 @@ return (
   </div>
 
   {/* Importar + Exportar */}
-  <div className="flex shrink-0 gap-3">
+  <div className="hidden md:flex shrink-0 gap-3">
     <button
       type="button"
       onClick={() => setMostrarImportarCalendario(true)}
@@ -3929,19 +3929,28 @@ return (
          {/* Modal de lucros por mês */}
         {mostrarResumoDetalhado && (
           <div
-            className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center"
+            className="fixed inset-0 z-50 bg-black/60 flex items-stretch justify-center p-3 md:items-center md:p-6"
             onClick={() => setMostrarResumoDetalhado(false)}
           >
             <div
-              className="bg-white dark:bg-gray-800 text-black dark:text-white p-6 rounded shadow-lg w-full max-w-5xl"
+              className="flex max-h-[92dvh] w-full max-w-5xl flex-col overflow-hidden rounded-2xl bg-white text-black shadow-2xl dark:bg-gray-800 dark:text-white md:max-h-[88vh]"
               onClick={(e) => e.stopPropagation()}
             >
-              <h2 className="text-lg font-bold mb-4 text-gray-900 dark:text-white">
-                Lucro por Mês
-              </h2>
-        
-              <div className="mb-4 overflow-x-auto">
-                <table className="min-w-full text-sm border border-gray-300 dark:border-gray-600">
+              <div className="flex shrink-0 items-center justify-between border-b border-gray-200 p-4 dark:border-gray-700 md:p-6">
+                <h2 className="text-base font-bold text-gray-900 dark:text-white md:text-lg">
+                  Lucro por Mês
+                </h2>
+
+                <button
+                  onClick={() => setMostrarResumoDetalhado(false)}
+                  className="rounded-xl bg-gray-200 px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600"
+                >
+                  Fechar
+                </button>
+              </div>
+
+              <div className="min-h-0 flex-1 overflow-auto p-3 md:p-6">
+                <table className="min-w-[900px] text-xs md:text-sm border border-gray-300 dark:border-gray-600">
                   <thead className="bg-gray-100 dark:bg-gray-700">
                     <tr>
                       <th className="p-2 text-left">Mês</th>
@@ -4193,12 +4202,6 @@ return (
                 </table>
               </div>
         
-              <button
-                onClick={() => setMostrarResumoDetalhado(false)}
-                className="mt-4 bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-white px-4 py-2 rounded hover:bg-gray-400 dark:hover:bg-gray-600"
-              >
-                Fechar
-              </button>
             </div>
           </div>
         )}
