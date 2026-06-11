@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { FaListUl, FaCalendarAlt, FaInfoCircle, FaShoppingCart, FaExclamationTriangle, FaUser } from "react-icons/fa";
+import { FaListUl, FaCalendarAlt, FaInfoCircle, FaShoppingCart, FaExclamationTriangle, FaStickyNote } from "react-icons/fa";
 
 export default function NavbarInferior() {
   return (
@@ -24,9 +24,9 @@ export default function NavbarInferior() {
         <FaExclamationTriangle size={20} />
         <span>Disputas</span>
       </Link>
-      <Link to="/outro" className="flex flex-col items-center text-sm text-gray-700 gap-1">
-        <FaUser size={20} />
-        <span>Perfil</span>
+      <Link to="/notas" className="flex flex-col items-center text-sm text-gray-700 gap-1">
+        <FaStickyNote size={20} />
+        <span>Notas</span>
       </Link>
     </div>
   );
